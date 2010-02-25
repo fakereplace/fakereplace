@@ -1,0 +1,14 @@
+package org.fakereplace.boot;
+
+public class Constants
+{
+   public final static String GENERATED_CLASS_PACKAGE = "org.fakereplace.proxies";
+
+   public static final String ADDED_METHOD_NAME = "______REDEFINED_METHOD_DELEGATOR_";
+
+   public static final String ADDED_FIELD_NAME = "______REDEFINED_FIELD_ARRAY_";
+
+   public static final String ADDED_STATIC_METHOD_NAME = "______REDEFINED_STATIC_METHOD_DELEGATOR_";
+
+   public static final String ADDED_METHOD_CALLING_METHOD = "________METHOD_CALL__";
+}

@@ -1,0 +1,24 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="Fakereplace Tests" verbose="10">
+
+	<test name="Util Tests">
+		<packages>
+			<package name="org.fakereplace.test.util"></package>
+			<package name="org.fakereplace.test.basic.replacement"></package>
+		</packages>
+	</test>
+
+	<test name="Reflection Tests">
+		<packages>
+			<package name="org.fakereplace.test.basic.reflection"></package>
+		</packages>
+	</test>
+
+	<test name="Static Method Tests">
+		<packages>
+			<package name="org.fakereplace.test.replacement.staticmethod"></package>
+		</packages>
+	</test>
+
+</suite>
