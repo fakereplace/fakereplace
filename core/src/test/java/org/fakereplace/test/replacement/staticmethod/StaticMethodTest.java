@@ -5,7 +5,6 @@ import java.lang.reflect.Method;
 
 import org.fakereplace.test.util.ClassReplacer;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 public class StaticMethodTest
@@ -24,12 +23,27 @@ public class StaticMethodTest
 
       StaticClass ns = new StaticClass();
       Class c = StaticClass.class;
-      Method m = c.getMethod("method1");
 
-      m = c.getMethod("method2");
+      Method m = c.getMethod("method2");
 
       Integer res = (Integer) m.invoke(null);
       assert res == 1 : "Failed to replace static method";
+   }
+
+   @Test(groups = "staticmethod", expectedExceptions = NoSuchMethodException.class)
+   public void testRemovedStaticMethodByReflection() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException
+   {
+
+      Class c = StaticClass.class;
+      Method m = c.getMethod("method1");
+   }
+
+   @Test(groups = "staticmethod")
+   public void testCorrectClassReturned() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException
+   {
+      Class c = StaticClass.class;
+      Method m = c.getMethod("method2");
+      assert m.getDeclaringClass().equals(c) : "wrong class returned: " + m.getDeclaringClass().getName();
    }
 
    @Test(groups = "staticmethod")

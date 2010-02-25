@@ -143,7 +143,7 @@ public class MethodReplacer
          {
             if ((m.getAccessFlags() & AccessFlag.STATIC) != 0)
             {
-               addMethod(file, loader, m, data, staticCodeAttribute, true);
+               addMethod(file, loader, m, data, staticCodeAttribute, true, oldClass);
             }
             else if ((m.getName().equals("<init>")))
             {
@@ -155,7 +155,7 @@ public class MethodReplacer
             }
             else if ((m.getAccessFlags() & AccessFlag.INTERFACE) == 0)
             {
-               addMethod(file, loader, m, data, virtualCodeAttribute, false);
+               addMethod(file, loader, m, data, virtualCodeAttribute, false, oldClass);
             }
             else
             {
@@ -350,7 +350,7 @@ public class MethodReplacer
     * Adds a method to a class
     * 
     */
-   private static void addMethod(ClassFile file, ClassLoader loader, MethodInfo mInfo, ClassData data, CodeAttribute bytecode, boolean staticMethod)
+   private static void addMethod(ClassFile file, ClassLoader loader, MethodInfo mInfo, ClassData data, CodeAttribute bytecode, boolean staticMethod, Class oldClass)
    {
 
       int methodCount = MethodIdentifierStore.getMethodNumber(mInfo.getName(), mInfo.getDescriptor());
@@ -359,6 +359,7 @@ public class MethodReplacer
       {
          generateBoxedConditionalCodeBlock(methodCount, mInfo, file.getConstPool(), bytecode, staticMethod);
          String proxyName = generateProxyInvocationBytecode(mInfo, file.getConstPool(), methodCount, file.getName(), loader, staticMethod);
+         ClassDataStore.registerProxyClass(oldClass, proxyName);
          Transformer.getManipulator().replaceVirtualMethodInvokationWithStatic(file.getName(), proxyName, mInfo.getName(), mInfo.getDescriptor(), mInfo.getDescriptor());
          MethodData md = new MethodData(mInfo.getName(), mInfo.getDescriptor());
          md.setType(MemberType.FAKE);
@@ -440,7 +441,7 @@ public class MethodReplacer
       }
       MethodInfo m = new MethodInfo(file.getConstPool(), md.getMethodName(), md.getDescriptor());
       m.setAccessFlags(md.getAccessFlags());
-
+      md.setType(MemberType.REMOVED_METHOD);
       // put the old annotations on the class
       m.addAttribute(AnnotationReplacer.duplicateAnnotationsAttribute(file.getConstPool(), meth));
 

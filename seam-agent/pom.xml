@@ -9,7 +9,7 @@
   </parent>
   <groupId>org.fakereplace</groupId>
   <artifactId>seam-agent</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>0.1.0-SNAPSHOT</version>
   <name>seam-agent</name>
   <url>http://maven.apache.org</url>
   <dependencies>

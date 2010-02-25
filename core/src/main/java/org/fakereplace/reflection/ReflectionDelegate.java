@@ -95,6 +95,11 @@ public class ReflectionDelegate
                   Class c = clazz.getClassLoader().loadClass(i.getClassName());
                   visible.add(i.getMethod(c));
                }
+               else if (i.getType() == MemberType.REMOVED_METHOD)
+               {
+                  Class c = clazz.getClassLoader().loadClass(i.getClassName());
+                  visible.remove(i.getMethod(c));
+               }
             }
             cta = cta.getSuperClassInformation();
          }
@@ -222,6 +227,16 @@ public class ReflectionDelegate
          }
       }
       throw new NoSuchMethodException();
+   }
+
+   public static Class getDeclaringClass(Method m)
+   {
+      Class c = m.getDeclaringClass();
+      if (c.getName().startsWith(Constants.GENERATED_CLASS_PACKAGE))
+      {
+         return ClassDataStore.getProxyClassForMethod(c.getName());
+      }
+      return c;
    }
 
    public static Field[] getDeclaredFields(Class clazz)

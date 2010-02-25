@@ -6,6 +6,7 @@ import java.util.Map;
 public class ClassDataStore
 {
 
+   static Map<String, Class> methodNameToProxyClass = new HashMap<String, Class>();
    public static Map<ClassLoader, Map<String, ClassData>> classData = new HashMap<ClassLoader, Map<String, ClassData>>();
 
    public static void saveClassData(ClassLoader loader, String className, ClassData data)
@@ -30,4 +31,13 @@ public class ClassDataStore
       return cd;
    }
 
+   public static Class getProxyClassForMethod(String proxyName)
+   {
+      return methodNameToProxyClass.get(proxyName);
+   }
+
+   public static void registerProxyClass(Class c, String proxyName)
+   {
+      methodNameToProxyClass.put(proxyName, c);
+   }
 }
