@@ -23,6 +23,8 @@ public class InstanceFieldTest
       InstanceFieldClass ns = new InstanceFieldClass();
       ns.inc();
       assert ns.get() == 1;
+      ns.inclong();
+      assert ns.getlong() == 2;
    }
 
 }

@@ -12,4 +12,14 @@ public class InstanceFieldClass
    {
       return 0;
    }
+
+   public void inclong()
+   {
+
+   }
+
+   public long getlong()
+   {
+      return 0;
+   }
 }
