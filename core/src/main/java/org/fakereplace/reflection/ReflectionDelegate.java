@@ -58,6 +58,7 @@ public class ReflectionDelegate
          {
             ret[i] = visible.get(i);
          }
+         
          return ret;
       }
       catch (Exception e)
@@ -82,7 +83,9 @@ public class ReflectionDelegate
          for (int i = 0; i < meth.length; ++i)
          {
             if (!meth[i].getName().equals(Constants.ADDED_METHOD_NAME) && !meth[i].getName().equals(Constants.ADDED_STATIC_METHOD_NAME))
+            {
                visible.add(meth[i]);
+            }
          }
 
          ClassData cta = cd;
@@ -124,7 +127,6 @@ public class ReflectionDelegate
 
       if (cd == null)
       {
-
          Method meth = clazz.getMethod(name, parameters);
          return meth;
       }
@@ -180,7 +182,6 @@ public class ReflectionDelegate
 
       if (cd == null)
       {
-
          Method meth = clazz.getDeclaredMethod(name, parameters);
          return meth;
       }
@@ -245,7 +246,7 @@ public class ReflectionDelegate
       {
          ClassData cd = ClassDataStore.getClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
 
-         if (cd == null || 0 == 0)
+         if (cd == null )
          {
             return clazz.getDeclaredFields();
          }
@@ -270,6 +271,7 @@ public class ReflectionDelegate
          {
             ret[i] = visible.get(i);
          }
+         
          return ret;
       }
       catch (Exception e)
@@ -284,7 +286,7 @@ public class ReflectionDelegate
       {
          ClassData cd = ClassDataStore.getClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
 
-         if (cd == null || 0 == 0)
+         if (cd == null)
          {
             return clazz.getDeclaredFields();
          }
