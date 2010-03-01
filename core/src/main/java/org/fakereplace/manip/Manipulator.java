@@ -18,6 +18,7 @@ public class Manipulator
    Map<String, String> renames = Collections.synchronizedMap(new HashMap<String, String>());
    MethodInvokationManipulator methodInvokationManipulator = new MethodInvokationManipulator();
    StaticFieldManipulator staticFieldManipulator = new StaticFieldManipulator();
+   InstanceFieldManipulator instanceFieldManapulator = new InstanceFieldManipulator();
 
    public void removeRewrites(String className)
    {
@@ -41,6 +42,11 @@ public class Manipulator
       staticFieldManipulator.rewriteStaticFieldAccess(oldClass, newClass, fieldName);
    }
 
+   public void rewriteInstanceFieldAccess(AddedFieldData data)
+   {
+      instanceFieldManapulator.addField(data);
+   }
+
    /**
     * This can also be used to replace a static invokation with another static
     * invokation
@@ -61,7 +67,7 @@ public class Manipulator
       // first we are going to transform virtual method calls to static ones
       methodInvokationManipulator.transformClass(file);
       staticFieldManipulator.transformClass(file);
-
+      instanceFieldManapulator.tranformClass(file);
       file.renameClass(renames);
 
    }

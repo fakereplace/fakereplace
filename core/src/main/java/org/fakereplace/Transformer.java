@@ -133,7 +133,7 @@ public class Transformer implements ClassFileTransformer
          if (!file.isInterface())
          {
             addMethodForInstrumentation(file);
-            // addFieldForInstrumentation(file);
+            addFieldForInstrumentation(file);
          }
 
          ByteArrayOutputStream bs = new ByteArrayOutputStream();
@@ -174,7 +174,7 @@ public class Transformer implements ClassFileTransformer
    {
       try
       {
-         MethodInfo m = new MethodInfo(file.getConstPool(), Constants.ADDED_METHOD_NAME, "(I[Ljava/lang/Object;)Ljava/lang/Object;");
+         MethodInfo m = new MethodInfo(file.getConstPool(), Constants.ADDED_METHOD_NAME, Constants.ADDED_METHOD_DESCRIPTOR);
          m.setAccessFlags(0 | AccessFlag.PUBLIC);
 
          Bytecode b = new Bytecode(file.getConstPool(), 5, 3);
@@ -190,7 +190,7 @@ public class Transformer implements ClassFileTransformer
       }
       try
       {
-         MethodInfo m = new MethodInfo(file.getConstPool(), Constants.ADDED_STATIC_METHOD_NAME, "(I[Ljava/lang/Object;)Ljava/lang/Object;");
+         MethodInfo m = new MethodInfo(file.getConstPool(), Constants.ADDED_STATIC_METHOD_NAME, Constants.ADDED_STATIC_METHOD_DESCRIPTOR);
          m.setAccessFlags(AccessFlag.PUBLIC | AccessFlag.STATIC);
          Bytecode b = new Bytecode(file.getConstPool(), 5, 3);
          b.add(Bytecode.ACONST_NULL);
@@ -218,7 +218,7 @@ public class Transformer implements ClassFileTransformer
       {
          if ((file.getAccessFlags() & AccessFlag.INTERFACE) == 0)
          {
-            FieldInfo m = new FieldInfo(file.getConstPool(), Constants.ADDED_FIELD_NAME, "[Ljava/lang/Object;");
+            FieldInfo m = new FieldInfo(file.getConstPool(), Constants.ADDED_FIELD_NAME, Constants.ADDED_FIELD_DESCRIPTOR);
             m.setAccessFlags(0 | AccessFlag.PUBLIC);
             Bytecode b = new Bytecode(file.getConstPool(), 5, 3);
             b.add(Bytecode.ACONST_NULL);

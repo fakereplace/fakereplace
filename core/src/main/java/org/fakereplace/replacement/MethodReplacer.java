@@ -51,7 +51,7 @@ public class MethodReplacer
          // stick our added methods into the class file
          // we can't finalise the code yet because we will probably need
          // the add stuff to them
-         MethodInfo m = new MethodInfo(file.getConstPool(), Constants.ADDED_METHOD_NAME, "(I[Ljava/lang/Object;)Ljava/lang/Object;");
+         MethodInfo m = new MethodInfo(file.getConstPool(), Constants.ADDED_METHOD_NAME, Constants.ADDED_METHOD_DESCRIPTOR);
          m.setAccessFlags(0 | AccessFlag.PUBLIC);
 
          Bytecode b = new Bytecode(file.getConstPool(), 5, 3);
@@ -61,7 +61,7 @@ public class MethodReplacer
          m.setCodeAttribute(virtualCodeAttribute);
          file.addMethod(m);
 
-         m = new MethodInfo(file.getConstPool(), Constants.ADDED_STATIC_METHOD_NAME, "(I[Ljava/lang/Object;)Ljava/lang/Object;");
+         m = new MethodInfo(file.getConstPool(), Constants.ADDED_STATIC_METHOD_NAME, Constants.ADDED_STATIC_METHOD_DESCRIPTOR);
          m.setAccessFlags(AccessFlag.PUBLIC | AccessFlag.STATIC);
          b = new Bytecode(file.getConstPool(), 5, 3);
          b.add(Bytecode.ACONST_NULL);

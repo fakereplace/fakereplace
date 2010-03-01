@@ -4,16 +4,23 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
 
 import javassist.bytecode.AccessFlag;
 import javassist.bytecode.AnnotationsAttribute;
+import javassist.bytecode.BadBytecode;
+import javassist.bytecode.Bytecode;
 import javassist.bytecode.ClassFile;
+import javassist.bytecode.CodeIterator;
 import javassist.bytecode.Descriptor;
 import javassist.bytecode.DuplicateMemberException;
 import javassist.bytecode.FieldInfo;
+import javassist.bytecode.MethodInfo;
+import javassist.bytecode.Opcode;
 
 import org.fakereplace.Transformer;
 import org.fakereplace.boot.Constants;
@@ -23,6 +30,7 @@ import org.fakereplace.data.ClassData;
 import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.data.FieldData;
 import org.fakereplace.data.MemberType;
+import org.fakereplace.manip.AddedFieldData;
 
 public class FieldReplacer
 {
@@ -30,12 +38,32 @@ public class FieldReplacer
    public static void handleFieldReplacement(ClassFile file, ClassLoader loader, Class oldClass)
    {
 
+      try
+      {
+         if ((file.getAccessFlags() & AccessFlag.INTERFACE) == 0)
+         {
+            FieldInfo m = new FieldInfo(file.getConstPool(), Constants.ADDED_FIELD_NAME, Constants.ADDED_FIELD_DESCRIPTOR);
+            m.setAccessFlags(0 | AccessFlag.PUBLIC);
+            Bytecode b = new Bytecode(file.getConstPool(), 5, 3);
+            b.add(Bytecode.ACONST_NULL);
+            b.add(Bytecode.ARETURN);
+            file.addField(m);
+         }
+      }
+      catch (DuplicateMemberException e)
+      {
+         // e.printStackTrace();
+      }
+
       ClassData data = ClassDataStore.getClassData(loader, Descriptor.toJvmName(file.getName()));
 
       Set<FieldData> fields = new HashSet<FieldData>();
       fields.addAll(data.getFields());
 
       ListIterator<?> it = file.getFields().listIterator();
+
+      int noAddedFields = 0;
+      List<AddedFieldData> addedFields = new ArrayList<AddedFieldData>();
 
       // now we iterator through all fields
       // in the process we modify the new class so that is's signature
@@ -70,7 +98,7 @@ public class FieldReplacer
          if (m.getName().equals(Constants.ADDED_FIELD_NAME))
          {
             it.remove();
-            break;
+            continue;
          }
          // This is a newly added field.
          if (md == null)
@@ -78,6 +106,11 @@ public class FieldReplacer
             if ((m.getAccessFlags() & AccessFlag.STATIC) != 0)
             {
                addStaticField(file, loader, m, data);
+            }
+            else
+            {
+               addedFields.add(new AddedFieldData(noAddedFields, m.getName(), m.getDescriptor(), file.getName()));
+               noAddedFields++;
             }
             // TODO deal with non static fields
             it.remove();
@@ -104,6 +137,79 @@ public class FieldReplacer
          }
       }
 
+      // if we have added instance fields we need to instrument all the
+      // constructors to create the
+      // arrays fist thing
+      if (noAddedFields > 0)
+      {
+         try
+         {
+            instrumentConstructors(file, addedFields);
+         }
+         catch (Exception e)
+         {
+            throw new RuntimeException(e);
+         }
+      }
+      for (AddedFieldData a : addedFields)
+      {
+         Transformer.getManipulator().rewriteInstanceFieldAccess(a);
+      }
+   }
+
+   /**
+    * initilizes the generated field straight after the call to super() or
+    * this()
+    * 
+    * @param file
+    * @param addedFields
+    * @throws BadBytecode
+    */
+   private static void instrumentConstructors(ClassFile file, List<AddedFieldData> addedFields) throws BadBytecode
+   {
+      int addedFieldsLengthIndex = file.getConstPool().addIntegerInfo(addedFields.size());
+      for (Object mo : file.getMethods())
+      {
+         MethodInfo m = (MethodInfo) mo;
+         if (m.getName().equals("<init>"))
+         {
+            // we want to add:
+            // if(added_field == null) added_field = new Object[size];
+
+            // create the body of the conditional first
+            Bytecode cond = new Bytecode(file.getConstPool());
+            // push this onto the stack
+            cond.addAload(0);
+            // put the array size on the stack
+            cond.addLdc(addedFieldsLengthIndex);
+            // create the array
+            cond.addAnewarray("java.lang.Object");
+            cond.addPutfield(file.getName(), Constants.ADDED_FIELD_NAME, Constants.ADDED_FIELD_DESCRIPTOR);
+            Bytecode b = new Bytecode(file.getConstPool());
+            b.addAload(0);
+            b.addGetfield(file.getName(), Constants.ADDED_FIELD_NAME, Constants.ADDED_FIELD_DESCRIPTOR);
+            b.add(Opcode.IFNONNULL);
+            ByteUtils.add16bit(b, cond.getSize() + 3);
+            CodeIterator it = m.getCodeAttribute().iterator();
+            it.skipConstructor();
+            // built up the bytecode to insert
+            // if we try and insert one after the other weirdness happens
+            // not sure why
+            byte[] bcd = new byte[b.getSize() + cond.getSize()];
+            int count = 0;
+            for (int i = 0; i < b.getSize(); ++i)
+            {
+               bcd[i] = b.get()[i];
+               count++;
+            }
+            for (int i = 0; i < cond.getSize(); ++i)
+            {
+               bcd[count] = cond.get()[i];
+               count++;
+            }
+            it.insert(bcd);
+         }
+      }
    }
 
    /**
