@@ -8,8 +8,11 @@ import java.io.IOException;
 import java.lang.instrument.ClassDefinition;
 
 import javassist.bytecode.ClassFile;
+import javassist.bytecode.Descriptor;
 
 import org.fakereplace.boot.Logger;
+import org.fakereplace.data.ClassData;
+import org.fakereplace.data.ClassDataStore;
 
 public class ClassRedefiner
 {
@@ -40,6 +43,8 @@ public class ClassRedefiner
 
    public static void modifyReloadedClass(ClassFile file, ClassLoader loader, Class oldClass)
    {
+      ClassData data = ClassDataStore.getClassData(loader, Descriptor.toJvmName(file.getName()));
+      data.clearReplacements();
       // deal with class level annotations
       AnnotationReplacer.processAnnotations(file, oldClass);
 

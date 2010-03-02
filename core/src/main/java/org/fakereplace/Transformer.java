@@ -48,6 +48,24 @@ public class Transformer implements ClassFileTransformer
 
    static Manipulator manipulator = new Manipulator();
 
+   static final String[] replacablePackages;
+
+   static
+   {
+      String plist = System.getProperty(Constants.REPLACABLE_PACKAGES_KEY);
+      if (plist == null || plist.length() == 0)
+      {
+         System.out.println("-----------------------------------------------------------------");
+         System.out.println("System property " + Constants.REPLACABLE_PACKAGES_KEY + " was not specified, fakereplace is diabled");
+         System.out.println("-----------------------------------------------------------------");
+         replacablePackages = new String[0];
+      }
+      else
+      {
+         replacablePackages = plist.split(",");
+      }
+   }
+
    Transformer(Instrumentation i)
    {
       instrumentation = i;
@@ -130,7 +148,7 @@ public class Transformer implements ClassFileTransformer
             recordClassDetails(file, loader);
          }
 
-         if (!file.isInterface())
+         if (!file.isInterface() && isClassReplacable(file.getName()))
          {
             addMethodForInstrumentation(file);
             addFieldForInstrumentation(file);
@@ -151,6 +169,18 @@ public class Transformer implements ClassFileTransformer
       {
          lock.unlock();
       }
+   }
+
+   public static boolean isClassReplacable(String className)
+   {
+      for (String i : replacablePackages)
+      {
+         if (className.startsWith(i))
+         {
+            return true;
+         }
+      }
+      return false;
    }
 
    /**

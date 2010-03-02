@@ -53,9 +53,6 @@ public class InstanceFieldManipulator
                   {
                      // store the location in the const pool of the method ref
                      fieldAccessLocations.put(i, data);
-                     // we have found a method call
-                     // now lets replace it
-
                      break;
                   }
 
@@ -85,12 +82,11 @@ public class InstanceFieldManipulator
                   // loop through the bytecode
                   int index = it.next();
                   int op = it.byteAt(index);
-                  // if the bytecode is a method invocation
+                  // if the bytecode is a field access
                   if (op == Opcode.PUTFIELD || op == Opcode.GETFIELD)
                   {
                      int val = it.s16bitAt(index + 1);
-                     // if the method call is one of the methods we are
-                     // replacing
+                     // if the field access is for an added field
                      if (fieldAccessLocations.containsKey(val))
                      {
 

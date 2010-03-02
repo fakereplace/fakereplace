@@ -3,8 +3,10 @@ package org.fakereplace.data;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import javassist.bytecode.FieldInfo;
 
@@ -168,6 +170,34 @@ public class ClassData
          return null;
       }
       return ms.iterator().next();
+   }
+
+   public void clearReplacements()
+   {
+      for (Map<String, Set<MethodData>> i : methods.values())
+      {
+         for (Set<MethodData> j : i.values())
+         {
+            Iterator<MethodData> it = j.iterator();
+            while (it.hasNext())
+            {
+               MethodData m = it.next();
+               if (m.getType() == MemberType.FAKE)
+               {
+                  it.remove();
+               }
+            }
+         }
+      }
+      Iterator<Entry<String, FieldData>> it = fields.entrySet().iterator();
+      while (it.hasNext())
+      {
+         Entry<String, FieldData> e = it.next();
+         if (e.getValue().getMemberType() == MemberType.FAKE)
+         {
+            it.remove();
+         }
+      }
    }
 
 }

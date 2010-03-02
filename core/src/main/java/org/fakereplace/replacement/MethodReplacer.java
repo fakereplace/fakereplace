@@ -78,6 +78,7 @@ public class MethodReplacer
       ClassData data = ClassDataStore.getClassData(loader, Descriptor.toJvmName(file.getName()));
 
       Set<MethodData> methods = new HashSet<MethodData>();
+
       methods.addAll(data.getMethods());
 
       ListIterator<?> it = file.getMethods().listIterator();
@@ -360,7 +361,12 @@ public class MethodReplacer
          generateBoxedConditionalCodeBlock(methodCount, mInfo, file.getConstPool(), bytecode, staticMethod);
          String proxyName = generateProxyInvocationBytecode(mInfo, file.getConstPool(), methodCount, file.getName(), loader, staticMethod);
          ClassDataStore.registerProxyClass(oldClass, proxyName);
-         Transformer.getManipulator().replaceVirtualMethodInvokationWithStatic(file.getName(), proxyName, mInfo.getName(), mInfo.getDescriptor(), mInfo.getDescriptor());
+         String newMethodDesc = mInfo.getDescriptor();
+         if (!staticMethod)
+         {
+            newMethodDesc = "(L" + Descriptor.toJvmName(file.getName()) + ";" + newMethodDesc.substring(1);
+         }
+         Transformer.getManipulator().replaceVirtualMethodInvokationWithStatic(file.getName(), proxyName, mInfo.getName(), mInfo.getDescriptor(), newMethodDesc);
          MethodData md = new MethodData(mInfo.getName(), mInfo.getDescriptor());
          md.setType(MemberType.FAKE);
          md.setClassName(proxyName);
