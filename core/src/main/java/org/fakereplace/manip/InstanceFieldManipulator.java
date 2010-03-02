@@ -47,7 +47,6 @@ public class InstanceFieldManipulator
          {
             if (addedFieldData.containsKey(pool.getFieldrefClassName(i)))
             {
-               System.out.println("Aaa");
                for (AddedFieldData data : addedFieldData.get(pool.getFieldrefClassName(i)))
                {
                   if (pool.getFieldrefName(i).equals(data.name))
@@ -106,14 +105,13 @@ public class InstanceFieldManipulator
                         if (op == Opcode.PUTFIELD)
                         {
                            Bytecode b = new Bytecode(file.getConstPool());
-                           if (data.getDescriptor().charAt(0) != 'L')
+                           if (data.getDescriptor().charAt(0) != 'L' && data.getDescriptor().charAt(0) != '[')
                            {
                               Boxing.box(b, data.getDescriptor().charAt(0));
                            }
                            b.addAload(0);
                            b.addGetfield(file.getName(), Constants.ADDED_FIELD_NAME, Constants.ADDED_FIELD_DESCRIPTOR);
-                           b.addOpcode(Opcode.SWAP); // we need to keep swapping
-                           // value to the top
+                           b.addOpcode(Opcode.SWAP); // we need to keep swapping this value to the top
                            b.addLdc(arrayPos);
                            b.addOpcode(Opcode.SWAP);
                            b.add(Opcode.AASTORE);
@@ -127,7 +125,7 @@ public class InstanceFieldManipulator
                            b.addGetfield(file.getName(), Constants.ADDED_FIELD_NAME, Constants.ADDED_FIELD_DESCRIPTOR);
                            b.addLdc(arrayPos);
                            b.add(Opcode.AALOAD);
-                           if (data.getDescriptor().charAt(0) != 'L')
+                           if (data.getDescriptor().charAt(0) != 'L'&& data.getDescriptor().charAt(0) != '[')
                            {
                               Boxing.unbox(b, data.getDescriptor().charAt(0));
                            }
