@@ -1,5 +1,8 @@
 package org.fakereplace.data;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -8,9 +11,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import javassist.bytecode.AccessFlag;
 import javassist.bytecode.AnnotationsAttribute;
+import javassist.bytecode.AttributeInfo;
+import javassist.bytecode.ClassFile;
 
-import org.fakereplace.util.AnnotationInstanceProvider;
+import org.fakereplace.boot.GlobalClassDefinitionData;
 
 /**
  * Stores information about the annotations on reloaded classes
@@ -20,8 +26,6 @@ import org.fakereplace.util.AnnotationInstanceProvider;
  */
 public class AnnotationDataStore
 {
-
-   static AnnotationInstanceProvider provider = new AnnotationInstanceProvider();
 
    static Map<Class<?>, Annotation[]> classAnnotations = Collections.synchronizedMap(new HashMap<Class<?>, Annotation[]>());
 
@@ -108,6 +112,34 @@ public class AnnotationDataStore
       return parameterAnnotations.get(clazz);
    }
 
+   static Class<?> createAnnotationsProxy(ClassLoader loader, AnnotationsAttribute annotations)
+   {
+      String proxyName = GlobalClassDefinitionData.getProxyName();
+      ClassFile proxy = new ClassFile(false, proxyName, "java.lang.Object");
+      proxy.setAccessFlags(AccessFlag.PUBLIC);
+      AttributeInfo a = annotations.copy(proxy.getConstPool(), Collections.EMPTY_MAP);
+      proxy.addAttribute(a);
+      try
+      {
+         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+         DataOutputStream dos = new DataOutputStream(bytes);
+         try
+         {
+            proxy.write(dos);
+         }
+         catch (IOException e)
+         {
+            throw new RuntimeException(e);
+         }
+         GlobalClassDefinitionData.saveProxyDefinition(loader, proxyName, bytes.toByteArray());
+         return loader.loadClass(proxyName);
+      }
+      catch (ClassNotFoundException e)
+      {
+         throw new RuntimeException(e);
+      }
+   }
+
    static public void recordClassAnnotations(Class<?> clazz, AnnotationsAttribute annotations)
    {
       // no annotations
@@ -118,89 +150,82 @@ public class AnnotationDataStore
          classAnnotationsByType.put(clazz, Collections.EMPTY_MAP);
          return;
       }
-      Annotation[] ans = new Annotation[annotations.getAnnotations().length];
-      classAnnotations.put(clazz, ans);
+      Class<?> pclass = createAnnotationsProxy(clazz.getClassLoader(), annotations);
+      classAnnotations.put(clazz, pclass.getAnnotations());
       Map<Class<? extends Annotation>, Annotation> anVals = new HashMap<Class<? extends Annotation>, Annotation>();
       classAnnotationsByType.put(clazz, anVals);
       int count = 0;
-      for (javassist.bytecode.annotation.Annotation a : annotations.getAnnotations())
+      for (Annotation a : pclass.getAnnotations())
       {
-         Annotation newAn = AnnotationBuilder.createAnnotation(clazz.getClassLoader(), provider, a);
-         ans[count] = newAn;
-         anVals.put(newAn.annotationType(), newAn);
+         anVals.put(a.annotationType(), a);
          count++;
       }
    }
 
-   static public void recordFieldAnnotations(Field clazz, AnnotationsAttribute annotations)
+   static public void recordFieldAnnotations(Field field, AnnotationsAttribute annotations)
    {
       // no annotations
       if (annotations == null)
       {
          Annotation[] ans = new Annotation[0];
-         fieldAnnotations.put(clazz, ans);
-         fieldAnnotationsByType.put(clazz, Collections.EMPTY_MAP);
+         fieldAnnotations.put(field, ans);
+         fieldAnnotationsByType.put(field, Collections.EMPTY_MAP);
          return;
       }
-      Annotation[] ans = new Annotation[annotations.getAnnotations().length];
-      fieldAnnotations.put(clazz, ans);
+      Class<?> pclass = createAnnotationsProxy(field.getDeclaringClass().getClassLoader(), annotations);
+      fieldAnnotations.put(field, pclass.getAnnotations());
       Map<Class<? extends Annotation>, Annotation> anVals = new HashMap<Class<? extends Annotation>, Annotation>();
-      fieldAnnotationsByType.put(clazz, anVals);
+      fieldAnnotationsByType.put(field, anVals);
       int count = 0;
-      for (javassist.bytecode.annotation.Annotation a : annotations.getAnnotations())
+      for (Annotation a : pclass.getAnnotations())
       {
-         Annotation newAn = AnnotationBuilder.createAnnotation(clazz.getDeclaringClass().getClassLoader(), provider, a);
-         ans[count] = newAn;
-         anVals.put(newAn.annotationType(), newAn);
+         anVals.put(a.annotationType(), a);
          count++;
       }
    }
 
-   static public void recordMethodAnnotations(Method clazz, AnnotationsAttribute annotations)
+   static public void recordMethodAnnotations(Method method, AnnotationsAttribute annotations)
    {
       // no annotations
       if (annotations == null)
       {
          Annotation[] ans = new Annotation[0];
-         methodAnnotations.put(clazz, ans);
-         methodAnnotationsByType.put(clazz, Collections.EMPTY_MAP);
+         methodAnnotations.put(method, ans);
+         methodAnnotationsByType.put(method, Collections.EMPTY_MAP);
          return;
       }
-      Annotation[] ans = new Annotation[annotations.getAnnotations().length];
-      methodAnnotations.put(clazz, ans);
+      Class<?> pclass = createAnnotationsProxy(method.getDeclaringClass().getClassLoader(), annotations);
+      methodAnnotations.put(method, pclass.getAnnotations());
       Map<Class<? extends Annotation>, Annotation> anVals = new HashMap<Class<? extends Annotation>, Annotation>();
-      methodAnnotationsByType.put(clazz, anVals);
+      methodAnnotationsByType.put(method, anVals);
       int count = 0;
-      for (javassist.bytecode.annotation.Annotation a : annotations.getAnnotations())
+      for (Annotation a : pclass.getAnnotations())
       {
-         Annotation newAn = AnnotationBuilder.createAnnotation(clazz.getDeclaringClass().getClassLoader(), provider, a);
-         ans[count] = newAn;
-         anVals.put(newAn.annotationType(), newAn);
+         anVals.put(a.annotationType(), a);
          count++;
       }
    }
 
-   static public void recordConstructorAnnotations(Constructor<?> clazz, AnnotationsAttribute annotations)
+   static public void recordConstructorAnnotations(Constructor<?> constructor, AnnotationsAttribute annotations)
    {
       // no annotations
       if (annotations == null)
       {
          Annotation[] ans = new Annotation[0];
-         constructorAnnotations.put(clazz, ans);
-         constructorAnnotationsByType.put(clazz, Collections.EMPTY_MAP);
+         constructorAnnotations.put(constructor, ans);
+         constructorAnnotationsByType.put(constructor, Collections.EMPTY_MAP);
          return;
       }
-      Annotation[] ans = new Annotation[annotations.getAnnotations().length];
-      constructorAnnotations.put(clazz, ans);
+      Class<?> pclass = createAnnotationsProxy(constructor.getDeclaringClass().getClassLoader(), annotations);
+      constructorAnnotations.put(constructor, pclass.getAnnotations());
       Map<Class<? extends Annotation>, Annotation> anVals = new HashMap<Class<? extends Annotation>, Annotation>();
-      constructorAnnotationsByType.put(clazz, anVals);
+      constructorAnnotationsByType.put(constructor, anVals);
       int count = 0;
-      for (javassist.bytecode.annotation.Annotation a : annotations.getAnnotations())
+      for (Annotation a : pclass.getAnnotations())
       {
-         Annotation newAn = AnnotationBuilder.createAnnotation(clazz.getDeclaringClass().getClassLoader(), provider, a);
-         ans[count] = newAn;
-         anVals.put(newAn.annotationType(), newAn);
+         anVals.put(a.annotationType(), a);
          count++;
       }
+
    }
 }

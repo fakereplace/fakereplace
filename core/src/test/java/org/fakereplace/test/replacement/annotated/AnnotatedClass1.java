@@ -4,4 +4,7 @@ package org.fakereplace.test.replacement.annotated;
 public class AnnotatedClass1
 {
 
+   @Annotation1(svalue = "hello2")
+   public String field;
+
 }

@@ -1,5 +1,6 @@
 package org.fakereplace.test.replacement.annotated;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 
 import org.fakereplace.test.util.ClassReplacer;
@@ -17,7 +18,7 @@ public class AnnotatedClassTest
    }
 
    @Test(groups = "annotatedclass")
-   public void testAnnotationAccessByReflection() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException
+   public void testAnnotationAccessByReflection() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException, NoSuchFieldException
    {
       AnnotatedClass ns = new AnnotatedClass();
       Class c = AnnotatedClass.class;
@@ -25,6 +26,9 @@ public class AnnotatedClassTest
       Annotation2 an2 = ns.getClass().getAnnotation(Annotation2.class);
       assert an2.ivalue() == 10;
       assert !ns.getClass().isAnnotationPresent(Annotation1.class);
+      Field field = c.getField("field");
+      assert field.isAnnotationPresent(Annotation1.class);
+      assert field.getAnnotation(Annotation1.class).svalue().equals("hello2");
    }
 
 }

@@ -2,9 +2,6 @@ package org.fakereplace.data;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.annotation.Annotation;
@@ -23,36 +20,8 @@ import javassist.bytecode.annotation.MemberValue;
 import javassist.bytecode.annotation.ShortMemberValue;
 import javassist.bytecode.annotation.StringMemberValue;
 
-import org.fakereplace.util.AnnotationInstanceProvider;
-
 public class AnnotationBuilder
 {
-   public static java.lang.annotation.Annotation createAnnotation(ClassLoader loader, AnnotationInstanceProvider provider, javassist.bytecode.annotation.Annotation a)
-   {
-      try
-      {
-         Class annotationType = loader.loadClass(a.getTypeName());
-
-         Map<String, Object> memberValues = new HashMap<String, Object>();
-         Set members = a.getMemberNames();
-         if (members != null)
-         {
-            for (Object mn : members)
-            {
-               String memName = mn.toString();
-               MemberValue value = a.getMemberValue(memName);
-               MemberValueVisitorImpl visitor = new MemberValueVisitorImpl(loader, provider);
-               value.accept(visitor);
-               memberValues.put(memName, visitor.getValue());
-            }
-         }
-         return provider.get(annotationType, memberValues);
-      }
-      catch (ClassNotFoundException e)
-      {
-         throw new RuntimeException(e);
-      }
-   }
 
    public static javassist.bytecode.annotation.Annotation createJavassistAnnotation(java.lang.annotation.Annotation annotation, ConstPool cp)
    {
