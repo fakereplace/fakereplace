@@ -1,5 +1,6 @@
 package org.fakereplace.manip;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -16,7 +17,12 @@ import org.fakereplace.boot.Logger;
 public class StaticFieldManipulator
 {
 
-   Map<String, Set<StaticFieldAccessRewriteData>> staticMethodData = new HashMap<String, Set<StaticFieldAccessRewriteData>>();
+   Map<String, Set<StaticFieldAccessRewriteData>> staticMethodData = Collections.synchronizedMap(new HashMap<String, Set<StaticFieldAccessRewriteData>>());
+
+   public void clearRewrite(String className)
+   {
+      staticMethodData.remove(className);
+   }
 
    /**
     * rewrites static field access to the same field on another class

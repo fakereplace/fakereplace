@@ -23,6 +23,8 @@ public class Manipulator
    public void removeRewrites(String className)
    {
       methodInvokationManipulator.removeMethodRewrites(className);
+      staticFieldManipulator.clearRewrite(className);
+      instanceFieldManapulator.clearRewrites(className);
    }
 
    public void renameClass(String oldName, String newName)

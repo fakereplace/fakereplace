@@ -1,5 +1,6 @@
 package org.fakereplace.manip;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -21,7 +22,7 @@ public class InstanceFieldManipulator
    /**
     * added field information by class
     */
-   Map<String, Set<AddedFieldData>> addedFieldData = new HashMap<String, Set<AddedFieldData>>();
+   Map<String, Set<AddedFieldData>> addedFieldData = Collections.synchronizedMap(new HashMap<String, Set<AddedFieldData>>());
 
    public void addField(AddedFieldData data)
    {
@@ -107,7 +108,8 @@ public class InstanceFieldManipulator
                            }
                            b.addAload(0);
                            b.addGetfield(file.getName(), Constants.ADDED_FIELD_NAME, Constants.ADDED_FIELD_DESCRIPTOR);
-                           b.addOpcode(Opcode.SWAP); // we need to keep swapping this value to the top
+                           b.addOpcode(Opcode.SWAP); // we need to keep swapping
+                           // this value to the top
                            b.addLdc(arrayPos);
                            b.addOpcode(Opcode.SWAP);
                            b.add(Opcode.AASTORE);
@@ -121,7 +123,7 @@ public class InstanceFieldManipulator
                            b.addGetfield(file.getName(), Constants.ADDED_FIELD_NAME, Constants.ADDED_FIELD_DESCRIPTOR);
                            b.addLdc(arrayPos);
                            b.add(Opcode.AALOAD);
-                           if (data.getDescriptor().charAt(0) != 'L'&& data.getDescriptor().charAt(0) != '[')
+                           if (data.getDescriptor().charAt(0) != 'L' && data.getDescriptor().charAt(0) != '[')
                            {
                               Boxing.unbox(b, data.getDescriptor().charAt(0));
                            }
@@ -141,4 +143,10 @@ public class InstanceFieldManipulator
          }
       }
    }
+
+   public void clearRewrites(String className)
+   {
+      this.addedFieldData.remove(className);
+   }
+
 }
