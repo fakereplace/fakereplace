@@ -31,6 +31,7 @@ import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.data.FieldData;
 import org.fakereplace.data.MemberType;
 import org.fakereplace.manip.AddedFieldData;
+import org.fakereplace.manip.Boxing;
 
 public class FieldReplacer
 {
@@ -112,7 +113,6 @@ public class FieldReplacer
                addedFields.add(new AddedFieldData(noAddedFields, m.getName(), m.getDescriptor(), file.getName()));
                noAddedFields++;
             }
-            // TODO deal with non static fields
             it.remove();
          }
          else
@@ -184,7 +184,44 @@ public class FieldReplacer
             cond.addLdc(addedFieldsLengthIndex);
             // create the array
             cond.addAnewarray("java.lang.Object");
+            cond.add(Opcode.DUP_X1);
             cond.addPutfield(file.getName(), Constants.ADDED_FIELD_NAME, Constants.ADDED_FIELD_DESCRIPTOR);
+            for (int i = 0; i < addedFields.size(); ++i)
+            {
+               // duplicate the array
+               cond.add(Opcode.DUP);
+               AddedFieldData d = addedFields.get(i);
+               // push the index
+               cond.addIconst(i);
+               // now push the value
+               if (d.getDescriptor().length() > 1)
+               {
+                  cond.add(Opcode.ACONST_NULL);
+               }
+               else
+               {
+                  char c = d.getDescriptor().charAt(0);
+                  if (c == 'J')
+                  {
+                     cond.add(Opcode.LCONST_0);
+                  }
+                  else if (c == 'F')
+                  {
+                     cond.add(Opcode.FCONST_0);
+                  }
+                  else if (c == 'D')
+                  {
+                     cond.add(Opcode.DCONST_0);
+                  }
+                  else
+                  {
+                     cond.add(Opcode.ICONST_0);
+                  }
+                  Boxing.box(cond, c);
+               }
+               cond.add(Opcode.AASTORE);
+            }
+            cond.add(Opcode.POP);
             Bytecode b = new Bytecode(file.getConstPool());
             b.addAload(0);
             b.addGetfield(file.getName(), Constants.ADDED_FIELD_NAME, Constants.ADDED_FIELD_DESCRIPTOR);

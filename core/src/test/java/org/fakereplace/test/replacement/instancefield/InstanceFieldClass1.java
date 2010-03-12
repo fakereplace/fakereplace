@@ -9,6 +9,10 @@ public class InstanceFieldClass1
    int afield;
    int bfield;
 
+   public String sv;
+
+   int yy;
+
    private int value = 0;
 
    private long lv = 1;
@@ -32,4 +36,5 @@ public class InstanceFieldClass1
    {
       lv++;
    }
+
 }

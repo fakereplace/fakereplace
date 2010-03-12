@@ -25,4 +25,5 @@ public class InstanceFieldClass
    {
       return 0;
    }
+
 }
