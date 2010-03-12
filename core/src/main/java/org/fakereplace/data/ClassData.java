@@ -124,7 +124,7 @@ public class ClassData
 
    public void addField(FieldInfo field, MemberType type)
    {
-      fields.put(field.getDescriptor(), new FieldData(field, type));
+      fields.put(field.getName(), new FieldData(field, type));
    }
 
    public Collection<MethodData> getMethods()

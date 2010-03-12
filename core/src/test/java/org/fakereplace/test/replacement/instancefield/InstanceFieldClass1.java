@@ -6,6 +6,9 @@ import org.fakereplace.util.NoInstrument;
 public class InstanceFieldClass1
 {
 
+   int afield;
+   int bfield;
+
    private int value = 0;
 
    private long lv = 1;

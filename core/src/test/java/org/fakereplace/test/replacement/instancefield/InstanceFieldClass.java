@@ -3,6 +3,9 @@ package org.fakereplace.test.replacement.instancefield;
 public class InstanceFieldClass
 {
 
+   int afield;
+   int bfield;
+
    public void inc()
    {
 

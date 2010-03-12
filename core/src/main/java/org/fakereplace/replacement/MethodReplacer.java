@@ -183,14 +183,6 @@ public class MethodReplacer
       // method directly so to this end we append some stuff to the bottom of
       // the method declaration to propagate the call to the parent
 
-      /*
-       * String superClass = file.getSuperclass().replace('.', '/'); if
-       * (!BuiltinClassData.skipInstrumentation(superClass)) { Bytecode b = new
-       * Bytecode(file.getConstPool()); b.addAload(0); b.addIload(1);
-       * b.addAload(2); b.addInvokespecial(superClass,
-       * Constants.ADDED_METHOD_NAME,
-       * "(I[Ljava/lang/Object;)Ljava/lang/Object;"); }
-       */
       try
       {
          Bytecode rcode = new Bytecode(staticCodeAttribute.getConstPool());
