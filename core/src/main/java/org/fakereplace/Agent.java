@@ -1,5 +1,7 @@
 package org.fakereplace;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.lang.instrument.ClassDefinition;
 import java.lang.instrument.Instrumentation;
 import java.lang.instrument.UnmodifiableClassException;
@@ -35,7 +37,28 @@ public class Agent
    static public void redefine(ClassDefinition... classes) throws UnmodifiableClassException, ClassNotFoundException
    {
       ClassDefinition[] modifiedClasses = ClassRedefiner.rewriteLoadedClasses(classes);
-      inst.redefineClasses(modifiedClasses);
+      try
+      {
+         inst.redefineClasses(modifiedClasses);
+      }
+      catch (VerifyError e)
+      {
+         // dump the classes to /tmp so we can look at them
+         for (ClassDefinition d : modifiedClasses)
+         {
+            try
+            {
+               FileOutputStream s = new FileOutputStream("/tmp/" + d.getDefinitionClass().getName() + ".class");
+               s.write(d.getDefinitionClassFile());
+               s.close();
+            }
+            catch (IOException a)
+            {
+               a.printStackTrace();
+            }
+         }
+         throw (e);
+      }
    }
 
    public static Instrumentation getInstrumentation()
