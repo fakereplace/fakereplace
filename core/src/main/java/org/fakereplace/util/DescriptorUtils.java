@@ -316,4 +316,17 @@ public class DescriptorUtils
       return false;
    }
 
+   public static boolean isWide(String descriptor)
+   {
+      if (!isPrimitive(descriptor))
+      {
+         return false;
+      }
+      char c = descriptor.charAt(0);
+      if (c == 'D' || c == 'J')
+      {
+         return true;
+      }
+      return false;
+   }
 }

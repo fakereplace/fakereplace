@@ -11,7 +11,7 @@ public class InstanceFieldClass1
 
    public InstanceFieldClass1()
    {
-      // sv = "aa";
+      sv = "aa";
    }
 
    public String sv;
@@ -44,7 +44,7 @@ public class InstanceFieldClass1
 
    public String getSv()
    {
-      return null;
+      return sv;
    }
 
 }
