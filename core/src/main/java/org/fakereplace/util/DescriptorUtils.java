@@ -205,6 +205,18 @@ public class DescriptorUtils
       return rt;
    }
 
+   /**
+    * e.g. Ljava/lang/Object; -> java/lang/Object
+    * @param descriptor
+    * @return
+    */
+   public static String getTypeStringFromDescriptorFormat(String descriptor)
+   {
+      descriptor = descriptor.substring(1);
+      descriptor = descriptor.substring(0, descriptor.length() - 1);
+      return descriptor;
+   }
+
    public static String getArgumentString(String descriptor)
    {
       return descriptor.substring(0, descriptor.lastIndexOf(')') + 1);

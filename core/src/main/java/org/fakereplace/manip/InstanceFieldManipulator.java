@@ -107,18 +107,7 @@ public class InstanceFieldManipulator
                            {
                               Boxing.box(b, data.getDescriptor().charAt(0));
                            }
-                           // we need to get the pointer to the object ref to the top of the stack
-                           if (DescriptorUtils.isWide(data.getDescriptor()))
-                           {
-                              // duplicate it down the stack
-                              b.add(Opcode.DUP2_X1);
-                              // now get rid of the top one
-                              b.add(Opcode.POP2);
-                           }
-                           else
-                           {
-                              b.add(Opcode.SWAP);
-                           }
+                           b.add(Opcode.SWAP);
 
                            b.addGetfield(file.getName(), Constants.ADDED_FIELD_NAME, Constants.ADDED_FIELD_DESCRIPTOR);
                            b.addOpcode(Opcode.SWAP); // we need to keep swapping the value to put to the top
@@ -140,7 +129,7 @@ public class InstanceFieldManipulator
                            }
                            else
                            {
-                              b.addCheckcast(data.getDescriptor());
+                              b.addCheckcast(DescriptorUtils.getTypeStringFromDescriptorFormat(data.getDescriptor()));
                            }
                            it.insertEx(b.get());
                         }
