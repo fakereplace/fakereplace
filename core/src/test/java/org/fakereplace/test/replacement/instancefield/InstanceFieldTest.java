@@ -25,6 +25,7 @@ public class InstanceFieldTest
       assert ns.get() == 1;
       ns.inclong();
       assert ns.getlong() == 2;
+      // assert ns.getSv().equals("aa");
    }
 
 }

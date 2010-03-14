@@ -9,6 +9,11 @@ public class InstanceFieldClass1
    int afield;
    int bfield;
 
+   public InstanceFieldClass1()
+   {
+      // sv = "aa";
+   }
+
    public String sv;
 
    int yy;
@@ -35,6 +40,11 @@ public class InstanceFieldClass1
    public void inclong()
    {
       lv++;
+   }
+
+   public String getSv()
+   {
+      return null;
    }
 
 }

@@ -16,6 +16,7 @@ import javassist.bytecode.Opcode;
 
 import org.fakereplace.boot.Constants;
 import org.fakereplace.boot.Logger;
+import org.fakereplace.util.DescriptorUtils;
 
 public class InstanceFieldManipulator
 {
@@ -108,24 +109,28 @@ public class InstanceFieldManipulator
                            }
                            b.addAload(0);
                            b.addGetfield(file.getName(), Constants.ADDED_FIELD_NAME, Constants.ADDED_FIELD_DESCRIPTOR);
-                           b.addOpcode(Opcode.SWAP); // we need to keep swapping
-                           // this value to the top
+                           b.addOpcode(Opcode.SWAP); // we need to keep swapping the value to put to the top
                            b.addLdc(arrayPos);
                            b.addOpcode(Opcode.SWAP);
                            b.add(Opcode.AASTORE);
+                           // there is still a 'this' pointer on the stack from the initial putfield
+                           b.add(Opcode.POP);
 
                            it.insertEx(b.get());
                         }
                         else if (op == Opcode.GETFIELD)
                         {
                            Bytecode b = new Bytecode(file.getConstPool());
-                           b.addAload(0);
                            b.addGetfield(file.getName(), Constants.ADDED_FIELD_NAME, Constants.ADDED_FIELD_DESCRIPTOR);
                            b.addLdc(arrayPos);
                            b.add(Opcode.AALOAD);
-                           if (data.getDescriptor().charAt(0) != 'L' && data.getDescriptor().charAt(0) != '[')
+                           if (DescriptorUtils.isPrimitive(data.getDescriptor()))
                            {
                               Boxing.unbox(b, data.getDescriptor().charAt(0));
+                           }
+                           else
+                           {
+                              b.addCheckcast(data.getDescriptor());
                            }
                            it.insertEx(b.get());
                         }

@@ -1,5 +1,8 @@
 package org.fakereplace;
 
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.instrument.ClassDefinition;
@@ -10,6 +13,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javassist.bytecode.ClassFile;
 
 import org.fakereplace.replacement.ClassRedefiner;
 
@@ -48,7 +53,12 @@ public class Agent
          {
             try
             {
+               DataInputStream ds = new DataInputStream(new ByteArrayInputStream(d.getDefinitionClassFile()));
+               ClassFile file = new ClassFile(ds);
+               Transformer.getManipulator().transformClass(file);
                FileOutputStream s = new FileOutputStream("/tmp/" + d.getDefinitionClass().getName() + ".class");
+               DataOutputStream dos = new DataOutputStream(s);
+               file.write(dos);
                s.write(d.getDefinitionClassFile());
                s.close();
             }

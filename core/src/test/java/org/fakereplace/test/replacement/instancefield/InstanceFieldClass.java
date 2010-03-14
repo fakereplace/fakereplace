@@ -26,4 +26,9 @@ public class InstanceFieldClass
       return 0;
    }
 
+   public String getSv()
+   {
+      return null;
+   }
+
 }

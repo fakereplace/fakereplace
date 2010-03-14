@@ -307,4 +307,13 @@ public class DescriptorUtils
       return 'L' + repl + ';';
    }
 
+   public static boolean isPrimitive(String descriptor)
+   {
+      if (descriptor.length() == 1)
+      {
+         return true;
+      }
+      return false;
+   }
+
 }
