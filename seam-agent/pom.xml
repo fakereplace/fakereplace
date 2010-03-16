@@ -25,6 +25,13 @@
       <version>2.4</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+    	<groupId>javax.faces</groupId>
+    	<artifactId>jsf-api</artifactId>
+    	<version>1.2_13</version>
+    	<type>jar</type>
+    	<scope>compile</scope>
+    </dependency>
   </dependencies>
   <build>
 		<plugins>
