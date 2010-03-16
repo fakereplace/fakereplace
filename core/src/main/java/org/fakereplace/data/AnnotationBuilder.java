@@ -41,7 +41,7 @@ public class AnnotationBuilder
       }
    }
 
-   static MemberValue createMemberValue(Class type, Object val, ConstPool cp)
+   static MemberValue createMemberValue(Class<?> type, Object val, ConstPool cp)
    {
       if (type == int.class)
       {
@@ -81,13 +81,13 @@ public class AnnotationBuilder
       }
       else if (type == Class.class)
       {
-         return new ClassMemberValue(((Class) val).getName(), cp);
+         return new ClassMemberValue(((Class<?>) val).getName(), cp);
       }
       else if (type.isEnum())
       {
          EnumMemberValue e = new EnumMemberValue(cp);
          e.setType(type.getName());
-         e.setValue(((Enum) val).name());
+         e.setValue(((Enum<?>) val).name());
          return e;
       }
       else if (type.isAnnotation())
@@ -96,7 +96,7 @@ public class AnnotationBuilder
       }
       else if (type.isArray())
       {
-         Class arrayType = type.getComponentType();
+         Class<?> arrayType = type.getComponentType();
          int length = Array.getLength(val);
          MemberValue arrayval = createEmptyMemberValue(arrayType, cp);
          ArrayMemberValue ret = new ArrayMemberValue(arrayval, cp);
@@ -112,7 +112,7 @@ public class AnnotationBuilder
 
    }
 
-   private static MemberValue createEmptyMemberValue(Class type, ConstPool cp)
+   private static MemberValue createEmptyMemberValue(Class<?> type, ConstPool cp)
    {
       if (type == int.class)
       {
@@ -167,7 +167,7 @@ public class AnnotationBuilder
       }
       else if (type.isArray())
       {
-         Class arrayType = type.getComponentType();
+         Class<?> arrayType = type.getComponentType();
          MemberValue arrayval = createEmptyMemberValue(arrayType, cp);
          ArrayMemberValue ret = new ArrayMemberValue(arrayval, cp);
          return ret;

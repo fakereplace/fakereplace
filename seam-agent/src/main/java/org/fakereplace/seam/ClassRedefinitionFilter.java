@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -80,7 +79,8 @@ public class ClassRedefinitionFilter extends AbstractFilter
          replaceMethod = agent.getMethod("redefine", ClassDefinition[].class);
          doInit();
 
-      } catch (Exception e)
+      }
+      catch (Exception e)
       {
          System.out.println("------------------------------------------------------------------------");
          System.out.println("------ Fakereplace agent not availbile, hot deployment is disabled -----");
@@ -99,7 +99,8 @@ public class ClassRedefinitionFilter extends AbstractFilter
             try
             {
                doReplace();
-            } finally
+            }
+            finally
             {
                lock.unlock();
             }
@@ -141,7 +142,8 @@ public class ClassRedefinitionFilter extends AbstractFilter
 
          }
 
-      } catch (Exception e)
+      }
+      catch (Exception e)
       {
          e.printStackTrace();
       }
@@ -170,7 +172,8 @@ public class ClassRedefinitionFilter extends AbstractFilter
 
          }
          initialScan();
-      } catch (IOException e)
+      }
+      catch (IOException e)
       {
          throw new RuntimeException(e);
       }
@@ -190,20 +193,26 @@ public class ClassRedefinitionFilter extends AbstractFilter
             if (resolver instanceof CompositeELResolver)
             {
                CompositeELResolver c = (CompositeELResolver) resolver;
-               Field resolvers = c.getClass().getDeclaredField("resolvers");
+
+               Field resolvers = getField(c.getClass(), "resolvers");
+               resolvers.setAccessible(true);
                ELResolver[] resAr = (ELResolver[]) resolvers.get(c);
                for (ELResolver r : resAr)
                {
                   if (r instanceof BeanELResolver)
                   {
-                     Field cache = r.getClass().getDeclaredField("properties");
-                     Map props = (Map) cache.get(r);
-                     props.clear();
+                     Field cacheField = getField(r.getClass(), "cache");
+                     cacheField.setAccessible(true);
+                     Object cache = cacheField.get(r);
+                     Method m = cache.getClass().getMethod("clear");
+                     m.invoke(cache);
+
                   }
                }
 
             }
-         } catch (Exception e)
+         }
+         catch (Exception e)
          {
             e.printStackTrace();
          }
@@ -241,7 +250,8 @@ public class ClassRedefinitionFilter extends AbstractFilter
                fd.className = d;
                files.add(fd);
             }
-         } else
+         }
+         else
          {
             handleDirectory(f, rootDir);
          }
@@ -265,6 +275,40 @@ public class ClassRedefinitionFilter extends AbstractFilter
 
       is.close();
       return bytes;
+   }
+
+   Set<Field> getFields(Class<?> clazz)
+   {
+      Set<Field> fields = new HashSet<Field>();
+      getFields(fields, clazz);
+      return fields;
+   }
+
+   void getFields(Set<Field> fields, Class<?> clazz)
+   {
+      if (clazz == Object.class)
+         return;
+      for (Field f : clazz.getDeclaredFields())
+      {
+         fields.add(f);
+      }
+      getFields(fields, clazz);
+
+   }
+
+   Field getField(Class clazz, String name) throws NoSuchFieldException
+   {
+      if (clazz == Object.class)
+         throw new NoSuchFieldException();
+      try
+      {
+         return clazz.getDeclaredField(name);
+      }
+      catch (Exception e)
+      {
+         // TODO: handle exception
+      }
+      return getField(clazz.getSuperclass(), name);
    }
 
 }

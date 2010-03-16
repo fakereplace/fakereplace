@@ -245,6 +245,7 @@ public class FieldReplacer
                count++;
             }
             it.insert(bcd);
+            m.getCodeAttribute().computeMaxStack();
          }
       }
    }
