@@ -98,7 +98,8 @@ public class AnnotationBuilder
       {
          Class arrayType = type.getComponentType();
          int length = Array.getLength(val);
-         ArrayMemberValue ret = new ArrayMemberValue(createMemberValue(arrayType, null, cp), cp);
+         MemberValue arrayval = createEmptyMemberValue(arrayType, cp);
+         ArrayMemberValue ret = new ArrayMemberValue(arrayval, cp);
          MemberValue[] vals = new MemberValue[length];
          for (int i = 0; i < length; ++i)
          {
@@ -109,5 +110,68 @@ public class AnnotationBuilder
       }
       throw new RuntimeException("Invalid array type " + type + " value: " + val);
 
+   }
+
+   private static MemberValue createEmptyMemberValue(Class type, ConstPool cp)
+   {
+      if (type == int.class)
+      {
+         return new IntegerMemberValue(cp);
+      }
+      else if (type == short.class)
+      {
+         return new ShortMemberValue(cp);
+      }
+      else if (type == long.class)
+      {
+         return new LongMemberValue(cp);
+      }
+      else if (type == byte.class)
+      {
+         return new ByteMemberValue(cp);
+      }
+      else if (type == float.class)
+      {
+         return new FloatMemberValue(cp);
+      }
+      else if (type == double.class)
+      {
+         return new DoubleMemberValue(cp);
+      }
+      else if (type == char.class)
+      {
+         return new CharMemberValue(cp);
+      }
+      else if (type == boolean.class)
+      {
+         return new BooleanMemberValue(cp);
+      }
+      else if (type == String.class)
+      {
+         return new StringMemberValue(cp);
+      }
+      else if (type == Class.class)
+      {
+         return new ClassMemberValue(cp);
+      }
+      else if (type.isEnum())
+      {
+         EnumMemberValue e = new EnumMemberValue(cp);
+         e.setType(type.getName());
+         return e;
+      }
+      else if (type.isAnnotation())
+      {
+         AnnotationMemberValue a = new AnnotationMemberValue(cp);
+         return a;
+      }
+      else if (type.isArray())
+      {
+         Class arrayType = type.getComponentType();
+         MemberValue arrayval = createEmptyMemberValue(arrayType, cp);
+         ArrayMemberValue ret = new ArrayMemberValue(arrayval, cp);
+         return ret;
+      }
+      throw new RuntimeException("Invalid array type " + type + " with no value ");
    }
 }

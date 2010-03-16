@@ -4,9 +4,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Annotation1
+public @interface AnnotationA
 {
-   String svalue();
-
-   Class cvalue();
+   StringA value();
 }
