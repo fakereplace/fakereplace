@@ -32,6 +32,7 @@ import org.fakereplace.data.FieldData;
 import org.fakereplace.data.MemberType;
 import org.fakereplace.manip.AddedFieldData;
 import org.fakereplace.manip.Boxing;
+import org.fakereplace.reflection.FieldAccessor;
 
 public class FieldReplacer
 {
@@ -106,11 +107,12 @@ public class FieldReplacer
          {
             if ((m.getAccessFlags() & AccessFlag.STATIC) != 0)
             {
-               addStaticField(file, loader, m, data);
+               addStaticField(file, loader, m, data, oldClass);
             }
             else
             {
                addedFields.add(new AddedFieldData(noAddedFields, m.getName(), m.getDescriptor(), file.getName()));
+               addInstanceField(file, loader, m, data, oldClass, noAddedFields);
                noAddedFields++;
             }
             it.remove();
@@ -259,11 +261,12 @@ public class FieldReplacer
     * @param m
     * @param data
     */
-   private static void addStaticField(ClassFile file, ClassLoader loader, FieldInfo m, ClassData data)
+   private static void addStaticField(ClassFile file, ClassLoader loader, FieldInfo m, ClassData data, Class<?> oldClass)
    {
       // this is quite simple. First we create a proxy
       String proxyName = GlobalClassDefinitionData.getProxyName();
       ClassFile proxy = new ClassFile(false, proxyName, "java.lang.Object");
+      ClassDataStore.registerProxyName(oldClass, proxyName);
       proxy.setAccessFlags(AccessFlag.PUBLIC);
       FieldInfo newField = new FieldInfo(proxy.getConstPool(), m.getName(), m.getDescriptor());
       newField.setAccessFlags(AccessFlag.PUBLIC | AccessFlag.STATIC);
@@ -271,6 +274,48 @@ public class FieldReplacer
       {
          proxy.addField(newField);
          Transformer.getManipulator().rewriteStaticFieldAccess(file.getName(), proxyName, m.getName());
+         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+         DataOutputStream dos = new DataOutputStream(bytes);
+         try
+         {
+            proxy.write(dos);
+         }
+         catch (IOException e)
+         {
+            throw new RuntimeException(e);
+         }
+         GlobalClassDefinitionData.saveProxyDefinition(loader, proxyName, bytes.toByteArray());
+         data.addField(newField, MemberType.FAKE);
+      }
+      catch (DuplicateMemberException e)
+      {
+         // can't happen
+      }
+   }
+
+   /**
+    * This will create a proxy with a non static field. This field does not store anything, it
+    * merely provides a Field object for reflection. Attempts to change and read it's value are 
+    * redirected to the actual array based store
+    * 
+    * @param file
+    * @param loader
+    * @param m
+    * @param data
+    */
+   private static void addInstanceField(ClassFile file, ClassLoader loader, FieldInfo m, ClassData data, Class<?> oldClass, int arrayPosition)
+   {
+      String proxyName = GlobalClassDefinitionData.getProxyName();
+      ClassFile proxy = new ClassFile(false, proxyName, "java.lang.Object");
+      ClassDataStore.registerProxyName(oldClass, proxyName);
+      FieldAccessor accessor = new FieldAccessor(oldClass, arrayPosition);
+      ClassDataStore.registerFieldAccessor(proxyName, accessor);
+      proxy.setAccessFlags(AccessFlag.PUBLIC);
+      FieldInfo newField = new FieldInfo(proxy.getConstPool(), m.getName(), m.getDescriptor());
+      newField.setAccessFlags(m.getAccessFlags());
+      try
+      {
+         proxy.addField(newField);
          ByteArrayOutputStream bytes = new ByteArrayOutputStream();
          DataOutputStream dos = new DataOutputStream(bytes);
          try

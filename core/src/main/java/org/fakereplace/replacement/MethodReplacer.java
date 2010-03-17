@@ -352,7 +352,7 @@ public class MethodReplacer
       {
          generateBoxedConditionalCodeBlock(methodCount, mInfo, file.getConstPool(), bytecode, staticMethod);
          String proxyName = generateProxyInvocationBytecode(mInfo, file.getConstPool(), methodCount, file.getName(), loader, staticMethod);
-         ClassDataStore.registerProxyClass(oldClass, proxyName);
+         ClassDataStore.registerProxyName(oldClass, proxyName);
          String newMethodDesc = mInfo.getDescriptor();
          if (!staticMethod)
          {

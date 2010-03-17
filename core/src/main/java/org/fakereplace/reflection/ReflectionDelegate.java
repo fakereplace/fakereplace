@@ -58,7 +58,7 @@ public class ReflectionDelegate
          {
             ret[i] = visible.get(i);
          }
-         
+
          return ret;
       }
       catch (Exception e)
@@ -235,7 +235,17 @@ public class ReflectionDelegate
       Class c = m.getDeclaringClass();
       if (c.getName().startsWith(Constants.GENERATED_CLASS_PACKAGE))
       {
-         return ClassDataStore.getProxyClassForMethod(c.getName());
+         return ClassDataStore.getRealClassFromProxyName(c.getName());
+      }
+      return c;
+   }
+
+   public static Class getDeclaringClass(Field f)
+   {
+      Class c = f.getDeclaringClass();
+      if (c.getName().startsWith(Constants.GENERATED_CLASS_PACKAGE))
+      {
+         return ClassDataStore.getRealClassFromProxyName(c.getName());
       }
       return c;
    }
@@ -246,7 +256,7 @@ public class ReflectionDelegate
       {
          ClassData cd = ClassDataStore.getClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
 
-         if (cd == null )
+         if (cd == null)
          {
             return clazz.getDeclaredFields();
          }
@@ -271,7 +281,7 @@ public class ReflectionDelegate
          {
             ret[i] = visible.get(i);
          }
-         
+
          return ret;
       }
       catch (Exception e)
