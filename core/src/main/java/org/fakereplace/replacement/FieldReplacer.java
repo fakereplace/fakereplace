@@ -285,7 +285,7 @@ public class FieldReplacer
             throw new RuntimeException(e);
          }
          GlobalClassDefinitionData.saveProxyDefinition(loader, proxyName, bytes.toByteArray());
-         data.addField(newField, MemberType.FAKE);
+         data.addField(newField, MemberType.FAKE, proxyName);
       }
       catch (DuplicateMemberException e)
       {
@@ -327,7 +327,7 @@ public class FieldReplacer
             throw new RuntimeException(e);
          }
          GlobalClassDefinitionData.saveProxyDefinition(loader, proxyName, bytes.toByteArray());
-         data.addField(newField, MemberType.FAKE);
+         data.addField(newField, MemberType.FAKE, proxyName);
       }
       catch (DuplicateMemberException e)
       {

@@ -15,52 +15,45 @@ import org.fakereplace.util.DescriptorUtils;
  */
 public class MethodData
 {
-   String methodName;
-   String descriptor;
+   final String methodName;
+   final String descriptor;
 
    /**
     * contains the argument portion of the descriptor minus the return type
     */
-   String argumentDescriptor;
+   final String argumentDescriptor;
    /**
     * the return type of the method
-    */
+   final  */
    String returnTypeDescriptor;
 
-   MemberType type;
-   int accessFlags;
+   final MemberType type;
+   final int accessFlags;
 
-   public MethodData(String name, String descriptor)
+   public MethodData(String name, String descriptor, String className, MemberType type, int accessFlags)
    {
       this.methodName = name;
       this.descriptor = descriptor;
       this.returnTypeDescriptor = DescriptorUtils.getReturnType(descriptor);
       this.argumentDescriptor = DescriptorUtils.getArgumentString(descriptor);
+      this.className = className;
+      this.type = type;
+      this.accessFlags = accessFlags;
    }
 
    /**
     * The actual class that the method resides in java not internal format
     */
-   String className;
+   final String className;
 
    public String getClassName()
    {
       return className;
    }
 
-   public void setClassName(String className)
-   {
-      this.className = className;
-   }
-
    public int getAccessFlags()
    {
       return accessFlags;
-   }
-
-   public void setAccessFlags(int accessFlags)
-   {
-      this.accessFlags = accessFlags;
    }
 
    public String getMethodName()
@@ -76,11 +69,6 @@ public class MethodData
    public MemberType getType()
    {
       return type;
-   }
-
-   public void setType(MemberType type)
-   {
-      this.type = type;
    }
 
    public boolean isStatic()

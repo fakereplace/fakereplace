@@ -169,14 +169,21 @@ public class MethodReplacer
          }
          else
          {
+            // the removed method has been replaced so lets change it back
+            if (md.getType() == MemberType.REMOVED_METHOD)
+            {
+               data.replaceMethod(new MethodData(md.getMethodName(), md.getDescriptor(), md.getClassName(), MemberType.NORMAL, md.getAccessFlags()));
+            }
             methods.remove(md);
          }
       }
       // these methods have been removed, change them to throw a
       // MethodNotFoundError
+
       for (MethodData md : methods)
       {
-         createRemovedMethod(file, md, oldClass);
+         MethodData nmd = createRemovedMethod(file, md, oldClass);
+         data.replaceMethod(nmd);
       }
 
       // if we did not return from a virtual method we need to call the parent
@@ -359,10 +366,8 @@ public class MethodReplacer
             newMethodDesc = "(L" + Descriptor.toJvmName(file.getName()) + ";" + newMethodDesc.substring(1);
          }
          Transformer.getManipulator().replaceVirtualMethodInvokationWithStatic(file.getName(), proxyName, mInfo.getName(), mInfo.getDescriptor(), newMethodDesc);
-         MethodData md = new MethodData(mInfo.getName(), mInfo.getDescriptor());
-         md.setType(MemberType.FAKE);
-         md.setClassName(proxyName);
-         md.setAccessFlags(mInfo.getAccessFlags());
+         MethodData md = new MethodData(mInfo.getName(), mInfo.getDescriptor(), proxyName, MemberType.FAKE, mInfo.getAccessFlags());
+
          data.addMethod(md);
       }
       catch (Exception e)
@@ -425,7 +430,7 @@ public class MethodReplacer
       MethodReturnRewriter.rewriteFakeMethod(addedMethod.iterator(), mInfo.getDescriptor());
    }
 
-   private static void createRemovedMethod(ClassFile file, MethodData md, Class oldClass)
+   private static MethodData createRemovedMethod(ClassFile file, MethodData md, Class<?> oldClass)
    {
       // load up the existing method object
       Method meth;
@@ -439,7 +444,7 @@ public class MethodReplacer
       }
       MethodInfo m = new MethodInfo(file.getConstPool(), md.getMethodName(), md.getDescriptor());
       m.setAccessFlags(md.getAccessFlags());
-      md.setType(MemberType.REMOVED_METHOD);
+
       // put the old annotations on the class
       m.addAttribute(AnnotationReplacer.duplicateAnnotationsAttribute(file.getConstPool(), meth));
 
@@ -464,6 +469,7 @@ public class MethodReplacer
       {
          e.printStackTrace();
       }
+      return new MethodData(md.getMethodName(), md.getDescriptor(), md.getClassName(), MemberType.REMOVED_METHOD, md.getAccessFlags());
    }
 
 }

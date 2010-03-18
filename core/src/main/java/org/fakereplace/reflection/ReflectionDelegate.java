@@ -335,16 +335,78 @@ public class ReflectionDelegate
       }
    }
 
-   public static Field getField(Class clazz, String name) throws NoSuchFieldException
+   public static Field getField(Class<?> clazz, String name) throws NoSuchFieldException
    {
-      Field meth = clazz.getField(name);
-      return meth;
+      ClassData cd = ClassDataStore.getClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
+
+      if (cd == null)
+      {
+         return clazz.getField(name);
+      }
+      FieldData fd = cd.getField(name);
+      if (fd == null)
+      {
+         return clazz.getField(name);
+      }
+
+      switch (fd.getMemberType())
+      {
+      case NORMAL:
+         return clazz.getField(name);
+      case FAKE:
+         try
+         {
+            Class<?> c = clazz.getClassLoader().loadClass(fd.getClassName());
+            return c.getField(name);
+
+         }
+         catch (NoSuchFieldException e)
+         {
+            throw e;
+         }
+         catch (Exception e)
+         {
+            throw new RuntimeException(e);
+         }
+      }
+      throw new NoSuchFieldException();
    }
 
-   public static Field getDeclaredField(Class clazz, String name) throws NoSuchFieldException
+   public static Field getDeclaredField(Class<?> clazz, String name) throws NoSuchFieldException
    {
-      Field meth = clazz.getDeclaredField(name);
-      return meth;
+      ClassData cd = ClassDataStore.getClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
+
+      if (cd == null)
+      {
+         return clazz.getDeclaredField(name);
+      }
+      FieldData fd = cd.getField(name);
+      if (fd == null)
+      {
+         return clazz.getDeclaredField(name);
+      }
+
+      switch (fd.getMemberType())
+      {
+      case NORMAL:
+         return clazz.getDeclaredField(name);
+      case FAKE:
+         try
+         {
+            Class<?> c = clazz.getClassLoader().loadClass(fd.getClassName());
+            return c.getDeclaredField(name);
+
+         }
+         catch (NoSuchFieldException e)
+         {
+            throw e;
+         }
+         catch (Exception e)
+         {
+            throw new RuntimeException(e);
+         }
+      }
+      throw new NoSuchFieldException();
    }
 
 }

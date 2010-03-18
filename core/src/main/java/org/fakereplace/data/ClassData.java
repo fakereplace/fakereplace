@@ -65,6 +65,11 @@ public class ClassData
       return superClassInformation;
    }
 
+   public FieldData getField(String field)
+   {
+      return fields.get(field);
+   }
+
    public String getSuperClassName()
    {
       return superClassName;
@@ -122,9 +127,26 @@ public class ClassData
 
    }
 
-   public void addField(FieldInfo field, MemberType type)
+   /**
+    * replaces a method if it already exists
+    * @param data
+    */
+   public void replaceMethod(MethodData data)
    {
-      fields.put(field.getName(), new FieldData(field, type));
+      if (!methods.containsKey(data.getMethodName()))
+      {
+         methods.put(data.getMethodName(), new HashMap<String, Set<MethodData>>());
+      }
+      Map<String, Set<MethodData>> mts = methods.get(data.getMethodName());
+      Set<MethodData> rr = new HashSet<MethodData>();
+      mts.put(data.getArgumentDescriptor(), rr);
+      rr.add(data);
+
+   }
+
+   public void addField(FieldInfo field, MemberType type, String className)
+   {
+      fields.put(field.getName(), new FieldData(field, type, className));
    }
 
    public Collection<MethodData> getMethods()

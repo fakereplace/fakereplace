@@ -7,13 +7,14 @@ import javassist.bytecode.FieldInfo;
 
 public class FieldData
 {
-   int accessFlags;
-   boolean priv, pack, prot;
-   String name;
-   String type;
-   MemberType memberType;
+   final int accessFlags;
+   final boolean priv, pack, prot;
+   final String name;
+   final String type;
+   final MemberType memberType;
+   final String className;
 
-   public FieldData(FieldInfo info, MemberType memberType)
+   public FieldData(FieldInfo info, MemberType memberType, String className)
    {
       accessFlags = info.getAccessFlags();
       pack = AccessFlag.isPackage(accessFlags);
@@ -21,6 +22,7 @@ public class FieldData
       prot = AccessFlag.isProtected(accessFlags);
       type = info.getDescriptor();
       name = info.getName();
+      this.className = className;
       this.memberType = memberType;
    }
 
@@ -32,6 +34,11 @@ public class FieldData
    public String getType()
    {
       return type;
+   }
+
+   public String getClassName()
+   {
+      return className;
    }
 
    public MemberType getMemberType()
@@ -50,4 +57,5 @@ public class FieldData
    {
       return accessFlags;
    }
+
 }

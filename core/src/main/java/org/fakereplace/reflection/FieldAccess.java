@@ -1,6 +1,7 @@
 package org.fakereplace.reflection;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 
 import org.fakereplace.data.ClassDataStore;
 
@@ -86,13 +87,13 @@ public class FieldAccess
    }
 
    /**
-    * set fake field values 
+    * set fake field instance field values 
     * @param f
     * @return false if not a fake field
     */
    static boolean setFakeField(Field f, Object object, Object val)
    {
-      if (f.getDeclaringClass().getName().startsWith(org.fakereplace.boot.Constants.GENERATED_CLASS_PACKAGE))
+      if ((f.getModifiers() & Modifier.STATIC) == 0 && f.getDeclaringClass().getName().startsWith(org.fakereplace.boot.Constants.GENERATED_CLASS_PACKAGE))
       {
          FieldAccessor accessor = ClassDataStore.getFieldAccessor(f.getDeclaringClass().getName());
          accessor.set(object, val);

@@ -284,18 +284,13 @@ public class Transformer implements ClassFileTransformer
       for (Object o : file.getMethods())
       {
          MethodInfo m = (MethodInfo) o;
-         MethodData md = new MethodData(m.getName(), m.getDescriptor());
+         MemberType type = MemberType.NORMAL;
+         if ((m.getDescriptor().equals(Constants.ADDED_METHOD_DESCRIPTOR) && m.getName().equals(Constants.ADDED_METHOD_NAME)) || (m.getDescriptor().equals(Constants.ADDED_STATIC_METHOD_DESCRIPTOR) && m.getName().equals(Constants.ADDED_STATIC_METHOD_NAME)))
+         {
+            type = MemberType.ADDED_SYSTEM;
+         }
 
-         md.setClassName(file.getName());
-         md.setAccessFlags(m.getAccessFlags());
-         if (md.getDescriptor().equals("(I[Ljava/lang/Object;)Ljava/lang/Object;") && md.getMethodName().equals(Constants.ADDED_METHOD_NAME))
-         {
-            md.setType(MemberType.ADDED_SYSTEM);
-         }
-         else
-         {
-            md.setType(MemberType.NORMAL);
-         }
+         MethodData md = new MethodData(m.getName(), m.getDescriptor(), file.getName(), type, m.getAccessFlags());
          data.addMethod(md);
       }
       for (Object o : file.getFields())
@@ -303,11 +298,11 @@ public class Transformer implements ClassFileTransformer
          FieldInfo m = (FieldInfo) o;
          if (m.getName().equals(Constants.ADDED_FIELD_NAME))
          {
-            data.addField(m, MemberType.ADDED_SYSTEM);
+            data.addField(m, MemberType.ADDED_SYSTEM, file.getName());
          }
          else
          {
-            data.addField(m, MemberType.NORMAL);
+            data.addField(m, MemberType.NORMAL, file.getName());
          }
       }
 
