@@ -41,7 +41,19 @@ public class FieldAccessor
       {
          throw new RuntimeException(e);
       }
+   }
 
+   public Object get(Object object)
+   {
+      try
+      {
+         Object[] ar = (Object[]) array.get(object);
+         return ar[arrayItem];
+      }
+      catch (Exception e)
+      {
+         throw new RuntimeException(e);
+      }
    }
 
 }

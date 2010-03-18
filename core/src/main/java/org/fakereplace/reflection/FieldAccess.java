@@ -86,6 +86,123 @@ public class FieldAccess
       }
    }
 
+   public static Object get(Field f, Object object) throws IllegalAccessException
+   {
+      if (isFakeField(f))
+      {
+         FieldAccessor accessor = ClassDataStore.getFieldAccessor(f.getDeclaringClass().getName());
+         return accessor.get(object);
+      }
+      else
+      {
+         return f.get(object);
+      }
+   }
+
+   public static boolean getBoolean(Field f, Object object) throws IllegalAccessException
+   {
+      if (isFakeField(f))
+      {
+         FieldAccessor accessor = ClassDataStore.getFieldAccessor(f.getDeclaringClass().getName());
+         return (Boolean) accessor.get(object);
+      }
+      else
+      {
+         return f.getBoolean(object);
+      }
+   }
+
+   public static byte getByte(Field f, Object object) throws IllegalAccessException
+   {
+      if (isFakeField(f))
+      {
+         FieldAccessor accessor = ClassDataStore.getFieldAccessor(f.getDeclaringClass().getName());
+         return (Byte) accessor.get(object);
+      }
+      else
+      {
+         return f.getByte(object);
+      }
+   }
+
+   public static char getChar(Field f, Object object) throws IllegalAccessException
+   {
+      if (isFakeField(f))
+      {
+         FieldAccessor accessor = ClassDataStore.getFieldAccessor(f.getDeclaringClass().getName());
+         return (Character) accessor.get(object);
+      }
+      else
+      {
+         return f.getChar(object);
+      }
+   }
+
+   public static Double getDouble(Field f, Object object) throws IllegalAccessException
+   {
+      if (isFakeField(f))
+      {
+         FieldAccessor accessor = ClassDataStore.getFieldAccessor(f.getDeclaringClass().getName());
+         return (Double) accessor.get(object);
+      }
+      else
+      {
+         return f.getDouble(object);
+      }
+   }
+
+   public static float getFloat(Field f, Object object) throws IllegalAccessException
+   {
+      if (isFakeField(f))
+      {
+         FieldAccessor accessor = ClassDataStore.getFieldAccessor(f.getDeclaringClass().getName());
+         return (Float) accessor.get(object);
+      }
+      else
+      {
+         return f.getFloat(object);
+      }
+   }
+
+   public static int getInt(Field f, Object object) throws IllegalAccessException
+   {
+      if (isFakeField(f))
+      {
+         FieldAccessor accessor = ClassDataStore.getFieldAccessor(f.getDeclaringClass().getName());
+         return (Integer) accessor.get(object);
+      }
+      else
+      {
+         return f.getInt(object);
+      }
+   }
+
+   public static long getLong(Field f, Object object) throws IllegalAccessException
+   {
+      if (isFakeField(f))
+      {
+         FieldAccessor accessor = ClassDataStore.getFieldAccessor(f.getDeclaringClass().getName());
+         return (Long) accessor.get(object);
+      }
+      else
+      {
+         return f.getLong(object);
+      }
+   }
+
+   public static Object getShort(Field f, Object object) throws IllegalAccessException
+   {
+      if (isFakeField(f))
+      {
+         FieldAccessor accessor = ClassDataStore.getFieldAccessor(f.getDeclaringClass().getName());
+         return (Short) accessor.get(object);
+      }
+      else
+      {
+         return f.getShort(object);
+      }
+   }
+
    /**
     * set fake field instance field values 
     * @param f
@@ -97,6 +214,15 @@ public class FieldAccess
       {
          FieldAccessor accessor = ClassDataStore.getFieldAccessor(f.getDeclaringClass().getName());
          accessor.set(object, val);
+         return true;
+      }
+      return false;
+   }
+
+   static boolean isFakeField(Field f)
+   {
+      if ((f.getModifiers() & Modifier.STATIC) == 0 && f.getDeclaringClass().getName().startsWith(org.fakereplace.boot.Constants.GENERATED_CLASS_PACKAGE))
+      {
          return true;
       }
       return false;
