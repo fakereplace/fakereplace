@@ -40,7 +40,7 @@ public class ReflectionDelegate
          List<Method> visible = new ArrayList<Method>(meth.length);
          for (int i = 0; i < meth.length; ++i)
          {
-            if (!meth[i].getName().equals(Constants.ADDED_METHOD_NAME) && !meth[i].getName().equals(Constants.ADDED_STATIC_METHOD_NAME))
+            if (!meth[i].getName().equals(Constants.ADDED_METHOD_NAME) && !meth[i].getName().equals(Constants.ADDED_STATIC_METHOD_NAME) && !meth[i].getName().equals(Constants.ADDED_METHOD_CALLING_METHOD))
                visible.add(meth[i]);
          }
 
@@ -82,7 +82,7 @@ public class ReflectionDelegate
          List<Method> visible = new ArrayList<Method>(meth.length);
          for (int i = 0; i < meth.length; ++i)
          {
-            if (!meth[i].getName().equals(Constants.ADDED_METHOD_NAME) && !meth[i].getName().equals(Constants.ADDED_STATIC_METHOD_NAME))
+            if (!meth[i].getName().equals(Constants.ADDED_METHOD_NAME) && !meth[i].getName().equals(Constants.ADDED_STATIC_METHOD_NAME) && !meth[i].getName().equals(Constants.ADDED_METHOD_CALLING_METHOD))
             {
                visible.add(meth[i]);
             }

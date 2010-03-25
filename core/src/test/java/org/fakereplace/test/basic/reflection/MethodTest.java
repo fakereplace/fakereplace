@@ -26,7 +26,7 @@ public class MethodTest
       Method[] meths = d.getClass().getDeclaredMethods();
       for (Method m : meths)
       {
-         if (m.getName().equals(Constants.ADDED_METHOD_NAME))
+         if (m.getName().equals(Constants.ADDED_METHOD_NAME) || m.getName().equals(Constants.ADDED_STATIC_METHOD_NAME) || m.getName().equals(Constants.ADDED_METHOD_CALLING_METHOD))
          {
             throw new RuntimeException("Added method delegator showing up in declared methods");
          }
