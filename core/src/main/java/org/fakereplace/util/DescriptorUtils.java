@@ -238,7 +238,11 @@ public class DescriptorUtils
 
    public static String classToStringRepresentation(Class<?> c)
    {
-      if (byte.class.equals(c))
+      if (void.class.equals(c))
+      {
+         return "V";
+      }
+      else if (byte.class.equals(c))
       {
          return "B";
       }
@@ -285,6 +289,9 @@ public class DescriptorUtils
    {
       switch (c)
       {
+      case 'V':
+         return void.class;
+
       case 'B':
          return byte.class;
 

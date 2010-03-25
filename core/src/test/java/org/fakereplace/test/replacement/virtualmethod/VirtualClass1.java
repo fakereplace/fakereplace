@@ -10,6 +10,7 @@ public class VirtualClass1
 
    public Integer getValue()
    {
+      addValue(1);
       return value;
    }
 

@@ -1,11 +1,11 @@
 package org.fakereplace.manip;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.CodeIterator;
@@ -17,16 +17,18 @@ import org.fakereplace.boot.Logger;
 public class MethodInvokationManipulator
 {
 
-   Map<String, Set<VirtualToStaticData>> virtualToStaticMethod = Collections.synchronizedMap(new HashMap<String, Set<VirtualToStaticData>>());
+   Map<String, Set<VirtualToStaticData>> virtualToStaticMethod = new ConcurrentHashMap<String, Set<VirtualToStaticData>>();
 
-   public void removeMethodRewrites(String className)
+   public synchronized void removeMethodRewrites(String className)
    {
       virtualToStaticMethod.remove(className);
    }
 
    /**
     * This can also be used to replace a static invokation with another static
-    * invokation
+    * invokation.
+    * 
+    * if newClass is null then the invokation is changed to point to a method on the current class
     * 
     * @param oldClass
     * @param newClass
@@ -36,12 +38,17 @@ public class MethodInvokationManipulator
     */
    public void replaceVirtualMethodInvokationWithStatic(String oldClass, String newClass, String methodName, String methodDesc, String newStaticMethodDesc)
    {
-      VirtualToStaticData data = new VirtualToStaticData();
-      data.oldClass = oldClass;
-      data.newClass = newClass;
-      data.methodName = methodName;
-      data.methodDesc = methodDesc;
-      data.newStaticMethodDesc = newStaticMethodDesc;
+      VirtualToStaticData data = new VirtualToStaticData(oldClass, newClass, methodName, methodDesc, newStaticMethodDesc, null);
+      if (!virtualToStaticMethod.containsKey(oldClass))
+      {
+         virtualToStaticMethod.put(oldClass, new HashSet<VirtualToStaticData>());
+      }
+      virtualToStaticMethod.get(oldClass).add(data);
+   }
+
+   public void replaceVirtualMethodInvokationWithLocal(String oldClass, String methodName, String newMethodName, String methodDesc, String newStaticMethodDesc)
+   {
+      VirtualToStaticData data = new VirtualToStaticData(oldClass, null, methodName, methodDesc, newStaticMethodDesc, newMethodName);
       if (!virtualToStaticMethod.containsKey(oldClass))
       {
          virtualToStaticMethod.put(oldClass, new HashSet<VirtualToStaticData>());
@@ -80,9 +87,18 @@ public class MethodInvokationManipulator
                      {
                         // we have not added the new class reference or
                         // the new call location to the class pool yet
-                        int newCpLoc = pool.addClassInfo(data.newClass);
+                        int newCpLoc;
+                        if (data.newClass != null)
+                        {
+                           newCpLoc = pool.addClassInfo(data.newClass);
+                        }
+                        else
+                        {
+
+                           newCpLoc = pool.addClassInfo(file.getName());
+                        }
                         newClassPoolLocations.put(data, newCpLoc);
-                        int newNameAndType = pool.addNameAndTypeInfo(data.methodName, data.newStaticMethodDesc);
+                        int newNameAndType = pool.addNameAndTypeInfo(data.newMethodName, data.newStaticMethodDesc);
                         newCallLocations.put(data, pool.addMethodrefInfo(newCpLoc, newNameAndType));
                      }
                      break;
@@ -142,11 +158,29 @@ public class MethodInvokationManipulator
 
    static private class VirtualToStaticData
    {
-      String oldClass;
-      String newClass;
-      String methodName;
-      String methodDesc;
-      String newStaticMethodDesc;
+      final String oldClass;
+      final String newClass;
+      final String methodName;
+      final String newMethodName;
+      final String methodDesc;
+      final String newStaticMethodDesc;
+
+      public VirtualToStaticData(String oldClass, String newClass, String methodName, String methodDesc, String newStaticMethodDesc, String newMethodName)
+      {
+         this.oldClass = oldClass;
+         this.newClass = newClass;
+         this.methodName = methodName;
+         if (newMethodName == null)
+         {
+            this.newMethodName = methodName;
+         }
+         else
+         {
+            this.newMethodName = newMethodName;
+         }
+         this.methodDesc = methodDesc;
+         this.newStaticMethodDesc = newStaticMethodDesc;
+      }
 
       public String toString()
       {
@@ -179,4 +213,5 @@ public class MethodInvokationManipulator
          return toString().hashCode();
       }
    }
+
 }

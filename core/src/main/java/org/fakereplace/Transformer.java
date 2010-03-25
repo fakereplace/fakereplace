@@ -7,11 +7,13 @@ import java.io.DataOutputStream;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.lang.instrument.Instrumentation;
+import java.lang.reflect.Method;
 import java.security.ProtectionDomain;
 import java.util.concurrent.locks.ReentrantLock;
 
 import javassist.bytecode.AccessFlag;
 import javassist.bytecode.AnnotationsAttribute;
+import javassist.bytecode.BadBytecode;
 import javassist.bytecode.Bytecode;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.CodeAttribute;
@@ -19,6 +21,7 @@ import javassist.bytecode.Descriptor;
 import javassist.bytecode.DuplicateMemberException;
 import javassist.bytecode.FieldInfo;
 import javassist.bytecode.MethodInfo;
+import javassist.bytecode.Opcode;
 
 import org.fakereplace.boot.Constants;
 import org.fakereplace.data.ClassData;
@@ -26,6 +29,7 @@ import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.data.MemberType;
 import org.fakereplace.data.MethodData;
 import org.fakereplace.manip.Manipulator;
+import org.fakereplace.util.InvocationUtil;
 import org.fakereplace.util.NoInstrument;
 
 /**
@@ -95,6 +99,9 @@ public class Transformer implements ClassFileTransformer
       manipulator.replaceVirtualMethodInvokationWithStatic("java.lang.reflect.Method", "org.fakereplace.reflection.AnnotationDelegate", "getAnnotations", "()[Ljava/lang/annotation/Annotation;", "(Ljava/lang/reflect/Method;)[Ljava/lang/annotation/Annotation;");
       manipulator.replaceVirtualMethodInvokationWithStatic("java.lang.reflect.Method", "org.fakereplace.reflection.AnnotationDelegate", "getParameterAnnotations", "()[[Ljava/lang/annotation/Annotation;", "(Ljava/lang/reflect/Method;)[[Ljava/lang/annotation/Annotation;");
 
+      // replace method invocation with call to method on current class
+      manipulator.replaceVirtualMethodInvokationWithLocal("java.lang.reflect.Method", "invoke", Constants.ADDED_METHOD_CALLING_METHOD, "(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;", Constants.ADDED_METHOD_CALLING_METHOD_DESCRIPTOR);
+
       // fields
       manipulator.replaceVirtualMethodInvokationWithStatic("java.lang.Class", "org.fakereplace.reflection.ReflectionDelegate", "getField", "(Ljava/lang/String;)Ljava/lang/reflect/Field;", "(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/reflect/Field;");
       manipulator.replaceVirtualMethodInvokationWithStatic("java.lang.Class", "org.fakereplace.reflection.ReflectionDelegate", "getDeclaredField", "(Ljava/lang/String;)Ljava/lang/reflect/Field;", "(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/reflect/Field;");
@@ -153,6 +160,7 @@ public class Transformer implements ClassFileTransformer
          }
 
          ClassFile file = new ClassFile(new DataInputStream(new ByteArrayInputStream(classfileBuffer)));
+
          if (classBeingRedefined == null)
          {
             AnnotationsAttribute at = (AnnotationsAttribute) file.getAttribute(AnnotationsAttribute.invisibleTag);
@@ -177,7 +185,10 @@ public class Transformer implements ClassFileTransformer
             addMethodForInstrumentation(file);
             addFieldForInstrumentation(file);
          }
-
+         if (!file.isInterface())
+         {
+            addMethodCallingMethod(file);
+         }
          ByteArrayOutputStream bs = new ByteArrayOutputStream();
          file.write(new DataOutputStream(bs));
 
@@ -258,6 +269,69 @@ public class Transformer implements ClassFileTransformer
       {
          // e.printStackTrace();
       }
+   }
+
+   /**
+    * Adds a method to a class that re can redefine when the class is reloaded
+    * 
+    * @param file
+    * @throws DuplicateMemberException
+    * @throws  
+    */
+   public void addMethodCallingMethod(ClassFile file) throws DuplicateMemberException, BadBytecode
+   {
+      try
+      {
+         MethodInfo m = new MethodInfo(file.getConstPool(), Constants.ADDED_METHOD_CALLING_METHOD, Constants.ADDED_METHOD_CALLING_METHOD_DESCRIPTOR);
+         m.setAccessFlags(0 | AccessFlag.PUBLIC | AccessFlag.STATIC);
+
+         // we test if the method is static and the first argment is not null.
+         // if this is the case we see if it is a fakereplace method
+         // if it is then we call it
+
+         // we build up the conditionals from the inside out. The first section is the code to make a fakereplace call
+         Bytecode fakeCall = new Bytecode(file.getConstPool());
+         // first the first two args
+         fakeCall.addAload(0);
+         fakeCall.add(Opcode.ACONST_NULL);
+
+         fakeCall.add(Opcode.ALOAD_1);
+         fakeCall.add(Opcode.ALOAD_2);
+         fakeCall.addInvokestatic(InvocationUtil.class.getName(), "prepare", "(Ljava/lang/Object;[Ljava/lang/Object;)[Ljava/lang/Object;");
+         // now we have an array with all the args on top of the stack
+         // invoke the method
+         fakeCall.addInvokevirtual(Method.class.getName(), "invoke", "(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;");
+         fakeCall.addOpcode(Opcode.ARETURN);
+         // now fakecall is complete. we only want to execute this bytecode if the object is not null and the method is
+         // static
+         // we delegate this check to another function because it is easier
+         Bytecode conditional = new Bytecode(file.getConstPool());
+         conditional.addAload(0);
+         conditional.addAload(1);
+         conditional.addInvokestatic(InvocationUtil.class.getName(), "executeFakeCall", "(Ljava/lang/reflect/Method;Ljava/lang/Object;)Z");
+         conditional.add(Opcode.ICONST_0);
+         conditional.add(Opcode.IF_ICMPEQ);
+         conditional.addIndex(fakeCall.length() + 3);
+
+         Bytecode b = new Bytecode(file.getConstPool());
+         b.add(Opcode.ALOAD_0);
+         b.add(Opcode.ALOAD_1);
+         b.add(Opcode.ALOAD_2);
+         b.addInvokevirtual(Method.class.getName(), "invoke", "(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;");
+         b.addOpcode(Opcode.ARETURN);
+         CodeAttribute ca = b.toCodeAttribute();
+         ca.iterator().insert(fakeCall.get());
+         ca.iterator().insert(conditional.get());
+         m.setCodeAttribute(ca);
+         ca.setMaxLocals(3);
+         ca.computeMaxStack();
+         file.addMethod(m);
+      }
+      catch (DuplicateMemberException e)
+      {
+         // e.printStackTrace();
+      }
+
    }
 
    /**

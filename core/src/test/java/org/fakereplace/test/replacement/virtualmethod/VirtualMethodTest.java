@@ -28,10 +28,10 @@ public class VirtualMethodTest
       Method add = c.getMethod("addValue", int.class);
       assert get != null;
       Integer res = (Integer) get.invoke(ns);
-      assert res.equals(new Integer(0));
-      add.invoke(null, ns, 1);
+      assert res.equals(new Integer(1));
+      add.invoke(ns, 1);
       res = (Integer) get.invoke(ns);
-      assert res.equals(new Integer(1)) : "Expected 1 got " + res;
+      assert res.equals(new Integer(3)) : "Expected 3 got " + res;
    }
 
 }

@@ -64,6 +64,11 @@ public class Manipulator
       methodInvokationManipulator.replaceVirtualMethodInvokationWithStatic(oldClass, newClass, methodName, methodDesc, newStaticMethodDesc);
    }
 
+   public void replaceVirtualMethodInvokationWithLocal(String oldClass, String methodName, String newMethodName, String methodDesc, String newStaticMethodDesc)
+   {
+      methodInvokationManipulator.replaceVirtualMethodInvokationWithLocal(oldClass, methodName, newMethodName, methodDesc, newStaticMethodDesc);
+   }
+
    public void transformClass(ClassFile file)
    {
       // first we are going to transform virtual method calls to static ones
