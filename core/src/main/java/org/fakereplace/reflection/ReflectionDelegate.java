@@ -1,6 +1,7 @@
 package org.fakereplace.reflection;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,9 @@ import org.fakereplace.data.FieldData;
 import org.fakereplace.data.MemberType;
 import org.fakereplace.data.MethodData;
 import org.fakereplace.util.DescriptorUtils;
+import org.fakereplace.util.InvocationUtil;
+
+import sun.reflect.Reflection;
 
 /**
  * This class contains static methods. These methods are called instead of
@@ -26,7 +30,34 @@ import org.fakereplace.util.DescriptorUtils;
 public class ReflectionDelegate
 {
 
-   public static Method[] getDeclaredMethods(Class clazz)
+   public static Object invoke(Method method, Object instance, Object[] args) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException
+   {
+      if (InvocationUtil.executeFakeCall(method, instance))
+      {
+         Object[] newAgrs = InvocationUtil.prepare(instance, args);
+         return method.invoke(null, newAgrs);
+      }
+
+      if (!method.isAccessible())
+      {
+         // todo: cache these checks
+         Class caller = sun.reflect.Reflection.getCallerClass(2);
+         Reflection.ensureMemberAccess(caller, method.getDeclaringClass(), instance, method.getModifiers());
+
+         try
+         {
+            method.setAccessible(true);
+            return method.invoke(instance, args);
+         }
+         finally
+         {
+            method.setAccessible(false);
+         }
+      }
+      return method.invoke(instance, args);
+   }
+
+   public static Method[] getDeclaredMethods(Class<?> clazz)
    {
       try
       {
@@ -48,7 +79,7 @@ public class ReflectionDelegate
          {
             if (i.getType() == MemberType.FAKE)
             {
-               Class c = clazz.getClassLoader().loadClass(i.getClassName());
+               Class<?> c = clazz.getClassLoader().loadClass(i.getClassName());
                visible.add(i.getMethod(c));
             }
          }
@@ -146,14 +177,14 @@ public class ReflectionDelegate
       case FAKE:
          try
          {
-            Class c = clazz.getClassLoader().loadClass(md.getClassName());
+            Class<?> c = clazz.getClassLoader().loadClass(md.getClassName());
             if (md.isStatic())
             {
                meth = c.getMethod(name, parameters);
             }
             else
             {
-               Class[] nparams = new Class[parameters.length + 1];
+               Class<?>[] nparams = new Class[parameters.length + 1];
                nparams[0] = clazz;
                for (int i = 0; i < parameters.length; ++i)
                {
@@ -201,14 +232,14 @@ public class ReflectionDelegate
       case FAKE:
          try
          {
-            Class c = clazz.getClassLoader().loadClass(md.getClassName());
+            Class<?> c = clazz.getClassLoader().loadClass(md.getClassName());
             if (md.isStatic())
             {
                meth = c.getMethod(name, parameters);
             }
             else
             {
-               Class[] nparams = new Class[parameters.length + 1];
+               Class<?>[] nparams = new Class[parameters.length + 1];
                nparams[0] = clazz;
                for (int i = 0; i < parameters.length; ++i)
                {
@@ -230,9 +261,9 @@ public class ReflectionDelegate
       throw new NoSuchMethodException();
    }
 
-   public static Class getDeclaringClass(Method m)
+   public static Class<?> getDeclaringClass(Method m)
    {
-      Class c = m.getDeclaringClass();
+      Class<?> c = m.getDeclaringClass();
       if (c.getName().startsWith(Constants.GENERATED_CLASS_PACKAGE))
       {
          return ClassDataStore.getRealClassFromProxyName(c.getName());
@@ -240,9 +271,9 @@ public class ReflectionDelegate
       return c;
    }
 
-   public static Class getDeclaringClass(Field f)
+   public static Class<?> getDeclaringClass(Field f)
    {
-      Class c = f.getDeclaringClass();
+      Class<?> c = f.getDeclaringClass();
       if (c.getName().startsWith(Constants.GENERATED_CLASS_PACKAGE))
       {
          return ClassDataStore.getRealClassFromProxyName(c.getName());
@@ -250,7 +281,7 @@ public class ReflectionDelegate
       return c;
    }
 
-   public static Field[] getDeclaredFields(Class clazz)
+   public static Field[] getDeclaredFields(Class<?> clazz)
    {
       try
       {

@@ -100,7 +100,7 @@ public class Transformer implements ClassFileTransformer
       manipulator.replaceVirtualMethodInvokationWithStatic("java.lang.reflect.Method", "org.fakereplace.reflection.AnnotationDelegate", "getParameterAnnotations", "()[[Ljava/lang/annotation/Annotation;", "(Ljava/lang/reflect/Method;)[[Ljava/lang/annotation/Annotation;");
 
       // replace method invocation with call to method on current class
-      manipulator.replaceVirtualMethodInvokationWithLocal("java.lang.reflect.Method", "invoke", Constants.ADDED_METHOD_CALLING_METHOD, "(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;", Constants.ADDED_METHOD_CALLING_METHOD_DESCRIPTOR);
+      manipulator.replaceVirtualMethodInvokationWithStatic("java.lang.reflect.Method", "org.fakereplace.reflection.ReflectionDelegate", "invoke", "(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;", "(Ljava/lang/reflect/Method;Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;");
 
       // fields
       manipulator.replaceVirtualMethodInvokationWithStatic("java.lang.Class", "org.fakereplace.reflection.ReflectionDelegate", "getField", "(Ljava/lang/String;)Ljava/lang/reflect/Field;", "(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/reflect/Field;");
@@ -184,10 +184,6 @@ public class Transformer implements ClassFileTransformer
          {
             addMethodForInstrumentation(file);
             addFieldForInstrumentation(file);
-         }
-         if (!file.isInterface())
-         {
-            addMethodCallingMethod(file);
          }
          ByteArrayOutputStream bs = new ByteArrayOutputStream();
          file.write(new DataOutputStream(bs));

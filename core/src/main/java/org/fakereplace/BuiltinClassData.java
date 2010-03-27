@@ -3,9 +3,9 @@ package org.fakereplace;
 public class BuiltinClassData
 {
 
-   static final String[] doNotInstrument = { "org/fakereplace", "java/lang", "sun/reflect/generics", "sun/reflect/annotation", "java/io", "java/math", "java/util/concurrent", "java/util/Currency", "sun/reflect/Unsafe", "java/util/Random", "sun/misc/Unsafe" };
+   static final String[] doNotInstrument = { "org/fakereplace", "java/math", "java/util/concurrent", "java/util/Currency", "java/util/Random", };
 
-   static final String[] exceptions = { "java/lang/reflect/Proxy", "org/fakereplace/test" };
+   static final String[] exceptions = { "java/lang/reflect/Proxy", "org/fakereplace/test", };
 
    public static boolean skipInstrumentation(String className)
    {
