@@ -22,13 +22,10 @@ import javassist.bytecode.ConstPool;
 import javassist.bytecode.Descriptor;
 import javassist.bytecode.DuplicateMemberException;
 import javassist.bytecode.ExceptionsAttribute;
-import javassist.bytecode.LineNumberAttribute;
-import javassist.bytecode.LocalVariableAttribute;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.Opcode;
 import javassist.bytecode.ParameterAnnotationsAttribute;
 import javassist.bytecode.SignatureAttribute;
-import javassist.bytecode.SourceFileAttribute;
 
 import org.fakereplace.Transformer;
 import org.fakereplace.boot.Constants;
@@ -652,10 +649,6 @@ public class MethodReplacer
       ParameterAnnotationsAttribute pannotations = (ParameterAnnotationsAttribute) oldMethod.getAttribute(ParameterAnnotationsAttribute.visibleTag);
       ExceptionsAttribute exAt = (ExceptionsAttribute) oldMethod.getAttribute(ExceptionsAttribute.tag);
       SignatureAttribute sigAt = (SignatureAttribute) oldMethod.getAttribute(SignatureAttribute.tag);
-      SourceFileAttribute sourceAt = (SourceFileAttribute) oldMethod.getAttribute(SourceFileAttribute.tag);
-      LineNumberAttribute lineAt = (LineNumberAttribute) oldMethod.getAttribute(LineNumberAttribute.tag);
-      LocalVariableAttribute localAt = (LocalVariableAttribute) oldMethod.getAttribute(LocalVariableAttribute.tag);
-
       if (annotations != null)
       {
          AttributeInfo newAnnotations = annotations.copy(newMethod.getConstPool(), Collections.EMPTY_MAP);
@@ -674,21 +667,6 @@ public class MethodReplacer
       if (exAt != null)
       {
          AttributeInfo newAnnotations = exAt.copy(newMethod.getConstPool(), Collections.EMPTY_MAP);
-         newMethod.addAttribute(newAnnotations);
-      }
-      if (sourceAt != null)
-      {
-         AttributeInfo newAnnotations = sourceAt.copy(newMethod.getConstPool(), Collections.EMPTY_MAP);
-         newMethod.addAttribute(newAnnotations);
-      }
-      if (lineAt != null)
-      {
-         AttributeInfo newAnnotations = lineAt.copy(newMethod.getConstPool(), Collections.EMPTY_MAP);
-         newMethod.addAttribute(newAnnotations);
-      }
-      if (localAt != null)
-      {
-         AttributeInfo newAnnotations = localAt.copy(newMethod.getConstPool(), Collections.EMPTY_MAP);
          newMethod.addAttribute(newAnnotations);
       }
    }

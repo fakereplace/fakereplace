@@ -43,23 +43,6 @@ public class FieldReplacer
    public static void handleFieldReplacement(ClassFile file, ClassLoader loader, Class oldClass)
    {
 
-      try
-      {
-         if ((file.getAccessFlags() & AccessFlag.INTERFACE) == 0)
-         {
-            FieldInfo m = new FieldInfo(file.getConstPool(), Constants.ADDED_FIELD_NAME, Constants.ADDED_FIELD_DESCRIPTOR);
-            m.setAccessFlags(0 | AccessFlag.PUBLIC);
-            Bytecode b = new Bytecode(file.getConstPool(), 5, 3);
-            b.add(Bytecode.ACONST_NULL);
-            b.add(Bytecode.ARETURN);
-            file.addField(m);
-         }
-      }
-      catch (DuplicateMemberException e)
-      {
-         // e.printStackTrace();
-      }
-
       ClassData data = ClassDataStore.getClassData(loader, Descriptor.toJvmName(file.getName()));
 
       Set<FieldData> fields = new HashSet<FieldData>();
@@ -199,6 +182,7 @@ public class FieldReplacer
                // push the index
                cond.addIconst(i);
                // now push the value
+               // TODO: we probably want to skip all this in the object case as it is already null
                if (d.getDescriptor().length() > 1)
                {
                   cond.add(Opcode.ACONST_NULL);
