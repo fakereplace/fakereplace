@@ -118,6 +118,33 @@ public class AnnotationDataStore
       return parameterAnnotations.get(clazz);
    }
 
+   // constructor
+
+   static public boolean isConstructorDataRecorded(Constructor<?> clazz)
+   {
+      return constructorAnnotations.containsKey(clazz);
+   }
+
+   static public Annotation[] getConstructorAnnotations(Constructor<?> clazz)
+   {
+      return constructorAnnotations.get(clazz);
+   }
+
+   static public Annotation getConstructorAnnotation(Constructor<?> clazz, Class<? extends Annotation> annotation)
+   {
+      return constructorAnnotationsByType.get(clazz).get(annotation);
+   }
+
+   static public boolean isConstructorAnnotationPresent(Constructor<?> clazz, Class<? extends Annotation> annotation)
+   {
+      return constructorAnnotationsByType.get(clazz).containsKey(annotation);
+   }
+
+   static public Annotation[][] getMethodParameterAnnotations(Constructor<?> clazz)
+   {
+      return constructorParameterAnnotations.get(clazz);
+   }
+
    static Class<?> createAnnotationsProxy(ClassLoader loader, AnnotationsAttribute annotations)
    {
       String proxyName = GlobalClassDefinitionData.getProxyName();
@@ -303,6 +330,34 @@ public class AnnotationDataStore
       {
          anVals.put(a.annotationType(), a);
          count++;
+      }
+
+   }
+
+   static public void recordConstructorParameterAnnotations(Constructor<?> method, ParameterAnnotationsAttribute annotations)
+   {
+      // no annotations
+      if (annotations == null)
+      {
+         Annotation[][] ans = new Annotation[method.getParameterAnnotations().length][0];
+         constructorParameterAnnotations.put(method, ans);
+         return;
+      }
+
+      Class<?> pclass = createParameterAnnotationsProxy(method.getDeclaringClass().getClassLoader(), annotations, method.getParameterTypes().length);
+      Class<?>[] types = new Class[method.getParameterTypes().length];
+      for (int i = 0; i < types.length; ++i)
+      {
+         types[i] = int.class;
+      }
+      try
+      {
+         Method anMethod = pclass.getMethod(PROXY_METHOD_NAME, types);
+         constructorParameterAnnotations.put(method, anMethod.getParameterAnnotations());
+      }
+      catch (Exception e)
+      {
+         throw new RuntimeException(e);
       }
 
    }

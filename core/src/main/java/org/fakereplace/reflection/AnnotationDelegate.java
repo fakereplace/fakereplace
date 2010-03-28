@@ -1,6 +1,7 @@
 package org.fakereplace.reflection;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
@@ -113,6 +114,52 @@ public class AnnotationDelegate
    static public Annotation[][] getParameterAnnotations(Method clazz)
    {
       if (AnnotationDataStore.isMethodDataRecorded(clazz))
+      {
+         Annotation[][] result = AnnotationDataStore.getMethodParameterAnnotations(clazz);
+         return result;
+      }
+      return clazz.getParameterAnnotations();
+   }
+
+   // constructors
+
+   static public boolean isAnnotationPresent(Constructor<?> clazz, Class anType)
+   {
+      if (AnnotationDataStore.isConstructorDataRecorded(clazz))
+      {
+         boolean result = AnnotationDataStore.isConstructorAnnotationPresent(clazz, anType);
+         // TODO: @Inherited
+
+         return result;
+      }
+      return clazz.isAnnotationPresent(anType);
+   }
+
+   static public Annotation getAnnotation(Constructor<?> clazz, Class anType)
+   {
+      if (AnnotationDataStore.isConstructorDataRecorded(clazz))
+      {
+         Annotation result = AnnotationDataStore.getConstructorAnnotation(clazz, anType);
+         // TODO: @Inherited
+
+         return result;
+      }
+      return clazz.getAnnotation(anType);
+   }
+
+   static public Annotation[] getAnnotations(Constructor<?> clazz)
+   {
+      if (AnnotationDataStore.isConstructorDataRecorded(clazz))
+      {
+         Annotation[] result = AnnotationDataStore.getConstructorAnnotations(clazz);
+         return result;
+      }
+      return clazz.getAnnotations();
+   }
+
+   static public Annotation[][] getParameterAnnotations(Constructor<?> clazz)
+   {
+      if (AnnotationDataStore.isConstructorDataRecorded(clazz))
       {
          Annotation[][] result = AnnotationDataStore.getMethodParameterAnnotations(clazz);
          return result;
