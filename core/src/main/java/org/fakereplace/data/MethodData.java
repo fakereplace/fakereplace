@@ -115,10 +115,10 @@ public class MethodData
    /**
     * If this method is actually a constructor get the construtor object
     */
-   public Constructor getConstructor(Class<?> actualClass) throws ClassNotFoundException, SecurityException, NoSuchMethodException
+   public Constructor<?> getConstructor(Class<?> actualClass) throws ClassNotFoundException, SecurityException, NoSuchMethodException
    {
       Class<?>[] methodDesc = DescriptorUtils.argumentStringToClassArray(descriptor, actualClass);
-      Constructor method = actualClass.getDeclaredConstructor(methodDesc);
+      Constructor<?> method = actualClass.getDeclaredConstructor(methodDesc);
       return method;
    }
 

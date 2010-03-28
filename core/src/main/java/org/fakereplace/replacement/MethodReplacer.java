@@ -46,7 +46,7 @@ public class MethodReplacer
    {
       // state for added static methods
 
-      CodeAttribute staticCodeAttribute = null, virtualCodeAttribute = null;
+      CodeAttribute staticCodeAttribute = null, virtualCodeAttribute = null, constructorCodeAttribute = null;
       try
       {
          // stick our added methods into the class file
@@ -69,6 +69,15 @@ public class MethodReplacer
          b.add(Bytecode.ARETURN);
          staticCodeAttribute = b.toCodeAttribute();
          m.setCodeAttribute(staticCodeAttribute);
+         file.addMethod(m);
+
+         m = new MethodInfo(file.getConstPool(), "<init>", Constants.ADDED_CONSTRUCTOR_DESCRIPTOR);
+         m.setAccessFlags(AccessFlag.PUBLIC);
+         b = new Bytecode(file.getConstPool(), 5, 5);
+         FakeConstructorUtils.addBogusConstructorCall(file, b);
+         constructorCodeAttribute = b.toCodeAttribute();
+         m.setCodeAttribute(constructorCodeAttribute);
+         constructorCodeAttribute.setMaxLocals(6);
          file.addMethod(m);
 
       }
@@ -132,11 +141,9 @@ public class MethodReplacer
                      throw new RuntimeException(e);
                   }
                }
-
                md = i;
                break;
             }
-
          }
          // we do not need to deal with these
          if (m.getName().equals(Constants.ADDED_METHOD_NAME) || m.getName().equals(Constants.ADDED_STATIC_METHOD_NAME))
@@ -152,7 +159,7 @@ public class MethodReplacer
             }
             else if ((m.getName().equals("<init>")))
             {
-               // handle constructor
+               addConstructor(file, loader, m, data, constructorCodeAttribute, oldClass);
             }
             else if (m.getName().equals("<clinit>"))
             {
@@ -204,6 +211,7 @@ public class MethodReplacer
 
          staticCodeAttribute.computeMaxStack();
          virtualCodeAttribute.computeMaxStack();
+         constructorCodeAttribute.computeMaxStack();
       }
       catch (BadBytecode e)
       {
@@ -554,6 +562,103 @@ public class MethodReplacer
          e.printStackTrace();
       }
       return new MethodData(md.getMethodName(), md.getDescriptor(), md.getClassName(), MemberType.REMOVED_METHOD, md.getAccessFlags());
+   }
+
+   private static void addConstructor(ClassFile file, ClassLoader loader, MethodInfo mInfo, ClassData data, CodeAttribute bytecode, Class oldClass)
+   {
+      int methodCount = MethodIdentifierStore.getMethodNumber(mInfo.getName(), mInfo.getDescriptor());
+
+      try
+      {
+
+         generateBoxedConditionalCodeBlock(methodCount, mInfo, file.getConstPool(), bytecode, false);
+
+         String proxyName = generateFakeConstructorBytecode(mInfo, file.getConstPool(), methodCount, file.getName(), loader);
+         ClassDataStore.registerProxyName(oldClass, proxyName);
+
+         MethodData md = new MethodData(mInfo.getName(), mInfo.getDescriptor(), proxyName, MemberType.FAKE_CONSTRUCTOR, mInfo.getAccessFlags());
+
+         data.addMethod(md);
+         ClassDataStore.registerReplacedMethod(proxyName, md);
+      }
+      catch (Exception e)
+      {
+         e.printStackTrace();
+      }
+   }
+
+   /**
+    * creates a class with a fake constructor that can be used by the reflection api
+    * 
+    * Constructors are not invoked through the proxy class, instead we have to do a lot more 
+    * bytecode re-writing at the actual invocation sites
+    * @param mInfo
+    * @param constPool
+    * @param methodNumber
+    * @param className
+    * @param loader
+    * @param staticMethod
+    * @return
+    * @throws BadBytecode
+    */
+   private static String generateFakeConstructorBytecode(MethodInfo mInfo, ConstPool constPool, int methodNumber, String className, ClassLoader loader) throws BadBytecode
+   {
+      String proxyName = GlobalClassDefinitionData.getProxyName();
+      ClassFile proxy = new ClassFile(false, proxyName, "java.lang.Object");
+      proxy.setVersionToJava5();
+      proxy.setAccessFlags(AccessFlag.PUBLIC);
+
+      // add our new annotations directly onto the new proxy method. This way
+      // they will just work without registering them with the
+      // AnnotationDataStore
+      AnnotationsAttribute annotations = (AnnotationsAttribute) mInfo.getAttribute(AnnotationsAttribute.visibleTag);
+      ParameterAnnotationsAttribute pannotations = (ParameterAnnotationsAttribute) mInfo.getAttribute(ParameterAnnotationsAttribute.visibleTag);
+
+      String[] types = DescriptorUtils.descriptorStringToParameterArray(mInfo.getDescriptor());
+      // as this method is never called the bytecode just returns
+      Bytecode b = new Bytecode(proxy.getConstPool());
+      b.addInvokespecial("java.lang.Object", "<init>", "()V");
+      b.add(Opcode.RETURN);
+      MethodInfo method = new MethodInfo(proxy.getConstPool(), mInfo.getName(), mInfo.getDescriptor());
+      method.setAccessFlags(mInfo.getAccessFlags());
+      method.setCodeAttribute(b.toCodeAttribute());
+      method.getCodeAttribute().computeMaxStack();
+      method.getCodeAttribute().setMaxLocals(types.length + 1);
+
+      if (annotations != null)
+      {
+         AttributeInfo newAnnotations = annotations.copy(proxy.getConstPool(), Collections.EMPTY_MAP);
+         method.addAttribute(newAnnotations);
+      }
+      if (pannotations != null)
+      {
+         AttributeInfo newAnnotations = pannotations.copy(proxy.getConstPool(), Collections.EMPTY_MAP);
+         method.addAttribute(newAnnotations);
+      }
+
+      try
+      {
+         proxy.addMethod(method);
+      }
+      catch (DuplicateMemberException e)
+      {
+         // TODO Auto-generated catch block
+         e.printStackTrace();
+      }
+
+      try
+      {
+         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+         DataOutputStream dos = new DataOutputStream(bytes);
+         proxy.write(dos);
+         GlobalClassDefinitionData.saveProxyDefinition(loader, proxyName, bytes.toByteArray());
+         return proxyName;
+      }
+      catch (IOException e)
+      {
+         throw new RuntimeException(e);
+      }
+
    }
 
 }

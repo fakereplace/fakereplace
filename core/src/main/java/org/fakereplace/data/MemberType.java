@@ -10,6 +10,8 @@ public enum MemberType
     * fake methods are methods that we are pretending exist
     */
    FAKE,
+
+   FAKE_CONSTRUCTOR,
    /**
     * added delegates are methods that the transformer added at load time to
     * directly call a superclass fake method so subclasses can use the normal

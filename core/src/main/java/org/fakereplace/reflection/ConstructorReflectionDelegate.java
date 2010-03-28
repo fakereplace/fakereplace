@@ -40,7 +40,7 @@ public class ConstructorReflectionDelegate
 
          for (MethodData i : cd.getMethods())
          {
-            if (i.getType() == MemberType.FAKE)
+            if (i.getType() == MemberType.FAKE_CONSTRUCTOR)
             {
                Class<?> c = clazz.getClassLoader().loadClass(i.getClassName());
                visible.add(i.getConstructor(c));
@@ -87,7 +87,7 @@ public class ConstructorReflectionDelegate
          {
             for (MethodData i : cta.getMethods())
             {
-               if (i.getType() == MemberType.FAKE && AccessFlag.isPublic(i.getAccessFlags()))
+               if (i.getType() == MemberType.FAKE_CONSTRUCTOR && AccessFlag.isPublic(i.getAccessFlags()))
                {
                   Class<?> c = clazz.getClassLoader().loadClass(i.getClassName());
                   visible.add(i.getConstructor(c));
@@ -137,7 +137,7 @@ public class ConstructorReflectionDelegate
       case NORMAL:
          Constructor<?> meth = clazz.getConstructor(parameters);
          return meth;
-      case FAKE:
+      case FAKE_CONSTRUCTOR:
          try
          {
             Class<?> c = clazz.getClassLoader().loadClass(md.getClassName());
@@ -179,7 +179,7 @@ public class ConstructorReflectionDelegate
       case NORMAL:
          Constructor<?> meth = clazz.getDeclaredConstructor(parameters);
          return meth;
-      case FAKE:
+      case FAKE_CONSTRUCTOR:
          try
          {
             Class<?> c = clazz.getClassLoader().loadClass(md.getClassName());
