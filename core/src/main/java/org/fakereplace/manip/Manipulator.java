@@ -19,12 +19,14 @@ public class Manipulator
    MethodInvokationManipulator methodInvokationManipulator = new MethodInvokationManipulator();
    StaticFieldManipulator staticFieldManipulator = new StaticFieldManipulator();
    InstanceFieldManipulator instanceFieldManapulator = new InstanceFieldManipulator();
+   ConstructorInvocationManipulator constructorInvocationManipulator = new ConstructorInvocationManipulator();
 
    public void removeRewrites(String className)
    {
-      methodInvokationManipulator.removeMethodRewrites(className);
+      methodInvokationManipulator.clearRewrites(className);
       staticFieldManipulator.clearRewrite(className);
       instanceFieldManapulator.clearRewrites(className);
+      constructorInvocationManipulator.clearRewrites(className);
    }
 
    public void renameClass(String oldName, String newName)
@@ -42,6 +44,11 @@ public class Manipulator
    public void rewriteStaticFieldAccess(String oldClass, String newClass, String fieldName)
    {
       staticFieldManipulator.rewriteStaticFieldAccess(oldClass, newClass, fieldName);
+   }
+
+   public void rewriteConstructorAccess(String clazz, String descriptor, int methodNo)
+   {
+      constructorInvocationManipulator.rewriteConstructorCalls(clazz, descriptor, methodNo);
    }
 
    public void rewriteInstanceFieldAccess(AddedFieldData data)
@@ -75,6 +82,7 @@ public class Manipulator
       methodInvokationManipulator.transformClass(file);
       staticFieldManipulator.transformClass(file);
       instanceFieldManapulator.tranformClass(file);
+      constructorInvocationManipulator.transformClass(file);
       file.renameClass(renames);
 
    }

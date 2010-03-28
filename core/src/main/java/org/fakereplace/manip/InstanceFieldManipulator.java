@@ -38,6 +38,10 @@ public class InstanceFieldManipulator
 
    public void tranformClass(ClassFile file)
    {
+      if (addedFieldData.isEmpty())
+      {
+         return;
+      }
       Map<Integer, AddedFieldData> fieldAccessLocations = new HashMap<Integer, AddedFieldData>();
       // first we need to scan the constant pool looking for
       // CONSTANT_method_info_ref structures

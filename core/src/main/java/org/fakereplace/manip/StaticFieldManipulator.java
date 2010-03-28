@@ -44,6 +44,10 @@ public class StaticFieldManipulator
 
    public void transformClass(ClassFile file)
    {
+      if (staticMethodData.isEmpty())
+      {
+         return;
+      }
       Map<Integer, StaticFieldAccessRewriteData> fieldAccessLocations = new HashMap<Integer, StaticFieldAccessRewriteData>();
       Map<StaticFieldAccessRewriteData, Integer> newFieldClassPoolLocations = new HashMap<StaticFieldAccessRewriteData, Integer>();
       Map<StaticFieldAccessRewriteData, Integer> newFieldAccessLocations = new HashMap<StaticFieldAccessRewriteData, Integer>();

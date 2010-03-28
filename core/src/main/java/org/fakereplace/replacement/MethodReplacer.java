@@ -377,7 +377,6 @@ public class MethodReplacer
                b.add(Opcode.ILOAD_0);
                b.add(Opcode.IRETURN);
             }
-
          }
          else
          {
