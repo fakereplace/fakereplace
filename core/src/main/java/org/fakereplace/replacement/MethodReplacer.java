@@ -322,6 +322,65 @@ public class MethodReplacer
       ca.computeMaxStack();
       nInfo.setCodeAttribute(ca);
 
+      // now we have the static method that actually does the we-writes.
+      // if this is a virtual method then we need to add another virtual method with the exact signature of the existing
+      // method.
+      // this is so that we do not need to instrument the reflection API to much
+      if (!staticMethod)
+      {
+         // as this method is never called the bytecode just returns
+         Bytecode b = new Bytecode(proxy.getConstPool());
+         String ret = DescriptorUtils.getReturnType(mInfo.getDescriptor());
+         if (ret.length() == 1)
+         {
+            if (ret.equals("V"))
+            {
+               b.add(Opcode.RETURN);
+            }
+            else if (ret.equals("D"))
+            {
+               b.add(Opcode.DLOAD_0);
+               b.add(Opcode.DRETURN);
+            }
+            else if (ret.equals("F"))
+            {
+               b.add(Opcode.FLOAD_0);
+               b.add(Opcode.FRETURN);
+            }
+            else if (ret.equals("J"))
+            {
+               b.add(Opcode.LLOAD_0);
+               b.add(Opcode.LRETURN);
+            }
+            else
+            {
+               b.add(Opcode.ILOAD_0);
+               b.add(Opcode.IRETURN);
+            }
+
+         }
+         else
+         {
+            b.add(Opcode.ACONST_NULL);
+            b.add(Opcode.ARETURN);
+         }
+
+         MethodInfo method = new MethodInfo(proxy.getConstPool(), mInfo.getName(), mInfo.getDescriptor());
+         method.setAccessFlags(mInfo.getAccessFlags());
+         method.setCodeAttribute(b.toCodeAttribute());
+         method.getCodeAttribute().computeMaxStack();
+         method.getCodeAttribute().setMaxLocals(types.length + 1);
+         try
+         {
+            proxy.addMethod(method);
+         }
+         catch (DuplicateMemberException e)
+         {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+         }
+      }
+
       try
       {
          proxy.addMethod(nInfo);

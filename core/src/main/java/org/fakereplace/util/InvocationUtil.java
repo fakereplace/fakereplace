@@ -1,7 +1,6 @@
 package org.fakereplace.util;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 
 import org.fakereplace.boot.Constants;
 
@@ -15,7 +14,23 @@ public class InvocationUtil
 {
    static public Object[] prepare(Object object, Object[] array)
    {
-      Object[] ret = new Object[array.length + 1];
+      int length = 0;
+      if (array != null)
+      {
+         length = array.length;
+      }
+      Object[] ret = new Object[length + 1];
+      ret[0] = object;
+      for (int i = 0; i < length; ++i)
+      {
+         ret[i + 1] = array[i];
+      }
+      return ret;
+   }
+
+   static public Class<?>[] getArguments(Class<?> object, Class<?>[] array)
+   {
+      Class<?>[] ret = new Class[array.length + 1];
       ret[0] = object;
       for (int i = 0; i < array.length; ++i)
       {
@@ -28,12 +43,9 @@ public class InvocationUtil
    {
       if (argment != null)
       {
-         if ((method.getModifiers() & Modifier.STATIC) != 0)
+         if (method.getDeclaringClass().getName().startsWith(Constants.GENERATED_CLASS_PACKAGE))
          {
-            if (method.getDeclaringClass().getName().startsWith(Constants.GENERATED_CLASS_PACKAGE))
-            {
-               return true;
-            }
+            return true;
          }
       }
       return false;

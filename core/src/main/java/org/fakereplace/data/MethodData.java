@@ -83,6 +83,14 @@ public class MethodData
 
    public Method getMethod(Class<?> actualClass) throws ClassNotFoundException, SecurityException, NoSuchMethodException
    {
+      Class<?>[] methodDesc = DescriptorUtils.argumentStringToClassArray(descriptor, actualClass);
+      Method method = actualClass.getDeclaredMethod(methodName, methodDesc);
+      return method;
+
+   }
+
+   public Method getMethodToInvoke(Class<?> actualClass) throws ClassNotFoundException, SecurityException, NoSuchMethodException
+   {
       Class<?>[] methodDesc;
       if (type == MemberType.FAKE && !isStatic())
       {
