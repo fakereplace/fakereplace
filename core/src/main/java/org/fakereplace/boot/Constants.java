@@ -16,6 +16,8 @@ public class Constants
 
    public static final String ADDED_STATIC_METHOD_DESCRIPTOR = "(I[Ljava/lang/Object;)Ljava/lang/Object;";
 
+   public static final String ADDED_CONSTRUCTOR_DESCRIPTOR = "(I[Ljava/lang/Object;Lorg/fakereplace/util/ConstructorArgument;)V";
+
    public static final String ADDED_METHOD_CALLING_METHOD = "________METHOD_CALL__";
 
    public static final String ADDED_METHOD_CALLING_METHOD_DESCRIPTOR = "(Ljava/lang/reflect/Method;Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;";

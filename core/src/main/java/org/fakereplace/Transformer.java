@@ -29,6 +29,7 @@ import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.data.MemberType;
 import org.fakereplace.data.MethodData;
 import org.fakereplace.manip.Manipulator;
+import org.fakereplace.util.DescriptorUtils;
 import org.fakereplace.util.InvocationUtil;
 import org.fakereplace.util.NoInstrument;
 
@@ -184,6 +185,7 @@ public class Transformer implements ClassFileTransformer
          {
             addMethodForInstrumentation(file);
             addFieldForInstrumentation(file);
+            addConstructorForInstrumentation(file);
          }
          ByteArrayOutputStream bs = new ByteArrayOutputStream();
          file.write(new DataOutputStream(bs));
@@ -265,6 +267,78 @@ public class Transformer implements ClassFileTransformer
       {
          // e.printStackTrace();
       }
+   }
+
+   void addConstructorForInstrumentation(ClassFile file)
+   {
+      MethodInfo constructorToCall = null;
+      for (Object meth : file.getMethods())
+      {
+         MethodInfo m = (MethodInfo) meth;
+         if (m.getName().equals("<init>"))
+         {
+            constructorToCall = m;
+            break;
+         }
+      }
+      if (constructorToCall == null)
+      {
+         // this should not happed
+         return;
+      }
+
+      MethodInfo ret = new MethodInfo(file.getConstPool(), "<init>", Constants.ADDED_CONSTRUCTOR_DESCRIPTOR);
+      Bytecode code = new Bytecode(file.getConstPool());
+      // push this onto the stack
+      code.add(Bytecode.ALOAD_0);
+
+      String[] params = DescriptorUtils.descriptorStringToParameterArray(constructorToCall.getDescriptor());
+      for (String p : params)
+      {
+         // int char short boolean byte
+         if (p.equals("I") || p.equals("C") || p.equals("S") || p.equals("Z") || p.equals("B"))
+         {
+            // push integer 0
+            code.add(Opcode.ICONST_0);
+         }
+         // long
+         else if (p.equals("J"))
+         {
+            code.add(Opcode.LCONST_0);
+         }
+         // double
+         else if (p.equals("D"))
+         {
+            code.add(Opcode.DCONST_0);
+         }
+         // float
+         else if (p.equals("F"))
+         {
+            code.add(Opcode.FCONST_0);
+         }
+         // arrays and reference types
+         else
+         {
+            code.add(Opcode.ACONST_NULL);
+         }
+      }
+      // all our args should be pushed onto the stack, call the constructor
+      code.addInvokespecial(file.getName(), "<init>", constructorToCall.getDescriptor());
+      code.add(Opcode.RETURN);
+      CodeAttribute ca = code.toCodeAttribute();
+      ca.setMaxLocals(4);
+      ret.setCodeAttribute(ca);
+      ret.setAccessFlags(AccessFlag.PUBLIC);
+      try
+      {
+         ca.computeMaxStack();
+         file.addMethod(ret);
+      }
+      catch (Exception e)
+      {
+         throw new RuntimeException(e);
+      }
+
    }
 
    /**
