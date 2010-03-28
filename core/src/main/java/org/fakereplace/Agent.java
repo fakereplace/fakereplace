@@ -46,7 +46,7 @@ public class Agent
       {
          inst.redefineClasses(modifiedClasses);
       }
-      catch (Exception e)
+      catch (Throwable e)
       {
          // dump the classes to /tmp so we can look at them
          for (ClassDefinition d : modifiedClasses)

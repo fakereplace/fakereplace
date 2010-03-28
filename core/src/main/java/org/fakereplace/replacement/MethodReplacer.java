@@ -447,7 +447,7 @@ public class MethodReplacer
 
       try
       {
-         generateBoxedConditionalCodeBlock(methodCount, mInfo, file.getConstPool(), bytecode, staticMethod);
+         generateBoxedConditionalCodeBlock(methodCount, mInfo, file.getConstPool(), bytecode, staticMethod, false);
          String proxyName = generateProxyInvocationBytecode(mInfo, file.getConstPool(), methodCount, file.getName(), loader, staticMethod);
          ClassDataStore.registerProxyName(oldClass, proxyName);
          String newMethodDesc = mInfo.getDescriptor();
@@ -481,7 +481,7 @@ public class MethodReplacer
     * @param addedMethod
     * @throws BadBytecode
     */
-   private static void generateBoxedConditionalCodeBlock(int methodNumber, MethodInfo mInfo, ConstPool methodConstPool, CodeAttribute addedMethod, boolean staticMethod) throws BadBytecode
+   private static void generateBoxedConditionalCodeBlock(int methodNumber, MethodInfo mInfo, ConstPool methodConstPool, CodeAttribute addedMethod, boolean staticMethod, boolean constructor) throws BadBytecode
    {
       // we need to insert a conditional
       Bytecode bc = new Bytecode(mInfo.getConstPool());
@@ -518,27 +518,46 @@ public class MethodReplacer
       addedMethod.iterator().insert(mInfo.getCodeAttribute().getCode());
       // now we need to make sure the function is returning an object
       // rewriteFakeMethod makes sure that the return type is properly boxed
-      MethodReturnRewriter.rewriteFakeMethod(addedMethod.iterator(), mInfo.getDescriptor());
+      if (!constructor)
+      {
+         MethodReturnRewriter.rewriteFakeMethod(addedMethod.iterator(), mInfo.getDescriptor());
+      }
    }
 
    private static MethodData createRemovedMethod(ClassFile file, MethodData md, Class<?> oldClass)
    {
       // load up the existing method object
-      Method meth;
-      try
-      {
-         meth = md.getMethod(oldClass);
-      }
-      catch (Exception e)
-      {
-         throw new RuntimeException("Error accessing existing method via reflection in not found", e);
-      }
+
       MethodInfo m = new MethodInfo(file.getConstPool(), md.getMethodName(), md.getDescriptor());
       m.setAccessFlags(md.getAccessFlags());
 
       // put the old annotations on the class
-      m.addAttribute(AnnotationReplacer.duplicateAnnotationsAttribute(file.getConstPool(), meth));
-
+      if (md.getMethodName().equals("<init>"))
+      {
+         Constructor<?> meth;
+         try
+         {
+            meth = md.getConstructor(oldClass);
+         }
+         catch (Exception e)
+         {
+            throw new RuntimeException("Error accessing existing constructor via reflection in not found", e);
+         }
+         m.addAttribute(AnnotationReplacer.duplicateAnnotationsAttribute(file.getConstPool(), meth));
+      }
+      else
+      {
+         Method meth;
+         try
+         {
+            meth = md.getMethod(oldClass);
+         }
+         catch (Exception e)
+         {
+            throw new RuntimeException("Error accessing existing method via reflection in not found", e);
+         }
+         m.addAttribute(AnnotationReplacer.duplicateAnnotationsAttribute(file.getConstPool(), meth));
+      }
       Bytecode b = new Bytecode(file.getConstPool(), 5, 3);
       b.addNew("java.lang.NoSuchMethodError");
       b.add(Opcode.DUP);
@@ -570,13 +589,13 @@ public class MethodReplacer
       try
       {
 
-         generateBoxedConditionalCodeBlock(methodCount, mInfo, file.getConstPool(), bytecode, false);
+         generateBoxedConditionalCodeBlock(methodCount, mInfo, file.getConstPool(), bytecode, false, true);
 
          String proxyName = generateFakeConstructorBytecode(mInfo, file.getConstPool(), methodCount, file.getName(), loader);
          ClassDataStore.registerProxyName(oldClass, proxyName);
 
          MethodData md = new MethodData(mInfo.getName(), mInfo.getDescriptor(), proxyName, MemberType.FAKE_CONSTRUCTOR, mInfo.getAccessFlags());
-
+         Transformer.getManipulator().rewriteConstructorAccess(file.getName(), mInfo.getDescriptor(), methodCount);
          data.addMethod(md);
          ClassDataStore.registerReplacedMethod(proxyName, md);
       }
@@ -616,6 +635,7 @@ public class MethodReplacer
       String[] types = DescriptorUtils.descriptorStringToParameterArray(mInfo.getDescriptor());
       // as this method is never called the bytecode just returns
       Bytecode b = new Bytecode(proxy.getConstPool());
+      b.add(Opcode.ALOAD_0);
       b.addInvokespecial("java.lang.Object", "<init>", "()V");
       b.add(Opcode.RETURN);
       MethodInfo method = new MethodInfo(proxy.getConstPool(), mInfo.getName(), mInfo.getDescriptor());
