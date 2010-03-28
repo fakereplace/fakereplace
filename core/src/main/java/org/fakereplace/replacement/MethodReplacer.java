@@ -106,6 +106,7 @@ public class MethodReplacer
                      AnnotationDataStore.recordConstructorAnnotations(meth, (AnnotationsAttribute) m.getAttribute(AnnotationsAttribute.visibleTag));
                      // now revert the annotations:
                      m.addAttribute(AnnotationReplacer.duplicateAnnotationsAttribute(file.getConstPool(), meth));
+                     m.addAttribute(AnnotationReplacer.duplicateParameterAnnotationsAttribute(file.getConstPool(), meth));
                   }
                   catch (Exception e)
                   {
@@ -124,6 +125,7 @@ public class MethodReplacer
                      AnnotationDataStore.recordMethodParameterAnnotations(meth, (ParameterAnnotationsAttribute) m.getAttribute(ParameterAnnotationsAttribute.visibleTag));
                      // now revert the annotations:
                      m.addAttribute(AnnotationReplacer.duplicateAnnotationsAttribute(file.getConstPool(), meth));
+                     m.addAttribute(AnnotationReplacer.duplicateParameterAnnotationsAttribute(file.getConstPool(), meth));
                   }
                   catch (Exception e)
                   {
@@ -389,7 +391,7 @@ public class MethodReplacer
          if (pannotations != null)
          {
             AttributeInfo newAnnotations = pannotations.copy(proxy.getConstPool(), Collections.EMPTY_MAP);
-            nInfo.addAttribute(newAnnotations);
+            method.addAttribute(newAnnotations);
          }
 
          try

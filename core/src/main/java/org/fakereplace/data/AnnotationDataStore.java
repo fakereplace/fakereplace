@@ -14,7 +14,6 @@ import java.util.Map;
 import javassist.bytecode.AccessFlag;
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.AttributeInfo;
-import javassist.bytecode.BadBytecode;
 import javassist.bytecode.Bytecode;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.MethodInfo;
@@ -169,6 +168,7 @@ public class AnnotationDataStore
 
       try
       {
+         proxy.addMethod(method);
          method.getCodeAttribute().computeMaxStack();
          ByteArrayOutputStream bytes = new ByteArrayOutputStream();
          DataOutputStream dos = new DataOutputStream(bytes);
@@ -183,11 +183,7 @@ public class AnnotationDataStore
          GlobalClassDefinitionData.saveProxyDefinition(loader, proxyName, bytes.toByteArray());
          return loader.loadClass(proxyName);
       }
-      catch (ClassNotFoundException e)
-      {
-         throw new RuntimeException(e);
-      }
-      catch (BadBytecode e)
+      catch (Exception e)
       {
          throw new RuntimeException(e);
       }
@@ -264,7 +260,7 @@ public class AnnotationDataStore
       // no annotations
       if (annotations == null)
       {
-         Annotation[][] ans = new Annotation[0][0];
+         Annotation[][] ans = new Annotation[method.getParameterAnnotations().length][0];
          parameterAnnotations.put(method, ans);
          return;
       }
