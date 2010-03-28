@@ -76,11 +76,13 @@ public class MethodReplacer
          m = new MethodInfo(file.getConstPool(), "<init>", Constants.ADDED_CONSTRUCTOR_DESCRIPTOR);
          m.setAccessFlags(AccessFlag.PUBLIC);
          b = new Bytecode(file.getConstPool(), 5, 5);
-         FakeConstructorUtils.addBogusConstructorCall(file, b);
-         constructorCodeAttribute = b.toCodeAttribute();
-         m.setCodeAttribute(constructorCodeAttribute);
-         constructorCodeAttribute.setMaxLocals(6);
-         file.addMethod(m);
+         if (FakeConstructorUtils.addBogusConstructorCall(file, b))
+         {
+            constructorCodeAttribute = b.toCodeAttribute();
+            m.setCodeAttribute(constructorCodeAttribute);
+            constructorCodeAttribute.setMaxLocals(6);
+            file.addMethod(m);
+         }
 
       }
       catch (DuplicateMemberException e)
@@ -213,7 +215,10 @@ public class MethodReplacer
 
          staticCodeAttribute.computeMaxStack();
          virtualCodeAttribute.computeMaxStack();
-         constructorCodeAttribute.computeMaxStack();
+         if (constructorCodeAttribute != null)
+         {
+            constructorCodeAttribute.computeMaxStack();
+         }
       }
       catch (BadBytecode e)
       {

@@ -280,7 +280,11 @@ public class Transformer implements ClassFileTransformer
 
       MethodInfo ret = new MethodInfo(file.getConstPool(), "<init>", Constants.ADDED_CONSTRUCTOR_DESCRIPTOR);
       Bytecode code = new Bytecode(file.getConstPool());
-      FakeConstructorUtils.addBogusConstructorCall(file, code);
+      // if the class does not have a constructor return
+      if (!FakeConstructorUtils.addBogusConstructorCall(file, code))
+      {
+         return;
+      }
       CodeAttribute ca = code.toCodeAttribute();
       ca.setMaxLocals(4);
       ret.setCodeAttribute(ca);

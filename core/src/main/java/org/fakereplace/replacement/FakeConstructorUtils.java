@@ -18,7 +18,7 @@ public class FakeConstructorUtils
     * add a bogus constructor call to a bytecode sequence so a constructor can pass bytecode validation
     * @param bytecode
     */
-   public static void addBogusConstructorCall(ClassFile file, Bytecode code)
+   public static boolean addBogusConstructorCall(ClassFile file, Bytecode code)
    {
       MethodInfo constructorToCall = null;
       for (Object meth : file.getMethods())
@@ -32,8 +32,7 @@ public class FakeConstructorUtils
       }
       if (constructorToCall == null)
       {
-         // this should not happed
-         return;
+         return false;
       }
       // push this onto the stack
       code.add(Bytecode.ALOAD_0);
@@ -71,6 +70,7 @@ public class FakeConstructorUtils
       // all our args should be pushed onto the stack, call the constructor
       code.addInvokespecial(file.getName(), "<init>", constructorToCall.getDescriptor());
       code.add(Opcode.RETURN);
+      return true;
    }
 
 }
