@@ -28,6 +28,7 @@ public class FieldAccess
             {
                f.setAccessible(true);
                f.set(object, val);
+               return;
             }
             finally
             {
@@ -50,6 +51,7 @@ public class FieldAccess
             {
                f.setAccessible(true);
                f.setBoolean(object, val);
+               return;
             }
             finally
             {
@@ -72,6 +74,7 @@ public class FieldAccess
             {
                f.setAccessible(true);
                f.setByte(object, val);
+               return;
             }
             finally
             {
@@ -94,6 +97,7 @@ public class FieldAccess
             {
                f.setAccessible(true);
                f.setChar(object, val);
+               return;
             }
             finally
             {
@@ -116,6 +120,7 @@ public class FieldAccess
             {
                f.setAccessible(true);
                f.setDouble(object, val);
+               return;
             }
             finally
             {
@@ -138,6 +143,7 @@ public class FieldAccess
             {
                f.setAccessible(true);
                f.setFloat(object, val);
+               return;
             }
             finally
             {
@@ -160,6 +166,7 @@ public class FieldAccess
             {
                f.setAccessible(true);
                f.setInt(object, val);
+               return;
             }
             finally
             {
@@ -182,6 +189,7 @@ public class FieldAccess
             {
                f.setAccessible(true);
                f.setLong(object, val);
+               return;
             }
             finally
             {
@@ -204,6 +212,7 @@ public class FieldAccess
             {
                f.setAccessible(true);
                f.setShort(object, val);
+               return;
             }
             finally
             {
