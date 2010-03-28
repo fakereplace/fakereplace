@@ -1,5 +1,7 @@
 package org.fakereplace.seam;
 
+import java.beans.BeanInfo;
+import java.beans.Introspector;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -12,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -33,6 +36,8 @@ import org.jboss.seam.annotations.Startup;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.annotations.web.Filter;
 import org.jboss.seam.web.AbstractFilter;
+
+import sun.awt.AppContext;
 
 @Startup
 @Scope(ScopeType.APPLICATION)
@@ -139,6 +144,20 @@ public class ClassRedefinitionFilter extends AbstractFilter
 
             replaceMethod.invoke(null, (Object) data);
             changed = true;
+            Field field = Introspector.class.getDeclaredField("declaredMethodCache");
+            field.setAccessible(true);
+            Map map = (Map) field.get(null);
+            map.clear();
+
+            field = Introspector.class.getDeclaredField("BEANINFO_CACHE");
+            field.setAccessible(true);
+            Object beaninfoCache = field.get(null);
+
+            map = (Map<Class<?>, BeanInfo>) AppContext.getAppContext().get(beaninfoCache);
+            if (map != null)
+            {
+               map.clear();
+            }
 
          }
 
@@ -206,7 +225,6 @@ public class ClassRedefinitionFilter extends AbstractFilter
                      Object cache = cacheField.get(r);
                      Method m = cache.getClass().getMethod("clear");
                      m.invoke(cache);
-
                   }
                }
 

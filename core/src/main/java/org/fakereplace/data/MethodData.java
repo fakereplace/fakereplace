@@ -83,9 +83,25 @@ public class MethodData
 
    public Method getMethod(Class<?> actualClass) throws ClassNotFoundException, SecurityException, NoSuchMethodException
    {
-      Class<?>[] methodDesc = DescriptorUtils.argumentStringToClassArray(descriptor, actualClass);
+      Class<?>[] methodDesc;
+      if (type == MemberType.FAKE && !isStatic())
+      {
+         methodDesc = DescriptorUtils.argumentStringToClassArray(descriptor, actualClass);
+         Class<?>[] ret = new Class<?>[methodDesc.length + 1];
+         ret[0] = ClassDataStore.getRealClassFromProxyName(actualClass.getName());
+         for (int i = 0; i < methodDesc.length; ++i)
+         {
+            ret[i + 1] = methodDesc[i];
+         }
+         methodDesc = ret;
+      }
+      else
+      {
+         methodDesc = DescriptorUtils.argumentStringToClassArray(descriptor, actualClass);
+      }
       Method method = actualClass.getDeclaredMethod(methodName, methodDesc);
       return method;
+
    }
 
    /**

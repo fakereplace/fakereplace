@@ -3,6 +3,7 @@ package org.fakereplace.reflection;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -261,6 +262,19 @@ public class ReflectionDelegate
       throw new NoSuchMethodException();
    }
 
+   public static int getModifiers(Method method)
+   {
+      int modifiers = method.getModifiers();
+      if (Modifier.isStatic(modifiers))
+      {
+         if (method.getDeclaringClass().getName().startsWith(Constants.GENERATED_CLASS_PACKAGE))
+         {
+            return ClassDataStore.getMethodInformation(method.getDeclaringClass().getName()).getAccessFlags();
+         }
+      }
+      return modifiers;
+   }
+
    public static Class<?> getDeclaringClass(Method m)
    {
       Class<?> c = m.getDeclaringClass();
@@ -303,7 +317,8 @@ public class ReflectionDelegate
          {
             if (i.getMemberType() == MemberType.FAKE)
             {
-               visible.add(i.getField(clazz));
+               Class<?> c = clazz.getClassLoader().loadClass(i.getClassName());
+               visible.add(i.getField(c));
             }
          }
 
@@ -347,7 +362,8 @@ public class ReflectionDelegate
             {
                if (i.getMemberType() == MemberType.FAKE && AccessFlag.isPublic(i.getAccessFlags()))
                {
-                  visible.add(i.getField(clazz));
+                  Class<?> c = clazz.getClassLoader().loadClass(i.getClassName());
+                  visible.add(i.getField(c));
                }
             }
             cta = cta.getSuperClassInformation();

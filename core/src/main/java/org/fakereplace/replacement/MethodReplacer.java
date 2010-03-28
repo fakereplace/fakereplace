@@ -369,6 +369,7 @@ public class MethodReplacer
          MethodData md = new MethodData(mInfo.getName(), mInfo.getDescriptor(), proxyName, MemberType.FAKE, mInfo.getAccessFlags());
 
          data.addMethod(md);
+         ClassDataStore.registerReplacedMethod(proxyName, md);
       }
       catch (Exception e)
       {

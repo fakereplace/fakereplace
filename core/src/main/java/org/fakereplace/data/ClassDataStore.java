@@ -11,7 +11,8 @@ public class ClassDataStore
 
    static Map<String, Class<?>> proxyNameToReplacedClass = new ConcurrentHashMap<String, Class<?>>();
    static Map<String, FieldAccessor> proxyNameToFieldAccessor = new ConcurrentHashMap<String, FieldAccessor>();
-   public static Map<ClassLoader, Map<String, ClassData>> classData = new ConcurrentHashMap<ClassLoader, Map<String, ClassData>>();
+   static Map<ClassLoader, Map<String, ClassData>> classData = new ConcurrentHashMap<ClassLoader, Map<String, ClassData>>();
+   static Map<String, MethodData> proxyNameToMethodData = new ConcurrentHashMap<String, MethodData>();
 
    /**
     * takes the place of the null key on ConcurrentHashMap
@@ -63,6 +64,16 @@ public class ClassDataStore
    public static void registerFieldAccessor(String proxyName, FieldAccessor accessor)
    {
       proxyNameToFieldAccessor.put(proxyName, accessor);
+   }
+
+   public static void registerReplacedMethod(String proxyName, MethodData methodData)
+   {
+      proxyNameToMethodData.put(proxyName, methodData);
+   }
+
+   public static MethodData getMethodInformation(String proxyName)
+   {
+      return proxyNameToMethodData.get(proxyName);
    }
 
    public static FieldAccessor getFieldAccessor(String proxyName)
