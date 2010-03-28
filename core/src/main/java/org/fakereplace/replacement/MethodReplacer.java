@@ -21,9 +21,14 @@ import javassist.bytecode.CodeIterator;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.Descriptor;
 import javassist.bytecode.DuplicateMemberException;
+import javassist.bytecode.ExceptionsAttribute;
+import javassist.bytecode.LineNumberAttribute;
+import javassist.bytecode.LocalVariableAttribute;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.Opcode;
 import javassist.bytecode.ParameterAnnotationsAttribute;
+import javassist.bytecode.SignatureAttribute;
+import javassist.bytecode.SourceFileAttribute;
 
 import org.fakereplace.Transformer;
 import org.fakereplace.boot.Constants;
@@ -242,22 +247,7 @@ public class MethodReplacer
          String nDesc = "(" + DescriptorUtils.extToInt(className) + mInfo.getDescriptor().substring(1);
          nInfo = new MethodInfo(proxy.getConstPool(), mInfo.getName(), nDesc);
       }
-
-      // add our new annotations directly onto the new proxy method. This way
-      // they will just work without registering them with the
-      // AnnotationDataStore
-      AnnotationsAttribute annotations = (AnnotationsAttribute) mInfo.getAttribute(AnnotationsAttribute.visibleTag);
-      if (annotations != null)
-      {
-         AttributeInfo newAnnotations = annotations.copy(proxy.getConstPool(), Collections.EMPTY_MAP);
-         nInfo.addAttribute(newAnnotations);
-      }
-      ParameterAnnotationsAttribute pannotations = (ParameterAnnotationsAttribute) mInfo.getAttribute(ParameterAnnotationsAttribute.visibleTag);
-      if (pannotations != null)
-      {
-         AttributeInfo newAnnotations = pannotations.copy(proxy.getConstPool(), Collections.EMPTY_MAP);
-         nInfo.addAttribute(newAnnotations);
-      }
+      copyMethodAttributes(mInfo, nInfo);
 
       // set the sync bit on the proxy if it was set on the method
 
@@ -390,17 +380,7 @@ public class MethodReplacer
          method.getCodeAttribute().computeMaxStack();
          method.getCodeAttribute().setMaxLocals(types.length + 1);
 
-         if (annotations != null)
-         {
-            AttributeInfo newAnnotations = annotations.copy(proxy.getConstPool(), Collections.EMPTY_MAP);
-            method.addAttribute(newAnnotations);
-         }
-         if (pannotations != null)
-         {
-            AttributeInfo newAnnotations = pannotations.copy(proxy.getConstPool(), Collections.EMPTY_MAP);
-            method.addAttribute(newAnnotations);
-         }
-
+         copyMethodAttributes(mInfo, method);
          try
          {
             proxy.addMethod(method);
@@ -588,12 +568,9 @@ public class MethodReplacer
 
       try
       {
-
          generateBoxedConditionalCodeBlock(methodCount, mInfo, file.getConstPool(), bytecode, false, true);
-
          String proxyName = generateFakeConstructorBytecode(mInfo, file.getConstPool(), methodCount, file.getName(), loader);
          ClassDataStore.registerProxyName(oldClass, proxyName);
-
          MethodData md = new MethodData(mInfo.getName(), mInfo.getDescriptor(), proxyName, MemberType.FAKE_CONSTRUCTOR, mInfo.getAccessFlags());
          Transformer.getManipulator().rewriteConstructorAccess(file.getName(), mInfo.getDescriptor(), methodCount);
          data.addMethod(md);
@@ -629,8 +606,6 @@ public class MethodReplacer
       // add our new annotations directly onto the new proxy method. This way
       // they will just work without registering them with the
       // AnnotationDataStore
-      AnnotationsAttribute annotations = (AnnotationsAttribute) mInfo.getAttribute(AnnotationsAttribute.visibleTag);
-      ParameterAnnotationsAttribute pannotations = (ParameterAnnotationsAttribute) mInfo.getAttribute(ParameterAnnotationsAttribute.visibleTag);
 
       String[] types = DescriptorUtils.descriptorStringToParameterArray(mInfo.getDescriptor());
       // as this method is never called the bytecode just returns
@@ -644,16 +619,7 @@ public class MethodReplacer
       method.getCodeAttribute().computeMaxStack();
       method.getCodeAttribute().setMaxLocals(types.length + 1);
 
-      if (annotations != null)
-      {
-         AttributeInfo newAnnotations = annotations.copy(proxy.getConstPool(), Collections.EMPTY_MAP);
-         method.addAttribute(newAnnotations);
-      }
-      if (pannotations != null)
-      {
-         AttributeInfo newAnnotations = pannotations.copy(proxy.getConstPool(), Collections.EMPTY_MAP);
-         method.addAttribute(newAnnotations);
-      }
+      copyMethodAttributes(mInfo, method);
 
       try
       {
@@ -678,6 +644,53 @@ public class MethodReplacer
          throw new RuntimeException(e);
       }
 
+   }
+
+   public static void copyMethodAttributes(MethodInfo oldMethod, MethodInfo newMethod)
+   {
+      AnnotationsAttribute annotations = (AnnotationsAttribute) oldMethod.getAttribute(AnnotationsAttribute.visibleTag);
+      ParameterAnnotationsAttribute pannotations = (ParameterAnnotationsAttribute) oldMethod.getAttribute(ParameterAnnotationsAttribute.visibleTag);
+      ExceptionsAttribute exAt = (ExceptionsAttribute) oldMethod.getAttribute(ExceptionsAttribute.tag);
+      SignatureAttribute sigAt = (SignatureAttribute) oldMethod.getAttribute(SignatureAttribute.tag);
+      SourceFileAttribute sourceAt = (SourceFileAttribute) oldMethod.getAttribute(SourceFileAttribute.tag);
+      LineNumberAttribute lineAt = (LineNumberAttribute) oldMethod.getAttribute(LineNumberAttribute.tag);
+      LocalVariableAttribute localAt = (LocalVariableAttribute) oldMethod.getAttribute(LocalVariableAttribute.tag);
+
+      if (annotations != null)
+      {
+         AttributeInfo newAnnotations = annotations.copy(newMethod.getConstPool(), Collections.EMPTY_MAP);
+         newMethod.addAttribute(newAnnotations);
+      }
+      if (pannotations != null)
+      {
+         AttributeInfo newAnnotations = pannotations.copy(newMethod.getConstPool(), Collections.EMPTY_MAP);
+         newMethod.addAttribute(newAnnotations);
+      }
+      if (sigAt != null)
+      {
+         AttributeInfo newAnnotations = sigAt.copy(newMethod.getConstPool(), Collections.EMPTY_MAP);
+         newMethod.addAttribute(newAnnotations);
+      }
+      if (exAt != null)
+      {
+         AttributeInfo newAnnotations = exAt.copy(newMethod.getConstPool(), Collections.EMPTY_MAP);
+         newMethod.addAttribute(newAnnotations);
+      }
+      if (sourceAt != null)
+      {
+         AttributeInfo newAnnotations = sourceAt.copy(newMethod.getConstPool(), Collections.EMPTY_MAP);
+         newMethod.addAttribute(newAnnotations);
+      }
+      if (lineAt != null)
+      {
+         AttributeInfo newAnnotations = lineAt.copy(newMethod.getConstPool(), Collections.EMPTY_MAP);
+         newMethod.addAttribute(newAnnotations);
+      }
+      if (localAt != null)
+      {
+         AttributeInfo newAnnotations = localAt.copy(newMethod.getConstPool(), Collections.EMPTY_MAP);
+         newMethod.addAttribute(newAnnotations);
+      }
    }
 
 }
