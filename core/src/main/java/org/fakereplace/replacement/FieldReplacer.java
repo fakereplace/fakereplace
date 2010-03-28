@@ -23,6 +23,7 @@ import javassist.bytecode.DuplicateMemberException;
 import javassist.bytecode.FieldInfo;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.Opcode;
+import javassist.bytecode.SignatureAttribute;
 
 import org.fakereplace.Transformer;
 import org.fakereplace.boot.Constants;
@@ -273,12 +274,7 @@ public class FieldReplacer
       FieldInfo newField = new FieldInfo(proxy.getConstPool(), m.getName(), m.getDescriptor());
       newField.setAccessFlags(AccessFlag.PUBLIC | AccessFlag.STATIC);
 
-      AnnotationsAttribute annotations = (AnnotationsAttribute) m.getAttribute(AnnotationsAttribute.visibleTag);
-      if (annotations != null)
-      {
-         AttributeInfo newAnnotations = annotations.copy(proxy.getConstPool(), Collections.EMPTY_MAP);
-         newField.addAttribute(newAnnotations);
-      }
+      copyFieldAttributes(m, newField);
 
       try
       {
@@ -324,12 +320,7 @@ public class FieldReplacer
       FieldInfo newField = new FieldInfo(proxy.getConstPool(), m.getName(), m.getDescriptor());
       newField.setAccessFlags(m.getAccessFlags());
 
-      AnnotationsAttribute annotations = (AnnotationsAttribute) m.getAttribute(AnnotationsAttribute.visibleTag);
-      if (annotations != null)
-      {
-         AttributeInfo newAnnotations = annotations.copy(proxy.getConstPool(), Collections.EMPTY_MAP);
-         newField.addAttribute(newAnnotations);
-      }
+      copyFieldAttributes(m, newField);
 
       try
       {
@@ -351,6 +342,24 @@ public class FieldReplacer
       {
          // can't happen
       }
+   }
+
+   public static void copyFieldAttributes(FieldInfo oldField, FieldInfo newField)
+   {
+      AnnotationsAttribute annotations = (AnnotationsAttribute) oldField.getAttribute(AnnotationsAttribute.visibleTag);
+      SignatureAttribute sigAt = (SignatureAttribute) oldField.getAttribute(SignatureAttribute.tag);
+
+      if (annotations != null)
+      {
+         AttributeInfo newAnnotations = annotations.copy(newField.getConstPool(), Collections.EMPTY_MAP);
+         newField.addAttribute(newAnnotations);
+      }
+      if (sigAt != null)
+      {
+         AttributeInfo newAnnotations = sigAt.copy(newField.getConstPool(), Collections.EMPTY_MAP);
+         newField.addAttribute(newAnnotations);
+      }
+
    }
 
 }

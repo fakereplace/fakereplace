@@ -1,7 +1,9 @@
 package org.fakereplace.test.replacement.staticfield;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 
 import org.fakereplace.test.util.ClassReplacer;
 import org.testng.annotations.BeforeClass;
@@ -27,5 +29,12 @@ public class StaticFieldReplacementTest
       v = (Long) m.invoke(null);
       assert v.equals(new Long(2)) : "expected 2, got " + v;
       ;
+   }
+
+   @Test
+   public void testStaticFieldGenericType() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException, NoSuchFieldException
+   {
+      Field f = StaticFieldClass.class.getField("list");
+      assert ((ParameterizedType) f.getGenericType()).getActualTypeArguments()[0].equals(String.class);
    }
 }
