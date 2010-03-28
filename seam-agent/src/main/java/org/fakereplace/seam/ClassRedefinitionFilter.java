@@ -29,12 +29,17 @@ import javax.servlet.ServletResponse;
 
 import org.jboss.seam.Component;
 import org.jboss.seam.ScopeType;
+import org.jboss.seam.Seam;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Startup;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.annotations.web.Filter;
+import org.jboss.seam.contexts.Contexts;
+import org.jboss.seam.contexts.Lifecycle;
+import org.jboss.seam.core.Init;
+import org.jboss.seam.init.Initialization;
 import org.jboss.seam.web.AbstractFilter;
 
 import sun.awt.AppContext;
@@ -119,14 +124,16 @@ public class ClassRedefinitionFilter extends AbstractFilter
    {
       try
       {
+         Lifecycle.beginCall();
          List<ClassDefinition> classesToReplace = new ArrayList<ClassDefinition>();
+
          for (FileData d : files)
          {
             if (d.file.lastModified() > d.lastModified)
             {
                System.out.println("File " + d.className + " has been modified, replacing");
 
-               Class ctr = Class.forName(d.className);
+               Class<?> ctr = Class.forName(d.className);
                byte[] fileData = readFile(d.file);
                ClassDefinition cd = new ClassDefinition(ctr, fileData);
                classesToReplace.add(cd);
@@ -136,14 +143,37 @@ public class ClassRedefinitionFilter extends AbstractFilter
          }
          if (!classesToReplace.isEmpty())
          {
+            Seam.clearComponentNameCache();
+
             ClassDefinition[] data = new ClassDefinition[classesToReplace.size()];
             for (int i = 0; i < classesToReplace.size(); ++i)
             {
-               data[i] = classesToReplace.get(i);
-            }
+               ClassDefinition d = classesToReplace.get(i);
+               data[i] = d;
 
+               // if the class is a seam component
+               if (d.getDefinitionClass().isAnnotationPresent(Name.class))
+               {
+                  String name = d.getDefinitionClass().getAnnotation(Name.class).value();
+                  Component component = Component.forName(name);
+                  if (component != null)
+                  {
+                     ScopeType scope = component.getScope();
+                     if (scope != ScopeType.STATELESS && scope.isContextActive())
+                     {
+                        scope.getContext().remove(name);
+                     }
+                     Init.instance().removeObserverMethods(component);
+                  }
+                  Contexts.getApplicationContext().remove(name + Initialization.COMPONENT_SUFFIX);
+               }
+
+            }
+            // do the replacement
             replaceMethod.invoke(null, (Object) data);
+
             changed = true;
+            // clear reflection caches
             Field field = Introspector.class.getDeclaredField("declaredMethodCache");
             field.setAccessible(true);
             Map map = (Map) field.get(null);
@@ -159,12 +189,30 @@ public class ClassRedefinitionFilter extends AbstractFilter
                map.clear();
             }
 
+            // redeploy the components
+
+            Initialization init = new Initialization(getServletContext());
+
+            Method redeploy = Initialization.class.getDeclaredMethod("installScannedComponentAndRoles", Class.class);
+            redeploy.setAccessible(true);
+            for (int i = 0; i < data.length; ++i)
+            {
+               redeploy.invoke(init, data[i].getDefinitionClass());
+            }
+            redeploy = Initialization.class.getDeclaredMethod("installComponents", Init.class);
+            redeploy.setAccessible(true);
+            redeploy.invoke(init, Init.instance());
+
          }
 
       }
       catch (Exception e)
       {
          e.printStackTrace();
+      }
+      finally
+      {
+         Lifecycle.endCall();
       }
    }
 

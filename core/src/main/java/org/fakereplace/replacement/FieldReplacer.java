@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
@@ -12,6 +13,7 @@ import java.util.Set;
 
 import javassist.bytecode.AccessFlag;
 import javassist.bytecode.AnnotationsAttribute;
+import javassist.bytecode.AttributeInfo;
 import javassist.bytecode.BadBytecode;
 import javassist.bytecode.Bytecode;
 import javassist.bytecode.ClassFile;
@@ -270,6 +272,14 @@ public class FieldReplacer
       proxy.setAccessFlags(AccessFlag.PUBLIC);
       FieldInfo newField = new FieldInfo(proxy.getConstPool(), m.getName(), m.getDescriptor());
       newField.setAccessFlags(AccessFlag.PUBLIC | AccessFlag.STATIC);
+
+      AnnotationsAttribute annotations = (AnnotationsAttribute) m.getAttribute(AnnotationsAttribute.visibleTag);
+      if (annotations != null)
+      {
+         AttributeInfo newAnnotations = annotations.copy(proxy.getConstPool(), Collections.EMPTY_MAP);
+         newField.addAttribute(newAnnotations);
+      }
+
       try
       {
          proxy.addField(newField);
@@ -313,6 +323,14 @@ public class FieldReplacer
       proxy.setAccessFlags(AccessFlag.PUBLIC);
       FieldInfo newField = new FieldInfo(proxy.getConstPool(), m.getName(), m.getDescriptor());
       newField.setAccessFlags(m.getAccessFlags());
+
+      AnnotationsAttribute annotations = (AnnotationsAttribute) m.getAttribute(AnnotationsAttribute.visibleTag);
+      if (annotations != null)
+      {
+         AttributeInfo newAnnotations = annotations.copy(proxy.getConstPool(), Collections.EMPTY_MAP);
+         newField.addAttribute(newAnnotations);
+      }
+
       try
       {
          proxy.addField(newField);

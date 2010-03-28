@@ -211,6 +211,7 @@ public class MethodReplacer
    {
       String proxyName = GlobalClassDefinitionData.getProxyName();
       ClassFile proxy = new ClassFile(false, proxyName, "java.lang.Object");
+      proxy.setVersionToJava5();
       proxy.setAccessFlags(AccessFlag.PUBLIC);
 
       // now generate our proxy that is used to actually call the method
@@ -236,7 +237,7 @@ public class MethodReplacer
       AnnotationsAttribute annotations = (AnnotationsAttribute) mInfo.getAttribute(AnnotationsAttribute.visibleTag);
       if (annotations != null)
       {
-         AttributeInfo newAnnotations = annotations.copy(constPool, Collections.EMPTY_MAP);
+         AttributeInfo newAnnotations = annotations.copy(proxy.getConstPool(), Collections.EMPTY_MAP);
          nInfo.addAttribute(newAnnotations);
       }
       // set the sync bit on the proxy if it was set on the method
@@ -370,6 +371,13 @@ public class MethodReplacer
          method.setCodeAttribute(b.toCodeAttribute());
          method.getCodeAttribute().computeMaxStack();
          method.getCodeAttribute().setMaxLocals(types.length + 1);
+
+         if (annotations != null)
+         {
+            AttributeInfo newAnnotations = annotations.copy(proxy.getConstPool(), Collections.EMPTY_MAP);
+            method.addAttribute(newAnnotations);
+         }
+
          try
          {
             proxy.addMethod(method);

@@ -46,7 +46,7 @@ public class Agent
       {
          inst.redefineClasses(modifiedClasses);
       }
-      catch (VerifyError e)
+      catch (Exception e)
       {
          // dump the classes to /tmp so we can look at them
          for (ClassDefinition d : modifiedClasses)
@@ -67,7 +67,7 @@ public class Agent
                a.printStackTrace();
             }
          }
-         throw (e);
+         throw (new RuntimeException(e));
       }
    }
 
