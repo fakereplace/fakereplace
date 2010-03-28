@@ -14,7 +14,12 @@ import java.util.Map;
 import javassist.bytecode.AccessFlag;
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.AttributeInfo;
+import javassist.bytecode.BadBytecode;
+import javassist.bytecode.Bytecode;
 import javassist.bytecode.ClassFile;
+import javassist.bytecode.MethodInfo;
+import javassist.bytecode.Opcode;
+import javassist.bytecode.ParameterAnnotationsAttribute;
 
 import org.fakereplace.boot.GlobalClassDefinitionData;
 
@@ -46,6 +51,8 @@ public class AnnotationDataStore
    static Map<Constructor<?>, Map<Class<? extends Annotation>, Annotation>> constructorAnnotationsByType = Collections.synchronizedMap(new HashMap<Constructor<?>, Map<Class<? extends Annotation>, Annotation>>());
 
    static Map<Constructor<?>, Annotation[][]> constructorParameterAnnotations = Collections.synchronizedMap(new HashMap<Constructor<?>, Annotation[][]>());
+
+   static final String PROXY_METHOD_NAME = "annotationsMethod";
 
    static public boolean isClassDataRecorded(Class<?> clazz)
    {
@@ -140,6 +147,52 @@ public class AnnotationDataStore
       }
    }
 
+   static Class<?> createParameterAnnotationsProxy(ClassLoader loader, ParameterAnnotationsAttribute annotations, int paramCount)
+   {
+      String proxyName = GlobalClassDefinitionData.getProxyName();
+      ClassFile proxy = new ClassFile(false, proxyName, "java.lang.Object");
+      proxy.setAccessFlags(AccessFlag.PUBLIC);
+      StringBuilder sb = new StringBuilder();
+      for (int i = 0; i < paramCount; ++i)
+      {
+         sb.append("I");
+      }
+
+      MethodInfo method = new MethodInfo(proxy.getConstPool(), PROXY_METHOD_NAME, "(" + sb.toString() + ")V");
+      Bytecode b = new Bytecode(proxy.getConstPool());
+      b.add(Opcode.RETURN);
+      method.setAccessFlags(AccessFlag.PUBLIC);
+      method.setCodeAttribute(b.toCodeAttribute());
+      method.getCodeAttribute().setMaxLocals(paramCount + 1);
+      AttributeInfo an = annotations.copy(proxy.getConstPool(), Collections.EMPTY_MAP);
+      method.addAttribute(an);
+
+      try
+      {
+         method.getCodeAttribute().computeMaxStack();
+         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+         DataOutputStream dos = new DataOutputStream(bytes);
+         try
+         {
+            proxy.write(dos);
+         }
+         catch (IOException e)
+         {
+            throw new RuntimeException(e);
+         }
+         GlobalClassDefinitionData.saveProxyDefinition(loader, proxyName, bytes.toByteArray());
+         return loader.loadClass(proxyName);
+      }
+      catch (ClassNotFoundException e)
+      {
+         throw new RuntimeException(e);
+      }
+      catch (BadBytecode e)
+      {
+         throw new RuntimeException(e);
+      }
+   }
+
    static public void recordClassAnnotations(Class<?> clazz, AnnotationsAttribute annotations)
    {
       // no annotations
@@ -204,6 +257,35 @@ public class AnnotationDataStore
          anVals.put(a.annotationType(), a);
          count++;
       }
+   }
+
+   static public void recordMethodParameterAnnotations(Method method, ParameterAnnotationsAttribute annotations)
+   {
+      // no annotations
+      if (annotations == null)
+      {
+         Annotation[][] ans = new Annotation[0][0];
+         parameterAnnotations.put(method, ans);
+         return;
+      }
+
+      Class<?> pclass = createParameterAnnotationsProxy(method.getDeclaringClass().getClassLoader(), annotations, method.getParameterTypes().length);
+      Class<?>[] types = new Class[method.getParameterTypes().length];
+      for (int i = 0; i < types.length; ++i)
+      {
+         types[i] = int.class;
+      }
+      try
+      {
+         Method anMethod = pclass.getMethod(PROXY_METHOD_NAME, types);
+         parameterAnnotations.put(method, anMethod.getParameterAnnotations());
+
+      }
+      catch (Exception e)
+      {
+         throw new RuntimeException(e);
+      }
+
    }
 
    static public void recordConstructorAnnotations(Constructor<?> constructor, AnnotationsAttribute annotations)

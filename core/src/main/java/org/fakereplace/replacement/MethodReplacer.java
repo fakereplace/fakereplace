@@ -23,6 +23,7 @@ import javassist.bytecode.Descriptor;
 import javassist.bytecode.DuplicateMemberException;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.Opcode;
+import javassist.bytecode.ParameterAnnotationsAttribute;
 
 import org.fakereplace.Transformer;
 import org.fakereplace.boot.Constants;
@@ -120,6 +121,7 @@ public class MethodReplacer
                   {
                      Method meth = i.getMethod(oldClass);
                      AnnotationDataStore.recordMethodAnnotations(meth, (AnnotationsAttribute) m.getAttribute(AnnotationsAttribute.visibleTag));
+                     AnnotationDataStore.recordMethodParameterAnnotations(meth, (ParameterAnnotationsAttribute) m.getAttribute(ParameterAnnotationsAttribute.visibleTag));
                      // now revert the annotations:
                      m.addAttribute(AnnotationReplacer.duplicateAnnotationsAttribute(file.getConstPool(), meth));
                   }
@@ -240,6 +242,13 @@ public class MethodReplacer
          AttributeInfo newAnnotations = annotations.copy(proxy.getConstPool(), Collections.EMPTY_MAP);
          nInfo.addAttribute(newAnnotations);
       }
+      ParameterAnnotationsAttribute pannotations = (ParameterAnnotationsAttribute) mInfo.getAttribute(ParameterAnnotationsAttribute.visibleTag);
+      if (pannotations != null)
+      {
+         AttributeInfo newAnnotations = pannotations.copy(proxy.getConstPool(), Collections.EMPTY_MAP);
+         nInfo.addAttribute(newAnnotations);
+      }
+
       // set the sync bit on the proxy if it was set on the method
 
       nInfo.setAccessFlags(0 | AccessFlag.PUBLIC | AccessFlag.STATIC);
@@ -376,6 +385,11 @@ public class MethodReplacer
          {
             AttributeInfo newAnnotations = annotations.copy(proxy.getConstPool(), Collections.EMPTY_MAP);
             method.addAttribute(newAnnotations);
+         }
+         if (pannotations != null)
+         {
+            AttributeInfo newAnnotations = pannotations.copy(proxy.getConstPool(), Collections.EMPTY_MAP);
+            nInfo.addAttribute(newAnnotations);
          }
 
          try
