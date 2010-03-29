@@ -29,6 +29,10 @@ public class MethodData
 
    final MemberType type;
    final int accessFlags;
+   /**
+    * stores the method no for a fake method. This is only used for constructors
+    */
+   final int methodNo;
 
    public MethodData(String name, String descriptor, String className, MemberType type, int accessFlags)
    {
@@ -39,6 +43,19 @@ public class MethodData
       this.className = className;
       this.type = type;
       this.accessFlags = accessFlags;
+      this.methodNo = 0;
+   }
+
+   public MethodData(String name, String descriptor, String className, MemberType type, int accessFlags, int methodNo)
+   {
+      this.methodName = name;
+      this.descriptor = descriptor;
+      this.returnTypeDescriptor = DescriptorUtils.getReturnType(descriptor);
+      this.argumentDescriptor = DescriptorUtils.getArgumentString(descriptor);
+      this.className = className;
+      this.type = type;
+      this.accessFlags = accessFlags;
+      this.methodNo = methodNo;
    }
 
    /**
@@ -120,6 +137,11 @@ public class MethodData
       Class<?>[] methodDesc = DescriptorUtils.argumentStringToClassArray(descriptor, actualClass);
       Constructor<?> method = actualClass.getDeclaredConstructor(methodDesc);
       return method;
+   }
+
+   public int getMethodNo()
+   {
+      return methodNo;
    }
 
 }

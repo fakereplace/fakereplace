@@ -573,7 +573,7 @@ public class MethodReplacer
          generateBoxedConditionalCodeBlock(methodCount, mInfo, file.getConstPool(), bytecode, false, true);
          String proxyName = generateFakeConstructorBytecode(mInfo, file.getConstPool(), methodCount, file.getName(), loader);
          ClassDataStore.registerProxyName(oldClass, proxyName);
-         MethodData md = new MethodData(mInfo.getName(), mInfo.getDescriptor(), proxyName, MemberType.FAKE_CONSTRUCTOR, mInfo.getAccessFlags());
+         MethodData md = new MethodData(mInfo.getName(), mInfo.getDescriptor(), proxyName, MemberType.FAKE_CONSTRUCTOR, mInfo.getAccessFlags(), methodCount);
          Transformer.getManipulator().rewriteConstructorAccess(file.getName(), mInfo.getDescriptor(), methodCount);
          data.addMethod(md);
          ClassDataStore.registerReplacedMethod(proxyName, md);

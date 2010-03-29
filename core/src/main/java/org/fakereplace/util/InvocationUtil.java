@@ -1,5 +1,6 @@
 package org.fakereplace.util;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
 import org.fakereplace.boot.Constants;
@@ -47,6 +48,15 @@ public class InvocationUtil
          {
             return true;
          }
+      }
+      return false;
+   }
+
+   public static boolean executeFakeCall(Constructor<?> method)
+   {
+      if (method.getDeclaringClass().getName().startsWith(Constants.GENERATED_CLASS_PACKAGE))
+      {
+         return true;
       }
       return false;
    }

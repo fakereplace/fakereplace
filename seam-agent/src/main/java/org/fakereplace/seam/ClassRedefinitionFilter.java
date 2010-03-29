@@ -312,7 +312,6 @@ public class ClassRedefinitionFilter extends AbstractFilter
                d = d.replace('/', '.');
                d = d.replace('\\', '.');
                d = d.substring(0, d.length() - ".class".length());
-               System.out.println(d);
                fd.className = d;
                files.add(fd);
             }

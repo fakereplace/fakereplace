@@ -1,6 +1,7 @@
 package org.fakereplace.reflection;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,9 +15,53 @@ import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.data.MemberType;
 import org.fakereplace.data.MethodData;
 import org.fakereplace.util.DescriptorUtils;
+import org.fakereplace.util.InvocationUtil;
+
+import sun.reflect.Reflection;
 
 public class ConstructorReflectionDelegate
 {
+
+   public static Object newInstance(Constructor<?> method, Object[] args) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException, InstantiationException
+   {
+      if (InvocationUtil.executeFakeCall(method))
+      {
+         MethodData data = ClassDataStore.getMethodInformation(method.getDeclaringClass().getName());
+         Class<?> info = ClassDataStore.getRealClassFromProxyName(method.getDeclaringClass().getName());
+         try
+         {
+            Constructor<?> invoke = info.getConstructor(int.class, Object[].class, ConstructorArgument.class);
+            return invoke.newInstance(data.getMethodNo(), args, null);
+         }
+         catch (NoSuchMethodException e)
+         {
+            throw new RuntimeException(e);
+         }
+         catch (SecurityException e)
+         {
+            throw new RuntimeException(e);
+         }
+
+      }
+
+      if (!method.isAccessible())
+      {
+         // todo: cache these checks
+         Class caller = sun.reflect.Reflection.getCallerClass(2);
+         Reflection.ensureMemberAccess(caller, method.getDeclaringClass(), null, method.getModifiers());
+
+         try
+         {
+            method.setAccessible(true);
+            return method.newInstance(args);
+         }
+         finally
+         {
+            method.setAccessible(false);
+         }
+      }
+      return method.newInstance(args);
+   }
 
    public static Constructor<?>[] getDeclaredConstructors(Class<?> clazz)
    {
@@ -114,7 +159,7 @@ public class ConstructorReflectionDelegate
       }
    }
 
-   public static Constructor<?> getConstructor(Class<?> clazz, String name, Class<?>... parameters) throws NoSuchMethodException
+   public static Constructor<?> getConstructor(Class<?> clazz, Class<?>... parameters) throws NoSuchMethodException
    {
 
       ClassData cd = ClassDataStore.getClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
@@ -125,7 +170,7 @@ public class ConstructorReflectionDelegate
          return meth;
       }
       String args = '(' + DescriptorUtils.classArrayToDescriptorString(parameters) + ')';
-      MethodData md = cd.getMethodData(name, args);
+      MethodData md = cd.getMethodData("<init>", args);
       if (md == null)
       {
          Constructor<?> meth = clazz.getConstructor(parameters);
@@ -156,7 +201,7 @@ public class ConstructorReflectionDelegate
       throw new NoSuchMethodException();
    }
 
-   public static Constructor<?> getDeclaredConstructor(Class<?> clazz, String name, Class<?>... parameters) throws NoSuchMethodException
+   public static Constructor<?> getDeclaredConstructor(Class<?> clazz, Class<?>... parameters) throws NoSuchMethodException
    {
 
       ClassData cd = ClassDataStore.getClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
@@ -167,7 +212,7 @@ public class ConstructorReflectionDelegate
          return meth;
       }
       String args = '(' + DescriptorUtils.classArrayToDescriptorString(parameters) + ')';
-      MethodData md = cd.getMethodData(name, args);
+      MethodData md = cd.getMethodData("<init>", args);
       if (md == null)
       {
          Constructor<?> meth = clazz.getDeclaredConstructor(parameters);
