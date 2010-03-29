@@ -22,6 +22,7 @@ import sun.reflect.Reflection;
 public class ConstructorReflectionDelegate
 {
 
+   @SuppressWarnings("restriction")
    public static Object newInstance(Constructor<?> method, Object... args) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException, InstantiationException
    {
       if (InvocationUtil.executeFakeCall(method))
@@ -52,7 +53,7 @@ public class ConstructorReflectionDelegate
       if (!method.isAccessible())
       {
          // todo: cache these checks
-         Class caller = sun.reflect.Reflection.getCallerClass(2);
+         Class<?> caller = sun.reflect.Reflection.getCallerClass(2);
          Reflection.ensureMemberAccess(caller, method.getDeclaringClass(), null, method.getModifiers());
 
          try
