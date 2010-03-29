@@ -26,8 +26,35 @@ public class ConstructorTest
       assert ConstructorCallingClass.getInstance().getValue().equals("b") : "wrong value : " + ConstructorCallingClass.getInstance().getValue();
    }
 
-   @Test(groups = "virtualmethod")
-   public void testVirtualConstrcutorGernericParameterTypeByReflection() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException
+   @Test(groups = "constructor")
+   public void testConstructorByReflection() throws SecurityException, NoSuchMethodException, IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException
+   {
+      boolean c1 = false, c2 = false;
+      for (Constructor<?> c : ConstructorClass.class.getDeclaredConstructors())
+      {
+         if (c.getParameterTypes().length == 1)
+         {
+            if (c.getParameterTypes()[0] == List.class)
+            {
+               c1 = true;
+            }
+            else if (c.getParameterTypes()[0] == String.class)
+            {
+               c2 = true;
+            }
+         }
+
+      }
+      assert c1;
+      assert c2;
+      Class<?> c = ConstructorClass.class;
+      Constructor<?> con = c.getConstructor(List.class);
+      ConstructorClass inst = (ConstructorClass) con.newInstance(null, null);
+      assert inst.getValue().equals("h");
+   }
+
+   @Test(groups = "constructor")
+   public void testVirtualConstrcutorGenericParameterTypeByReflection() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException
    {
       Class<?> c = ConstructorClass.class;
       Constructor<?> con = c.getConstructor(List.class);

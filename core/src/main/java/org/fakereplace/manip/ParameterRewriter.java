@@ -15,7 +15,7 @@ import org.fakereplace.util.DescriptorUtils;
  */
 public class ParameterRewriter
 {
-   public static void mangleParameters(boolean staticMethod, CodeAttribute attribute, String methodSigniture, int existingLocalVaraiables)
+   public static void mangleParameters(boolean staticMethod, boolean constructor, CodeAttribute attribute, String methodSigniture, int existingLocalVaraiables)
    {
       try
       {
@@ -31,8 +31,17 @@ public class ParameterRewriter
          // insert two new local variables, these are the fake method parameters
          attribute.insertLocalVar(offset, 1);
          attribute.insertLocalVar(offset, 1);
+         if (constructor)
+         {
+            // constructors have an extra one
+            attribute.insertLocalVar(offset, 1);
+         }
          Bytecode code = new Bytecode(attribute.getConstPool());
          int varpos = offset + 2;
+         if (constructor)
+         {
+            varpos++;
+         }
          for (int i = 0; i < data.length; ++i)
          {
             // push the parameter array onto the stack

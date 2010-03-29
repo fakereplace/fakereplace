@@ -480,8 +480,13 @@ public class MethodReplacer
       bc.addOpcode(Opcode.IF_ICMPNE);
 
       // now we need to fix local variables and unbox parameters etc
-      ParameterRewriter.mangleParameters(staticMethod, mInfo.getCodeAttribute(), mInfo.getDescriptor(), mInfo.getCodeAttribute().getMaxLocals());
+      ParameterRewriter.mangleParameters(staticMethod, constructor, mInfo.getCodeAttribute(), mInfo.getDescriptor(), mInfo.getCodeAttribute().getMaxLocals());
       int newMax = mInfo.getCodeAttribute().getMaxLocals() + 2;
+      if (constructor)
+      {
+         // for the extra
+         newMax++;
+      }
       if (newMax > addedMethod.getMaxLocals())
       {
          addedMethod.setMaxLocals(newMax);
@@ -495,7 +500,7 @@ public class MethodReplacer
       // new method
       CodeIterator newInfo = mInfo.getCodeAttribute().iterator();
       newInfo.insert(bc.get());
-      // now insert the new method code at the begining of the static method
+      // now insert the new method code at the beginning of the static method
       // code attribute
       addedMethod.iterator().insert(mInfo.getCodeAttribute().getCode());
       // now we need to make sure the function is returning an object

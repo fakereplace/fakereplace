@@ -22,7 +22,7 @@ import sun.reflect.Reflection;
 public class ConstructorReflectionDelegate
 {
 
-   public static Object newInstance(Constructor<?> method, Object[] args) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException, InstantiationException
+   public static Object newInstance(Constructor<?> method, Object... args) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException, InstantiationException
    {
       if (InvocationUtil.executeFakeCall(method))
       {
@@ -31,7 +31,12 @@ public class ConstructorReflectionDelegate
          try
          {
             Constructor<?> invoke = info.getConstructor(int.class, Object[].class, ConstructorArgument.class);
-            return invoke.newInstance(data.getMethodNo(), args, null);
+            Object ar = args;
+            if (ar == null)
+            {
+               ar = new Object[0];
+            }
+            return invoke.newInstance(data.getMethodNo(), ar, null);
          }
          catch (NoSuchMethodException e)
          {
