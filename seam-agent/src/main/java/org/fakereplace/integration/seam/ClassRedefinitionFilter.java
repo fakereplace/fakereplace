@@ -1,4 +1,4 @@
-package org.fakereplace.seam;
+package org.fakereplace.integration.seam;
 
 import java.beans.BeanInfo;
 import java.beans.Introspector;
@@ -21,8 +21,9 @@ import java.util.concurrent.locks.ReentrantLock;
 import javax.el.BeanELResolver;
 import javax.el.CompositeELResolver;
 import javax.el.ELResolver;
-import javax.faces.event.PhaseEvent;
 import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -31,7 +32,6 @@ import org.jboss.seam.Component;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.Seam;
 import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Startup;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
@@ -39,8 +39,8 @@ import org.jboss.seam.annotations.web.Filter;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.contexts.Lifecycle;
 import org.jboss.seam.core.Init;
+import org.jboss.seam.el.EL;
 import org.jboss.seam.init.Initialization;
-import org.jboss.seam.web.AbstractFilter;
 
 import sun.awt.AppContext;
 
@@ -49,7 +49,7 @@ import sun.awt.AppContext;
 @Name("org.fakereplace.classRedefinitionFilter")
 @BypassInterceptors
 @Filter
-public class ClassRedefinitionFilter extends AbstractFilter
+public class ClassRedefinitionFilter implements javax.servlet.Filter
 {
 
    static class FileData
@@ -75,6 +75,8 @@ public class ClassRedefinitionFilter extends AbstractFilter
 
    boolean changed = false;
 
+   ServletContext servletContext;
+
    /**
     * gets a reference to the replaceClass method. If this fails
     * because the agent has not been installed then the filter is disabled
@@ -99,8 +101,16 @@ public class ClassRedefinitionFilter extends AbstractFilter
       }
    }
 
+   public boolean isEnabled()
+   {
+      return true;
+   }
+
    public void doFilter(ServletRequest arg0, ServletResponse arg1, FilterChain arg2) throws IOException, ServletException
    {
+      System.out.println("------------------------------------------------------------------------");
+      System.out.println("------ running fakereplace filter a -----");
+      System.out.println("------------------------------------------------------------------------");
       if (enabled)
       {
 
@@ -191,7 +201,7 @@ public class ClassRedefinitionFilter extends AbstractFilter
 
             // redeploy the components
 
-            Initialization init = new Initialization(getServletContext());
+            Initialization init = new Initialization(servletContext);
 
             Method redeploy = Initialization.class.getDeclaredMethod("installScannedComponentAndRoles", Class.class);
             redeploy.setAccessible(true);
@@ -202,6 +212,37 @@ public class ClassRedefinitionFilter extends AbstractFilter
             redeploy = Initialization.class.getDeclaredMethod("installComponents", Init.class);
             redeploy.setAccessible(true);
             redeploy.invoke(init, Init.instance());
+
+            try
+            {
+               // javax.faces.context.FacesContext context = (javax.faces.context.FacesContext)
+               // Component.getInstance("org.jboss.seam.faces.facesContext");
+               ELResolver resolver = EL.EL_RESOLVER;
+               if (resolver instanceof CompositeELResolver)
+               {
+                  CompositeELResolver c = (CompositeELResolver) resolver;
+
+                  Field resolvers = getField(c.getClass(), "resolvers");
+                  resolvers.setAccessible(true);
+                  ELResolver[] resAr = (ELResolver[]) resolvers.get(c);
+                  for (ELResolver r : resAr)
+                  {
+                     if (r instanceof BeanELResolver)
+                     {
+                        Field cacheField = getField(r.getClass(), "cache");
+                        cacheField.setAccessible(true);
+                        Object cache = cacheField.get(r);
+                        Method m = cache.getClass().getMethod("clear");
+                        m.invoke(cache);
+                     }
+                  }
+
+               }
+            }
+            catch (Exception e)
+            {
+               e.printStackTrace();
+            }
 
          }
 
@@ -245,44 +286,6 @@ public class ClassRedefinitionFilter extends AbstractFilter
          throw new RuntimeException(e);
       }
 
-   }
-
-   @Observer("org.jboss.seam.afterPhase")
-   public void phaseInvalidator(PhaseEvent event)
-   {
-      if (changed)
-      {
-         changed = false;
-         try
-         {
-            javax.faces.context.FacesContext context = (javax.faces.context.FacesContext) Component.getInstance("org.jboss.seam.faces.facesContext");
-            ELResolver resolver = context.getELContext().getELResolver();
-            if (resolver instanceof CompositeELResolver)
-            {
-               CompositeELResolver c = (CompositeELResolver) resolver;
-
-               Field resolvers = getField(c.getClass(), "resolvers");
-               resolvers.setAccessible(true);
-               ELResolver[] resAr = (ELResolver[]) resolvers.get(c);
-               for (ELResolver r : resAr)
-               {
-                  if (r instanceof BeanELResolver)
-                  {
-                     Field cacheField = getField(r.getClass(), "cache");
-                     cacheField.setAccessible(true);
-                     Object cache = cacheField.get(r);
-                     Method m = cache.getClass().getMethod("clear");
-                     m.invoke(cache);
-                  }
-               }
-
-            }
-         }
-         catch (Exception e)
-         {
-            e.printStackTrace();
-         }
-      }
    }
 
    public void initialScan()
@@ -374,6 +377,17 @@ public class ClassRedefinitionFilter extends AbstractFilter
          // TODO: handle exception
       }
       return getField(clazz.getSuperclass(), name);
+   }
+
+   public void destroy()
+   {
+      // TODO Auto-generated method stub
+
+   }
+
+   public void init(FilterConfig arg0) throws ServletException
+   {
+      servletContext = arg0.getServletContext();
    }
 
 }

@@ -4,10 +4,14 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.lang.instrument.Instrumentation;
+import java.net.URL;
 import java.security.ProtectionDomain;
+import java.util.WeakHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
 import javassist.bytecode.AccessFlag;
@@ -15,10 +19,12 @@ import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.Bytecode;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.CodeAttribute;
+import javassist.bytecode.CodeIterator;
 import javassist.bytecode.Descriptor;
 import javassist.bytecode.DuplicateMemberException;
 import javassist.bytecode.FieldInfo;
 import javassist.bytecode.MethodInfo;
+import javassist.bytecode.Opcode;
 
 import org.fakereplace.boot.Constants;
 import org.fakereplace.data.ClassData;
@@ -50,6 +56,8 @@ public class Transformer implements ClassFileTransformer
    static Manipulator manipulator = new Manipulator();
 
    static final String[] replacablePackages;
+
+   static final WeakHashMap<ClassLoader, Object> integrationClassloader = new WeakHashMap<ClassLoader, Object>();
 
    static
    {
@@ -182,6 +190,38 @@ public class Transformer implements ClassFileTransformer
                }
             }
          }
+
+         // hook in seam support
+         // this is such a massive hack
+         // is so awesome at the same time
+         if (file.getName().equals("org.jboss.seam.servlet.SeamFilter"))
+         {
+            integrationClassloader.put(loader, new Object());
+            MethodInfo meth = file.getMethod("getSortedFilters");
+            CodeIterator it = meth.getCodeAttribute().iterator();
+            while (it.hasNext())
+            {
+               int i = it.lookAhead();
+               // find the return instruction
+               if (it.byteAt(i) == Opcode.ARETURN)
+               {
+                  Bytecode b = new Bytecode(file.getConstPool());
+                  b.add(Opcode.DUP);
+                  b.addNew("org.fakereplace.integration.seam.ClassRedefinitionFilter");
+                  b.add(Opcode.DUP);
+                  b.addInvokespecial("org.fakereplace.integration.seam.ClassRedefinitionFilter", "<init>", "()V");
+                  b.addIconst(0);
+                  b.add(Opcode.SWAP);
+                  b.addInvokeinterface("java.util.List", "add", "(ILjava/lang/Object;)V", 3);
+                  // b.add(Opcode.POP);
+                  it.insert(b.get());
+
+               }
+               it.next();
+            }
+
+         }
+
          replaceReflectionCalls(file);
 
          if (classBeingRedefined == null)
@@ -370,6 +410,35 @@ public class Transformer implements ClassFileTransformer
    public static Manipulator getManipulator()
    {
       return manipulator;
+   }
+
+   public static byte[] getIntegrationClass(ClassLoader c, String name)
+   {
+      if (!integrationClassloader.containsKey(c))
+      {
+         return null;
+      }
+      URL resource = ClassLoader.getSystemClassLoader().getResource(name.replace('.', '/') + ".class");
+      InputStream in = null;
+      try
+      {
+         in = resource.openStream();
+         return org.fakereplace.util.FileReader.readFileBytes(resource.openStream());
+      }
+      catch (Exception e)
+      {
+         throw new RuntimeException(e);
+      }
+      finally
+      {
+         try
+         {
+            in.close();
+         }
+         catch (IOException e)
+         {
+         }
+      }
    }
 
 }

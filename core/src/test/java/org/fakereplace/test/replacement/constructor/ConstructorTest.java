@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
+import org.fakereplace.test.replacement.constructor.other.Creator;
 import org.fakereplace.test.util.ClassReplacer;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -61,4 +62,10 @@ public class ConstructorTest
       assert ((ParameterizedType) con.getGenericParameterTypes()[0]).getActualTypeArguments()[0].equals(String.class);
    }
 
+   @Test(groups = "constructor")
+   public void testPackagePrivateConstructor() throws SecurityException, IllegalArgumentException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException
+   {
+      Creator c = new Creator();
+      c.doStuff();
+   }
 }
