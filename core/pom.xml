@@ -6,7 +6,7 @@
 	<groupId>org.fakereplace</groupId>
 	<artifactId>fakereplace</artifactId>
 	<packaging>jar</packaging>
-	<version>0.1.0-SNAPSHOT</version>
+	<version>0.1</version>
 	<name>Fakereplace</name>
 
 	<dependencies>
@@ -30,7 +30,7 @@
 		<dependency>
 			<groupId>org.fakereplace</groupId>
 			<artifactId>seam-agent</artifactId>
-			<version>0.1.0-SNAPSHOT</version>
+			<version>0.1</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>

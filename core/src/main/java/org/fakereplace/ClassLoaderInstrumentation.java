@@ -41,10 +41,7 @@ public class ClassLoaderInstrumentation
    {
       try
       {
-         if (cl.getSuperclass() != ClassLoader.class && !trasformedClassLoaders.contains(cl.getSuperclass()) && !failedTransforms.contains(cl))
-         {
-            redefineClassLoader(cl.getSuperclass());
-         }
+
          // we are using the high level javassist bytecode here because we
          // have access to the class object
          if (cl.getClassLoader() != null)
@@ -101,6 +98,10 @@ public class ClassLoaderInstrumentation
       }
       catch (NotFoundException e)
       {
+         if (cl.getSuperclass() != ClassLoader.class && !trasformedClassLoaders.contains(cl.getSuperclass()) && !failedTransforms.contains(cl))
+         {
+            redefineClassLoader(cl.getSuperclass());
+         }
          trasformedClassLoaders.add(cl);
       }
       catch (Exception e)

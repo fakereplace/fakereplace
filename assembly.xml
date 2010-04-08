@@ -39,7 +39,6 @@
       <moduleSet>
          <includes>
             <include>org.fakereplace:fakereplace:jar</include>
-            <include>org.fakereplace:seam-agent:jar</include>
          </includes>
          <binaries>
          	<outputFileNameMapping>${module.artifactId}.${module.extension}</outputFileNameMapping>
