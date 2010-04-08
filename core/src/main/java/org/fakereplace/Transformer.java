@@ -193,7 +193,6 @@ public class Transformer implements ClassFileTransformer
 
          // hook in seam support
          // this is such a massive hack
-         // is so awesome at the same time
          if (file.getName().equals("org.jboss.seam.servlet.SeamFilter"))
          {
             integrationClassloader.put(loader, new Object());
@@ -219,6 +218,7 @@ public class Transformer implements ClassFileTransformer
                }
                it.next();
             }
+            loader.loadClass("org.fakereplace.integration.seam.ClassRedefinitionFilter");
 
          }
 
@@ -440,5 +440,4 @@ public class Transformer implements ClassFileTransformer
          }
       }
    }
-
 }
