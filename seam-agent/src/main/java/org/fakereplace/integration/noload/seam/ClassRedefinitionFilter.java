@@ -22,8 +22,6 @@ import javax.el.BeanELResolver;
 import javax.el.CompositeELResolver;
 import javax.el.ELResolver;
 import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -32,24 +30,16 @@ import org.jboss.seam.Component;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.Seam;
 import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.annotations.Startup;
-import org.jboss.seam.annotations.intercept.BypassInterceptors;
-import org.jboss.seam.annotations.web.Filter;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.contexts.Lifecycle;
 import org.jboss.seam.core.Init;
 import org.jboss.seam.el.EL;
 import org.jboss.seam.init.Initialization;
+import org.jboss.seam.web.AbstractFilter;
 
 import sun.awt.AppContext;
 
-@Startup
-@Scope(ScopeType.APPLICATION)
-@Name("org.fakereplace.classRedefinitionFilter")
-@BypassInterceptors
-@Filter
-public class ClassRedefinitionFilter implements javax.servlet.Filter
+public class ClassRedefinitionFilter extends AbstractFilter
 {
 
    static class FileData
@@ -74,8 +64,6 @@ public class ClassRedefinitionFilter implements javax.servlet.Filter
    boolean enabled = true;
 
    boolean changed = false;
-
-   ServletContext servletContext;
 
    /**
     * gets a reference to the replaceClass method. If this fails
@@ -201,7 +189,7 @@ public class ClassRedefinitionFilter implements javax.servlet.Filter
 
             // redeploy the components
 
-            Initialization init = new Initialization(servletContext);
+            Initialization init = new Initialization(getServletContext());
 
             Method redeploy = Initialization.class.getDeclaredMethod("installScannedComponentAndRoles", Class.class);
             redeploy.setAccessible(true);
@@ -377,17 +365,6 @@ public class ClassRedefinitionFilter implements javax.servlet.Filter
          // TODO: handle exception
       }
       return getField(clazz.getSuperclass(), name);
-   }
-
-   public void destroy()
-   {
-      // TODO Auto-generated method stub
-
-   }
-
-   public void init(FilterConfig arg0) throws ServletException
-   {
-      servletContext = arg0.getServletContext();
    }
 
 }
