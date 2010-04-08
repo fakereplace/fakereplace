@@ -37,6 +37,7 @@ import org.jboss.seam.contexts.Lifecycle;
 import org.jboss.seam.core.Init;
 import org.jboss.seam.el.EL;
 import org.jboss.seam.init.Initialization;
+import org.jboss.seam.util.ProxyFactory;
 import org.jboss.seam.web.AbstractFilter;
 
 import sun.awt.AppContext;
@@ -101,9 +102,6 @@ public class ClassRedefinitionFilter extends AbstractFilter
 
    public void doFilter(ServletRequest arg0, ServletResponse arg1, FilterChain arg2) throws IOException, ServletException
    {
-      System.out.println("------------------------------------------------------------------------");
-      System.out.println("------ running fakereplace filter a -----");
-      System.out.println("------------------------------------------------------------------------");
       if (enabled)
       {
 
@@ -252,7 +250,7 @@ public class ClassRedefinitionFilter extends AbstractFilter
 
    public void doInit()
    {
-
+      ProxyFactory.useCache = false;
       try
       {
          for (String resource : fl)
