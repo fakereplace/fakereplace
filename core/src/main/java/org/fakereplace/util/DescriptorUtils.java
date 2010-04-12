@@ -1,10 +1,26 @@
 package org.fakereplace.util;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DescriptorUtils
 {
+
+   public static Method getMethod(String name, String methodDesc, Class actual)
+   {
+      try
+      {
+         return actual.getMethod(name, argumentStringToClassArray(methodDesc, actual));
+      }
+      catch (Exception e)
+      {
+         // this should not happen
+         throw new RuntimeException(e);
+      }
+
+   }
+
    /**
     * returns an array of class types based on the method parameters this allows
     * getMethod to be called based on descriptor data We also pass the class
