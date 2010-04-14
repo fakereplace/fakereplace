@@ -10,6 +10,7 @@ import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javassist.bytecode.AccessFlag;
 import javassist.bytecode.AnnotationsAttribute;
@@ -31,25 +32,25 @@ import org.fakereplace.boot.GlobalClassDefinitionData;
 public class AnnotationDataStore
 {
 
-   static Map<Class<?>, Annotation[]> classAnnotations = Collections.synchronizedMap(new HashMap<Class<?>, Annotation[]>());
+   static Map<Class<?>, Annotation[]> classAnnotations = new ConcurrentHashMap<Class<?>, Annotation[]>();
 
-   static Map<Class<?>, Map<Class<? extends Annotation>, Annotation>> classAnnotationsByType = Collections.synchronizedMap(new HashMap<Class<?>, Map<Class<? extends Annotation>, Annotation>>());
+   static Map<Class<?>, Map<Class<? extends Annotation>, Annotation>> classAnnotationsByType = new ConcurrentHashMap<Class<?>, Map<Class<? extends Annotation>, Annotation>>();
 
-   static Map<Field, Annotation[]> fieldAnnotations = Collections.synchronizedMap(new HashMap<Field, Annotation[]>());
+   static Map<Field, Annotation[]> fieldAnnotations = new ConcurrentHashMap<Field, Annotation[]>();
 
-   static Map<Field, Map<Class<? extends Annotation>, Annotation>> fieldAnnotationsByType = Collections.synchronizedMap(new HashMap<Field, Map<Class<? extends Annotation>, Annotation>>());
+   static Map<Field, Map<Class<? extends Annotation>, Annotation>> fieldAnnotationsByType = new ConcurrentHashMap<Field, Map<Class<? extends Annotation>, Annotation>>();
 
-   static Map<Method, Annotation[]> methodAnnotations = Collections.synchronizedMap(new HashMap<Method, Annotation[]>());
+   static Map<Method, Annotation[]> methodAnnotations = new ConcurrentHashMap<Method, Annotation[]>();
 
-   static Map<Method, Map<Class<? extends Annotation>, Annotation>> methodAnnotationsByType = Collections.synchronizedMap(new HashMap<Method, Map<Class<? extends Annotation>, Annotation>>());
+   static Map<Method, Map<Class<? extends Annotation>, Annotation>> methodAnnotationsByType = new ConcurrentHashMap<Method, Map<Class<? extends Annotation>, Annotation>>();
 
-   static Map<Method, Annotation[][]> parameterAnnotations = Collections.synchronizedMap(new HashMap<Method, Annotation[][]>());
+   static Map<Method, Annotation[][]> parameterAnnotations = new ConcurrentHashMap<Method, Annotation[][]>();
 
-   static Map<Constructor<?>, Annotation[]> constructorAnnotations = Collections.synchronizedMap(new HashMap<Constructor<?>, Annotation[]>());
+   static Map<Constructor<?>, Annotation[]> constructorAnnotations = new ConcurrentHashMap<Constructor<?>, Annotation[]>();
 
-   static Map<Constructor<?>, Map<Class<? extends Annotation>, Annotation>> constructorAnnotationsByType = Collections.synchronizedMap(new HashMap<Constructor<?>, Map<Class<? extends Annotation>, Annotation>>());
+   static Map<Constructor<?>, Map<Class<? extends Annotation>, Annotation>> constructorAnnotationsByType = new ConcurrentHashMap<Constructor<?>, Map<Class<? extends Annotation>, Annotation>>();
 
-   static Map<Constructor<?>, Annotation[][]> constructorParameterAnnotations = Collections.synchronizedMap(new HashMap<Constructor<?>, Annotation[][]>());
+   static Map<Constructor<?>, Annotation[][]> constructorParameterAnnotations = new ConcurrentHashMap<Constructor<?>, Annotation[][]>();
 
    static final String PROXY_METHOD_NAME = "annotationsMethod";
 

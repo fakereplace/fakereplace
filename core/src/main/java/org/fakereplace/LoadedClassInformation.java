@@ -1,8 +1,8 @@
 package org.fakereplace;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.fakereplace.data.ClassData;
 
@@ -20,9 +20,9 @@ public class LoadedClassInformation
     * map of class information, stored by classloader -> java name (the one with
     * dots)
     */
-   static Map<ClassLoader, Map<String, ClassData>> classInformation = Collections.synchronizedMap(new HashMap<ClassLoader, Map<String, ClassData>>());
+   static Map<ClassLoader, Map<String, ClassData>> classInformation = new ConcurrentHashMap<ClassLoader, Map<String, ClassData>>();
 
-   public static ClassData getClassInformation(Class clazz)
+   public static ClassData getClassInformation(Class<?> clazz)
    {
       Map<String, ClassData> data = classInformation.get(clazz.getClassLoader());
       if (data != null)

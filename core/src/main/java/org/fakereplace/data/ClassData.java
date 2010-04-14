@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javassist.bytecode.FieldInfo;
 
@@ -22,8 +23,8 @@ public class ClassData
 
    String className;
    String internalName;
-   Map<String, Map<String, Set<MethodData>>> methods = new HashMap<String, Map<String, Set<MethodData>>>();
-   Map<String, FieldData> fields = new HashMap<String, FieldData>();
+   Map<String, Map<String, Set<MethodData>>> methods = new ConcurrentHashMap<String, Map<String, Set<MethodData>>>();
+   Map<String, FieldData> fields = new ConcurrentHashMap<String, FieldData>();
    ClassLoader loader;
    String superClassName;
    boolean superClassInfoInit = false;

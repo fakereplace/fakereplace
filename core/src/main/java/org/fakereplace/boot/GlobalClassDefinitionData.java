@@ -2,6 +2,7 @@ package org.fakereplace.boot;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -16,7 +17,7 @@ public class GlobalClassDefinitionData
 
    static protected ReentrantLock lock = new ReentrantLock();
 
-   static Map<ClassLoader, Map<String, byte[]>> proxyDefinitions = new HashMap<ClassLoader, Map<String, byte[]>>();
+   static Map<ClassLoader, Map<String, byte[]>> proxyDefinitions = new ConcurrentHashMap<ClassLoader, Map<String, byte[]>>();
 
    public static byte[] getProxyDefinition(ClassLoader classLoader, String name)
    {

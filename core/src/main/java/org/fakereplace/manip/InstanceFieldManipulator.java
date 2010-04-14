@@ -1,11 +1,11 @@
 package org.fakereplace.manip;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javassist.bytecode.Bytecode;
 import javassist.bytecode.ClassFile;
@@ -23,7 +23,7 @@ public class InstanceFieldManipulator
    /**
     * added field information by class
     */
-   Map<String, Set<AddedFieldData>> addedFieldData = Collections.synchronizedMap(new HashMap<String, Set<AddedFieldData>>());
+   Map<String, Set<AddedFieldData>> addedFieldData = new ConcurrentHashMap<String, Set<AddedFieldData>>();
 
    public void addField(AddedFieldData data)
    {

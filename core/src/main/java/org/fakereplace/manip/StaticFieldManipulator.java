@@ -1,11 +1,11 @@
 package org.fakereplace.manip;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.CodeIterator;
@@ -17,7 +17,7 @@ import org.fakereplace.boot.Logger;
 public class StaticFieldManipulator
 {
 
-   Map<String, Set<StaticFieldAccessRewriteData>> staticMethodData = Collections.synchronizedMap(new HashMap<String, Set<StaticFieldAccessRewriteData>>());
+   Map<String, Set<StaticFieldAccessRewriteData>> staticMethodData = new ConcurrentHashMap<String, Set<StaticFieldAccessRewriteData>>();
 
    public void clearRewrite(String className)
    {

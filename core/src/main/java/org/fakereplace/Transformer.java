@@ -11,6 +11,8 @@ import java.lang.instrument.IllegalClassFormatException;
 import java.lang.instrument.Instrumentation;
 import java.net.URL;
 import java.security.ProtectionDomain;
+import java.util.Collections;
+import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -57,7 +59,7 @@ public class Transformer implements ClassFileTransformer
 
    static final String[] replacablePackages;
 
-   static final WeakHashMap<ClassLoader, Object> integrationClassloader = new WeakHashMap<ClassLoader, Object>();
+   static final Map<ClassLoader, Object> integrationClassloader = Collections.synchronizedMap(new WeakHashMap<ClassLoader, Object>());
 
    static
    {

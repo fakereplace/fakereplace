@@ -5,8 +5,8 @@ import java.io.InputStream;
 import java.lang.instrument.ClassDefinition;
 import java.lang.instrument.Instrumentation;
 import java.net.URL;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import javassist.ClassPool;
 import javassist.CtClass;
@@ -27,9 +27,9 @@ public class ClassLoaderInstrumentation
 
    final Instrumentation instrumentation;
 
-   Set<Class> trasformedClassLoaders = new HashSet<Class>();
+   Set<Class<?>> trasformedClassLoaders = new CopyOnWriteArraySet<Class<?>>();
 
-   Set<Class> failedTransforms = new HashSet<Class>();
+   Set<Class<?>> failedTransforms = new CopyOnWriteArraySet<Class<?>>();
 
    /**
     * This method instruments class loaders so that they can load our helper
@@ -37,7 +37,7 @@ public class ClassLoaderInstrumentation
     * 
     * @param cl
     */
-   public void redefineClassLoader(Class cl)
+   public void redefineClassLoader(Class<?> cl)
    {
       try
       {
