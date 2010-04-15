@@ -56,22 +56,13 @@ public class ReflectionDelegate
 
       }
 
-      if (!method.isAccessible())
+      if (!AccessibleObjectReflectionDelegate.isAccessible(method))
       {
          // todo: cache these checks
          Class caller = sun.reflect.Reflection.getCallerClass(2);
          Reflection.ensureMemberAccess(caller, method.getDeclaringClass(), instance, method.getModifiers());
-
-         try
-         {
-            method.setAccessible(true);
-            return method.invoke(instance, args);
-         }
-         finally
-         {
-            method.setAccessible(false);
-         }
       }
+      method.setAccessible(true);
       return method.invoke(instance, args);
    }
 

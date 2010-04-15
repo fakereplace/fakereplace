@@ -5,8 +5,6 @@ import java.lang.reflect.Modifier;
 
 import org.fakereplace.data.ClassDataStore;
 
-import sun.reflect.Reflection;
-
 /**
  * Class that handles access to re-written fields.
  * 
@@ -20,21 +18,7 @@ public class FieldAccess
    {
       if (!setFakeField(f, object, val))
       {
-         if (!f.isAccessible())
-         {
-            Class<?> caller = sun.reflect.Reflection.getCallerClass(2);
-            Reflection.ensureMemberAccess(caller, f.getDeclaringClass(), object, f.getModifiers());
-            try
-            {
-               f.setAccessible(true);
-               f.set(object, val);
-               return;
-            }
-            finally
-            {
-               f.setAccessible(false);
-            }
-         }
+         AccessibleObjectReflectionDelegate.ensureAccess(f, 3, f.getDeclaringClass(), f.getModifiers());
          f.set(object, val);
       }
    }
@@ -43,21 +27,7 @@ public class FieldAccess
    {
       if (!setFakeField(f, object, val))
       {
-         if (!f.isAccessible())
-         {
-            Class<?> caller = sun.reflect.Reflection.getCallerClass(2);
-            Reflection.ensureMemberAccess(caller, f.getDeclaringClass(), object, f.getModifiers());
-            try
-            {
-               f.setAccessible(true);
-               f.setBoolean(object, val);
-               return;
-            }
-            finally
-            {
-               f.setAccessible(false);
-            }
-         }
+         AccessibleObjectReflectionDelegate.ensureAccess(f, 3, f.getDeclaringClass(), f.getModifiers());
          f.setBoolean(object, val);
       }
    }
@@ -66,21 +36,7 @@ public class FieldAccess
    {
       if (!setFakeField(f, object, val))
       {
-         if (!f.isAccessible())
-         {
-            Class<?> caller = sun.reflect.Reflection.getCallerClass(2);
-            Reflection.ensureMemberAccess(caller, f.getDeclaringClass(), object, f.getModifiers());
-            try
-            {
-               f.setAccessible(true);
-               f.setByte(object, val);
-               return;
-            }
-            finally
-            {
-               f.setAccessible(false);
-            }
-         }
+         AccessibleObjectReflectionDelegate.ensureAccess(f, 3, f.getDeclaringClass(), f.getModifiers());
          f.setByte(object, val);
       }
    }
@@ -89,21 +45,7 @@ public class FieldAccess
    {
       if (!setFakeField(f, object, val))
       {
-         if (!f.isAccessible())
-         {
-            Class<?> caller = sun.reflect.Reflection.getCallerClass(2);
-            Reflection.ensureMemberAccess(caller, f.getDeclaringClass(), object, f.getModifiers());
-            try
-            {
-               f.setAccessible(true);
-               f.setChar(object, val);
-               return;
-            }
-            finally
-            {
-               f.setAccessible(false);
-            }
-         }
+         AccessibleObjectReflectionDelegate.ensureAccess(f, 3, f.getDeclaringClass(), f.getModifiers());
          f.setChar(object, val);
       }
    }
@@ -112,21 +54,7 @@ public class FieldAccess
    {
       if (!setFakeField(f, object, val))
       {
-         if (!f.isAccessible())
-         {
-            Class<?> caller = sun.reflect.Reflection.getCallerClass(2);
-            Reflection.ensureMemberAccess(caller, f.getDeclaringClass(), object, f.getModifiers());
-            try
-            {
-               f.setAccessible(true);
-               f.setDouble(object, val);
-               return;
-            }
-            finally
-            {
-               f.setAccessible(false);
-            }
-         }
+         AccessibleObjectReflectionDelegate.ensureAccess(f, 3, f.getDeclaringClass(), f.getModifiers());
          f.setDouble(object, val);
       }
    }
@@ -135,21 +63,7 @@ public class FieldAccess
    {
       if (!setFakeField(f, object, val))
       {
-         if (!f.isAccessible())
-         {
-            Class<?> caller = sun.reflect.Reflection.getCallerClass(2);
-            Reflection.ensureMemberAccess(caller, f.getDeclaringClass(), object, f.getModifiers());
-            try
-            {
-               f.setAccessible(true);
-               f.setFloat(object, val);
-               return;
-            }
-            finally
-            {
-               f.setAccessible(false);
-            }
-         }
+         AccessibleObjectReflectionDelegate.ensureAccess(f, 3, f.getDeclaringClass(), f.getModifiers());
          f.setFloat(object, val);
       }
    }
@@ -158,21 +72,7 @@ public class FieldAccess
    {
       if (!setFakeField(f, object, val))
       {
-         if (!f.isAccessible())
-         {
-            Class<?> caller = sun.reflect.Reflection.getCallerClass(2);
-            Reflection.ensureMemberAccess(caller, f.getDeclaringClass(), object, f.getModifiers());
-            try
-            {
-               f.setAccessible(true);
-               f.setInt(object, val);
-               return;
-            }
-            finally
-            {
-               f.setAccessible(false);
-            }
-         }
+         AccessibleObjectReflectionDelegate.ensureAccess(f, 3, f.getDeclaringClass(), f.getModifiers());
          f.setInt(object, val);
       }
    }
@@ -181,21 +81,7 @@ public class FieldAccess
    {
       if (!setFakeField(f, object, val))
       {
-         if (!f.isAccessible())
-         {
-            Class<?> caller = sun.reflect.Reflection.getCallerClass(2);
-            Reflection.ensureMemberAccess(caller, f.getDeclaringClass(), object, f.getModifiers());
-            try
-            {
-               f.setAccessible(true);
-               f.setLong(object, val);
-               return;
-            }
-            finally
-            {
-               f.setAccessible(false);
-            }
-         }
+         AccessibleObjectReflectionDelegate.ensureAccess(f, 3, f.getDeclaringClass(), f.getModifiers());
          f.setLong(object, val);
       }
    }
@@ -204,21 +90,7 @@ public class FieldAccess
    {
       if (!setFakeField(f, object, val))
       {
-         if (!f.isAccessible())
-         {
-            Class<?> caller = sun.reflect.Reflection.getCallerClass(2);
-            Reflection.ensureMemberAccess(caller, f.getDeclaringClass(), object, f.getModifiers());
-            try
-            {
-               f.setAccessible(true);
-               f.setShort(object, val);
-               return;
-            }
-            finally
-            {
-               f.setAccessible(false);
-            }
-         }
+         AccessibleObjectReflectionDelegate.ensureAccess(f, 3, f.getDeclaringClass(), f.getModifiers());
          f.setShort(object, val);
       }
    }
@@ -232,20 +104,7 @@ public class FieldAccess
       }
       else
       {
-         if (!f.isAccessible())
-         {
-            Class<?> caller = sun.reflect.Reflection.getCallerClass(2);
-            Reflection.ensureMemberAccess(caller, f.getDeclaringClass(), object, f.getModifiers());
-            try
-            {
-               f.setAccessible(true);
-               return f.get(object);
-            }
-            finally
-            {
-               f.setAccessible(false);
-            }
-         }
+         AccessibleObjectReflectionDelegate.ensureAccess(f, 3, f.getDeclaringClass(), f.getModifiers());
          return f.get(object);
       }
    }
@@ -259,20 +118,7 @@ public class FieldAccess
       }
       else
       {
-         if (!f.isAccessible())
-         {
-            Class<?> caller = sun.reflect.Reflection.getCallerClass(2);
-            Reflection.ensureMemberAccess(caller, f.getDeclaringClass(), object, f.getModifiers());
-            try
-            {
-               f.setAccessible(true);
-               return f.getBoolean(object);
-            }
-            finally
-            {
-               f.setAccessible(false);
-            }
-         }
+         AccessibleObjectReflectionDelegate.ensureAccess(f, 3, f.getDeclaringClass(), f.getModifiers());
          return f.getBoolean(object);
       }
    }
@@ -286,20 +132,7 @@ public class FieldAccess
       }
       else
       {
-         if (!f.isAccessible())
-         {
-            Class<?> caller = sun.reflect.Reflection.getCallerClass(2);
-            Reflection.ensureMemberAccess(caller, f.getDeclaringClass(), object, f.getModifiers());
-            try
-            {
-               f.setAccessible(true);
-               return f.getByte(object);
-            }
-            finally
-            {
-               f.setAccessible(false);
-            }
-         }
+         AccessibleObjectReflectionDelegate.ensureAccess(f, 3, f.getDeclaringClass(), f.getModifiers());
          return f.getByte(object);
       }
    }
@@ -313,20 +146,7 @@ public class FieldAccess
       }
       else
       {
-         if (!f.isAccessible())
-         {
-            Class<?> caller = sun.reflect.Reflection.getCallerClass(2);
-            Reflection.ensureMemberAccess(caller, f.getDeclaringClass(), object, f.getModifiers());
-            try
-            {
-               f.setAccessible(true);
-               return f.getChar(object);
-            }
-            finally
-            {
-               f.setAccessible(false);
-            }
-         }
+         AccessibleObjectReflectionDelegate.ensureAccess(f, 3, f.getDeclaringClass(), f.getModifiers());
          return f.getChar(object);
       }
    }
@@ -340,20 +160,7 @@ public class FieldAccess
       }
       else
       {
-         if (!f.isAccessible())
-         {
-            Class<?> caller = sun.reflect.Reflection.getCallerClass(2);
-            Reflection.ensureMemberAccess(caller, f.getDeclaringClass(), object, f.getModifiers());
-            try
-            {
-               f.setAccessible(true);
-               return f.getDouble(object);
-            }
-            finally
-            {
-               f.setAccessible(false);
-            }
-         }
+         AccessibleObjectReflectionDelegate.ensureAccess(f, 3, f.getDeclaringClass(), f.getModifiers());
          return f.getDouble(object);
       }
    }
@@ -367,20 +174,7 @@ public class FieldAccess
       }
       else
       {
-         if (!f.isAccessible())
-         {
-            Class<?> caller = sun.reflect.Reflection.getCallerClass(2);
-            Reflection.ensureMemberAccess(caller, f.getDeclaringClass(), object, f.getModifiers());
-            try
-            {
-               f.setAccessible(true);
-               return f.getFloat(object);
-            }
-            finally
-            {
-               f.setAccessible(false);
-            }
-         }
+         AccessibleObjectReflectionDelegate.ensureAccess(f, 3, f.getDeclaringClass(), f.getModifiers());
          return f.getFloat(object);
       }
    }
@@ -394,20 +188,7 @@ public class FieldAccess
       }
       else
       {
-         if (!f.isAccessible())
-         {
-            Class<?> caller = sun.reflect.Reflection.getCallerClass(2);
-            Reflection.ensureMemberAccess(caller, f.getDeclaringClass(), object, f.getModifiers());
-            try
-            {
-               f.setAccessible(true);
-               return f.getInt(object);
-            }
-            finally
-            {
-               f.setAccessible(false);
-            }
-         }
+         AccessibleObjectReflectionDelegate.ensureAccess(f, 3, f.getDeclaringClass(), f.getModifiers());
          return f.getInt(object);
       }
    }
@@ -421,20 +202,7 @@ public class FieldAccess
       }
       else
       {
-         if (!f.isAccessible())
-         {
-            Class<?> caller = sun.reflect.Reflection.getCallerClass(2);
-            Reflection.ensureMemberAccess(caller, f.getDeclaringClass(), object, f.getModifiers());
-            try
-            {
-               f.setAccessible(true);
-               return f.getLong(object);
-            }
-            finally
-            {
-               f.setAccessible(false);
-            }
-         }
+         AccessibleObjectReflectionDelegate.ensureAccess(f, 3, f.getDeclaringClass(), f.getModifiers());
          return f.getLong(object);
       }
    }
@@ -448,20 +216,7 @@ public class FieldAccess
       }
       else
       {
-         if (!f.isAccessible())
-         {
-            Class<?> caller = sun.reflect.Reflection.getCallerClass(2);
-            Reflection.ensureMemberAccess(caller, f.getDeclaringClass(), object, f.getModifiers());
-            try
-            {
-               f.setAccessible(true);
-               return f.getShort(object);
-            }
-            finally
-            {
-               f.setAccessible(false);
-            }
-         }
+         AccessibleObjectReflectionDelegate.ensureAccess(f, 3, f.getDeclaringClass(), f.getModifiers());
          return f.getShort(object);
       }
    }

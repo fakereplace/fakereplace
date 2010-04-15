@@ -149,6 +149,16 @@ public class Transformer implements ClassFileTransformer
       manipulator.replaceVirtualMethodInvokationWithStatic("java.lang.reflect.Field", "org.fakereplace.reflection.FieldAccess", "getLong", "(Ljava/lang/Object;)J", "(Ljava/lang/reflect/Field;Ljava/lang/Object;)J");
       manipulator.replaceVirtualMethodInvokationWithStatic("java.lang.reflect.Field", "org.fakereplace.reflection.FieldAccess", "getShort", "(Ljava/lang/Object;)S", "(Ljava/lang/reflect/Field;Ljava/lang/Object;)S");
 
+      // accessible objects
+      manipulator.replaceVirtualMethodInvokationWithStatic("java.lang.reflect.Field", "org.fakereplace.reflection.AccessibleObjectReflectionDelegate", "setAccessible", "(Z)V", "(Ljava/lang/reflect/AccessibleObject;Z)V");
+      manipulator.replaceVirtualMethodInvokationWithStatic("java.lang.reflect.Field", "org.fakereplace.reflection.AccessibleObjectReflectionDelegate", "isAccessible", "()Z", "(Ljava/lang/reflect/AccessibleObject;)Z");
+      manipulator.replaceVirtualMethodInvokationWithStatic("java.lang.reflect.Method", "org.fakereplace.reflection.AccessibleObjectReflectionDelegate", "setAccessible", "(Z)V", "(Ljava/lang/reflect/AccessibleObject;Z)V");
+      manipulator.replaceVirtualMethodInvokationWithStatic("java.lang.reflect.Method", "org.fakereplace.reflection.AccessibleObjectReflectionDelegate", "isAccessible", "()Z", "(Ljava/lang/reflect/AccessibleObject;)Z");
+      manipulator.replaceVirtualMethodInvokationWithStatic("java.lang.reflect.Constructor", "org.fakereplace.reflection.AccessibleObjectReflectionDelegate", "setAccessible", "(Z)V", "(Ljava/lang/reflect/AccessibleObject;Z)V");
+      manipulator.replaceVirtualMethodInvokationWithStatic("java.lang.reflect.Constructor", "org.fakereplace.reflection.AccessibleObjectReflectionDelegate", "isAccessible", "()Z", "(Ljava/lang/reflect/AccessibleObject;)Z");
+      manipulator.replaceVirtualMethodInvokationWithStatic("java.lang.reflect.AccessibleObject", "org.fakereplace.reflection.AccessibleObjectReflectionDelegate", "setAccessible", "(Z)V", "(Ljava/lang/reflect/AccessibleObject;Z)V");
+      manipulator.replaceVirtualMethodInvokationWithStatic("java.lang.reflect.AccessibleObject", "org.fakereplace.reflection.AccessibleObjectReflectionDelegate", "isAccessible", "()Z", "(Ljava/lang/reflect/AccessibleObject;)Z");
+
    }
 
    /**
