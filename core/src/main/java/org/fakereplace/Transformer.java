@@ -33,6 +33,7 @@ import org.fakereplace.data.ClassData;
 import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.data.MemberType;
 import org.fakereplace.data.MethodData;
+import org.fakereplace.detector.DetectorRunner;
 import org.fakereplace.manip.Manipulator;
 import org.fakereplace.replacement.FakeConstructorUtils;
 import org.fakereplace.util.NoInstrument;
@@ -61,6 +62,8 @@ public class Transformer implements ClassFileTransformer
 
    static final Map<ClassLoader, Object> integrationClassloader = Collections.synchronizedMap(new WeakHashMap<ClassLoader, Object>());
 
+   DetectorRunner detector = new DetectorRunner();
+
    static
    {
       String plist = System.getProperty(Constants.REPLACABLE_PACKAGES_KEY);
@@ -79,6 +82,7 @@ public class Transformer implements ClassFileTransformer
 
    Transformer(Instrumentation i)
    {
+
       instrumentation = i;
       classLoaderInstrumenter = new ClassLoaderInstrumentation(instrumentation);
       // initilize the reflection manipulation
@@ -158,6 +162,9 @@ public class Transformer implements ClassFileTransformer
       manipulator.replaceVirtualMethodInvokationWithStatic("java.lang.reflect.Constructor", "org.fakereplace.reflection.AccessibleObjectReflectionDelegate", "isAccessible", "()Z", "(Ljava/lang/reflect/AccessibleObject;)Z");
       manipulator.replaceVirtualMethodInvokationWithStatic("java.lang.reflect.AccessibleObject", "org.fakereplace.reflection.AccessibleObjectReflectionDelegate", "setAccessible", "(Z)V", "(Ljava/lang/reflect/AccessibleObject;Z)V");
       manipulator.replaceVirtualMethodInvokationWithStatic("java.lang.reflect.AccessibleObject", "org.fakereplace.reflection.AccessibleObjectReflectionDelegate", "isAccessible", "()Z", "(Ljava/lang/reflect/AccessibleObject;)Z");
+
+      Thread t = new Thread(detector);
+      t.start();
 
    }
 
@@ -243,6 +250,7 @@ public class Transformer implements ClassFileTransformer
 
          if (!file.isInterface() && isClassReplacable(file.getName()))
          {
+            detector.addClassLoader(loader, file.getName());
             addMethodForInstrumentation(file);
             addFieldForInstrumentation(file);
             addConstructorForInstrumentation(file);
