@@ -405,12 +405,6 @@ public class Transformer implements ClassFileTransformer
          return null;
       }
       URL resource = ClassLoader.getSystemClassLoader().getResource(name.replace('.', '/') + ".class");
-      System.out.println("----------++");
-      System.out.println("----------++");
-      System.out.println("----------++");
-      System.out.println(resource);
-      System.out.println("----------++");
-      System.out.println("----------++");
       InputStream in = null;
       try
       {

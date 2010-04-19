@@ -29,6 +29,7 @@ import org.jboss.seam.contexts.ServletLifecycle;
 import org.jboss.seam.core.Init;
 import org.jboss.seam.el.EL;
 import org.jboss.seam.init.Initialization;
+import org.jboss.seam.util.ProxyFactory;
 
 import sun.awt.AppContext;
 
@@ -40,6 +41,7 @@ public class ClassRedefinitionPlugin implements ClassChangeAware
 
    public ClassRedefinitionPlugin()
    {
+      ProxyFactory.useCache = false;
       ClassChangeNotifier.add(this);
    }
 
@@ -79,8 +81,10 @@ public class ClassRedefinitionPlugin implements ClassChangeAware
 
    public void notify(Class<?>[] changed, Class<?>[] added)
    {
-      Seam.clearComponentNameCache();
+
+      ProxyFactory.useCache = false;
       Lifecycle.beginCall();
+      Seam.clearComponentNameCache();
       for (int i = 0; i < changed.length; ++i)
       {
          Class<?> d = changed[i];
@@ -114,6 +118,12 @@ public class ClassRedefinitionPlugin implements ClassChangeAware
          field = Introspector.class.getDeclaredField("BEANINFO_CACHE");
          field.setAccessible(true);
          Object beaninfoCache = field.get(null);
+
+         // clear proxy factory caches
+         field = ProxyFactory.class.getDeclaredField("proxyCache");
+         field.setAccessible(true);
+         map = (Map) field.get(null);
+         map.clear();
 
          map = (Map<Class<?>, BeanInfo>) AppContext.getAppContext().get(beaninfoCache);
          if (map != null)
@@ -186,11 +196,7 @@ public class ClassRedefinitionPlugin implements ClassChangeAware
       {
          e.printStackTrace();
       }
-      finally
-      {
-         Lifecycle.endCall();
-      }
-
+      Lifecycle.endCall();
    }
 
 }

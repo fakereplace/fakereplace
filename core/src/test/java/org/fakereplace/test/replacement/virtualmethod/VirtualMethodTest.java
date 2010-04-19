@@ -63,6 +63,10 @@ public class VirtualMethodTest
       Class<?> c = VirtualClass.class;
       Method add = c.getMethod("addValue", int.class);
       assert !Modifier.isStatic(add.getModifiers());
+      add = c.getMethod("getStuff", List.class);
+      assert !Modifier.isStatic(add.getModifiers());
+      add = c.getMethod("getValue");
+      assert !Modifier.isStatic(add.getModifiers());
    }
 
    @Test(groups = "virtualmethod")
