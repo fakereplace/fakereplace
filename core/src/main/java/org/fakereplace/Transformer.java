@@ -14,19 +14,16 @@ import java.security.ProtectionDomain;
 import java.util.Collections;
 import java.util.Map;
 import java.util.WeakHashMap;
-import java.util.concurrent.locks.ReentrantLock;
 
 import javassist.bytecode.AccessFlag;
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.Bytecode;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.CodeAttribute;
-import javassist.bytecode.CodeIterator;
 import javassist.bytecode.Descriptor;
 import javassist.bytecode.DuplicateMemberException;
 import javassist.bytecode.FieldInfo;
 import javassist.bytecode.MethodInfo;
-import javassist.bytecode.Opcode;
 
 import org.fakereplace.boot.Constants;
 import org.fakereplace.data.ClassData;
@@ -47,10 +44,6 @@ import org.fakereplace.util.NoInstrument;
  */
 public class Transformer implements ClassFileTransformer
 {
-
-   // we only want one thread to be transforming classes at a time.
-   // otherwise lots of problems can result.
-   ReentrantLock lock = new ReentrantLock();
 
    Instrumentation instrumentation;
 
@@ -179,7 +172,6 @@ public class Transformer implements ClassFileTransformer
    {
       try
       {
-         lock.lock();
          if (classBeingRedefined != null)
          {
             transformationStarted = true;
@@ -214,29 +206,8 @@ public class Transformer implements ClassFileTransformer
          if (file.getName().equals("org.jboss.seam.servlet.SeamFilter"))
          {
             integrationClassloader.put(loader, new Object());
-            MethodInfo meth = file.getMethod("getSortedFilters");
-            CodeIterator it = meth.getCodeAttribute().iterator();
-            while (it.hasNext())
-            {
-               int i = it.lookAhead();
-               // find the return instruction
-               if (it.byteAt(i) == Opcode.ARETURN)
-               {
-                  Bytecode b = new Bytecode(file.getConstPool());
-                  b.add(Opcode.DUP);
-                  b.addNew("org.fakereplace.integration.seam.ClassRedefinitionFilter");
-                  b.add(Opcode.DUP);
-                  b.addInvokespecial("org.fakereplace.integration.seam.ClassRedefinitionFilter", "<init>", "()V");
-                  b.addIconst(0);
-                  b.add(Opcode.SWAP);
-                  b.addInvokeinterface("java.util.List", "add", "(ILjava/lang/Object;)V", 3);
-                  // b.add(Opcode.POP);
-                  it.insert(b.get());
-
-               }
-               it.next();
-            }
-            loader.loadClass("org.fakereplace.integration.seam.ClassRedefinitionFilter");
+            Class<?> cl = loader.loadClass("org.fakereplace.integration.seam.ClassRedefinitionPlugin");
+            cl.newInstance();
 
          }
 
@@ -264,10 +235,6 @@ public class Transformer implements ClassFileTransformer
          e.printStackTrace();
 
          throw new IllegalClassFormatException();
-      }
-      finally
-      {
-         lock.unlock();
       }
    }
 
@@ -438,6 +405,12 @@ public class Transformer implements ClassFileTransformer
          return null;
       }
       URL resource = ClassLoader.getSystemClassLoader().getResource(name.replace('.', '/') + ".class");
+      System.out.println("----------++");
+      System.out.println("----------++");
+      System.out.println("----------++");
+      System.out.println(resource);
+      System.out.println("----------++");
+      System.out.println("----------++");
       InputStream in = null;
       try
       {
@@ -452,7 +425,10 @@ public class Transformer implements ClassFileTransformer
       {
          try
          {
-            in.close();
+            if (in != null)
+            {
+               in.close();
+            }
          }
          catch (IOException e)
          {

@@ -19,7 +19,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.fakereplace</groupId>
-			<artifactId>seam-agent</artifactId>
+			<artifactId>fakereplace-seam-agent</artifactId>
 			<version>0.2-SNAPSHOT</version>
 			<type>jar</type>
 			<scope>compile</scope>

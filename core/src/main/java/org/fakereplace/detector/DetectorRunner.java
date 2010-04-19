@@ -15,6 +15,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.fakereplace.Agent;
+import org.fakereplace.api.ClassChangeNotifier;
 import org.fakereplace.util.FileReader;
 
 public class DetectorRunner implements Runnable
@@ -229,15 +230,19 @@ public class DetectorRunner implements Runnable
             sleep(DELAY_TIME);
             ClassChangeSet changes = getChanges();
             ClassDefinition[] defs = new ClassDefinition[changes.getChangedClasses().size()];
+            Class<?>[] changed = new Class[changes.getChangedClasses().size()];
+            Class<?>[] newClasses = changes.newClasses.toArray(new Class[0]);
             int count = 0;
             for (ChangedClassData i : changes.getChangedClasses())
             {
                System.out.println("REPLACING CLASS: " + i.getJavaClass().getName());
+               changed[count] = i.javaClass;
                defs[count++] = new ClassDefinition(i.javaClass, i.classFile);
             }
             try
             {
                Agent.redefine(defs);
+               ClassChangeNotifier.notify(changed, newClasses);
             }
             catch (UnmodifiableClassException e)
             {
