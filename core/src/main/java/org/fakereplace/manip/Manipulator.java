@@ -1,8 +1,7 @@
 package org.fakereplace.manip;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javassist.bytecode.ClassFile;
 
@@ -15,7 +14,7 @@ import javassist.bytecode.ClassFile;
 public class Manipulator
 {
 
-   Map<String, String> renames = Collections.synchronizedMap(new HashMap<String, String>());
+   Map<String, String> renames = new ConcurrentHashMap<String, String>();
    MethodInvokationManipulator methodInvokationManipulator = new MethodInvokationManipulator();
    StaticFieldManipulator staticFieldManipulator = new StaticFieldManipulator();
    InstanceFieldManipulator instanceFieldManapulator = new InstanceFieldManipulator();

@@ -19,7 +19,7 @@ public class MethodInvokationManipulator
 
    Map<String, Set<VirtualToStaticData>> virtualToStaticMethod = new ConcurrentHashMap<String, Set<VirtualToStaticData>>();
 
-   public synchronized void clearRewrites(String className)
+   public void clearRewrites(String className)
    {
       virtualToStaticMethod.remove(className);
    }

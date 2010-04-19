@@ -180,7 +180,6 @@ public class Transformer implements ClassFileTransformer
       try
       {
          lock.lock();
-
          if (classBeingRedefined != null)
          {
             transformationStarted = true;
@@ -248,7 +247,7 @@ public class Transformer implements ClassFileTransformer
             recordClassDetails(file, loader);
          }
 
-         if (!file.isInterface() && isClassReplacable(file.getName()))
+         if (!file.isInterface() && isClassReplacable(file.getName()) && (AccessFlag.ENUM & file.getAccessFlags()) == 0)
          {
             detector.addClassLoader(loader, file.getName());
             addMethodForInstrumentation(file);

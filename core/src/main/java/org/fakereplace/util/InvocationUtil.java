@@ -6,8 +6,7 @@ import java.lang.reflect.Method;
 import org.fakereplace.boot.Constants;
 
 /**
- * class that inserts an object into the front of an array
- * this is way to hard to code by hand in bytecode.
+ * 
  * @author stuart
  *
  */

@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.instrument.ClassDefinition;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -223,16 +224,20 @@ public class ClassRedefinitionFilter extends AbstractFilter
                         Field cacheField = getField(r.getClass(), "cache");
                         cacheField.setAccessible(true);
                         Object cache = cacheField.get(r);
-                        for (Method m : cache.getClass().getDeclaredMethods())
+                        try
                         {
-                           System.out.println("METH:" + m.getName());
-                        }
-                        for (Field m : cache.getClass().getDeclaredFields())
-                        {
-                           System.out.println("FIELD:" + m.getName());
-                        }
                         Method m = cache.getClass().getMethod("clear");
                         m.invoke(cache);
+                        }
+                        catch(NoSuchMethodException e)
+                        {
+                           //different version of jboss el
+                           Class cacheClass = getClass().getClassLoader().loadClass("javax.el.BeanELResolver$ConcurrentCache");
+                           Constructor con = cacheClass.getConstructor(int.class);
+                           con.setAccessible(true);
+                           Object cacheInstance = con.newInstance(100);
+                           cacheField.set(r, cacheInstance);
+                        }
                      }
                   }
 
