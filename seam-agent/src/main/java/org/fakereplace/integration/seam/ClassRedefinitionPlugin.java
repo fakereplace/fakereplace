@@ -21,8 +21,6 @@ import org.jboss.seam.Component;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.Seam;
 import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.intercept.BypassInterceptors;
-import org.jboss.seam.annotations.web.Filter;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.contexts.Lifecycle;
 import org.jboss.seam.contexts.ServletLifecycle;
@@ -33,12 +31,9 @@ import org.jboss.seam.util.ProxyFactory;
 
 import sun.awt.AppContext;
 
-@Name("org.fakereplace.ClassRedefinitionFilter")
-@Filter
-@BypassInterceptors
+
 public class ClassRedefinitionPlugin implements ClassChangeAware
 {
-
    public ClassRedefinitionPlugin()
    {
       ProxyFactory.useCache = false;

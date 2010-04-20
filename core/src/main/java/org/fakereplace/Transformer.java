@@ -161,21 +161,12 @@ public class Transformer implements ClassFileTransformer
 
    }
 
-   /**
-    * This is set to true once we retransform the first class This is a
-    * performance improvement that allows us to skip a large amount of code
-    * until we know it is needed
-    */
-   boolean transformationStarted = false;
+  
 
    public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException
    {
       try
       {
-         if (classBeingRedefined != null)
-         {
-            transformationStarted = true;
-         }
          classLoaderInstrumenter.instrumentClassLoaderIfNessesary(loader, className);
          // we do not instrument any classes from fakereplace
          // if we did we get an endless loop
@@ -206,9 +197,11 @@ public class Transformer implements ClassFileTransformer
          if (file.getName().equals("org.jboss.seam.servlet.SeamFilter"))
          {
             integrationClassloader.put(loader, new Object());
-            Class<?> cl = loader.loadClass("org.fakereplace.integration.seam.ClassRedefinitionPlugin");
-            cl.newInstance();
-
+            //we need to load the class in another thread
+            //otherwise it will not be instrumented
+            ThreadLoader l = new ThreadLoader("org.fakereplace.integration.seam.ClassRedefinitionPlugin", loader);
+            Thread t = new Thread(l);
+            t.start();
          }
 
          replaceReflectionCalls(file);
@@ -428,5 +421,36 @@ public class Transformer implements ClassFileTransformer
          {
          }
       }
+   }
+   
+   class ThreadLoader implements Runnable
+   {
+      final String className;
+      final ClassLoader classLoader;
+      private ThreadLoader(String className, ClassLoader classLoader)
+      {
+         this.className = className;
+         this.classLoader = classLoader;
+      }
+      public void run()
+      {
+         try
+         {
+            Class c = classLoader.loadClass(className);
+            c.newInstance();
+         } catch (ClassNotFoundException e)
+         {
+            e.printStackTrace();
+         } catch (InstantiationException e)
+         {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+         } catch (IllegalAccessException e)
+         {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+         }
+      }
+      
    }
 }
