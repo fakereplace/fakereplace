@@ -4,7 +4,7 @@
    <groupId>org.fakereplace</groupId>
    <artifactId>fakereplace-parent</artifactId>
    <packaging>pom</packaging>
-   <version>0.2-SNAPSHOT</version>
+   <version>0.2</version>
 
    <name>Fakereplace Parent</name>
    
