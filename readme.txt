@@ -19,7 +19,7 @@ JVM option:
  -Dorg.fakereplace.packages=${com.mycompany.myclasses}
 
 Where ${com.mycompany.myclasses} is the top level package of the classes that
-I am trying to hot replace. All classes in this package or sub packages are
+you want to hot replace. All classes in this package or sub packages are
 instrumented to allow them to be replaced.
 
 To set the JVM options you will probably need to modify your app servers 

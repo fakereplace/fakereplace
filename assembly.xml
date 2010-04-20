@@ -38,10 +38,10 @@
    <moduleSets>
       <moduleSet>
          <includes>
-            <include>org.fakereplace:fakereplace:jar</include>
+            <include>org.fakereplace:fakereplace-bundle:jar</include>
          </includes>
          <binaries>
-         	<outputFileNameMapping>${module.artifactId}.${module.extension}</outputFileNameMapping>
+         	<outputFileNameMapping>fakereplace.${module.extension}</outputFileNameMapping>
             <outputDirectory>fakereplace</outputDirectory>
             <unpack>false</unpack>
          </binaries>         
