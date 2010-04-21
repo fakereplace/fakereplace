@@ -116,11 +116,22 @@ public class FieldReplacer
          old.setAccessFlags(md.getAccessFlags());
          try
          {
+            Field field = md.getField(oldClass);
             file.addField(old);
+            old.addAttribute(AnnotationReplacer.duplicateAnnotationsAttribute(file.getConstPool(), field));
          }
          catch (DuplicateMemberException e)
          {
             // this should not happen
+            throw new RuntimeException(e);
+         } catch (SecurityException e)
+         {
+            throw new RuntimeException(e);
+         } catch (ClassNotFoundException e)
+         {
+            throw new RuntimeException(e);
+         } catch (NoSuchFieldException e)
+         {
             throw new RuntimeException(e);
          }
       }
