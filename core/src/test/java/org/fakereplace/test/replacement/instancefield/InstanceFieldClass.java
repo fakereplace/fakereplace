@@ -5,6 +5,9 @@ public class InstanceFieldClass
 
    int afield;
    int bfield;
+   
+   @SomeAnnotation
+   int cfield;
 
    public void inc()
    {
