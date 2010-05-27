@@ -55,6 +55,7 @@ public class VirtualMethodTest
       assert addValue;
       assert value;
       assert stuff;
+
    }
 
    @Test(groups = "virtualmethod")
@@ -92,6 +93,75 @@ public class VirtualMethodTest
       Class<?> c = VirtualClass.class;
       Method meth = c.getMethod("getStuff", List.class);
       assert ((ParameterizedType) meth.getGenericParameterTypes()[0]).getActualTypeArguments()[0].equals(Integer.class);
+   }
+
+   @Test(groups = "virtualmethod")
+   public void testVirtualMethodgetDeclaredMethods() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException
+   {
+      boolean add = false;
+      boolean stuff = false;
+      Class<?> c = VirtualClass.class;
+      for (Method m : c.getDeclaredMethods())
+      {
+         if (m.getName().equals("addValue"))
+         {
+            assert m.getParameterTypes()[0] == int.class;
+            add = true;
+         }
+         if (m.getName().equals("getStuff"))
+         {
+            assert m.getParameterTypes()[0] == List.class;
+            stuff = true;
+         }
+      }
+      assert add;
+      assert stuff;
+   }
+   
+   @Test(groups = "virtualmethod")
+   public void testVirtualChildMethodgetMethods() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException
+   {
+      boolean add = false;
+      boolean stuff = false;
+      Class<?> c = VirtualChild.class;
+      for (Method m : c.getMethods())
+      {
+         if (m.getName().equals("addValue"))
+         {
+            assert m.getParameterTypes()[0] == int.class;
+            add = true;
+         }
+         if (m.getName().equals("getStuff"))
+         {
+            assert m.getParameterTypes()[0] == List.class;
+            stuff = true;
+         }
+      }
+      assert add;
+      assert stuff;
+   }
+   
+   @Test(groups = "virtualmethod")
+   public void testVirtualMethodgetMethods() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException
+   {
+      boolean add = false;
+      boolean stuff = false;
+      Class<?> c = VirtualClass.class;
+      for (Method m : c.getMethods())
+      {
+         if (m.getName().equals("addValue"))
+         {
+            assert m.getParameterTypes()[0] == int.class;
+            add = true;
+         }
+         if (m.getName().equals("getStuff"))
+         {
+            assert m.getParameterTypes()[0] == List.class;
+            stuff = true;
+         }
+      }
+      assert add;
+      assert stuff;
    }
 
 }

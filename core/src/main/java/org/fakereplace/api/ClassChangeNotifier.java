@@ -60,5 +60,33 @@ public class ClassChangeNotifier
          }
       }
    }
+   
+   public static void beforeChange(Class<?>[] changed, Class<?>[] newClasses)
+   {
+      Class<?>[] a = new Class[0];
+      for (Set<ClassChangeAware> c : classChangeAwares.values())
+      {
+         for (ClassChangeAware i : c)
+         {
+            i.beforeChange(changed, newClasses);
+         }
+      }
+
+      for (Set<Object> c : unlinkedAwares.values())
+      {
+         for (Object i : c)
+         {
+            try
+            {
+               Method m = i.getClass().getMethod("beforeChange", a.getClass(), a.getClass());
+               m.invoke(i, changed, newClasses);
+            }
+            catch (Exception e)
+            {
+               e.printStackTrace();
+            }
+         }
+      }
+   }
 
 }

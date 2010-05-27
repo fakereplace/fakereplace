@@ -7,5 +7,7 @@ package org.fakereplace.api;
  */
 public interface ClassChangeAware
 {
+   public void beforeChange(Class<?>[] changed, Class<?>[] added);
+   
    public void notify(Class<?>[] changed, Class<?>[] added);
 }

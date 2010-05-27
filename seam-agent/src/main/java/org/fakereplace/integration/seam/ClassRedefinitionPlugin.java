@@ -74,10 +74,8 @@ public class ClassRedefinitionPlugin implements ClassChangeAware
       return getField(clazz.getSuperclass(), name);
    }
 
-   public void notify(Class<?>[] changed, Class<?>[] added)
+   public void beforeChange(Class<?>[] changed, Class<?>[] added)
    {
-
-      ProxyFactory.useCache = false;
       Lifecycle.beginCall();
       Seam.clearComponentNameCache();
       for (int i = 0; i < changed.length; ++i)
@@ -102,6 +100,11 @@ public class ClassRedefinitionPlugin implements ClassChangeAware
          }
 
       }
+   }
+
+   public void notify(Class<?>[] changed, Class<?>[] added)
+   {
+      
       try
       {
          // clear reflection caches

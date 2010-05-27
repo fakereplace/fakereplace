@@ -223,6 +223,8 @@ public class DetectorRunner implements Runnable
       {
          // wait 2 seconds
          sleep(POLL_TIME);
+         try
+         {
          if (isFileSystemChanged())
          {
             // wait for the stuff to be copied
@@ -241,6 +243,7 @@ public class DetectorRunner implements Runnable
             }
             try
             {
+               ClassChangeNotifier.beforeChange(changed, newClasses);
                Agent.redefine(defs);
                ClassChangeNotifier.notify(changed, newClasses);
             }
@@ -254,6 +257,9 @@ public class DetectorRunner implements Runnable
                System.out.println("ERROR REPLACING CLASSES");
                e.printStackTrace();
             }
+         }
+         }catch (Exception e) {
+            System.out.println(e.getMessage());
          }
 
       }
