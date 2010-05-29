@@ -1,11 +1,9 @@
 package org.fakereplace.manip;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javassist.bytecode.Bytecode;
 import javassist.bytecode.ClassFile;
@@ -17,28 +15,26 @@ import javassist.bytecode.Opcode;
 import org.fakereplace.boot.Constants;
 import org.fakereplace.boot.Logger;
 import org.fakereplace.manip.data.AddedFieldData;
+import org.fakereplace.manip.util.Boxing;
+import org.fakereplace.manip.util.ManipulationDataStore;
 import org.fakereplace.util.DescriptorUtils;
 
-public class InstanceFieldManipulator
+public class InstanceFieldManipulator implements ClassManipulator
 {
    /**
     * added field information by class
     */
-   Map<String, Set<AddedFieldData>> addedFieldData = new ConcurrentHashMap<String, Set<AddedFieldData>>();
+   ManipulationDataStore<AddedFieldData> data = new ManipulationDataStore<AddedFieldData>();
 
-   public void addField(AddedFieldData data)
+   public void addField(AddedFieldData dt)
    {
-      Set<AddedFieldData> d = addedFieldData.get(data.getClassName());
-      if (d == null)
-      {
-         d = new HashSet<AddedFieldData>();
-         addedFieldData.put(data.getClassName(), d);
-      }
-      d.add(data);
+      data.add(dt.getClassName(), dt);
    }
 
-   public void tranformClass(ClassFile file)
+   public void transformClass(ClassFile file, ClassLoader loader)
    {
+
+      Map<String, Set<AddedFieldData>> addedFieldData = data.getManipulationDate(loader);
       if (addedFieldData.isEmpty())
       {
          return;
@@ -153,9 +149,9 @@ public class InstanceFieldManipulator
       }
    }
 
-   public void clearRewrites(String className)
+   public void clearRewrites(String className, ClassLoader loader)
    {
-      this.addedFieldData.remove(className);
+      data.remove(className, loader);
    }
 
 }

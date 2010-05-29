@@ -1,11 +1,11 @@
 package org.fakereplace.manip;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import org.fakereplace.manip.data.AddedFieldData;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import javassist.bytecode.ClassFile;
+
+import org.fakereplace.manip.data.AddedFieldData;
 
 /**
  * Class that maintains a set of manipulations to apply to classes
@@ -16,23 +16,27 @@ import javassist.bytecode.ClassFile;
 public class Manipulator
 {
 
-   Map<String, String> renames = new ConcurrentHashMap<String, String>();
-   MethodInvokationManipulator methodInvokationManipulator = new MethodInvokationManipulator();
-   StaticFieldManipulator staticFieldManipulator = new StaticFieldManipulator();
-   InstanceFieldManipulator instanceFieldManapulator = new InstanceFieldManipulator();
-   ConstructorInvocationManipulator constructorInvocationManipulator = new ConstructorInvocationManipulator();
+   final private MethodInvokationManipulator methodInvokationManipulator = new MethodInvokationManipulator();
+   final private StaticFieldManipulator staticFieldManipulator = new StaticFieldManipulator();
+   final private InstanceFieldManipulator instanceFieldManapulator = new InstanceFieldManipulator();
+   final private ConstructorInvocationManipulator constructorInvocationManipulator = new ConstructorInvocationManipulator();
 
-   public void removeRewrites(String className)
+   final private Set<ClassManipulator> manipulators = new CopyOnWriteArraySet<ClassManipulator>();
+
+   public Manipulator()
    {
-      methodInvokationManipulator.clearRewrites(className);
-      staticFieldManipulator.clearRewrite(className);
-      instanceFieldManapulator.clearRewrites(className);
-      constructorInvocationManipulator.clearRewrites(className);
+      manipulators.add(methodInvokationManipulator);
+      manipulators.add(staticFieldManipulator);
+      manipulators.add(instanceFieldManapulator);
+      manipulators.add(constructorInvocationManipulator);
    }
 
-   public void renameClass(String oldName, String newName)
+   public void removeRewrites(String className, ClassLoader classLoader)
    {
-      renames.put(oldName, newName);
+      for (ClassManipulator m : manipulators)
+      {
+         m.clearRewrites(className, classLoader);
+      }
    }
 
    /**
@@ -77,15 +81,13 @@ public class Manipulator
       methodInvokationManipulator.replaceVirtualMethodInvokationWithLocal(oldClass, methodName, newMethodName, methodDesc, newStaticMethodDesc, classLoader);
    }
 
-   public void transformClass(ClassFile file)
+   public void transformClass(ClassFile file, ClassLoader classLoader)
    {
       // first we are going to transform virtual method calls to static ones
-      methodInvokationManipulator.transformClass(file);
-      staticFieldManipulator.transformClass(file);
-      instanceFieldManapulator.tranformClass(file);
-      constructorInvocationManipulator.transformClass(file);
-      file.renameClass(renames);
-
+      for (ClassManipulator m : manipulators)
+      {
+         m.transformClass(file, classLoader);
+      }
    }
 
 }

@@ -1,4 +1,4 @@
-package org.fakereplace.manip;
+package org.fakereplace.manip.util;
 
 /**
  * Represents an object that can be filtered by classloader

@@ -55,7 +55,7 @@ public class Agent
             {
                DataInputStream ds = new DataInputStream(new ByteArrayInputStream(d.getDefinitionClassFile()));
                ClassFile file = new ClassFile(ds);
-               Transformer.getManipulator().transformClass(file);
+               Transformer.getManipulator().transformClass(file, d.getDefinitionClass().getClassLoader());
                FileOutputStream s = new FileOutputStream("/tmp/" + d.getDefinitionClass().getName() + ".class");
                DataOutputStream dos = new DataOutputStream(s);
                file.write(dos);

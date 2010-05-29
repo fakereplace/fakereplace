@@ -1,11 +1,9 @@
 package org.fakereplace.manip;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javassist.bytecode.Bytecode;
 import javassist.bytecode.ClassFile;
@@ -17,16 +15,18 @@ import javassist.bytecode.Opcode;
 import org.fakereplace.boot.Constants;
 import org.fakereplace.boot.Logger;
 import org.fakereplace.manip.data.ConstructorRewriteData;
+import org.fakereplace.manip.util.Boxing;
+import org.fakereplace.manip.util.ManipulationDataStore;
 import org.fakereplace.util.DescriptorUtils;
 
-public class ConstructorInvocationManipulator
+public class ConstructorInvocationManipulator implements ClassManipulator
 {
 
-   Map<String, Set<ConstructorRewriteData>> constructorRewrites = new ConcurrentHashMap<String, Set<ConstructorRewriteData>>();
+   ManipulationDataStore<ConstructorRewriteData> data = new ManipulationDataStore<ConstructorRewriteData>();
 
-   public synchronized void clearRewrites(String className)
+   public synchronized void clearRewrites(String className, ClassLoader loader)
    {
-      constructorRewrites.remove(className);
+      data.remove(className, loader);
    }
 
    /**
@@ -40,16 +40,14 @@ public class ConstructorInvocationManipulator
     */
    public void rewriteConstructorCalls(String clazz, String descriptor, int methodNo, ClassLoader classLoader)
    {
-      ConstructorRewriteData data = new ConstructorRewriteData(clazz, descriptor, methodNo, classLoader);
-      if (!constructorRewrites.containsKey(clazz))
-      {
-         constructorRewrites.put(clazz, new HashSet<ConstructorRewriteData>());
-      }
-      constructorRewrites.get(clazz).add(data);
+      ConstructorRewriteData d = new ConstructorRewriteData(clazz, descriptor, methodNo, classLoader);
+      data.add(clazz, d);
    }
 
-   public void transformClass(ClassFile file)
+   public void transformClass(ClassFile file, ClassLoader loader)
    {
+
+      Map<String, Set<ConstructorRewriteData>> constructorRewrites = data.getManipulationDate(loader);
       if (constructorRewrites.isEmpty())
       {
          return;

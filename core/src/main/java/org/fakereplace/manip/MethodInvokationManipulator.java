@@ -1,11 +1,9 @@
 package org.fakereplace.manip;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.CodeIterator;
@@ -14,15 +12,15 @@ import javassist.bytecode.MethodInfo;
 
 import org.fakereplace.boot.Logger;
 import org.fakereplace.manip.data.VirtualToStaticData;
+import org.fakereplace.manip.util.ManipulationDataStore;
 
-public class MethodInvokationManipulator
+public class MethodInvokationManipulator implements ClassManipulator
 {
+   ManipulationDataStore<VirtualToStaticData> data = new ManipulationDataStore<VirtualToStaticData>();
 
-   Map<String, Set<VirtualToStaticData>> virtualToStaticMethod = new ConcurrentHashMap<String, Set<VirtualToStaticData>>();
-
-   public void clearRewrites(String className)
+   public void clearRewrites(String className, ClassLoader loader)
    {
-      virtualToStaticMethod.remove(className);
+      data.remove(className, loader);
    }
 
    /**
@@ -39,27 +37,19 @@ public class MethodInvokationManipulator
     */
    public void replaceVirtualMethodInvokationWithStatic(String oldClass, String newClass, String methodName, String methodDesc, String newStaticMethodDesc, ClassLoader classLoader)
    {
-      VirtualToStaticData data = new VirtualToStaticData(oldClass, newClass, methodName, methodDesc, newStaticMethodDesc, null, classLoader);
-      if (!virtualToStaticMethod.containsKey(oldClass))
-      {
-         virtualToStaticMethod.put(oldClass, new HashSet<VirtualToStaticData>());
-      }
-      virtualToStaticMethod.get(oldClass).add(data);
+      VirtualToStaticData d = new VirtualToStaticData(oldClass, newClass, methodName, methodDesc, newStaticMethodDesc, null, classLoader);
+      data.add(oldClass, d);
    }
 
    public void replaceVirtualMethodInvokationWithLocal(String oldClass, String methodName, String newMethodName, String methodDesc, String newStaticMethodDesc, ClassLoader classLoader)
    {
-      VirtualToStaticData data = new VirtualToStaticData(oldClass, null, methodName, methodDesc, newStaticMethodDesc, newMethodName, classLoader);
-      if (!virtualToStaticMethod.containsKey(oldClass))
-      {
-         virtualToStaticMethod.put(oldClass, new HashSet<VirtualToStaticData>());
-      }
-      virtualToStaticMethod.get(oldClass).add(data);
+      VirtualToStaticData d = new VirtualToStaticData(oldClass, null, methodName, methodDesc, newStaticMethodDesc, newMethodName, classLoader);
+      data.add(oldClass, d);
    }
 
-   public void transformClass(ClassFile file)
+   public void transformClass(ClassFile file, ClassLoader loader)
    {
-
+      Map<String, Set<VirtualToStaticData>> virtualToStaticMethod = data.getManipulationDate(loader);
       Map<Integer, VirtualToStaticData> methodCallLocations = new HashMap<Integer, VirtualToStaticData>();
       Map<VirtualToStaticData, Integer> newClassPoolLocations = new HashMap<VirtualToStaticData, Integer>();
       Map<VirtualToStaticData, Integer> newCallLocations = new HashMap<VirtualToStaticData, Integer>();

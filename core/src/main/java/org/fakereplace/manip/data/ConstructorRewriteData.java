@@ -3,9 +3,10 @@
  */
 package org.fakereplace.manip.data;
 
+import org.fakereplace.manip.util.ClassloaderFiltered;
 import org.fakereplace.util.DescriptorUtils;
 
-public class ConstructorRewriteData
+public class ConstructorRewriteData implements ClassloaderFiltered<ConstructorRewriteData>
 {
    final private String clazz;
    final private String methodDesc;
@@ -62,5 +63,10 @@ public class ConstructorRewriteData
    public ClassLoader getClassLoader()
    {
       return classLoader;
+   }
+
+   public ConstructorRewriteData getInstane()
+   {
+      return this;
    }
 }

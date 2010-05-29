@@ -3,7 +3,9 @@
  */
 package org.fakereplace.manip.data;
 
-public class VirtualToStaticData
+import org.fakereplace.manip.util.ClassloaderFiltered;
+
+public class VirtualToStaticData implements ClassloaderFiltered<VirtualToStaticData>
 {
    final private String oldClass;
    final private String newClass;
@@ -95,5 +97,10 @@ public class VirtualToStaticData
    public ClassLoader getClassLoader()
    {
       return classLoader;
+   }
+
+   public VirtualToStaticData getInstane()
+   {
+      return this;
    }
 }

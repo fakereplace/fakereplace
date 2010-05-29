@@ -1,4 +1,4 @@
-package org.fakereplace.manip;
+package org.fakereplace.manip.util;
 
 import javassist.bytecode.BadBytecode;
 import javassist.bytecode.Bytecode;

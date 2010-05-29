@@ -33,8 +33,8 @@ import org.fakereplace.data.ClassData;
 import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.data.FieldData;
 import org.fakereplace.data.MemberType;
-import org.fakereplace.manip.Boxing;
 import org.fakereplace.manip.data.AddedFieldData;
+import org.fakereplace.manip.util.Boxing;
 import org.fakereplace.reflection.FieldAccessor;
 
 public class FieldReplacer

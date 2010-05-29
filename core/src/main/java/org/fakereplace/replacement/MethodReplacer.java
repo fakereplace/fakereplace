@@ -37,9 +37,9 @@ import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.data.MemberType;
 import org.fakereplace.data.MethodData;
 import org.fakereplace.data.MethodIdentifierStore;
-import org.fakereplace.manip.Boxing;
-import org.fakereplace.manip.MethodReturnRewriter;
-import org.fakereplace.manip.ParameterRewriter;
+import org.fakereplace.manip.util.Boxing;
+import org.fakereplace.manip.util.MethodReturnRewriter;
+import org.fakereplace.manip.util.ParameterRewriter;
 import org.fakereplace.util.DescriptorUtils;
 
 public class MethodReplacer

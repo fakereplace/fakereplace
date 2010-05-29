@@ -207,7 +207,7 @@ public class Transformer implements ClassFileTransformer
             t.start();
          }
 
-         replaceReflectionCalls(file);
+         manipulator.transformClass(file, loader);
 
          if (!file.isInterface() && isClassReplacable(file.getName()) && (AccessFlag.ENUM & file.getAccessFlags()) == 0)
          {
@@ -239,17 +239,6 @@ public class Transformer implements ClassFileTransformer
          }
       }
       return false;
-   }
-
-   /**
-    * Replace all calls to java reflection api's with calls to our api's to give
-    * us a change to mangle the calls if nessesary
-    * 
-    * @param file
-    */
-   void replaceReflectionCalls(ClassFile file)
-   {
-      manipulator.transformClass(file);
    }
 
    /**

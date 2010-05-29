@@ -1,12 +1,14 @@
 package org.fakereplace.manip.data;
 
+import org.fakereplace.manip.util.ClassloaderFiltered;
+
 /**
  * Stores information about an added instance field.
  * 
  * @author stuart
  * 
  */
-public class AddedFieldData
+public class AddedFieldData implements ClassloaderFiltered<AddedFieldData>
 {
    final private int arrayIndex;
    final private String name;
@@ -47,6 +49,11 @@ public class AddedFieldData
    public ClassLoader getClassLoader()
    {
       return classLoader;
+   }
+
+   public AddedFieldData getInstane()
+   {
+      return this;
    }
 
 }

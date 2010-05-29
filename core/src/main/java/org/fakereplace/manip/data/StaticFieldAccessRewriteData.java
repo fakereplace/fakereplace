@@ -1,11 +1,13 @@
 package org.fakereplace.manip.data;
 
-public class StaticFieldAccessRewriteData
+import org.fakereplace.manip.util.ClassloaderFiltered;
+
+public class StaticFieldAccessRewriteData implements ClassloaderFiltered<StaticFieldAccessRewriteData>
 {
-   final String oldClass;
-   final String newClass;
-   final String fieldName;
-   final ClassLoader classLoader;
+   final private String oldClass;
+   final private String newClass;
+   final private String fieldName;
+   final private ClassLoader classLoader;
 
    public StaticFieldAccessRewriteData(String oldClass, String newClass, String fieldName, ClassLoader classLoader)
    {
@@ -55,5 +57,15 @@ public class StaticFieldAccessRewriteData
    public int hashCode()
    {
       return toString().hashCode();
+   }
+
+   public ClassLoader getClassLoader()
+   {
+      return classLoader;
+   }
+
+   public StaticFieldAccessRewriteData getInstane()
+   {
+      return this;
    }
 }

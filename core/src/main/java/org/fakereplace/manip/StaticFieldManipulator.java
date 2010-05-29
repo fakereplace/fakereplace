@@ -1,11 +1,9 @@
 package org.fakereplace.manip;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.CodeIterator;
@@ -14,15 +12,15 @@ import javassist.bytecode.MethodInfo;
 
 import org.fakereplace.boot.Logger;
 import org.fakereplace.manip.data.StaticFieldAccessRewriteData;
+import org.fakereplace.manip.util.ManipulationDataStore;
 
-public class StaticFieldManipulator
+public class StaticFieldManipulator implements ClassManipulator
 {
+   ManipulationDataStore<StaticFieldAccessRewriteData> data = new ManipulationDataStore<StaticFieldAccessRewriteData>();
 
-   Map<String, Set<StaticFieldAccessRewriteData>> staticMethodData = new ConcurrentHashMap<String, Set<StaticFieldAccessRewriteData>>();
-
-   public void clearRewrite(String className)
+   public void clearRewrites(String className, ClassLoader classLoader)
    {
-      staticMethodData.remove(className);
+      data.remove(className, classLoader);
    }
 
    /**
@@ -34,17 +32,12 @@ public class StaticFieldManipulator
     */
    public void rewriteStaticFieldAccess(String oldClass, String newClass, String fieldName, ClassLoader classLoader)
    {
-      Set<StaticFieldAccessRewriteData> d = staticMethodData.get(oldClass);
-      if (d == null)
-      {
-         d = new HashSet<StaticFieldAccessRewriteData>();
-         staticMethodData.put(oldClass, d);
-      }
-      d.add(new StaticFieldAccessRewriteData(oldClass, newClass, fieldName, classLoader));
+      data.add(oldClass, new StaticFieldAccessRewriteData(oldClass, newClass, fieldName, classLoader));
    }
 
-   public void transformClass(ClassFile file)
+   public void transformClass(ClassFile file, ClassLoader loader)
    {
+      Map<String, Set<StaticFieldAccessRewriteData>> staticMethodData = data.getManipulationDate(loader);
       if (staticMethodData.isEmpty())
       {
          return;
