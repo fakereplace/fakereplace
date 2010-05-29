@@ -1,4 +1,4 @@
-package org.fakereplace.manip;
+package org.fakereplace.manip.data;
 
 /**
  * Stores information about an added instance field.
@@ -8,18 +8,20 @@ package org.fakereplace.manip;
  */
 public class AddedFieldData
 {
-   final int arrayIndex;
-   final String name;
-   final String descriptor;
-   final String className;
+   final private int arrayIndex;
+   final private String name;
+   final private String descriptor;
+   final private String className;
+   final private ClassLoader classLoader;
 
-   public AddedFieldData(int arrayIndex, String name, String descriptor, String className)
+   public AddedFieldData(int arrayIndex, String name, String descriptor, String className, ClassLoader classLoader)
    {
       super();
       this.arrayIndex = arrayIndex;
       this.name = name;
       this.descriptor = descriptor;
       this.className = className;
+      this.classLoader = classLoader;
    }
 
    public int getArrayIndex()
@@ -40,6 +42,11 @@ public class AddedFieldData
    public String getClassName()
    {
       return className;
+   }
+
+   public ClassLoader getClassLoader()
+   {
+      return classLoader;
    }
 
 }

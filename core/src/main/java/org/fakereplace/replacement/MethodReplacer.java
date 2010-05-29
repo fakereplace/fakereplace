@@ -437,7 +437,7 @@ public class MethodReplacer
          {
             newMethodDesc = "(L" + Descriptor.toJvmName(file.getName()) + ";" + newMethodDesc.substring(1);
          }
-         Transformer.getManipulator().replaceVirtualMethodInvokationWithStatic(file.getName(), proxyName, mInfo.getName(), mInfo.getDescriptor(), newMethodDesc);
+         Transformer.getManipulator().replaceVirtualMethodInvokationWithStatic(file.getName(), proxyName, mInfo.getName(), mInfo.getDescriptor(), newMethodDesc, loader);
          MethodData md = new MethodData(mInfo.getName(), mInfo.getDescriptor(), proxyName, MemberType.FAKE, mInfo.getAccessFlags());
 
          data.addMethod(md);
@@ -579,7 +579,7 @@ public class MethodReplacer
          String proxyName = generateFakeConstructorBytecode(mInfo, file.getConstPool(), methodCount, file.getName(), loader);
          ClassDataStore.registerProxyName(oldClass, proxyName);
          MethodData md = new MethodData(mInfo.getName(), mInfo.getDescriptor(), proxyName, MemberType.FAKE_CONSTRUCTOR, mInfo.getAccessFlags(), methodCount);
-         Transformer.getManipulator().rewriteConstructorAccess(file.getName(), mInfo.getDescriptor(), methodCount);
+         Transformer.getManipulator().rewriteConstructorAccess(file.getName(), mInfo.getDescriptor(), methodCount, loader);
          data.addMethod(md);
          ClassDataStore.registerReplacedMethod(proxyName, md);
       }

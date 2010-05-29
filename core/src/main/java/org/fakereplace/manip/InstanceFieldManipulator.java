@@ -16,6 +16,7 @@ import javassist.bytecode.Opcode;
 
 import org.fakereplace.boot.Constants;
 import org.fakereplace.boot.Logger;
+import org.fakereplace.manip.data.AddedFieldData;
 import org.fakereplace.util.DescriptorUtils;
 
 public class InstanceFieldManipulator
@@ -55,7 +56,7 @@ public class InstanceFieldManipulator
             {
                for (AddedFieldData data : addedFieldData.get(pool.getFieldrefClassName(i)))
                {
-                  if (pool.getFieldrefName(i).equals(data.name))
+                  if (pool.getFieldrefName(i).equals(data.getName()))
                   {
                      // store the location in the const pool of the method ref
                      fieldAccessLocations.put(i, data);
@@ -98,7 +99,7 @@ public class InstanceFieldManipulator
 
                         AddedFieldData data = fieldAccessLocations.get(val);
 
-                        int arrayPos = file.getConstPool().addIntegerInfo(data.arrayIndex);
+                        int arrayPos = file.getConstPool().addIntegerInfo(data.getArrayIndex());
                         // write over the field access with nop
                         it.writeByte(Opcode.NOP, index);
                         it.writeByte(Opcode.NOP, index + 1);

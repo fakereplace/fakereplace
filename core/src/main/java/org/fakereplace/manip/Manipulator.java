@@ -3,6 +3,8 @@ package org.fakereplace.manip;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.fakereplace.manip.data.AddedFieldData;
+
 import javassist.bytecode.ClassFile;
 
 /**
@@ -40,14 +42,14 @@ public class Manipulator
     * @param newClass
     * @param fieldName
     */
-   public void rewriteStaticFieldAccess(String oldClass, String newClass, String fieldName)
+   public void rewriteStaticFieldAccess(String oldClass, String newClass, String fieldName, ClassLoader classLoader)
    {
-      staticFieldManipulator.rewriteStaticFieldAccess(oldClass, newClass, fieldName);
+      staticFieldManipulator.rewriteStaticFieldAccess(oldClass, newClass, fieldName, classLoader);
    }
 
-   public void rewriteConstructorAccess(String clazz, String descriptor, int methodNo)
+   public void rewriteConstructorAccess(String clazz, String descriptor, int methodNo, ClassLoader classLoader)
    {
-      constructorInvocationManipulator.rewriteConstructorCalls(clazz, descriptor, methodNo);
+      constructorInvocationManipulator.rewriteConstructorCalls(clazz, descriptor, methodNo, classLoader);
    }
 
    public void rewriteInstanceFieldAccess(AddedFieldData data)
@@ -65,14 +67,14 @@ public class Manipulator
     * @param methodDesc
     * @param newStaticMethodDesc
     */
-   public void replaceVirtualMethodInvokationWithStatic(String oldClass, String newClass, String methodName, String methodDesc, String newStaticMethodDesc)
+   public void replaceVirtualMethodInvokationWithStatic(String oldClass, String newClass, String methodName, String methodDesc, String newStaticMethodDesc, ClassLoader classLoader)
    {
-      methodInvokationManipulator.replaceVirtualMethodInvokationWithStatic(oldClass, newClass, methodName, methodDesc, newStaticMethodDesc);
+      methodInvokationManipulator.replaceVirtualMethodInvokationWithStatic(oldClass, newClass, methodName, methodDesc, newStaticMethodDesc, classLoader);
    }
 
-   public void replaceVirtualMethodInvokationWithLocal(String oldClass, String methodName, String newMethodName, String methodDesc, String newStaticMethodDesc)
+   public void replaceVirtualMethodInvokationWithLocal(String oldClass, String methodName, String newMethodName, String methodDesc, String newStaticMethodDesc, ClassLoader classLoader)
    {
-      methodInvokationManipulator.replaceVirtualMethodInvokationWithLocal(oldClass, methodName, newMethodName, methodDesc, newStaticMethodDesc);
+      methodInvokationManipulator.replaceVirtualMethodInvokationWithLocal(oldClass, methodName, newMethodName, methodDesc, newStaticMethodDesc, classLoader);
    }
 
    public void transformClass(ClassFile file)

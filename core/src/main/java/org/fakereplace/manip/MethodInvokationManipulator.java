@@ -13,6 +13,7 @@ import javassist.bytecode.ConstPool;
 import javassist.bytecode.MethodInfo;
 
 import org.fakereplace.boot.Logger;
+import org.fakereplace.manip.data.VirtualToStaticData;
 
 public class MethodInvokationManipulator
 {
@@ -36,9 +37,9 @@ public class MethodInvokationManipulator
     * @param methodDesc
     * @param newStaticMethodDesc
     */
-   public void replaceVirtualMethodInvokationWithStatic(String oldClass, String newClass, String methodName, String methodDesc, String newStaticMethodDesc)
+   public void replaceVirtualMethodInvokationWithStatic(String oldClass, String newClass, String methodName, String methodDesc, String newStaticMethodDesc, ClassLoader classLoader)
    {
-      VirtualToStaticData data = new VirtualToStaticData(oldClass, newClass, methodName, methodDesc, newStaticMethodDesc, null);
+      VirtualToStaticData data = new VirtualToStaticData(oldClass, newClass, methodName, methodDesc, newStaticMethodDesc, null, classLoader);
       if (!virtualToStaticMethod.containsKey(oldClass))
       {
          virtualToStaticMethod.put(oldClass, new HashSet<VirtualToStaticData>());
@@ -46,9 +47,9 @@ public class MethodInvokationManipulator
       virtualToStaticMethod.get(oldClass).add(data);
    }
 
-   public void replaceVirtualMethodInvokationWithLocal(String oldClass, String methodName, String newMethodName, String methodDesc, String newStaticMethodDesc)
+   public void replaceVirtualMethodInvokationWithLocal(String oldClass, String methodName, String newMethodName, String methodDesc, String newStaticMethodDesc, ClassLoader classLoader)
    {
-      VirtualToStaticData data = new VirtualToStaticData(oldClass, null, methodName, methodDesc, newStaticMethodDesc, newMethodName);
+      VirtualToStaticData data = new VirtualToStaticData(oldClass, null, methodName, methodDesc, newStaticMethodDesc, newMethodName, classLoader);
       if (!virtualToStaticMethod.containsKey(oldClass))
       {
          virtualToStaticMethod.put(oldClass, new HashSet<VirtualToStaticData>());
@@ -74,7 +75,7 @@ public class MethodInvokationManipulator
             {
                for (VirtualToStaticData data : virtualToStaticMethod.get(pool.getMethodrefClassName(i)))
                {
-                  if (pool.getMethodrefName(i).equals(data.methodName) && pool.getMethodrefType(i).equals(data.methodDesc))
+                  if (pool.getMethodrefName(i).equals(data.getMethodName()) && pool.getMethodrefType(i).equals(data.getMethodDesc()))
                   {
                      // store the location in the const pool of the method ref
                      methodCallLocations.put(i, data);
@@ -88,9 +89,9 @@ public class MethodInvokationManipulator
                         // we have not added the new class reference or
                         // the new call location to the class pool yet
                         int newCpLoc;
-                        if (data.newClass != null)
+                        if (data.getNewClass() != null)
                         {
-                           newCpLoc = pool.addClassInfo(data.newClass);
+                           newCpLoc = pool.addClassInfo(data.getNewClass());
                         }
                         else
                         {
@@ -98,7 +99,7 @@ public class MethodInvokationManipulator
                            newCpLoc = pool.addClassInfo(file.getName());
                         }
                         newClassPoolLocations.put(data, newCpLoc);
-                        int newNameAndType = pool.addNameAndTypeInfo(data.newMethodName, data.newStaticMethodDesc);
+                        int newNameAndType = pool.addNameAndTypeInfo(data.getNewMethodName(), data.getNewStaticMethodDesc());
                         newCallLocations.put(data, pool.addMethodrefInfo(newCpLoc, newNameAndType));
                      }
                      break;
@@ -153,64 +154,6 @@ public class MethodInvokationManipulator
                e.printStackTrace();
             }
          }
-      }
-   }
-
-   static private class VirtualToStaticData
-   {
-      final String oldClass;
-      final String newClass;
-      final String methodName;
-      final String newMethodName;
-      final String methodDesc;
-      final String newStaticMethodDesc;
-
-      public VirtualToStaticData(String oldClass, String newClass, String methodName, String methodDesc, String newStaticMethodDesc, String newMethodName)
-      {
-         this.oldClass = oldClass;
-         this.newClass = newClass;
-         this.methodName = methodName;
-         if (newMethodName == null)
-         {
-            this.newMethodName = methodName;
-         }
-         else
-         {
-            this.newMethodName = newMethodName;
-         }
-         this.methodDesc = methodDesc;
-         this.newStaticMethodDesc = newStaticMethodDesc;
-      }
-
-      public String toString()
-      {
-         StringBuilder sb = new StringBuilder();
-         sb.append(oldClass);
-         sb.append(" ");
-         sb.append(newClass);
-         sb.append(" ");
-         sb.append(methodName);
-         sb.append(" ");
-         sb.append(methodDesc);
-         sb.append(" ");
-         sb.append(newStaticMethodDesc);
-
-         return sb.toString();
-      }
-
-      public boolean equals(Object o)
-      {
-         if (o.getClass().isAssignableFrom(VirtualToStaticData.class))
-         {
-            VirtualToStaticData i = (VirtualToStaticData) o;
-            return oldClass.equals(i.oldClass) && newClass.equals(i.newClass) && methodName.equals(i.methodName) && methodDesc.equals(i.methodDesc) && newStaticMethodDesc.equals(i.newStaticMethodDesc);
-         }
-         return false;
-      }
-
-      public int hashCode()
-      {
-         return toString().hashCode();
       }
    }
 

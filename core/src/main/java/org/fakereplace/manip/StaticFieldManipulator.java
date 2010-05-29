@@ -13,6 +13,7 @@ import javassist.bytecode.ConstPool;
 import javassist.bytecode.MethodInfo;
 
 import org.fakereplace.boot.Logger;
+import org.fakereplace.manip.data.StaticFieldAccessRewriteData;
 
 public class StaticFieldManipulator
 {
@@ -31,7 +32,7 @@ public class StaticFieldManipulator
     * @param newClass
     * @param fieldName
     */
-   public void rewriteStaticFieldAccess(String oldClass, String newClass, String fieldName)
+   public void rewriteStaticFieldAccess(String oldClass, String newClass, String fieldName, ClassLoader classLoader)
    {
       Set<StaticFieldAccessRewriteData> d = staticMethodData.get(oldClass);
       if (d == null)
@@ -39,7 +40,7 @@ public class StaticFieldManipulator
          d = new HashSet<StaticFieldAccessRewriteData>();
          staticMethodData.put(oldClass, d);
       }
-      d.add(new StaticFieldAccessRewriteData(oldClass, newClass, fieldName));
+      d.add(new StaticFieldAccessRewriteData(oldClass, newClass, fieldName, classLoader));
    }
 
    public void transformClass(ClassFile file)
@@ -63,7 +64,7 @@ public class StaticFieldManipulator
                String fieldName = pool.getFieldrefName(i);
                for (StaticFieldAccessRewriteData data : staticMethodData.get(className))
                {
-                  if (fieldName.equals(data.fieldName))
+                  if (fieldName.equals(data.getFieldName()))
                   {
                      fieldAccessLocations.put(i, data);
                      // we have found a field access
@@ -72,7 +73,7 @@ public class StaticFieldManipulator
                      {
                         // we have not added the new class reference or
                         // the new call location to the class pool yet
-                        int newCpLoc = pool.addClassInfo(data.newClass);
+                        int newCpLoc = pool.addClassInfo(data.getNewClass());
                         newFieldClassPoolLocations.put(data, newCpLoc);
                         // we do not need to change the name and type
                         int newNameAndType = pool.getFieldrefNameAndType(i);
@@ -120,62 +121,6 @@ public class StaticFieldManipulator
                e.printStackTrace();
             }
          }
-      }
-   }
-
-   static private class StaticFieldAccessRewriteData
-   {
-      final String oldClass;
-      final String newClass;
-      final String fieldName;
-
-      public StaticFieldAccessRewriteData(String oldClass, String newClass, String fieldName)
-      {
-         this.oldClass = oldClass;
-         this.newClass = newClass;
-         this.fieldName = fieldName;
-      }
-
-      public String getOldClass()
-      {
-         return oldClass;
-      }
-
-      public String getNewClass()
-      {
-         return newClass;
-      }
-
-      public String getFieldName()
-      {
-         return fieldName;
-      }
-
-      public String toString()
-      {
-         StringBuilder sb = new StringBuilder();
-         sb.append(oldClass);
-         sb.append(" ");
-         sb.append(newClass);
-         sb.append(" ");
-         sb.append(fieldName);
-
-         return sb.toString();
-      }
-
-      public boolean equals(Object o)
-      {
-         if (o.getClass().isAssignableFrom(StaticFieldAccessRewriteData.class))
-         {
-            StaticFieldAccessRewriteData i = (StaticFieldAccessRewriteData) o;
-            return oldClass.equals(i.oldClass) && newClass.equals(i.newClass) && fieldName.equals(i.fieldName);
-         }
-         return false;
-      }
-
-      public int hashCode()
-      {
-         return toString().hashCode();
       }
    }
 

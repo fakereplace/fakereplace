@@ -33,8 +33,8 @@ import org.fakereplace.data.ClassData;
 import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.data.FieldData;
 import org.fakereplace.data.MemberType;
-import org.fakereplace.manip.AddedFieldData;
 import org.fakereplace.manip.Boxing;
+import org.fakereplace.manip.data.AddedFieldData;
 import org.fakereplace.reflection.FieldAccessor;
 
 public class FieldReplacer
@@ -97,7 +97,7 @@ public class FieldReplacer
             }
             else
             {
-               addedFields.add(new AddedFieldData(noAddedFields, m.getName(), m.getDescriptor(), file.getName()));
+               addedFields.add(new AddedFieldData(noAddedFields, m.getName(), m.getDescriptor(), file.getName(), loader));
                addInstanceField(file, loader, m, data, oldClass, noAddedFields);
                noAddedFields++;
             }
@@ -124,13 +124,16 @@ public class FieldReplacer
          {
             // this should not happen
             throw new RuntimeException(e);
-         } catch (SecurityException e)
+         }
+         catch (SecurityException e)
          {
             throw new RuntimeException(e);
-         } catch (ClassNotFoundException e)
+         }
+         catch (ClassNotFoundException e)
          {
             throw new RuntimeException(e);
-         } catch (NoSuchFieldException e)
+         }
+         catch (NoSuchFieldException e)
          {
             throw new RuntimeException(e);
          }
@@ -274,7 +277,7 @@ public class FieldReplacer
       try
       {
          proxy.addField(newField);
-         Transformer.getManipulator().rewriteStaticFieldAccess(file.getName(), proxyName, m.getName());
+         Transformer.getManipulator().rewriteStaticFieldAccess(file.getName(), proxyName, m.getName(), loader);
          ByteArrayOutputStream bytes = new ByteArrayOutputStream();
          DataOutputStream dos = new DataOutputStream(bytes);
          try

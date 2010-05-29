@@ -16,6 +16,7 @@ import javassist.bytecode.Opcode;
 
 import org.fakereplace.boot.Constants;
 import org.fakereplace.boot.Logger;
+import org.fakereplace.manip.data.ConstructorRewriteData;
 import org.fakereplace.util.DescriptorUtils;
 
 public class ConstructorInvocationManipulator
@@ -37,9 +38,9 @@ public class ConstructorInvocationManipulator
     * @param methodDesc
     * @param newStaticMethodDesc
     */
-   public void rewriteConstructorCalls(String clazz, String descriptor, int methodNo)
+   public void rewriteConstructorCalls(String clazz, String descriptor, int methodNo, ClassLoader classLoader)
    {
-      ConstructorRewriteData data = new ConstructorRewriteData(clazz, descriptor, methodNo);
+      ConstructorRewriteData data = new ConstructorRewriteData(clazz, descriptor, methodNo, classLoader);
       if (!constructorRewrites.containsKey(clazz))
       {
          constructorRewrites.put(clazz, new HashSet<ConstructorRewriteData>());
@@ -67,7 +68,7 @@ public class ConstructorInvocationManipulator
             {
                for (ConstructorRewriteData data : constructorRewrites.get(pool.getMethodrefClassName(i)))
                {
-                  if (pool.getMethodrefName(i).equals("<init>") && pool.getMethodrefType(i).equals(data.methodDesc))
+                  if (pool.getMethodrefName(i).equals("<init>") && pool.getMethodrefType(i).equals(data.getMethodDesc()))
                   {
                      // store the location in the const pool of the method ref
                      methodCallLocations.put(i, data);
@@ -132,15 +133,15 @@ public class ConstructorInvocationManipulator
 
                         Bytecode bc = new Bytecode(file.getConstPool());
                         // now we need an array:
-                        bc.addIconst(data.parameters.length);
+                        bc.addIconst(data.getParameters().length);
                         bc.addAnewarray("java.lang.Object");
                         // now we have our array sitting on top of the stack
                         // we need to stick our parameters into it. We do this is reverse
                         // as we can't pull them from the bottom of the stack
-                        for (int i = data.parameters.length - 1; i >= 0; --i)
+                        for (int i = data.getParameters().length - 1; i >= 0; --i)
                         {
 
-                           if (DescriptorUtils.isWide(data.parameters[i]))
+                           if (DescriptorUtils.isWide(data.getParameters()[i]))
                            {
                               // dup the array below the wide
                               bc.add(Opcode.DUP_X2);
@@ -158,9 +159,9 @@ public class ConstructorInvocationManipulator
                            }
                            // now the parameter is above the array
                            // box it if nessesary
-                           if (DescriptorUtils.isPrimitive(data.parameters[i]))
+                           if (DescriptorUtils.isPrimitive(data.getParameters()[i]))
                            {
-                              Boxing.box(bc, data.parameters[i].charAt(0));
+                              Boxing.box(bc, data.getParameters()[i].charAt(0));
                            }
                            // add the array index
                            bc.addIconst(i);
@@ -170,10 +171,10 @@ public class ConstructorInvocationManipulator
                         }
                         // so now our stack looks like unconstructed instance : array
                         // we need unconstructed instance : int : array : null
-                        bc.addIconst(data.methodNo);
+                        bc.addIconst(data.getMethodNo());
                         bc.add(Opcode.SWAP);
                         bc.add(Opcode.ACONST_NULL);
-                        bc.addInvokespecial(data.clazz, "<init>", Constants.ADDED_CONSTRUCTOR_DESCRIPTOR);
+                        bc.addInvokespecial(data.getClazz(), "<init>", Constants.ADDED_CONSTRUCTOR_DESCRIPTOR);
                         // and we have our bytecode
                         it.insert(bc.get());
 
@@ -188,39 +189,6 @@ public class ConstructorInvocationManipulator
                e.printStackTrace();
             }
          }
-      }
-   }
-
-   static private class ConstructorRewriteData
-   {
-      final String clazz;
-      final String methodDesc;
-      final String[] parameters;
-      final int methodNo;
-
-      public ConstructorRewriteData(String clazz, String methodDesc, int methodNo)
-      {
-         this.clazz = clazz;
-         this.methodDesc = methodDesc;
-         this.methodNo = methodNo;
-         parameters = DescriptorUtils.descriptorStringToParameterArray(methodDesc);
-      }
-
-      public String toString()
-      {
-         StringBuilder sb = new StringBuilder(ConstructorRewriteData.class.getName() + " ");
-         sb.append(clazz);
-         sb.append(" ");
-         sb.append(methodDesc);
-         sb.append(" ");
-         sb.append(methodNo);
-
-         return sb.toString();
-      }
-
-      public int hashCode()
-      {
-         return toString().hashCode();
       }
    }
 
