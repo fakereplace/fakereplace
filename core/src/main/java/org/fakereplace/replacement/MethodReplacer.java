@@ -423,7 +423,11 @@ public class MethodReplacer
 
       try
       {
-         generateBoxedConditionalCodeBlock(methodCount, mInfo, file.getConstPool(), bytecode, staticMethod, false);
+         if ((AccessFlag.ABSTRACT | mInfo.getAccessFlags()) == 0)
+         {
+            // abstract methods don't get a body
+            generateBoxedConditionalCodeBlock(methodCount, mInfo, file.getConstPool(), bytecode, staticMethod, false);
+         }
          String proxyName = generateProxyInvocationBytecode(mInfo, file.getConstPool(), methodCount, file.getName(), loader, staticMethod);
          ClassDataStore.registerProxyName(oldClass, proxyName);
          String newMethodDesc = mInfo.getDescriptor();
@@ -435,6 +439,7 @@ public class MethodReplacer
 
          MethodData md = builder.addFakeMethod(mInfo.getName(), mInfo.getDescriptor(), proxyName, mInfo.getAccessFlags());
          ClassDataStore.registerReplacedMethod(proxyName, md);
+
       }
       catch (Exception e)
       {

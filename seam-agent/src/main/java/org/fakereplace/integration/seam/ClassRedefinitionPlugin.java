@@ -37,7 +37,7 @@ public class ClassRedefinitionPlugin implements ClassChangeAware
       try
       {
          Class<?> proxyFactory = getClass().getClassLoader().loadClass("org.jboss.seam.util.ProxyFactory");
-         Field f = proxyFactory.getField("userCache");
+         Field f = proxyFactory.getField("useCache");
          f.setBoolean(null, false);
       }
       catch (Throwable t)
