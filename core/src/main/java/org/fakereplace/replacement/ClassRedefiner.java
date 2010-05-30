@@ -11,7 +11,8 @@ import javassist.bytecode.ClassFile;
 import javassist.bytecode.Descriptor;
 
 import org.fakereplace.boot.Logger;
-import org.fakereplace.data.ClassData;
+import org.fakereplace.data.BaseClassData;
+import org.fakereplace.data.ClassDataBuilder;
 import org.fakereplace.data.ClassDataStore;
 
 public class ClassRedefiner
@@ -41,16 +42,19 @@ public class ClassRedefiner
 
    }
 
-   public static void modifyReloadedClass(ClassFile file, ClassLoader loader, Class oldClass)
+   public static void modifyReloadedClass(ClassFile file, ClassLoader loader, Class<?> oldClass)
    {
-      ClassData data = ClassDataStore.getClassData(loader, Descriptor.toJvmName(file.getName()));
-      data.clearReplacements();
-      // deal with class level annotations
-      AnnotationReplacer.processAnnotations(file, oldClass);
+      BaseClassData b = ClassDataStore.getBaseClassData(loader, Descriptor.toJvmName(file.getName()));
+      if (b == null)
+      {
+         throw new RuntimeException("BaseData is null for " + file.getName());
+      }
+      ClassDataBuilder builder = new ClassDataBuilder(b);
+      AnnotationReplacer.processAnnotations(file, oldClass, builder);
 
-      FieldReplacer.handleFieldReplacement(file, loader, oldClass);
-      MethodReplacer.handleMethodReplacement(file, loader, oldClass);
-
+      FieldReplacer.handleFieldReplacement(file, loader, oldClass, builder);
+      MethodReplacer.handleMethodReplacement(file, loader, oldClass, builder);
+      ClassDataStore.saveClassData(loader, file.getName(), builder);
    }
 
 }

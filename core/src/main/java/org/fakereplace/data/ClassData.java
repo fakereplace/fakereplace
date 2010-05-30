@@ -3,13 +3,9 @@ package org.fakereplace.data;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
-
-import javassist.bytecode.FieldInfo;
 
 /**
  * This class holds everything there is to know about a class that has been seen
@@ -21,25 +17,82 @@ import javassist.bytecode.FieldInfo;
 public class ClassData
 {
 
-   String className;
-   String internalName;
-   Map<String, Map<String, Set<MethodData>>> methods = new ConcurrentHashMap<String, Map<String, Set<MethodData>>>();
-   Map<String, FieldData> fields = new ConcurrentHashMap<String, FieldData>();
-   ClassLoader loader;
-   String superClassName;
-   boolean superClassInfoInit = false;
-   ClassData superClassInformation;
+   private final String className;
+   private final String internalName;
+   private final Map<String, Map<String, Set<MethodData>>> methods = new ConcurrentHashMap<String, Map<String, Set<MethodData>>>();
+   private final Map<String, FieldData> fields = new ConcurrentHashMap<String, FieldData>();
+   private final ClassLoader loader;
+   private final String superClassName;
+   private final boolean signitureModified;
 
-   boolean signitureModified = false;
+   // lazy initilised fields
+   private ClassData superClassInformation;
+   private boolean superClassInfoInit = false;
+
+   ClassData(BaseClassData data, Set<MethodData> addMethods, Set<MethodData> removedMethods, Set<FieldData> addedFields, Set<FieldData> removedFields)
+   {
+      className = data.getClassName();
+      internalName = data.getInternalName();
+      loader = data.getLoader();
+      superClassName = data.getSuperClassName();
+      signitureModified = true;
+
+      for (MethodData m : data.getMethods())
+      {
+         if (!removedMethods.contains(m))
+         {
+            addMethod(m);
+         }
+      }
+      for (FieldData f : data.getFields())
+      {
+         if (!removedFields.contains(f))
+         {
+            addField(f);
+         }
+      }
+
+      for (FieldData f : removedFields)
+      {
+         addField(f);
+      }
+      for (FieldData f : addedFields)
+      {
+         addField(f);
+      }
+
+      for (MethodData m : removedMethods)
+      {
+         addMethod(m);
+      }
+
+      for (MethodData m : addMethods)
+      {
+         addMethod(m);
+      }
+
+   }
+
+   ClassData(BaseClassData data)
+   {
+      className = data.getClassName();
+      internalName = data.getInternalName();
+      loader = data.getLoader();
+      superClassName = data.getSuperClassName();
+      for (MethodData m : data.getMethods())
+      {
+         addMethod(m);
+      }
+      for (FieldData f : data.getFields())
+      {
+         addField(f);
+      }
+      signitureModified = false;
+   }
 
    public boolean isSignitureModified()
    {
       return signitureModified;
-   }
-
-   public void setSignitureModified(boolean structuralModification)
-   {
-      this.signitureModified = structuralModification;
    }
 
    /**
@@ -52,17 +105,15 @@ public class ClassData
    {
       if (!superClassInfoInit)
       {
-         superClassInformation = ClassDataStore.getClassData(loader, superClassName);
+         superClassInformation = ClassDataStore.getModifiedClassData(loader, superClassName);
          ClassLoader l = loader;
          while (superClassInformation == null && l != null)
          {
             l = l.getParent();
-            superClassInformation = ClassDataStore.getClassData(l, superClassName);
+            superClassInformation = ClassDataStore.getModifiedClassData(l, superClassName);
          }
-
          superClassInfoInit = true;
       }
-
       return superClassInformation;
    }
 
@@ -76,19 +127,9 @@ public class ClassData
       return superClassName;
    }
 
-   public void setSuperClassName(String superClassName)
-   {
-      this.superClassName = superClassName;
-   }
-
    public ClassLoader getLoader()
    {
       return loader;
-   }
-
-   public void setLoader(ClassLoader loader)
-   {
-      this.loader = loader;
    }
 
    public String getClassName()
@@ -96,19 +137,9 @@ public class ClassData
       return className;
    }
 
-   public void setClassName(String className)
-   {
-      this.className = className;
-   }
-
    public String getInternalName()
    {
       return internalName;
-   }
-
-   public void setInternalName(String internalName)
-   {
-      this.internalName = internalName;
    }
 
    public void addMethod(MethodData data)
@@ -145,9 +176,9 @@ public class ClassData
 
    }
 
-   public void addField(FieldInfo field, MemberType type, String className)
+   public void addField(FieldData data)
    {
-      fields.put(field.getName(), new FieldData(field, type, className));
+      fields.put(data.getName(), data);
    }
 
    public Collection<MethodData> getMethods()
@@ -171,9 +202,9 @@ public class ClassData
    }
 
    /**
-    * gets the method data based on name and signiture. If there is multiple
-    * methods with the same name and signiture it is undefined which one will be
-    * returened
+    * gets the method data based on name and signature. If there is multiple
+    * methods with the same name and signature it is undefined which one will be
+    * returned
     * 
     * @param name
     * @param arguments
@@ -194,33 +225,4 @@ public class ClassData
       }
       return ms.iterator().next();
    }
-
-   public void clearReplacements()
-   {
-      for (Map<String, Set<MethodData>> i : methods.values())
-      {
-         for (Set<MethodData> j : i.values())
-         {
-            Iterator<MethodData> it = j.iterator();
-            while (it.hasNext())
-            {
-               MethodData m = it.next();
-               if (m.getType() == MemberType.FAKE)
-               {
-                  it.remove();
-               }
-            }
-         }
-      }
-      Iterator<Entry<String, FieldData>> it = fields.entrySet().iterator();
-      while (it.hasNext())
-      {
-         Entry<String, FieldData> e = it.next();
-         if (e.getValue().getMemberType() == MemberType.FAKE)
-         {
-            it.remove();
-         }
-      }
-   }
-
 }

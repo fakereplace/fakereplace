@@ -18,7 +18,6 @@ import javassist.bytecode.BadBytecode;
 import javassist.bytecode.Bytecode;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.CodeIterator;
-import javassist.bytecode.Descriptor;
 import javassist.bytecode.DuplicateMemberException;
 import javassist.bytecode.FieldInfo;
 import javassist.bytecode.MethodInfo;
@@ -29,10 +28,10 @@ import org.fakereplace.Transformer;
 import org.fakereplace.boot.Constants;
 import org.fakereplace.boot.GlobalClassDefinitionData;
 import org.fakereplace.data.AnnotationDataStore;
-import org.fakereplace.data.ClassData;
+import org.fakereplace.data.BaseClassData;
+import org.fakereplace.data.ClassDataBuilder;
 import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.data.FieldData;
-import org.fakereplace.data.MemberType;
 import org.fakereplace.manip.data.AddedFieldData;
 import org.fakereplace.manip.util.Boxing;
 import org.fakereplace.reflection.FieldAccessor;
@@ -40,10 +39,10 @@ import org.fakereplace.reflection.FieldAccessor;
 public class FieldReplacer
 {
 
-   public static void handleFieldReplacement(ClassFile file, ClassLoader loader, Class oldClass)
+   public static void handleFieldReplacement(ClassFile file, ClassLoader loader, Class<?> oldClass, ClassDataBuilder builder)
    {
 
-      ClassData data = ClassDataStore.getClassData(loader, Descriptor.toJvmName(file.getName()));
+      BaseClassData data = builder.getBaseData();
 
       Set<FieldData> fields = new HashSet<FieldData>();
       fields.addAll(data.getFields());
@@ -64,7 +63,6 @@ public class FieldReplacer
          FieldData md = null;
          for (FieldData i : fields)
          {
-
             if (i.getName().equals(m.getName()) && i.getType().equals(m.getDescriptor()) && i.getAccessFlags() == m.getAccessFlags())
             {
                try
@@ -93,12 +91,12 @@ public class FieldReplacer
          {
             if ((m.getAccessFlags() & AccessFlag.STATIC) != 0)
             {
-               addStaticField(file, loader, m, data, oldClass);
+               addStaticField(file, loader, m, builder, oldClass);
             }
             else
             {
                addedFields.add(new AddedFieldData(noAddedFields, m.getName(), m.getDescriptor(), file.getName(), loader));
-               addInstanceField(file, loader, m, data, oldClass, noAddedFields);
+               addInstanceField(file, loader, m, builder, oldClass, noAddedFields);
                noAddedFields++;
             }
             it.remove();
@@ -114,6 +112,7 @@ public class FieldReplacer
       {
          FieldInfo old = new FieldInfo(file.getConstPool(), md.getName(), md.getType());
          old.setAccessFlags(md.getAccessFlags());
+         builder.removeField(md);
          try
          {
             Field field = md.getField(oldClass);
@@ -262,7 +261,7 @@ public class FieldReplacer
     * @param m
     * @param data
     */
-   private static void addStaticField(ClassFile file, ClassLoader loader, FieldInfo m, ClassData data, Class<?> oldClass)
+   private static void addStaticField(ClassFile file, ClassLoader loader, FieldInfo m, ClassDataBuilder builder, Class<?> oldClass)
    {
       // this is quite simple. First we create a proxy
       String proxyName = GlobalClassDefinitionData.getProxyName();
@@ -289,7 +288,7 @@ public class FieldReplacer
             throw new RuntimeException(e);
          }
          GlobalClassDefinitionData.saveProxyDefinition(loader, proxyName, bytes.toByteArray());
-         data.addField(newField, MemberType.FAKE, proxyName);
+         builder.addFakeField(newField, proxyName);
       }
       catch (DuplicateMemberException e)
       {
@@ -307,7 +306,7 @@ public class FieldReplacer
     * @param m
     * @param data
     */
-   private static void addInstanceField(ClassFile file, ClassLoader loader, FieldInfo m, ClassData data, Class<?> oldClass, int arrayPosition)
+   private static void addInstanceField(ClassFile file, ClassLoader loader, FieldInfo m, ClassDataBuilder builder, Class<?> oldClass, int arrayPosition)
    {
       String proxyName = GlobalClassDefinitionData.getProxyName();
       ClassFile proxy = new ClassFile(false, proxyName, "java.lang.Object");
@@ -334,7 +333,7 @@ public class FieldReplacer
             throw new RuntimeException(e);
          }
          GlobalClassDefinitionData.saveProxyDefinition(loader, proxyName, bytes.toByteArray());
-         data.addField(newField, MemberType.FAKE, proxyName);
+         builder.addFakeField(newField, proxyName);
       }
       catch (DuplicateMemberException e)
       {

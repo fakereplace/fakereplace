@@ -65,7 +65,7 @@ public class ConstructorReflectionDelegate
    {
       try
       {
-         ClassData cd = ClassDataStore.getClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
+         ClassData cd = ClassDataStore.getModifiedClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
 
          if (cd == null)
          {
@@ -108,7 +108,7 @@ public class ConstructorReflectionDelegate
    {
       try
       {
-         ClassData cd = ClassDataStore.getClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
+         ClassData cd = ClassDataStore.getModifiedClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
 
          if (cd == null)
          {
@@ -160,7 +160,7 @@ public class ConstructorReflectionDelegate
    public static Constructor<?> getConstructor(Class<?> clazz, Class<?>... parameters) throws NoSuchMethodException
    {
 
-      ClassData cd = ClassDataStore.getClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
+      ClassData cd = ClassDataStore.getModifiedClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
 
       if (cd == null)
       {
@@ -202,7 +202,7 @@ public class ConstructorReflectionDelegate
    public static Constructor<?> getDeclaredConstructor(Class<?> clazz, Class<?>... parameters) throws NoSuchMethodException
    {
 
-      ClassData cd = ClassDataStore.getClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
+      ClassData cd = ClassDataStore.getModifiedClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
 
       if (cd == null)
       {

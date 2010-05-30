@@ -15,24 +15,29 @@ import org.fakereplace.util.DescriptorUtils;
  */
 public class MethodData
 {
-   final String methodName;
-   final String descriptor;
+   final private String methodName;
+   final private String descriptor;
 
    /**
     * contains the argument portion of the descriptor minus the return type
     */
-   final String argumentDescriptor;
+   final private String argumentDescriptor;
    /**
     * the return type of the method
    final  */
-   String returnTypeDescriptor;
+   final private String returnTypeDescriptor;
 
-   final MemberType type;
-   final int accessFlags;
+   final private MemberType type;
+   final private int accessFlags;
    /**
     * stores the method no for a fake method. This is only used for constructors
     */
-   final int methodNo;
+   final private int methodNo;
+
+   /**
+    * The actual class that the method resides in java not internal format
+    */
+   final private String className;
 
    public MethodData(String name, String descriptor, String className, MemberType type, int accessFlags)
    {
@@ -59,9 +64,37 @@ public class MethodData
    }
 
    /**
-    * The actual class that the method resides in java not internal format
+    * MethodData's are equal if they refer to the same method
     */
-   final String className;
+   @Override
+   public boolean equals(Object obj)
+   {
+      if (obj == null)
+      {
+         return false;
+      }
+      if (obj instanceof MethodData)
+      {
+         MethodData m = (MethodData) obj;
+         if (m.className.equals(className))
+         {
+            if (m.methodName.equals(methodName))
+            {
+               if (m.descriptor.equals(descriptor))
+               {
+                  return true;
+               }
+            }
+         }
+      }
+      return false;
+   }
+
+   @Override
+   public int hashCode()
+   {
+      return (className + methodName + descriptor).hashCode();
+   }
 
    public String getClassName()
    {
@@ -142,6 +175,11 @@ public class MethodData
    public int getMethodNo()
    {
       return methodNo;
+   }
+
+   public String getReturnTypeDescriptor()
+   {
+      return returnTypeDescriptor;
    }
 
 }

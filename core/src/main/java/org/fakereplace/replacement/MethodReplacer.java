@@ -32,9 +32,9 @@ import org.fakereplace.boot.Constants;
 import org.fakereplace.boot.GlobalClassDefinitionData;
 import org.fakereplace.boot.Logger;
 import org.fakereplace.data.AnnotationDataStore;
-import org.fakereplace.data.ClassData;
+import org.fakereplace.data.BaseClassData;
+import org.fakereplace.data.ClassDataBuilder;
 import org.fakereplace.data.ClassDataStore;
-import org.fakereplace.data.MemberType;
 import org.fakereplace.data.MethodData;
 import org.fakereplace.data.MethodIdentifierStore;
 import org.fakereplace.manip.util.Boxing;
@@ -44,7 +44,7 @@ import org.fakereplace.util.DescriptorUtils;
 
 public class MethodReplacer
 {
-   public static void handleMethodReplacement(ClassFile file, ClassLoader loader, Class oldClass)
+   public static void handleMethodReplacement(ClassFile file, ClassLoader loader, Class<?> oldClass, ClassDataBuilder builder)
    {
       // state for added static methods
 
@@ -89,7 +89,7 @@ public class MethodReplacer
       {
          e.printStackTrace();
       }
-      ClassData data = ClassDataStore.getClassData(loader, Descriptor.toJvmName(file.getName()));
+      BaseClassData data = builder.getBaseData();
 
       Set<MethodData> methods = new HashSet<MethodData>();
 
@@ -159,11 +159,11 @@ public class MethodReplacer
          {
             if ((m.getAccessFlags() & AccessFlag.STATIC) != 0)
             {
-               addMethod(file, loader, m, data, staticCodeAttribute, true, oldClass);
+               addMethod(file, loader, m, builder, staticCodeAttribute, true, oldClass);
             }
             else if ((m.getName().equals("<init>")))
             {
-               addConstructor(file, loader, m, data, constructorCodeAttribute, oldClass);
+               addConstructor(file, loader, m, builder, constructorCodeAttribute, oldClass);
             }
             else if (m.getName().equals("<clinit>"))
             {
@@ -171,7 +171,7 @@ public class MethodReplacer
             }
             else if ((m.getAccessFlags() & AccessFlag.INTERFACE) == 0)
             {
-               addMethod(file, loader, m, data, virtualCodeAttribute, false, oldClass);
+               addMethod(file, loader, m, builder, virtualCodeAttribute, false, oldClass);
             }
             else
             {
@@ -184,11 +184,6 @@ public class MethodReplacer
          }
          else
          {
-            // the removed method has been replaced so lets change it back
-            if (md.getType() == MemberType.REMOVED_METHOD)
-            {
-               data.replaceMethod(new MethodData(md.getMethodName(), md.getDescriptor(), md.getClassName(), MemberType.NORMAL, md.getAccessFlags()));
-            }
             methods.remove(md);
          }
       }
@@ -197,8 +192,7 @@ public class MethodReplacer
 
       for (MethodData md : methods)
       {
-         MethodData nmd = createRemovedMethod(file, md, oldClass);
-         data.replaceMethod(nmd);
+         createRemovedMethod(file, md, oldClass, builder);
       }
 
       // if we did not return from a virtual method we need to call the parent
@@ -422,7 +416,7 @@ public class MethodReplacer
     * Adds a method to a class
     * 
     */
-   private static void addMethod(ClassFile file, ClassLoader loader, MethodInfo mInfo, ClassData data, CodeAttribute bytecode, boolean staticMethod, Class oldClass)
+   private static void addMethod(ClassFile file, ClassLoader loader, MethodInfo mInfo, ClassDataBuilder builder, CodeAttribute bytecode, boolean staticMethod, Class oldClass)
    {
 
       int methodCount = MethodIdentifierStore.getMethodNumber(mInfo.getName(), mInfo.getDescriptor());
@@ -438,9 +432,8 @@ public class MethodReplacer
             newMethodDesc = "(L" + Descriptor.toJvmName(file.getName()) + ";" + newMethodDesc.substring(1);
          }
          Transformer.getManipulator().replaceVirtualMethodInvokationWithStatic(file.getName(), proxyName, mInfo.getName(), mInfo.getDescriptor(), newMethodDesc, loader);
-         MethodData md = new MethodData(mInfo.getName(), mInfo.getDescriptor(), proxyName, MemberType.FAKE, mInfo.getAccessFlags());
 
-         data.addMethod(md);
+         MethodData md = builder.addFakeMethod(mInfo.getName(), mInfo.getDescriptor(), proxyName, mInfo.getAccessFlags());
          ClassDataStore.registerReplacedMethod(proxyName, md);
       }
       catch (Exception e)
@@ -511,7 +504,7 @@ public class MethodReplacer
       }
    }
 
-   private static MethodData createRemovedMethod(ClassFile file, MethodData md, Class<?> oldClass)
+   private static void createRemovedMethod(ClassFile file, MethodData md, Class<?> oldClass, ClassDataBuilder builder)
    {
       // load up the existing method object
 
@@ -566,10 +559,10 @@ public class MethodReplacer
       {
          e.printStackTrace();
       }
-      return new MethodData(md.getMethodName(), md.getDescriptor(), md.getClassName(), MemberType.REMOVED_METHOD, md.getAccessFlags());
+      builder.removeRethod(md);
    }
 
-   private static void addConstructor(ClassFile file, ClassLoader loader, MethodInfo mInfo, ClassData data, CodeAttribute bytecode, Class oldClass)
+   private static void addConstructor(ClassFile file, ClassLoader loader, MethodInfo mInfo, ClassDataBuilder builder, CodeAttribute bytecode, Class<?> oldClass)
    {
       int methodCount = MethodIdentifierStore.getMethodNumber(mInfo.getName(), mInfo.getDescriptor());
 
@@ -578,9 +571,8 @@ public class MethodReplacer
          generateBoxedConditionalCodeBlock(methodCount, mInfo, file.getConstPool(), bytecode, false, true);
          String proxyName = generateFakeConstructorBytecode(mInfo, file.getConstPool(), methodCount, file.getName(), loader);
          ClassDataStore.registerProxyName(oldClass, proxyName);
-         MethodData md = new MethodData(mInfo.getName(), mInfo.getDescriptor(), proxyName, MemberType.FAKE_CONSTRUCTOR, mInfo.getAccessFlags(), methodCount);
          Transformer.getManipulator().rewriteConstructorAccess(file.getName(), mInfo.getDescriptor(), methodCount, loader);
-         data.addMethod(md);
+         MethodData md = builder.addFakeConstructor(mInfo.getName(), mInfo.getDescriptor(), proxyName, mInfo.getAccessFlags(), methodCount);
          ClassDataStore.registerReplacedMethod(proxyName, md);
       }
       catch (Exception e)

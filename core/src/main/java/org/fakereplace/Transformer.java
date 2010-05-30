@@ -20,16 +20,13 @@ import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.Bytecode;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.CodeAttribute;
-import javassist.bytecode.Descriptor;
 import javassist.bytecode.DuplicateMemberException;
 import javassist.bytecode.FieldInfo;
 import javassist.bytecode.MethodInfo;
 
 import org.fakereplace.boot.Constants;
-import org.fakereplace.data.ClassData;
+import org.fakereplace.data.BaseClassData;
 import org.fakereplace.data.ClassDataStore;
-import org.fakereplace.data.MemberType;
-import org.fakereplace.data.MethodData;
 import org.fakereplace.detector.DetectorRunner;
 import org.fakereplace.manip.Manipulator;
 import org.fakereplace.replacement.FakeConstructorUtils;
@@ -170,7 +167,8 @@ public class Transformer implements ClassFileTransformer
 
          if (classBeingRedefined == null)
          {
-            recordClassDetails(file, loader);
+            BaseClassData data = new BaseClassData(file, loader);
+            ClassDataStore.saveClassData(loader, data.getInternalName(), data);
          }
 
          // we do not instrument any classes from fakereplace
@@ -335,42 +333,6 @@ public class Transformer implements ClassFileTransformer
          // e.printStackTrace();
       }
 
-   }
-
-   private void recordClassDetails(ClassFile file, ClassLoader loader)
-   {
-
-      ClassData data = new ClassData();
-      data.setClassName(file.getName());
-      data.setInternalName(Descriptor.toJvmName(file.getName()));
-      data.setLoader(loader);
-      data.setSuperClassName(Descriptor.toJvmName(file.getSuperclass()));
-
-      for (Object o : file.getMethods())
-      {
-         MethodInfo m = (MethodInfo) o;
-         MemberType type = MemberType.NORMAL;
-         if ((m.getDescriptor().equals(Constants.ADDED_METHOD_DESCRIPTOR) && m.getName().equals(Constants.ADDED_METHOD_NAME)) || (m.getDescriptor().equals(Constants.ADDED_STATIC_METHOD_DESCRIPTOR) && m.getName().equals(Constants.ADDED_STATIC_METHOD_NAME)))
-         {
-            type = MemberType.ADDED_SYSTEM;
-         }
-
-         MethodData md = new MethodData(m.getName(), m.getDescriptor(), file.getName(), type, m.getAccessFlags());
-         data.addMethod(md);
-      }
-      for (Object o : file.getFields())
-      {
-         FieldInfo m = (FieldInfo) o;
-         if (m.getName().equals(Constants.ADDED_FIELD_NAME))
-         {
-            data.addField(m, MemberType.ADDED_SYSTEM, file.getName());
-         }
-         else
-         {
-            data.addField(m, MemberType.NORMAL, file.getName());
-         }
-      }
-      ClassDataStore.saveClassData(loader, data.getInternalName(), data);
    }
 
    public static Manipulator getManipulator()

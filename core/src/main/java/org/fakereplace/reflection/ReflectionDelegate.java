@@ -70,7 +70,7 @@ public class ReflectionDelegate
    {
       try
       {
-         ClassData cd = ClassDataStore.getClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
+         ClassData cd = ClassDataStore.getModifiedClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
 
          if (cd == null)
          {
@@ -111,7 +111,7 @@ public class ReflectionDelegate
    {
       try
       {
-         ClassData cd = ClassDataStore.getClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
+         ClassData cd = ClassDataStore.getModifiedClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
 
          if (cd == null)
          {
@@ -163,7 +163,7 @@ public class ReflectionDelegate
    public static Method getMethod(Class clazz, String name, Class... parameters) throws NoSuchMethodException
    {
 
-      ClassData cd = ClassDataStore.getClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
+      ClassData cd = ClassDataStore.getModifiedClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
 
       if (cd == null)
       {
@@ -205,7 +205,7 @@ public class ReflectionDelegate
    public static Method getDeclaredMethod(Class clazz, String name, Class... parameters) throws NoSuchMethodException
    {
 
-      ClassData cd = ClassDataStore.getClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
+      ClassData cd = ClassDataStore.getModifiedClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
 
       if (cd == null)
       {
@@ -269,7 +269,7 @@ public class ReflectionDelegate
    {
       try
       {
-         ClassData cd = ClassDataStore.getClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
+         ClassData cd = ClassDataStore.getModifiedClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
 
          if (cd == null)
          {
@@ -306,11 +306,11 @@ public class ReflectionDelegate
       }
    }
 
-   public static Field[] getFields(Class clazz)
+   public static Field[] getFields(Class<?> clazz)
    {
       try
       {
-         ClassData cd = ClassDataStore.getClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
+         ClassData cd = ClassDataStore.getModifiedClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
 
          if (cd == null)
          {
@@ -354,7 +354,7 @@ public class ReflectionDelegate
 
    public static Field getField(Class<?> clazz, String name) throws NoSuchFieldException
    {
-      ClassData cd = ClassDataStore.getClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
+      ClassData cd = ClassDataStore.getModifiedClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
 
       if (cd == null)
       {
@@ -391,7 +391,7 @@ public class ReflectionDelegate
 
    public static Field getDeclaredField(Class<?> clazz, String name) throws NoSuchFieldException
    {
-      ClassData cd = ClassDataStore.getClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
+      ClassData cd = ClassDataStore.getModifiedClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
 
       if (cd == null)
       {
