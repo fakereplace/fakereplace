@@ -60,7 +60,7 @@ public class ClassChangeNotifier
          }
       }
    }
-   
+
    public static void beforeChange(Class<?>[] changed, Class<?>[] newClasses)
    {
       Class<?>[] a = new Class[0];
@@ -68,7 +68,14 @@ public class ClassChangeNotifier
       {
          for (ClassChangeAware i : c)
          {
-            i.beforeChange(changed, newClasses);
+            try
+            {
+               i.beforeChange(changed, newClasses);
+            }
+            catch (Throwable t)
+            {
+               t.printStackTrace();
+            }
          }
       }
 

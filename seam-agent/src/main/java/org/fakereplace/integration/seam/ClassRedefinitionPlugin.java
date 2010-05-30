@@ -1,6 +1,5 @@
 package org.fakereplace.integration.seam;
 
-import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.io.File;
 import java.io.FileInputStream;
@@ -30,7 +29,6 @@ import org.jboss.seam.init.Initialization;
 import org.jboss.seam.util.ProxyFactory;
 
 import sun.awt.AppContext;
-
 
 public class ClassRedefinitionPlugin implements ClassChangeAware
 {
@@ -76,6 +74,10 @@ public class ClassRedefinitionPlugin implements ClassChangeAware
 
    public void beforeChange(Class<?>[] changed, Class<?>[] added)
    {
+      if (!Lifecycle.isApplicationInitialized())
+      {
+         return;
+      }
       Lifecycle.beginCall();
       Seam.clearComponentNameCache();
       for (int i = 0; i < changed.length; ++i)
@@ -98,19 +100,21 @@ public class ClassRedefinitionPlugin implements ClassChangeAware
             }
             Contexts.getApplicationContext().remove(name + Initialization.COMPONENT_SUFFIX);
          }
-
       }
    }
 
    public void notify(Class<?>[] changed, Class<?>[] added)
    {
-      
+      if (!Lifecycle.isApplicationInitialized())
+      {
+         return;
+      }
       try
       {
          // clear reflection caches
          Field field = Introspector.class.getDeclaredField("declaredMethodCache");
          field.setAccessible(true);
-         Map map = (Map) field.get(null);
+         Map<?, ?> map = (Map<?, ?>) field.get(null);
          map.clear();
 
          field = Introspector.class.getDeclaredField("BEANINFO_CACHE");
@@ -120,10 +124,10 @@ public class ClassRedefinitionPlugin implements ClassChangeAware
          // clear proxy factory caches
          field = ProxyFactory.class.getDeclaredField("proxyCache");
          field.setAccessible(true);
-         map = (Map) field.get(null);
+         map = (Map<?, ?>) field.get(null);
          map.clear();
 
-         map = (Map<Class<?>, BeanInfo>) AppContext.getAppContext().get(beaninfoCache);
+         map = (Map<?, ?>) AppContext.getAppContext().get(beaninfoCache);
          if (map != null)
          {
             map.clear();
