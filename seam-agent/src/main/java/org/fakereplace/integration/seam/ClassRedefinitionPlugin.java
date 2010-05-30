@@ -34,8 +34,18 @@ public class ClassRedefinitionPlugin implements ClassChangeAware
 {
    public ClassRedefinitionPlugin()
    {
-      ProxyFactory.useCache = false;
+      try
+      {
+         Class<?> proxyFactory = getClass().getClassLoader().loadClass("org.jboss.seam.util.ProxyFactory");
+         Field f = proxyFactory.getField("userCache");
+         f.setBoolean(null, false);
+      }
+      catch (Throwable t)
+      {
+         System.out.println("Could not set org.jboss.seam.util.ProxyFactory.useCache to false: " + t.getMessage());
+      }
       ClassChangeNotifier.add(this);
+
    }
 
    byte[] readFile(File file) throws IOException
@@ -189,6 +199,7 @@ public class ClassRedefinitionPlugin implements ClassChangeAware
                      Object cacheInstance = con.newInstance(100);
                      cacheField.set(r, cacheInstance);
                   }
+
                }
             }
 
@@ -196,9 +207,8 @@ public class ClassRedefinitionPlugin implements ClassChangeAware
       }
       catch (Exception e)
       {
-         e.printStackTrace();
+         System.out.println("Could not clear EL cache:" + e.getMessage());
       }
       Lifecycle.endCall();
    }
-
 }
