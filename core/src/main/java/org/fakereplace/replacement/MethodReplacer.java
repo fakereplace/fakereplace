@@ -423,7 +423,7 @@ public class MethodReplacer
 
       try
       {
-         if ((AccessFlag.ABSTRACT | mInfo.getAccessFlags()) == 0)
+         if ((AccessFlag.ABSTRACT & mInfo.getAccessFlags()) == 0)
          {
             // abstract methods don't get a body
             generateBoxedConditionalCodeBlock(methodCount, mInfo, file.getConstPool(), bytecode, staticMethod, false);
