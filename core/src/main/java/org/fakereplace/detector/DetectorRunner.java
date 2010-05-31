@@ -12,11 +12,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.fakereplace.Agent;
 import org.fakereplace.api.ClassChangeNotifier;
-import org.fakereplace.util.FileReader;
 
 import com.google.common.collect.MapMaker;
 
@@ -38,14 +36,14 @@ public class DetectorRunner implements Runnable
     */
    static final Map<ClassLoader, Set<File>> classLoaders = (new MapMaker()).weakKeys().makeMap();
 
-   Map<File, FileData> files = new ConcurrentHashMap<File, FileData>();
+   Map<ClassLoader, Map<File, FileData>> files = (new MapMaker()).weakKeys().makeMap();
 
    /**
     * adds a class loader to the map of class loaders that are scanned for changes
     * @param classLoader
     * @param instigatingClassName
     */
-   public void addClassLoader(ClassLoader classLoader, String instigatingClassName)
+   public synchronized void addClassLoader(ClassLoader classLoader, String instigatingClassName)
    {
       Set<File> roots = classLoaders.get(classLoader);
       if (roots == null)
@@ -80,7 +78,16 @@ public class DetectorRunner implements Runnable
 
    private void initRoot(File f, ClassLoader classLoader)
    {
-      handleInitDirectory(f, f, files, classLoader);
+      if (!files.containsKey(classLoader))
+      {
+         Map<File, FileData> fileMap = new MapMaker().makeMap();
+         handleInitDirectory(f, f, fileMap, classLoader);
+         files.put(classLoader, fileMap);
+      }
+      else
+      {
+         handleInitDirectory(f, f, files.get(classLoader), classLoader);
+      }
    }
 
    private void handleInitDirectory(File dir, File rootDir, Map<File, FileData> foundFiles, ClassLoader classLoader)
@@ -111,7 +118,7 @@ public class DetectorRunner implements Runnable
       }
    }
 
-   private boolean isFileSystemChanged()
+   private synchronized boolean isFileSystemChanged()
    {
       Map<File, FileData> fls = new HashMap<File, FileData>();
       for (Entry<ClassLoader, Set<File>> e : classLoaders.entrySet())
@@ -120,39 +127,31 @@ public class DetectorRunner implements Runnable
          {
             handleInitDirectory(f, f, fls, e.getKey());
          }
-      }
-      for (File e : files.keySet())
-      {
-         FileData oldFile = files.get(e);
-         if (oldFile == null)
+         Map<File, FileData> oldFileMap = files.get(e.getKey());
+         for (File newFile : fls.keySet())
          {
-            // new class file
-            return true;
-         }
-         FileData nf = fls.get(e);
-         if (nf != null)
-         {
-            if (nf.lastModified > oldFile.lastModified)
+            FileData oldFile = oldFileMap.get(newFile);
+            if (oldFile == null)
             {
+               // new class file
                return true;
             }
-            fls.remove(e);
-         }
-         else
-         {
-            // the file has been removed
-            // not much we can do here
+            FileData nf = fls.get(newFile);
+            if (nf != null)
+            {
+               if (nf.getLastModified() > oldFile.getLastModified())
+               {
+                  return true;
+               }
+               fls.remove(e);
+            }
          }
       }
-      // files have been added
-      if (!fls.isEmpty())
-      {
-         return true;
-      }
+
       return false;
    }
 
-   private ClassChangeSet getChanges()
+   private synchronized ClassChangeSet getChanges()
    {
       ClassChangeSet ret = new ClassChangeSet();
       Map<File, FileData> fls = new HashMap<File, FileData>();
@@ -161,59 +160,58 @@ public class DetectorRunner implements Runnable
          for (File f : e.getValue())
          {
             handleInitDirectory(f, f, fls, e.getKey());
-         }
-      }
-      for (File e : files.keySet())
-      {
-         FileData oldFile = files.get(e);
-         FileData nf = fls.get(e);
-         if (oldFile == null)
-         {
-            // deal with a new file
-            String d = nf.file.getAbsolutePath().substring(nf.root.getAbsolutePath().length() + 1);
-            d = d.replace('/', '.');
-            d = d.replace('\\', '.');
-            d = d.substring(0, d.length() - ".class".length());
-            ret.getNewClasses().add(new NewClassData(d, nf.classLoader));
-            files.put(nf.file, nf);
-         }
-         if (nf != null)
-         {
-            if (nf.lastModified > oldFile.lastModified)
-            {
-               InputStream in = null;
 
-               try
-               {
-                  in = new FileInputStream(nf.file);
-                  byte[] data = FileReader.readFileBytes(in);
-                  ret.getChangedClasses().add(new ChangedClassData(nf.classLoader.loadClass(nf.className), data));
-                  files.put(nf.file, nf);
-               }
-               catch (Exception e1)
-               {
-                  System.out.println("ERROR reading changed class file " + nf.file + " - " + e1.getMessage());
-               }
-               finally
-               {
-                  try
-                  {
-                     in.close();
-                  }
-                  catch (IOException e1)
-                  {
-                  }
-               }
+         }
+         Map<File, FileData> oldFileMap = files.get(e.getKey());
+         for (File newFile : fls.keySet())
+         {
+            FileData oldFile = oldFileMap.get(newFile);
+            FileData nf = fls.get(newFile);
+            if (oldFile == null)
+            {
+               // deal with a new file
+               String d = nf.file.getAbsolutePath().substring(nf.getRoot().getAbsolutePath().length() + 1);
+               d = d.replace('/', '.');
+               d = d.replace('\\', '.');
+               d = d.substring(0, d.length() - ".class".length());
+               ret.getNewClasses().add(new NewClassData(d, nf.getClassLoader()));
+               oldFileMap.put(nf.getFile(), nf);
 
             }
-            fls.remove(e);
-         }
-         else
-         {
-            // the file has been removed
-            // not much we can do here
+            else if (nf != null)
+            {
+               if (nf.getLastModified() > oldFile.getLastModified())
+               {
+                  InputStream in = null;
+
+                  try
+                  {
+                     in = new FileInputStream(nf.getFile());
+                     byte[] data = org.fakereplace.util.FileReader.readFileBytes(in);
+                     ret.getChangedClasses().add(new ChangedClassData(nf.getClassLoader().loadClass(nf.getClassName()), data));
+                     oldFileMap.put(nf.getFile(), nf);
+                  }
+                  catch (Exception e1)
+                  {
+                     System.out.println("ERROR reading changed class file " + nf.file + " - " + e1.getMessage());
+                  }
+                  finally
+                  {
+                     try
+                     {
+                        in.close();
+                     }
+                     catch (IOException e1)
+                     {
+                     }
+                  }
+
+               }
+               fls.remove(e);
+            }
          }
       }
+
       return ret;
    }
 
@@ -235,13 +233,19 @@ public class DetectorRunner implements Runnable
                ClassChangeSet changes = getChanges();
                ClassDefinition[] defs = new ClassDefinition[changes.getChangedClasses().size()];
                Class<?>[] changed = new Class[changes.getChangedClasses().size()];
-               Class<?>[] newClasses = changes.newClasses.toArray(new Class[0]);
+               Class<?>[] newClasses = new Class[changes.getNewClasses().size()];
                int count = 0;
                for (ChangedClassData i : changes.getChangedClasses())
                {
                   System.out.println("REPLACING CLASS: " + i.getJavaClass().getName());
                   changed[count] = i.javaClass;
                   defs[count++] = new ClassDefinition(i.javaClass, i.classFile);
+               }
+               count = 0;
+               for (NewClassData i : changes.getNewClasses())
+               {
+                  System.out.println("ADD NEW CLASS: " + i.getJavaClass().getName());
+                  newClasses[count++] = i.getJavaClass();
                }
                try
                {
@@ -263,7 +267,7 @@ public class DetectorRunner implements Runnable
          }
          catch (Exception e)
          {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
          }
 
       }
@@ -293,10 +297,10 @@ public class DetectorRunner implements Runnable
          this.classLoader = classLoader;
       }
 
-      final Long lastModified;
-      final File file, root;
-      final String className;
-      final ClassLoader classLoader;
+      final private Long lastModified;
+      final private File file, root;
+      final private String className;
+      final private ClassLoader classLoader;
 
       @Override
       public boolean equals(Object obj)
@@ -308,6 +312,31 @@ public class DetectorRunner implements Runnable
       public int hashCode()
       {
          return file.hashCode();
+      }
+
+      public Long getLastModified()
+      {
+         return lastModified;
+      }
+
+      public File getFile()
+      {
+         return file;
+      }
+
+      public File getRoot()
+      {
+         return root;
+      }
+
+      public String getClassName()
+      {
+         return className;
+      }
+
+      public ClassLoader getClassLoader()
+      {
+         return classLoader;
       }
    }
 
