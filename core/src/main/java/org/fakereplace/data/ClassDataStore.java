@@ -8,15 +8,17 @@ import javassist.bytecode.Descriptor;
 
 import org.fakereplace.reflection.FieldAccessor;
 
+import com.google.common.collect.MapMaker;
+
 public class ClassDataStore
 {
 
    static Map<String, Class<?>> proxyNameToReplacedClass = new ConcurrentHashMap<String, Class<?>>();
    static Map<String, FieldAccessor> proxyNameToFieldAccessor = new ConcurrentHashMap<String, FieldAccessor>();
 
-   static Map<ClassLoader, Map<String, ClassData>> classData = new ConcurrentHashMap<ClassLoader, Map<String, ClassData>>();
+   static Map<ClassLoader, Map<String, ClassData>> classData = new MapMaker().weakKeys().makeMap();
 
-   static Map<ClassLoader, Map<String, BaseClassData>> baseClassData = new ConcurrentHashMap<ClassLoader, Map<String, BaseClassData>>();
+   static Map<ClassLoader, Map<String, BaseClassData>> baseClassData = new MapMaker().weakKeys().makeMap();
    static Map<String, MethodData> proxyNameToMethodData = new ConcurrentHashMap<String, MethodData>();
 
    /**

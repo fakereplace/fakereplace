@@ -2,9 +2,10 @@ package org.fakereplace;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.fakereplace.data.ClassData;
+
+import com.google.common.collect.MapMaker;
 
 /**
  * This class stores all the information about classes that have been seen by
@@ -20,7 +21,7 @@ public class LoadedClassInformation
     * map of class information, stored by classloader -> java name (the one with
     * dots)
     */
-   static Map<ClassLoader, Map<String, ClassData>> classInformation = new ConcurrentHashMap<ClassLoader, Map<String, ClassData>>();
+   static Map<ClassLoader, Map<String, ClassData>> classInformation = new MapMaker().weakKeys().makeMap();
 
    public static ClassData getClassInformation(Class<?> clazz)
    {
