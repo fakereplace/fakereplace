@@ -200,9 +200,7 @@ public class Transformer implements ClassFileTransformer
             integrationClassloader.put(loader, new Object());
             // we need to load the class in another thread
             // otherwise it will not be instrumented
-            ThreadLoader l = new ThreadLoader("org.fakereplace.integration.seam.ClassRedefinitionPlugin", loader);
-            Thread t = new Thread(l);
-            t.start();
+            ThreadLoader.loadAsync("org.fakereplace.integration.seam.ClassRedefinitionPlugin", loader, true);
          }
 
          manipulator.transformClass(file, loader);
@@ -370,41 +368,5 @@ public class Transformer implements ClassFileTransformer
          {
          }
       }
-   }
-
-   class ThreadLoader implements Runnable
-   {
-      final String className;
-      final ClassLoader classLoader;
-
-      private ThreadLoader(String className, ClassLoader classLoader)
-      {
-         this.className = className;
-         this.classLoader = classLoader;
-      }
-
-      public void run()
-      {
-         try
-         {
-            Class c = classLoader.loadClass(className);
-            c.newInstance();
-         }
-         catch (ClassNotFoundException e)
-         {
-            e.printStackTrace();
-         }
-         catch (InstantiationException e)
-         {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-         }
-         catch (IllegalAccessException e)
-         {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-         }
-      }
-
    }
 }
