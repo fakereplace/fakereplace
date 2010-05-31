@@ -25,6 +25,12 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
+		    <groupId>com.google.collections</groupId>
+		    <artifactId>google-collections</artifactId>
+		    <version>1.0</version>
+		</dependency>
+		
+		<dependency>
 			<groupId>org.testng</groupId>
 			<artifactId>testng</artifactId>
 			<version>5.11</version>
@@ -70,9 +76,14 @@
 		                  <pattern>javassist</pattern>
 		                  <shadedPattern>org.fakereplace.javassist</shadedPattern>
 		                </relocation>
+		                <relocation>
+		                  <pattern>com.google</pattern>
+		                  <shadedPattern>org.fakereplace.com.google</shadedPattern>
+		                </relocation>
 		              </relocations>
 		              <artifactSet>
 		                <includes>
+		                  <include>com.google.collections:google-collections</include>
 		                  <include>javassist:javassist</include>
 		                  <include>org.fakereplace:seam-agent</include>
 		                </includes>

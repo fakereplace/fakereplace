@@ -2,17 +2,19 @@ package org.fakereplace.api;
 
 import java.lang.reflect.Method;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
-import java.util.WeakHashMap;
+
+import com.google.common.collect.MapMaker;
 
 public class ClassChangeNotifier
 {
-   static WeakHashMap<ClassLoader, Set<ClassChangeAware>> classChangeAwares = new WeakHashMap<ClassLoader, Set<ClassChangeAware>>();
+   static Map<ClassLoader, Set<ClassChangeAware>> classChangeAwares = new MapMaker().weakKeys().makeMap();
 
    /**
     * These are objects that want to be notified but that do not have a dependency on fakereplace.
     */
-   static WeakHashMap<ClassLoader, Set<Object>> unlinkedAwares = new WeakHashMap<ClassLoader, Set<Object>>();
+   static Map<ClassLoader, Set<Object>> unlinkedAwares = new MapMaker().weakKeys().makeMap();
 
    static public void add(ClassChangeAware aware)
    {

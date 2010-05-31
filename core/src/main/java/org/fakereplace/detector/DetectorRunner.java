@@ -18,6 +18,8 @@ import org.fakereplace.Agent;
 import org.fakereplace.api.ClassChangeNotifier;
 import org.fakereplace.util.FileReader;
 
+import com.google.common.collect.MapMaker;
+
 public class DetectorRunner implements Runnable
 {
 
@@ -34,7 +36,7 @@ public class DetectorRunner implements Runnable
     * some classloaders can have several root paths, e.g. an ear level classloader loading
     * several exploded jar
     */
-   static Map<ClassLoader, Set<File>> classLoaders = new ConcurrentHashMap<ClassLoader, Set<File>>();
+   static final Map<ClassLoader, Set<File>> classLoaders = (new MapMaker()).weakKeys().makeMap();
 
    Map<File, FileData> files = new ConcurrentHashMap<File, FileData>();
 
@@ -225,40 +227,42 @@ public class DetectorRunner implements Runnable
          sleep(POLL_TIME);
          try
          {
-         if (isFileSystemChanged())
-         {
-            // wait for the stuff to be copied
-            // we don't want half copied class filed
-            sleep(DELAY_TIME);
-            ClassChangeSet changes = getChanges();
-            ClassDefinition[] defs = new ClassDefinition[changes.getChangedClasses().size()];
-            Class<?>[] changed = new Class[changes.getChangedClasses().size()];
-            Class<?>[] newClasses = changes.newClasses.toArray(new Class[0]);
-            int count = 0;
-            for (ChangedClassData i : changes.getChangedClasses())
+            if (isFileSystemChanged())
             {
-               System.out.println("REPLACING CLASS: " + i.getJavaClass().getName());
-               changed[count] = i.javaClass;
-               defs[count++] = new ClassDefinition(i.javaClass, i.classFile);
-            }
-            try
-            {
-               ClassChangeNotifier.beforeChange(changed, newClasses);
-               Agent.redefine(defs);
-               ClassChangeNotifier.notify(changed, newClasses);
-            }
-            catch (UnmodifiableClassException e)
-            {
-               System.out.println("ERROR REPLACING CLASSES");
-               e.printStackTrace();
-            }
-            catch (ClassNotFoundException e)
-            {
-               System.out.println("ERROR REPLACING CLASSES");
-               e.printStackTrace();
+               // wait for the stuff to be copied
+               // we don't want half copied class filed
+               sleep(DELAY_TIME);
+               ClassChangeSet changes = getChanges();
+               ClassDefinition[] defs = new ClassDefinition[changes.getChangedClasses().size()];
+               Class<?>[] changed = new Class[changes.getChangedClasses().size()];
+               Class<?>[] newClasses = changes.newClasses.toArray(new Class[0]);
+               int count = 0;
+               for (ChangedClassData i : changes.getChangedClasses())
+               {
+                  System.out.println("REPLACING CLASS: " + i.getJavaClass().getName());
+                  changed[count] = i.javaClass;
+                  defs[count++] = new ClassDefinition(i.javaClass, i.classFile);
+               }
+               try
+               {
+                  ClassChangeNotifier.beforeChange(changed, newClasses);
+                  Agent.redefine(defs);
+                  ClassChangeNotifier.notify(changed, newClasses);
+               }
+               catch (UnmodifiableClassException e)
+               {
+                  System.out.println("ERROR REPLACING CLASSES");
+                  e.printStackTrace();
+               }
+               catch (ClassNotFoundException e)
+               {
+                  System.out.println("ERROR REPLACING CLASSES");
+                  e.printStackTrace();
+               }
             }
          }
-         }catch (Exception e) {
+         catch (Exception e)
+         {
             System.out.println(e.getMessage());
          }
 

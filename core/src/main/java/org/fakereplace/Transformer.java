@@ -11,9 +11,7 @@ import java.lang.instrument.IllegalClassFormatException;
 import java.lang.instrument.Instrumentation;
 import java.net.URL;
 import java.security.ProtectionDomain;
-import java.util.Collections;
 import java.util.Map;
-import java.util.WeakHashMap;
 
 import javassist.bytecode.AccessFlag;
 import javassist.bytecode.AnnotationsAttribute;
@@ -31,6 +29,8 @@ import org.fakereplace.detector.DetectorRunner;
 import org.fakereplace.manip.Manipulator;
 import org.fakereplace.replacement.FakeConstructorUtils;
 import org.fakereplace.util.NoInstrument;
+
+import com.google.common.collect.MapMaker;
 
 /**
  * This file is the transformer that instruments classes as they are added to
@@ -50,7 +50,7 @@ public class Transformer implements ClassFileTransformer
 
    static final String[] replacablePackages;
 
-   static final Map<ClassLoader, Object> integrationClassloader = Collections.synchronizedMap(new WeakHashMap<ClassLoader, Object>());
+   static final Map<ClassLoader, Object> integrationClassloader = new MapMaker().weakKeys().makeMap();
 
    DetectorRunner detector = new DetectorRunner();
 
