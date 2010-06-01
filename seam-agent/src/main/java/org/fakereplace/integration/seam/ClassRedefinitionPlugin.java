@@ -126,22 +126,28 @@ public class ClassRedefinitionPlugin implements ClassChangeAware
          field.setAccessible(true);
          Map<?, ?> map = (Map<?, ?>) field.get(null);
          map.clear();
+         try
+         {
+            field = Introspector.class.getDeclaredField("BEANINFO_CACHE");
+            field.setAccessible(true);
+            Object beaninfoCache = field.get(null);
 
-         field = Introspector.class.getDeclaredField("BEANINFO_CACHE");
-         field.setAccessible(true);
-         Object beaninfoCache = field.get(null);
+            map = (Map<?, ?>) AppContext.getAppContext().get(beaninfoCache);
+            if (map != null)
+            {
+               map.clear();
+            }
+         }
+         catch (NoSuchFieldException e)
+         {
 
+         }
          // clear proxy factory caches
          field = ProxyFactory.class.getDeclaredField("proxyCache");
          field.setAccessible(true);
          map = (Map<?, ?>) field.get(null);
          map.clear();
 
-         map = (Map<?, ?>) AppContext.getAppContext().get(beaninfoCache);
-         if (map != null)
-         {
-            map.clear();
-         }
       }
       catch (Exception e)
       {
