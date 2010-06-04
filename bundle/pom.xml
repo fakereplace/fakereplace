@@ -6,21 +6,21 @@
 	<groupId>org.fakereplace</groupId>
 	<artifactId>fakereplace-bundle</artifactId>
 	<packaging>jar</packaging>
-	<version>0.4</version>
+	<version>0.5</version>
 	<name>Fakereplace Bundle</name>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.fakereplace</groupId>
 			<artifactId>fakereplace</artifactId>
-			<version>0.4</version>
+			<version>0.5</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.fakereplace</groupId>
 			<artifactId>fakereplace-seam-agent</artifactId>
-			<version>0.4</version>
+			<version>0.5</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
