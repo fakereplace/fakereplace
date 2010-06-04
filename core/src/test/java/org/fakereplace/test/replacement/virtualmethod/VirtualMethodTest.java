@@ -17,6 +17,7 @@ public class VirtualMethodTest
    {
       ClassReplacer rep = new ClassReplacer();
       rep.queueClassForReplacement(VirtualClass.class, VirtualClass1.class);
+      rep.queueClassForReplacement(VirtualCaller.class, VirtualCaller1.class);
       rep.replaceQueuedClasses();
    }
 
@@ -55,6 +56,18 @@ public class VirtualMethodTest
       assert addValue;
       assert value;
       assert stuff;
+
+   }
+   
+   @Test(groups = "virtualmethod")
+   public void testVirtualMethod() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException
+   {
+
+      VirtualClass ns = new VirtualClass();
+      VirtualCaller caller = new VirtualCaller();
+      caller.add(ns);
+      int val = ns.getValue();
+      assert val == 11 : "expected 10 got " + val;
 
    }
 

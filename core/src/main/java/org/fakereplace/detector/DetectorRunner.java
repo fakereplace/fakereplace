@@ -231,6 +231,10 @@ public class DetectorRunner implements Runnable
                // we don't want half copied class filed
                sleep(DELAY_TIME);
                ClassChangeSet changes = getChanges();
+               if(changes.getChangedClasses().isEmpty())
+               {
+                  continue;
+               }
                ClassDefinition[] defs = new ClassDefinition[changes.getChangedClasses().size()];
                Class<?>[] changed = new Class[changes.getChangedClasses().size()];
                Class<?>[] newClasses = new Class[changes.getNewClasses().size()];
