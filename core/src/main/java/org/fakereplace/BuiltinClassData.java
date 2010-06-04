@@ -9,6 +9,7 @@ public class BuiltinClassData
 
    public static boolean skipInstrumentation(String className)
    {
+      className = className.replace('.', '/');
       for (String s : exceptions)
       {
          if (className.startsWith(s))

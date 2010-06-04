@@ -27,6 +27,7 @@ import javassist.bytecode.Opcode;
 import javassist.bytecode.ParameterAnnotationsAttribute;
 import javassist.bytecode.SignatureAttribute;
 
+import org.fakereplace.BuiltinClassData;
 import org.fakereplace.Transformer;
 import org.fakereplace.boot.Constants;
 import org.fakereplace.boot.GlobalClassDefinitionData;
@@ -58,8 +59,20 @@ public class MethodReplacer
          m.setAccessFlags(0 | AccessFlag.PUBLIC);
 
          Bytecode b = new Bytecode(file.getConstPool(), 5, 3);
-         b.add(Bytecode.ACONST_NULL);
-         b.add(Bytecode.ARETURN);
+         if(BuiltinClassData.skipInstrumentation(file.getSuperclass()))
+         {
+            b.add(Bytecode.ACONST_NULL);
+            b.add(Bytecode.ARETURN);
+         }
+         else
+         {
+            b.add(Bytecode.ALOAD_0);
+            b.add(Bytecode.ILOAD_1);
+            b.add(Bytecode.ALOAD_2);
+            b.addInvokespecial(file.getSuperclass(), Constants.ADDED_METHOD_NAME, Constants.ADDED_METHOD_DESCRIPTOR);
+            b.add(Bytecode.ARETURN);
+            
+         }
          virtualCodeAttribute = b.toCodeAttribute();
          m.setCodeAttribute(virtualCodeAttribute);
          file.addMethod(m);

@@ -60,6 +60,25 @@ public class VirtualMethodTest
    }
    
    @Test(groups = "virtualmethod")
+   public void testVirtualMethodChildByReflection() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException
+   {
+
+      VirtualChild ns = new VirtualChild();
+      Class c = VirtualChild.class;
+      Method get = c.getMethod("getValue");
+
+      Method add = c.getMethod("addValue", int.class);
+      assert get != null;
+      Integer res = (Integer) get.invoke(ns);
+      assert res.equals(new Integer(1)) : " actual " + res;
+      add.invoke(ns, 1);
+      res = (Integer) get.invoke(ns);
+      assert res.equals(new Integer(3)) : "Expected 3 got " + res;
+
+
+   }
+   
+   @Test(groups = "virtualmethod")
    public void testVirtualMethod() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException
    {
 
