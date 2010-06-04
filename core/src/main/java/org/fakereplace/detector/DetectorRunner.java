@@ -9,6 +9,7 @@ import java.lang.instrument.UnmodifiableClassException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
@@ -21,7 +22,7 @@ import com.google.common.collect.MapMaker;
 public class DetectorRunner implements Runnable
 {
 
-   static final int POLL_TIME = 1000;
+   static final int POLL_TIME = 2000;
 
    /**
     * when a change is first detected we wait for DELAY_TIME then
@@ -68,6 +69,23 @@ public class DetectorRunner implements Runnable
          {
             initRoot(f, classLoader);
             roots.add(f);
+            // if there is a different classloader with the same root remove it
+            // as that probably means that the app has been undeployed
+            System.out.println("ADDING ROOT: " + f.getAbsolutePath() + " to CL " + classLoader);
+            Iterator<Entry<ClassLoader, Set<File>>> i = classLoaders.entrySet().iterator();
+            while (i.hasNext())
+            {
+               Entry<ClassLoader, Set<File>> cl = i.next();
+               if (cl.getKey() == classLoader)
+               {
+                  continue;
+               }
+               if (cl.getValue().contains(f))
+               {
+                  files.remove(cl.getKey());
+                  i.remove();
+               }
+            }
          }
       }
       else
@@ -157,6 +175,7 @@ public class DetectorRunner implements Runnable
       Map<File, FileData> fls = new HashMap<File, FileData>();
       for (Entry<ClassLoader, Set<File>> e : classLoaders.entrySet())
       {
+
          for (File f : e.getValue())
          {
             handleInitDirectory(f, f, fls, e.getKey());
@@ -231,7 +250,7 @@ public class DetectorRunner implements Runnable
                // we don't want half copied class filed
                sleep(DELAY_TIME);
                ClassChangeSet changes = getChanges();
-               if(changes.getChangedClasses().isEmpty())
+               if (changes.getChangedClasses().isEmpty())
                {
                   continue;
                }
@@ -248,8 +267,11 @@ public class DetectorRunner implements Runnable
                count = 0;
                for (NewClassData i : changes.getNewClasses())
                {
-                  System.out.println("ADD NEW CLASS: " + i.getJavaClass().getName());
-                  newClasses[count++] = i.getJavaClass();
+                  if (i.getJavaClass() == null)
+                  {
+                     System.out.println("ADDING NEW CLASS: " + i.getJavaClass().getName());
+                     newClasses[count++] = i.getJavaClass();
+                  }
                }
                try
                {
