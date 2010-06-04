@@ -172,6 +172,17 @@ public class ReflectionDelegate
       }
       String args = '(' + DescriptorUtils.classArrayToDescriptorString(parameters) + ')';
       MethodData md = cd.getMethodData(name, args);
+      Class superClass= clazz;
+      while(superClass.getSuperclass() != null && md == null && superClass != Object.class)
+      {
+         superClass  = superClass.getSuperclass();
+         cd = ClassDataStore.getModifiedClassData(superClass.getClassLoader(), Descriptor.toJvmName(superClass.getName()));
+         if(cd != null)
+         {
+            md = cd.getMethodData(name, args);
+         }
+      }
+        
       if (md == null)
       {
          Method meth = clazz.getMethod(name, parameters);
@@ -186,7 +197,7 @@ public class ReflectionDelegate
       case FAKE:
          try
          {
-            Class<?> c = clazz.getClassLoader().loadClass(md.getClassName());
+            Class<?> c = superClass.getClassLoader().loadClass(md.getClassName());
             meth = c.getMethod(name, parameters);
             return meth;
          }
