@@ -168,18 +168,17 @@ public class Transformer implements ClassFileTransformer
          classLoaderInstrumenter.instrumentClassLoaderIfNessesary(loader, className);
          ClassFile file = new ClassFile(new DataInputStream(new ByteArrayInputStream(classfileBuffer)));
 
-         if (classBeingRedefined == null)
-         {
-            BaseClassData data = new BaseClassData(file, loader);
-            ClassDataStore.saveClassData(loader, data.getInternalName(), data);
-         }
-
          // we do not instrument any classes from fakereplace
          // if we did we get an endless loop
          // we also aviod instrumenting much of the java/lang and
          // java/io namespace except for java/lang/reflect/Proxy
          if (BuiltinClassData.skipInstrumentation(className))
          {
+            if (classBeingRedefined == null)
+            {
+               BaseClassData data = new BaseClassData(file, loader);
+               ClassDataStore.saveClassData(loader, data.getInternalName(), data);
+            }
             return null;
          }
 
@@ -219,6 +218,13 @@ public class Transformer implements ClassFileTransformer
             addFieldForInstrumentation(file);
             addConstructorForInstrumentation(file);
          }
+
+         if (classBeingRedefined == null)
+         {
+            BaseClassData data = new BaseClassData(file, loader);
+            ClassDataStore.saveClassData(loader, data.getInternalName(), data);
+         }
+
          ByteArrayOutputStream bs = new ByteArrayOutputStream();
          file.write(new DataOutputStream(bs));
 

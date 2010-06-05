@@ -8,6 +8,7 @@ import javassist.bytecode.Descriptor;
 
 import org.fakereplace.reflection.FieldAccessor;
 
+import com.google.common.base.Function;
 import com.google.common.collect.MapMaker;
 
 public class ClassDataStore
@@ -16,7 +17,14 @@ public class ClassDataStore
    static Map<String, Class<?>> proxyNameToReplacedClass = new ConcurrentHashMap<String, Class<?>>();
    static Map<String, FieldAccessor> proxyNameToFieldAccessor = new ConcurrentHashMap<String, FieldAccessor>();
 
-   static Map<ClassLoader, Map<String, ClassData>> classData = new MapMaker().weakKeys().makeMap();
+   static Map<ClassLoader, Map<String, ClassData>> classData = new MapMaker().weakKeys().makeComputingMap(new Function<ClassLoader, Map<String, ClassData>>()
+   {
+
+      public Map<String, ClassData> apply(ClassLoader from)
+      {
+         return new MapMaker().makeMap();
+      }
+   });
 
    static Map<ClassLoader, Map<String, BaseClassData>> baseClassData = new MapMaker().weakKeys().makeMap();
    static Map<String, MethodData> proxyNameToMethodData = new ConcurrentHashMap<String, MethodData>();
@@ -34,10 +42,6 @@ public class ClassDataStore
       if (loader == null)
       {
          loader = nullLoader;
-      }
-      if (!classData.containsKey(loader))
-      {
-         classData.put(loader, new HashMap<String, ClassData>());
       }
       Map<String, ClassData> map = classData.get(loader);
       map.put(className, data.buildClassData());
@@ -65,16 +69,6 @@ public class ClassDataStore
       {
          loader = nullLoader;
       }
-      if (!classData.containsKey(loader))
-      {
-         BaseClassData dd = getBaseClassData(loader, className);
-         if (dd == null)
-         {
-            return null;
-         }
-         ClassDataBuilder builder = new ClassDataBuilder(dd);
-         return builder.buildClassData();
-      }
       Map<String, ClassData> map = classData.get(loader);
       ClassData cd = map.get(className);
       if (cd == null)
@@ -85,7 +79,9 @@ public class ClassDataStore
             return null;
          }
          ClassDataBuilder builder = new ClassDataBuilder(dd);
-         return builder.buildClassData();
+         ClassData d = builder.buildClassData();
+         map.put(className, d);
+         return d;
       }
 
       return cd;

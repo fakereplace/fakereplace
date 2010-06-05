@@ -32,6 +32,7 @@ import org.fakereplace.data.BaseClassData;
 import org.fakereplace.data.ClassDataBuilder;
 import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.data.FieldData;
+import org.fakereplace.data.MemberType;
 import org.fakereplace.manip.data.AddedFieldData;
 import org.fakereplace.manip.util.Boxing;
 import org.fakereplace.manip.util.ManipulationUtils;
@@ -111,31 +112,34 @@ public class FieldReplacer
       // TODO: rewrite classes that access them to throw a NoSuchFieldError
       for (FieldData md : fields)
       {
-         FieldInfo old = new FieldInfo(file.getConstPool(), md.getName(), md.getType());
-         old.setAccessFlags(md.getAccessFlags());
-         builder.removeField(md);
-         try
+         if (md.getMemberType() == MemberType.NORMAL)
          {
-            Field field = md.getField(oldClass);
-            file.addField(old);
-            old.addAttribute(AnnotationReplacer.duplicateAnnotationsAttribute(file.getConstPool(), field));
-         }
-         catch (DuplicateMemberException e)
-         {
-            // this should not happen
-            throw new RuntimeException(e);
-         }
-         catch (SecurityException e)
-         {
-            throw new RuntimeException(e);
-         }
-         catch (ClassNotFoundException e)
-         {
-            throw new RuntimeException(e);
-         }
-         catch (NoSuchFieldException e)
-         {
-            throw new RuntimeException(e);
+            FieldInfo old = new FieldInfo(file.getConstPool(), md.getName(), md.getType());
+            old.setAccessFlags(md.getAccessFlags());
+            builder.removeField(md);
+            try
+            {
+               Field field = md.getField(oldClass);
+               file.addField(old);
+               old.addAttribute(AnnotationReplacer.duplicateAnnotationsAttribute(file.getConstPool(), field));
+            }
+            catch (DuplicateMemberException e)
+            {
+               // this should not happen
+               throw new RuntimeException(e);
+            }
+            catch (SecurityException e)
+            {
+               throw new RuntimeException(e);
+            }
+            catch (ClassNotFoundException e)
+            {
+               throw new RuntimeException(e);
+            }
+            catch (NoSuchFieldException e)
+            {
+               throw new RuntimeException(e);
+            }
          }
       }
 

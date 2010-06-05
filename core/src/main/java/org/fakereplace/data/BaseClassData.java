@@ -45,6 +45,10 @@ public class BaseClassData
          {
             type = MemberType.ADDED_SYSTEM;
          }
+         else if (m.getAttribute(Constants.ADDED_SUPERCLASS_DELEGATING_METHOD_ATTRIBUTE) != null)
+         {
+            type = MemberType.ADDED_DELEGATE;
+         }
 
          MethodData md = new MethodData(m.getName(), m.getDescriptor(), file.getName(), type, m.getAccessFlags());
          meths.add(md);

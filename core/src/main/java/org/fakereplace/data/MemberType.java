@@ -14,7 +14,7 @@ public enum MemberType
    FAKE_CONSTRUCTOR,
    /**
     * added delegates are methods that the transformer added at load time to
-    * directly call a superclass fake method so subclasses can use the normal
+    * directly call a superclass method so subclasses can use the normal
     * virtual method resolution rules
     * 
     */

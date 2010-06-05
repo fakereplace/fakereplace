@@ -36,6 +36,7 @@ import org.fakereplace.data.AnnotationDataStore;
 import org.fakereplace.data.BaseClassData;
 import org.fakereplace.data.ClassDataBuilder;
 import org.fakereplace.data.ClassDataStore;
+import org.fakereplace.data.MemberType;
 import org.fakereplace.data.MethodData;
 import org.fakereplace.data.MethodIdentifierStore;
 import org.fakereplace.manip.util.Boxing;
@@ -206,7 +207,14 @@ public class MethodReplacer
 
       for (MethodData md : methods)
       {
-         createRemovedMethod(file, md, oldClass, builder);
+         if (md.getType() == MemberType.NORMAL)
+         {
+            createRemovedMethod(file, md, oldClass, builder);
+         }
+         else if (md.getType() == MemberType.ADDED_DELEGATE)
+         {
+            // TODO:
+         }
       }
 
       // if we did not return from a virtual method we need to call the parent

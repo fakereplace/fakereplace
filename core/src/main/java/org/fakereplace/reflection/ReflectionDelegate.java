@@ -80,8 +80,11 @@ public class ReflectionDelegate
          List<Method> visible = new ArrayList<Method>(meth.length);
          for (int i = 0; i < meth.length; ++i)
          {
-            if (!meth[i].getName().equals(Constants.ADDED_METHOD_NAME) && !meth[i].getName().equals(Constants.ADDED_STATIC_METHOD_NAME))
+            MethodData mData = cd.getData(meth[i]);
+            if (mData == null || mData.getType() == MemberType.NORMAL)
+            {
                visible.add(meth[i]);
+            }
          }
 
          for (MethodData i : cd.getMethods())
@@ -107,7 +110,7 @@ public class ReflectionDelegate
       }
    }
 
-   public static Method[] getMethods(Class clazz)
+   public static Method[] getMethods(Class<?> clazz)
    {
       try
       {
@@ -122,7 +125,8 @@ public class ReflectionDelegate
          List<Method> visible = new ArrayList<Method>(meth.length);
          for (int i = 0; i < meth.length; ++i)
          {
-            if (!meth[i].getName().equals(Constants.ADDED_METHOD_NAME) && !meth[i].getName().equals(Constants.ADDED_STATIC_METHOD_NAME))
+            MethodData mData = cd.getData(meth[i]);
+            if (mData == null || mData.getType() == MemberType.NORMAL)
             {
                visible.add(meth[i]);
             }
@@ -135,12 +139,12 @@ public class ReflectionDelegate
             {
                if (i.getType() == MemberType.FAKE && AccessFlag.isPublic(i.getAccessFlags()))
                {
-                  Class c = clazz.getClassLoader().loadClass(i.getClassName());
+                  Class<?> c = clazz.getClassLoader().loadClass(i.getClassName());
                   visible.add(i.getMethod(c));
                }
                else if (i.getType() == MemberType.REMOVED_METHOD)
                {
-                  Class c = clazz.getClassLoader().loadClass(i.getClassName());
+                  Class<?> c = clazz.getClassLoader().loadClass(i.getClassName());
                   visible.remove(i.getMethod(c));
                }
             }
@@ -160,7 +164,7 @@ public class ReflectionDelegate
       }
    }
 
-   public static Method getMethod(Class clazz, String name, Class... parameters) throws NoSuchMethodException
+   public static Method getMethod(Class<?> clazz, String name, Class<?>... parameters) throws NoSuchMethodException
    {
 
       ClassData cd = ClassDataStore.getModifiedClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
@@ -172,17 +176,17 @@ public class ReflectionDelegate
       }
       String args = '(' + DescriptorUtils.classArrayToDescriptorString(parameters) + ')';
       MethodData md = cd.getMethodData(name, args);
-      Class superClass= clazz;
-      while(superClass.getSuperclass() != null && md == null && superClass != Object.class)
+      Class superClass = clazz;
+      while (superClass.getSuperclass() != null && md == null && superClass != Object.class)
       {
-         superClass  = superClass.getSuperclass();
+         superClass = superClass.getSuperclass();
          cd = ClassDataStore.getModifiedClassData(superClass.getClassLoader(), Descriptor.toJvmName(superClass.getName()));
-         if(cd != null)
+         if (cd != null)
          {
             md = cd.getMethodData(name, args);
          }
       }
-        
+
       if (md == null)
       {
          Method meth = clazz.getMethod(name, parameters);

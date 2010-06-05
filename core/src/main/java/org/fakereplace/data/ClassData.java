@@ -1,11 +1,17 @@
 package org.fakereplace.data;
 
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.fakereplace.util.DescriptorUtils;
+
+import com.google.common.base.Function;
+import com.google.common.collect.MapMaker;
 
 /**
  * This class holds everything there is to know about a class that has been seen
@@ -20,6 +26,7 @@ public class ClassData
    private final String className;
    private final String internalName;
    private final Map<String, Map<String, Set<MethodData>>> methods = new ConcurrentHashMap<String, Map<String, Set<MethodData>>>();
+   private final Map<Method, MethodData> methodsByMethod = new MapMaker().makeComputingMap(new MethodResolver());
    private final Map<String, FieldData> fields = new ConcurrentHashMap<String, FieldData>();
    private final ClassLoader loader;
    private final String superClassName;
@@ -28,6 +35,8 @@ public class ClassData
    // lazy initilised fields
    private ClassData superClassInformation;
    private boolean superClassInfoInit = false;
+
+   private final static MethodData NULL_METHOD_DATA = new MethodData("", "", "", null, 0);
 
    ClassData(BaseClassData data, Set<MethodData> addMethods, Set<MethodData> removedMethods, Set<FieldData> addedFields, Set<FieldData> removedFields)
    {
@@ -73,6 +82,16 @@ public class ClassData
 
    }
 
+   public MethodData getData(Method method)
+   {
+      MethodData res = methodsByMethod.get(method);
+      if (res == NULL_METHOD_DATA)
+      {
+         return null;
+      }
+      return res;
+   }
+
    ClassData(BaseClassData data)
    {
       className = data.getClassName();
@@ -103,17 +122,15 @@ public class ClassData
     */
    public ClassData getSuperClassInformation()
    {
-      if (!superClassInfoInit)
+      ClassData superClassInformation = ClassDataStore.getModifiedClassData(loader, superClassName);
+      ClassLoader l = loader;
+      while (superClassInformation == null && l != null)
       {
-         superClassInformation = ClassDataStore.getModifiedClassData(loader, superClassName);
-         ClassLoader l = loader;
-         while (superClassInformation == null && l != null)
-         {
-            l = l.getParent();
-            superClassInformation = ClassDataStore.getModifiedClassData(l, superClassName);
-         }
-         superClassInfoInit = true;
+         l = l.getParent();
+         superClassInformation = ClassDataStore.getModifiedClassData(l, superClassName);
       }
+      superClassInfoInit = true;
+
       return superClassInformation;
    }
 
@@ -224,5 +241,27 @@ public class ClassData
          return null;
       }
       return ms.iterator().next();
+   }
+
+   private static class MethodResolver implements Function<Method, MethodData>
+   {
+
+      public MethodData apply(Method from)
+      {
+         ClassData dta = ClassDataStore.getModifiedClassData(from.getDeclaringClass().getClassLoader(), from.getDeclaringClass().getName());
+         if (dta == null)
+         {
+            return NULL_METHOD_DATA;
+         }
+
+         String args = '(' + DescriptorUtils.classArrayToDescriptorString(from.getParameterTypes()) + ')';
+         MethodData m = dta.getMethodData(from.getName(), args);
+         if (m == null)
+         {
+            return NULL_METHOD_DATA;
+         }
+         return m;
+      }
+
    }
 }
