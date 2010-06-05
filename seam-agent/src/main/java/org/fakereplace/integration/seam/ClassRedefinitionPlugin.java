@@ -9,6 +9,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Map;
+import java.util.Set;
 
 import javax.el.BeanELResolver;
 import javax.el.CompositeELResolver;
@@ -16,6 +17,7 @@ import javax.el.ELResolver;
 
 import org.fakereplace.api.ClassChangeAware;
 import org.fakereplace.api.ClassChangeNotifier;
+import org.fakereplace.data.InstanceTracker;
 import org.jboss.seam.Component;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.Seam;
@@ -24,11 +26,9 @@ import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.contexts.Lifecycle;
 import org.jboss.seam.contexts.ServletLifecycle;
 import org.jboss.seam.core.Init;
-import org.jboss.seam.el.EL;
 import org.jboss.seam.init.Initialization;
 import org.jboss.seam.util.ProxyFactory;
-
-import sun.awt.AppContext;
+import org.jboss.seam.web.AbstractFilter;
 
 public class ClassRedefinitionPlugin implements ClassChangeAware
 {
@@ -45,7 +45,6 @@ public class ClassRedefinitionPlugin implements ClassChangeAware
          System.out.println("Could not set org.jboss.seam.util.ProxyFactory.useCache to false: " + t.getMessage());
       }
       ClassChangeNotifier.add(this);
-
    }
 
    byte[] readFile(File file) throws IOException
@@ -89,6 +88,16 @@ public class ClassRedefinitionPlugin implements ClassChangeAware
          return;
       }
       Lifecycle.beginCall();
+      try
+      {
+         // fakereplace does not play nice with the hot deployment filter
+         AbstractFilter filter = (AbstractFilter) Component.getInstance("org.jboss.seam.web.hotDeployFilter");
+         filter.setDisabled(true);
+      }
+      catch (Exception e)
+      {
+
+      }
       Seam.clearComponentNameCache();
       for (int i = 0; i < changed.length; ++i)
       {
@@ -121,31 +130,12 @@ public class ClassRedefinitionPlugin implements ClassChangeAware
       }
       try
       {
-         // clear reflection caches
-         Field field = Introspector.class.getDeclaredField("declaredMethodCache");
+         Introspector.flushCaches();
+
+         // clear proxy factory caches
+         Field field = ProxyFactory.class.getDeclaredField("proxyCache");
          field.setAccessible(true);
          Map<?, ?> map = (Map<?, ?>) field.get(null);
-         map.clear();
-         try
-         {
-            field = Introspector.class.getDeclaredField("BEANINFO_CACHE");
-            field.setAccessible(true);
-            Object beaninfoCache = field.get(null);
-
-            map = (Map<?, ?>) AppContext.getAppContext().get(beaninfoCache);
-            if (map != null)
-            {
-               map.clear();
-            }
-         }
-         catch (NoSuchFieldException e)
-         {
-
-         }
-         // clear proxy factory caches
-         field = ProxyFactory.class.getDeclaredField("proxyCache");
-         field.setAccessible(true);
-         map = (Map<?, ?>) field.get(null);
          map.clear();
 
       }
@@ -172,11 +162,18 @@ public class ClassRedefinitionPlugin implements ClassChangeAware
       {
          e.printStackTrace();
       }
+      Set<Object> data = InstanceTracker.get("javax.el.BeanELResolver");
+      for (Object i : data)
+      {
+         clearBeanElResolver(i);
+      }
+      Lifecycle.endCall();
+   }
+
+   public void clearElResolver(ELResolver resolver)
+   {
       try
       {
-         // javax.faces.context.FacesContext context = (javax.faces.context.FacesContext)
-         // Component.getInstance("org.jboss.seam.faces.facesContext");
-         ELResolver resolver = EL.EL_RESOLVER;
          if (resolver instanceof CompositeELResolver)
          {
             CompositeELResolver c = (CompositeELResolver) resolver;
@@ -208,13 +205,41 @@ public class ClassRedefinitionPlugin implements ClassChangeAware
 
                }
             }
+         }
 
+      }
+      catch (Exception e)
+      {
+         System.out.println("Could not clear EL cache:" + e.getMessage());
+      }
+   }
+
+   public void clearBeanElResolver(Object r)
+   {
+      try
+      {
+         Field cacheField = getField(r.getClass(), "cache");
+         cacheField.setAccessible(true);
+         Object cache = cacheField.get(r);
+         try
+         {
+            Method m = cache.getClass().getMethod("clear");
+            m.invoke(cache);
+         }
+         catch (NoSuchMethodException e)
+         {
+            // different version of jboss el
+            Class<?> cacheClass = getClass().getClassLoader().loadClass("javax.el.BeanELResolver$ConcurrentCache");
+            Constructor<?> con = cacheClass.getConstructor(int.class);
+            con.setAccessible(true);
+            Object cacheInstance = con.newInstance(100);
+            cacheField.set(r, cacheInstance);
          }
       }
       catch (Exception e)
       {
          System.out.println("Could not clear EL cache:" + e.getMessage());
       }
-      Lifecycle.endCall();
    }
+
 }

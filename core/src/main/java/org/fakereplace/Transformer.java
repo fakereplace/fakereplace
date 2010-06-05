@@ -15,9 +15,11 @@ import java.util.Map;
 
 import javassist.bytecode.AccessFlag;
 import javassist.bytecode.AnnotationsAttribute;
+import javassist.bytecode.BadBytecode;
 import javassist.bytecode.Bytecode;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.CodeAttribute;
+import javassist.bytecode.CodeIterator;
 import javassist.bytecode.DuplicateMemberException;
 import javassist.bytecode.FieldInfo;
 import javassist.bytecode.MethodInfo;
@@ -25,6 +27,7 @@ import javassist.bytecode.MethodInfo;
 import org.fakereplace.boot.Constants;
 import org.fakereplace.data.BaseClassData;
 import org.fakereplace.data.ClassDataStore;
+import org.fakereplace.data.InstanceTracker;
 import org.fakereplace.detector.DetectorRunner;
 import org.fakereplace.manip.Manipulator;
 import org.fakereplace.replacement.FakeConstructorUtils;
@@ -202,6 +205,10 @@ public class Transformer implements ClassFileTransformer
             // otherwise it will not be instrumented
             ThreadLoader.loadAsync("org.fakereplace.integration.seam.ClassRedefinitionPlugin", loader, true);
          }
+         if (file.getName().equals("javax.el.BeanELResolver"))
+         {
+            makeTrackedInstance(file);
+         }
 
          manipulator.transformClass(file, loader);
 
@@ -251,7 +258,7 @@ public class Transformer implements ClassFileTransformer
          m.setAccessFlags(0 | AccessFlag.PUBLIC);
 
          Bytecode b = new Bytecode(file.getConstPool(), 5, 3);
-         if(BuiltinClassData.skipInstrumentation(file.getSuperclass()))
+         if (BuiltinClassData.skipInstrumentation(file.getSuperclass()))
          {
             b.add(Bytecode.ACONST_NULL);
             b.add(Bytecode.ARETURN);
@@ -263,7 +270,7 @@ public class Transformer implements ClassFileTransformer
             b.add(Bytecode.ALOAD_2);
             b.addInvokespecial(file.getSuperclass(), Constants.ADDED_METHOD_NAME, Constants.ADDED_METHOD_DESCRIPTOR);
             b.add(Bytecode.ARETURN);
-            
+
          }
          CodeAttribute ca = b.toCodeAttribute();
          m.setCodeAttribute(ca);
@@ -378,6 +385,29 @@ public class Transformer implements ClassFileTransformer
          }
          catch (IOException e)
          {
+         }
+      }
+   }
+
+   /**
+    * modifies a class so that all created instances are registered with InstanceTracker
+    * @param file
+    * @throws BadBytecode
+    */
+   public void makeTrackedInstance(ClassFile file) throws BadBytecode
+   {
+      for (Object mo : file.getMethods())
+      {
+         MethodInfo m = (MethodInfo) mo;
+         if (m.getName().equals("<init>"))
+         {
+            Bytecode code = new Bytecode(file.getConstPool());
+            code.addLdc(file.getName());
+            code.addAload(0);
+            code.addInvokestatic(InstanceTracker.class.getName(), "add", "(Ljava/lang/String;Ljava/lang/Object;)V");
+            CodeIterator it = m.getCodeAttribute().iterator();
+            it.skipConstructor();
+            it.insert(code.get());
          }
       }
    }
