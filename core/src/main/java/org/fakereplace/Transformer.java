@@ -205,7 +205,7 @@ public class Transformer implements ClassFileTransformer
             // otherwise it will not be instrumented
             ThreadLoader.loadAsync("org.fakereplace.integration.seam.ClassRedefinitionPlugin", loader, true);
          }
-         if (file.getName().equals("javax.el.BeanELResolver"))
+         if (file.getName().equals("javax.el.BeanELResolver") || file.getName().equals("org.jboss.seam.servlet.SeamFilter"))
          {
             makeTrackedInstance(file);
          }

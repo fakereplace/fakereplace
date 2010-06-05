@@ -8,6 +8,8 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -27,8 +29,10 @@ import org.jboss.seam.contexts.Lifecycle;
 import org.jboss.seam.contexts.ServletLifecycle;
 import org.jboss.seam.core.Init;
 import org.jboss.seam.init.Initialization;
+import org.jboss.seam.servlet.SeamFilter;
 import org.jboss.seam.util.ProxyFactory;
 import org.jboss.seam.web.AbstractFilter;
+import org.jboss.seam.web.HotDeployFilter;
 
 public class ClassRedefinitionPlugin implements ClassChangeAware
 {
@@ -83,6 +87,7 @@ public class ClassRedefinitionPlugin implements ClassChangeAware
 
    public void beforeChange(Class<?>[] changed, Class<?>[] added)
    {
+      disableHotDeployFilter();
       if (!Lifecycle.isApplicationInitialized())
       {
          return;
@@ -239,6 +244,37 @@ public class ClassRedefinitionPlugin implements ClassChangeAware
       catch (Exception e)
       {
          System.out.println("Could not clear EL cache:" + e.getMessage());
+      }
+   }
+
+   /**
+    * Fakereplace does not play nice with the hot deploy filter
+    */
+   public void disableHotDeployFilter()
+   {
+      try
+      {
+         Set<Object> data = InstanceTracker.get(SeamFilter.class.getName());
+         for (Object i : data)
+         {
+            Field filters = SeamFilter.class.getDeclaredField("filters");
+            filters.setAccessible(true);
+            List<?> filterList = (List<?>) filters.get(i);
+            ListIterator<?> it = filterList.listIterator();
+            while (it.hasNext())
+            {
+               Object val = it.next();
+               if (val instanceof HotDeployFilter)
+               {
+                  it.remove();
+               }
+            }
+         }
+      }
+      catch (Exception e)
+      {
+         System.out.println("Unable to disable hot deploy filter");
+         e.printStackTrace();
       }
    }
 
