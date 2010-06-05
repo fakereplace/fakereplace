@@ -266,6 +266,7 @@ public class ClassRedefinitionPlugin implements ClassChangeAware
                Object val = it.next();
                if (val instanceof HotDeployFilter)
                {
+                  System.out.println("Disabling seam hot deployment filter, it does not play nicely with fakereplace");
                   it.remove();
                }
             }

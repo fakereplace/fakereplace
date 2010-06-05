@@ -39,8 +39,9 @@ import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.data.MethodData;
 import org.fakereplace.data.MethodIdentifierStore;
 import org.fakereplace.manip.util.Boxing;
-import org.fakereplace.manip.util.MethodReturnRewriter;
+import org.fakereplace.manip.util.ManipulationUtils;
 import org.fakereplace.manip.util.ParameterRewriter;
+import org.fakereplace.manip.util.ManipulationUtils.MethodReturnRewriter;
 import org.fakereplace.util.DescriptorUtils;
 
 public class MethodReplacer
@@ -59,7 +60,7 @@ public class MethodReplacer
          m.setAccessFlags(0 | AccessFlag.PUBLIC);
 
          Bytecode b = new Bytecode(file.getConstPool(), 5, 3);
-         if(BuiltinClassData.skipInstrumentation(file.getSuperclass()))
+         if (BuiltinClassData.skipInstrumentation(file.getSuperclass()))
          {
             b.add(Bytecode.ACONST_NULL);
             b.add(Bytecode.ARETURN);
@@ -71,7 +72,7 @@ public class MethodReplacer
             b.add(Bytecode.ALOAD_2);
             b.addInvokespecial(file.getSuperclass(), Constants.ADDED_METHOD_NAME, Constants.ADDED_METHOD_DESCRIPTOR);
             b.add(Bytecode.ARETURN);
-            
+
          }
          virtualCodeAttribute = b.toCodeAttribute();
          m.setCodeAttribute(virtualCodeAttribute);
@@ -89,7 +90,7 @@ public class MethodReplacer
          m = new MethodInfo(file.getConstPool(), "<init>", Constants.ADDED_CONSTRUCTOR_DESCRIPTOR);
          m.setAccessFlags(AccessFlag.PUBLIC);
          b = new Bytecode(file.getConstPool(), 5, 5);
-         if (FakeConstructorUtils.addBogusConstructorCall(file, b))
+         if (ManipulationUtils.addBogusConstructorCall(file, b))
          {
             constructorCodeAttribute = b.toCodeAttribute();
             m.setCodeAttribute(constructorCodeAttribute);
@@ -334,7 +335,7 @@ public class MethodReplacer
          proxyBytecode.addInvokevirtual(className, Constants.ADDED_METHOD_NAME, "(I[Ljava/lang/Object;)Ljava/lang/Object;");
       }
       // cast it to the appropriate type and return it
-      MethodReturnRewriter.addReturnProxyMethod(mInfo.getDescriptor(), proxyBytecode);
+      ManipulationUtils.MethodReturnRewriter.addReturnProxyMethod(mInfo.getDescriptor(), proxyBytecode);
       CodeAttribute ca = proxyBytecode.toCodeAttribute();
       ca.setMaxLocals(locals);
 
@@ -506,7 +507,7 @@ public class MethodReplacer
       int offset = mInfo.getCodeAttribute().getCodeLength();
       // offset is +3, 2 for the branch offset after the IF_ICMPNE and 1 to
       // take it past the end of the code
-      ByteUtils.add16bit(bc, offset + 3); // add the branch offset
+      ManipulationUtils.add16bit(bc, offset + 3); // add the branch offset
       // now we need to insert our generated conditional at the start of the
       // new method
       CodeIterator newInfo = mInfo.getCodeAttribute().iterator();

@@ -30,7 +30,7 @@ import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.data.InstanceTracker;
 import org.fakereplace.detector.DetectorRunner;
 import org.fakereplace.manip.Manipulator;
-import org.fakereplace.replacement.FakeConstructorUtils;
+import org.fakereplace.manip.util.ManipulationUtils;
 import org.fakereplace.util.NoInstrument;
 
 import com.google.common.collect.MapMaker;
@@ -304,7 +304,7 @@ public class Transformer implements ClassFileTransformer
       MethodInfo ret = new MethodInfo(file.getConstPool(), "<init>", Constants.ADDED_CONSTRUCTOR_DESCRIPTOR);
       Bytecode code = new Bytecode(file.getConstPool());
       // if the class does not have a constructor return
-      if (!FakeConstructorUtils.addBogusConstructorCall(file, code))
+      if (!ManipulationUtils.addBogusConstructorCall(file, code))
       {
          return;
       }

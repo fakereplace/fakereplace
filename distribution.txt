@@ -1,4 +1,4 @@
 To create the fakereplace distribution, run the following Maven command:
 
-mvn clean package assembly:assembly
+mvn clean package javadoc:javadoc assembly:assembly
 

@@ -34,6 +34,7 @@ import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.data.FieldData;
 import org.fakereplace.manip.data.AddedFieldData;
 import org.fakereplace.manip.util.Boxing;
+import org.fakereplace.manip.util.ManipulationUtils;
 import org.fakereplace.reflection.FieldAccessor;
 
 public class FieldReplacer
@@ -228,7 +229,7 @@ public class FieldReplacer
             b.addAload(0);
             b.addGetfield(file.getName(), Constants.ADDED_FIELD_NAME, Constants.ADDED_FIELD_DESCRIPTOR);
             b.add(Opcode.IFNONNULL);
-            ByteUtils.add16bit(b, cond.getSize() + 3);
+            ManipulationUtils.add16bit(b, cond.getSize() + 3);
             CodeIterator it = m.getCodeAttribute().iterator();
             it.skipConstructor();
             // built up the bytecode to insert
