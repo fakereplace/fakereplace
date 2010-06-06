@@ -177,7 +177,7 @@ public class ReflectionDelegate
       String args = '(' + DescriptorUtils.classArrayToDescriptorString(parameters) + ')';
       MethodData md = cd.getMethodData(name, args);
       Class superClass = clazz;
-      while (superClass.getSuperclass() != null && md == null && superClass != Object.class)
+      while (superClass.getSuperclass() != null && (md == null || md.getType() == MemberType.ADDED_DELEGATE) && superClass != Object.class)
       {
          superClass = superClass.getSuperclass();
          cd = ClassDataStore.getModifiedClassData(superClass.getClassLoader(), Descriptor.toJvmName(superClass.getName()));
