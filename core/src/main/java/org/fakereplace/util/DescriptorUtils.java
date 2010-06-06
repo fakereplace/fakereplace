@@ -21,6 +21,11 @@ public class DescriptorUtils
 
    }
 
+   public static String getDescriptor(Method method)
+   {
+      return "(" + classArrayToDescriptorString(method.getParameterTypes()) + ")" + classToStringRepresentation(method.getReturnType());
+   }
+
    /**
     * returns an array of class types based on the method parameters this allows
     * getMethod to be called based on descriptor data We also pass the class

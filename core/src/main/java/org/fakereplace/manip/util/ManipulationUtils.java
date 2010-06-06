@@ -236,6 +236,7 @@ public class ManipulationUtils
    public static void addDelegatingMethod(ClassFile file, MethodData mData) throws BadBytecode, DuplicateMemberException
    {
       MethodInfo m = new MethodInfo(file.getConstPool(), mData.getMethodName(), mData.getDescriptor());
+      m.setAccessFlags(mData.getAccessFlags());
       Bytecode code = new Bytecode(file.getConstPool());
 
       String[] params = DescriptorUtils.descriptorStringToParameterArray(mData.getDescriptor());

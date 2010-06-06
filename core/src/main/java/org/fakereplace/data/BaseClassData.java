@@ -1,5 +1,7 @@
 package org.fakereplace.data;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -11,6 +13,7 @@ import javassist.bytecode.FieldInfo;
 import javassist.bytecode.MethodInfo;
 
 import org.fakereplace.boot.Constants;
+import org.fakereplace.util.DescriptorUtils;
 
 /**
  * This class holds everything there is to know about a class that has been seen
@@ -64,6 +67,35 @@ public class BaseClassData
             mt = MemberType.ADDED_SYSTEM;
          }
          fieldData.add(new FieldData(m, mt, className));
+      }
+      this.fields = Collections.unmodifiableSet(fieldData);
+   }
+
+   public BaseClassData(Class<?> cls)
+   {
+      className = cls.getName();
+      internalName = Descriptor.toJvmName(cls.getName());
+      this.loader = cls.getClassLoader();
+      if (cls.getSuperclass() != null)
+      {
+         superClassName = Descriptor.toJvmName(cls.getSuperclass().getName());
+      }
+      else
+      {
+         superClassName = null;
+      }
+      Set<MethodData> meths = new HashSet<MethodData>();
+      for (Method m : cls.getMethods())
+      {
+         MemberType type = MemberType.NORMAL;
+         MethodData md = new MethodData(m.getName(), DescriptorUtils.getDescriptor(m), cls.getName(), type, m.getModifiers());
+         meths.add(md);
+      }
+      this.methods = Collections.unmodifiableSet(meths);
+      Set<FieldData> fieldData = new HashSet<FieldData>();
+      for (Field m : cls.getFields())
+      {
+         fieldData.add(new FieldData(m));
       }
       this.fields = Collections.unmodifiableSet(fieldData);
    }

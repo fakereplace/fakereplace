@@ -26,6 +26,18 @@ public class FieldData
       this.memberType = memberType;
    }
 
+   public FieldData(Field field)
+   {
+      this.accessFlags = field.getModifiers();
+      this.pack = AccessFlag.isPackage(accessFlags);
+      this.priv = AccessFlag.isPrivate(accessFlags);
+      this.prot = AccessFlag.isProtected(accessFlags);
+      this.type = field.getType().getName();
+      this.memberType = MemberType.NORMAL;
+      this.className = field.getDeclaringClass().getName();
+      this.name = field.getName();
+   }
+
    public FieldData(FieldData other, MemberType type)
    {
       this.accessFlags = other.accessFlags;

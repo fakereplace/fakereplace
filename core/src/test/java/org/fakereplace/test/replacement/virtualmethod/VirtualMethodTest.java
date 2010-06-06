@@ -58,7 +58,7 @@ public class VirtualMethodTest
       assert stuff;
 
    }
-   
+
    @Test(groups = "virtualmethod")
    public void testVirtualMethodChildByReflection() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException
    {
@@ -75,9 +75,8 @@ public class VirtualMethodTest
       res = (Integer) get.invoke(ns);
       assert res.equals(new Integer(3)) : "Expected 3 got " + res;
 
-
    }
-   
+
    @Test(groups = "virtualmethod")
    public void testVirtualMethod() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException
    {
@@ -149,7 +148,7 @@ public class VirtualMethodTest
       assert add;
       assert stuff;
    }
-   
+
    @Test(groups = "virtualmethod")
    public void testVirtualChildMethodgetMethods() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException
    {
@@ -172,7 +171,7 @@ public class VirtualMethodTest
       assert add;
       assert stuff;
    }
-   
+
    @Test(groups = "virtualmethod")
    public void testVirtualMethodgetMethods() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException
    {
@@ -194,6 +193,18 @@ public class VirtualMethodTest
       }
       assert add;
       assert stuff;
+   }
+
+   @Test(groups = "virtualmethod")
+   public void testToStringOverride() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException
+   {
+      VirtualClass c = new VirtualClass();
+      assert getString(c).equals("VirtualChild1");
+   }
+
+   public String getString(Object o)
+   {
+      return o.toString();
    }
 
 }

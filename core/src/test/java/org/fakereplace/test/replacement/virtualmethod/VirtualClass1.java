@@ -25,4 +25,10 @@ public class VirtualClass1
    {
       return null;
    }
+
+   @Override
+   public String toString()
+   {
+      return "VirtualChild1";
+   }
 }

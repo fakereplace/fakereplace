@@ -122,6 +122,10 @@ public class ClassData
     */
    public ClassData getSuperClassInformation()
    {
+      if (superClassName == null)
+      {
+         return null;
+      }
       ClassData superClassInformation = ClassDataStore.getModifiedClassData(loader, superClassName);
       ClassLoader l = loader;
       while (superClassInformation == null && l != null)

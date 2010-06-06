@@ -6,7 +6,9 @@ import java.util.Map;
 /**
  * Returns a method number for a generated method. Methods with the same name
  * and descriptor are assigned the same number to make emulating virtual calls
- * easier
+ * easier. The redifined method can call super.REDEFINED_METHOD with the same 
+ * method number and if the method exists on the superclass then it is handled 
+ * automatically
  * 
  * @author Stuart Douglas <stuart@baileyroberts.com.au>
  * 

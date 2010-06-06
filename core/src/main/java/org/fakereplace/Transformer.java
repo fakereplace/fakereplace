@@ -4,6 +4,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.instrument.ClassFileTransformer;
@@ -26,8 +28,10 @@ import javassist.bytecode.MethodInfo;
 
 import org.fakereplace.boot.Constants;
 import org.fakereplace.data.BaseClassData;
+import org.fakereplace.data.ClassData;
 import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.data.InstanceTracker;
+import org.fakereplace.data.MethodData;
 import org.fakereplace.detector.DetectorRunner;
 import org.fakereplace.manip.Manipulator;
 import org.fakereplace.manip.util.ManipulationUtils;
@@ -55,10 +59,31 @@ public class Transformer implements ClassFileTransformer
 
    static final Map<ClassLoader, Object> integrationClassloader = new MapMaker().weakKeys().makeMap();
 
+   static final String DUMP_DIRECTORY;
+
    DetectorRunner detector = new DetectorRunner();
 
    static
    {
+      String dump = System.getProperty(Constants.DUMP_DIRECTORY_KEY);
+      if (dump != null)
+      {
+         File f = new File(dump);
+         if (!f.exists())
+         {
+            System.out.println("dump directory  " + dump + " does not exist ");
+            DUMP_DIRECTORY = null;
+         }
+         else
+         {
+            DUMP_DIRECTORY = dump;
+            System.out.println("dumping class definitions to " + dump);
+         }
+      }
+      else
+      {
+         DUMP_DIRECTORY = null;
+      }
       String plist = System.getProperty(Constants.REPLACABLE_PACKAGES_KEY);
       if (plist == null || plist.length() == 0)
       {
@@ -217,6 +242,7 @@ public class Transformer implements ClassFileTransformer
             addMethodForInstrumentation(file);
             addFieldForInstrumentation(file);
             addConstructorForInstrumentation(file);
+            addSuperClassMethodDelegates(file, loader);
          }
 
          if (classBeingRedefined == null)
@@ -227,6 +253,14 @@ public class Transformer implements ClassFileTransformer
 
          ByteArrayOutputStream bs = new ByteArrayOutputStream();
          file.write(new DataOutputStream(bs));
+
+         if (DUMP_DIRECTORY != null)
+         {
+            FileOutputStream s = new FileOutputStream(DUMP_DIRECTORY + '/' + file.getName() + ".class");
+            DataOutputStream dos = new DataOutputStream(s);
+            file.write(dos);
+            s.close();
+         }
 
          return bs.toByteArray();
       }
@@ -271,6 +305,7 @@ public class Transformer implements ClassFileTransformer
          }
          else
          {
+            // delegate to the parent class
             b.add(Bytecode.ALOAD_0);
             b.add(Bytecode.ILOAD_1);
             b.add(Bytecode.ALOAD_2);
@@ -393,6 +428,69 @@ public class Transformer implements ClassFileTransformer
          {
          }
       }
+   }
+
+   /**
+    * adds methods that call super.same_method() this is so that if the user decides to add this method 
+    * @param file
+    */
+   public void addSuperClassMethodDelegates(ClassFile file, ClassLoader loader)
+   {
+      ClassData data = ClassDataStore.getModifiedClassData(loader, file.getSuperclass());
+      if (data == null)
+      {
+         // add the methods from object as we can't just load the class
+         // as classes loaded by the javaagent are not transformed
+         data = ClassDataStore.getModifiedClassData(loader, "java.lang.Object");
+      }
+
+      while (data != null)
+      {
+         for (MethodData m : data.getMethods())
+         {
+            if (m.isStatic() || (AccessFlag.ABSTRACT & m.getAccessFlags()) != 0 || (AccessFlag.FINAL & m.getAccessFlags()) != 0 || (AccessFlag.PRIVATE & m.getAccessFlags()) != 0 || (AccessFlag.NATIVE & m.getAccessFlags()) != 0)
+            {
+               continue;
+            }
+            boolean found = false;
+            for (Object mio : file.getMethods())
+            {
+               MethodInfo mi = (MethodInfo) mio;
+               if (mi.getName().equals(m.getMethodName()) || mi.getDescriptor().equals(m.getDescriptor()))
+               {
+                  found = true;
+                  break;
+               }
+            }
+            if (found)
+            {
+               continue;
+            }
+            try
+            {
+               ManipulationUtils.addDelegatingMethod(file, m);
+            }
+            catch (DuplicateMemberException e)
+            {
+               e.printStackTrace();
+            }
+            catch (BadBytecode e)
+            {
+               e.printStackTrace();
+            }
+
+         }
+         if (data.getClassName().equals("java.lang.Object"))
+         {
+            break;
+         }
+         data = ClassDataStore.getModifiedClassData(loader, data.getSuperClassName());
+         if (data == null)
+         {
+            data = ClassDataStore.getModifiedClassData(loader, "java.lang.Object");
+         }
+      }
+
    }
 
    /**

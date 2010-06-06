@@ -1,11 +1,9 @@
 package org.fakereplace.data;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javassist.bytecode.Descriptor;
-
+import org.fakereplace.BuiltinClassData;
 import org.fakereplace.reflection.FieldAccessor;
 
 import com.google.common.base.Function;
@@ -26,7 +24,15 @@ public class ClassDataStore
       }
    });
 
-   static Map<ClassLoader, Map<String, BaseClassData>> baseClassData = new MapMaker().weakKeys().makeMap();
+   static Map<ClassLoader, Map<String, BaseClassData>> baseClassData = new MapMaker().weakKeys().makeComputingMap(new Function<ClassLoader, Map<String, BaseClassData>>()
+   {
+
+      public Map<String, BaseClassData> apply(ClassLoader from)
+      {
+         return new MapMaker().makeMap();
+      }
+   });
+
    static Map<String, MethodData> proxyNameToMethodData = new ConcurrentHashMap<String, MethodData>();
 
    /**
@@ -38,7 +44,7 @@ public class ClassDataStore
 
    public static void saveClassData(ClassLoader loader, String className, ClassDataBuilder data)
    {
-      className = Descriptor.toJvmName(className);
+      className = className.replace('/', '.');
       if (loader == null)
       {
          loader = nullLoader;
@@ -49,14 +55,10 @@ public class ClassDataStore
 
    public static void saveClassData(ClassLoader loader, String className, BaseClassData data)
    {
-      className = className.replace('.', '/');
+      className = className.replace('/', '.');
       if (loader == null)
       {
          loader = nullLoader;
-      }
-      if (!baseClassData.containsKey(loader))
-      {
-         baseClassData.put(loader, new HashMap<String, BaseClassData>());
       }
       Map<String, BaseClassData> map = baseClassData.get(loader);
       map.put(className, data);
@@ -64,7 +66,7 @@ public class ClassDataStore
 
    public static ClassData getModifiedClassData(ClassLoader loader, String className)
    {
-      className = className.replace('.', '/');
+      className = className.replace('/', '.');
       if (loader == null)
       {
          loader = nullLoader;
@@ -89,16 +91,42 @@ public class ClassDataStore
 
    public static BaseClassData getBaseClassData(ClassLoader loader, String className)
    {
-      className = className.replace('.', '/');
+      className = className.replace('/', '.');
       if (loader == null)
       {
          loader = nullLoader;
       }
-      if (!baseClassData.containsKey(loader))
-      {
-         return null;
-      }
       Map<String, BaseClassData> map = baseClassData.get(loader);
+      if (!map.containsKey(className))
+      {
+         // if this is a class that is not being instrumented it is safe to
+         // load the class and get the data
+         if (BuiltinClassData.skipInstrumentation(className))
+         {
+            try
+            {
+               if (loader != nullLoader)
+               {
+                  Class<?> cls = loader.loadClass(className);
+                  saveClassData(loader, className, new BaseClassData(cls));
+               }
+               else
+               {
+                  Class<?> cls = Class.forName(className);
+                  saveClassData(loader, className, new BaseClassData(cls));
+               }
+            }
+            catch (ClassNotFoundException e)
+            {
+               return null;
+            }
+         }
+         else
+         {
+            return null;
+         }
+      }
+
       BaseClassData cd = map.get(className);
       return cd;
    }

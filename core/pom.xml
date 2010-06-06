@@ -131,7 +131,7 @@
 								<include>**/*.java</include>
 							</includes>
 							<forkMode>once</forkMode>
-							<argLine>-javaagent:${project.build.directory}/${project.build.finalName}.jar -Dorg.fakereplace.packages=org.fakereplace.test</argLine>
+							<argLine>-javaagent:${project.build.directory}/${project.build.finalName}.jar -Dorg.fakereplace.packages=org.fakereplace.test -Dorg.fakereplace.dump=/tmp</argLine>
 						</configuration>
 					</execution>
 				</executions>
