@@ -32,10 +32,6 @@ public class ClassData
    private final String superClassName;
    private final boolean signitureModified;
 
-   // lazy initilised fields
-   private ClassData superClassInformation;
-   private boolean superClassInfoInit = false;
-
    private final static MethodData NULL_METHOD_DATA = new MethodData("", "", "", null, 0);
 
    ClassData(BaseClassData data, Set<MethodData> addMethods, Set<MethodData> removedMethods, Set<FieldData> addedFields, Set<FieldData> removedFields)
@@ -133,8 +129,6 @@ public class ClassData
          l = l.getParent();
          superClassInformation = ClassDataStore.getModifiedClassData(l, superClassName);
       }
-      superClassInfoInit = true;
-
       return superClassInformation;
    }
 

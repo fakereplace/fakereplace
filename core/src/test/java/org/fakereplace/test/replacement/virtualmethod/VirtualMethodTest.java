@@ -18,6 +18,7 @@ public class VirtualMethodTest
       ClassReplacer rep = new ClassReplacer();
       rep.queueClassForReplacement(VirtualClass.class, VirtualClass1.class);
       rep.queueClassForReplacement(VirtualCaller.class, VirtualCaller1.class);
+      rep.queueClassForReplacement(NoSupChild.class, NoSupChild1.class);
       rep.replaceQueuedClasses();
    }
 
@@ -200,6 +201,13 @@ public class VirtualMethodTest
    {
       VirtualClass c = new VirtualClass();
       assert getString(c).equals("VirtualChild1");
+   }
+
+   @Test(groups = "virtualmethod", enabled = false)
+   public void testOverrideWithSuperclassNotLoaded() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException
+   {
+      NoSupClass c = new NoSupChild();
+      assert c.getStuff().equals("NoSupChild") : "Expected NoSupChild got:" + c.getStuff();
    }
 
    public String getString(Object o)

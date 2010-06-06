@@ -100,6 +100,28 @@ public class BaseClassData
       this.fields = Collections.unmodifiableSet(fieldData);
    }
 
+   /**
+    * Searches through parent classloaders of the classes class loader to find
+    * the ClassData structure for the super class
+    * 
+    * @return
+    */
+   public BaseClassData getSuperClassInformation()
+   {
+      if (superClassName == null)
+      {
+         return null;
+      }
+      BaseClassData superClassInformation = ClassDataStore.getBaseClassData(loader, superClassName);
+      ClassLoader l = loader;
+      while (superClassInformation == null && l != null)
+      {
+         l = l.getParent();
+         superClassInformation = ClassDataStore.getBaseClassData(l, superClassName);
+      }
+      return superClassInformation;
+   }
+
    public String getSuperClassName()
    {
       return superClassName;
