@@ -23,4 +23,6 @@ public class Constants
    public static final String DUMP_DIRECTORY_KEY = "org.fakereplace.dump";
 
    public static final String ADDED_SUPERCLASS_DELEGATING_METHOD_ATTRIBUTE = "org.fakereplace.superclassDelegatingMethod";
+
+   public static final String[] INTEGRATIONS = { "seam" };
 }

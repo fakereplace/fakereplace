@@ -14,7 +14,7 @@ import javassist.bytecode.ClassFile;
 import org.fakereplace.replacement.ClassRedefiner;
 
 /**
- * The agent entry point
+ * The agent entry point. 
  * 
  * @author stuart
  * 
@@ -26,6 +26,7 @@ public class Agent
 
    public static void premain(java.lang.String s, java.lang.instrument.Instrumentation i)
    {
+      IntegrationLoader.getIntegrationInfo(ClassLoader.getSystemClassLoader());
       inst = i;
       inst.addTransformer(new Transformer(i));
    }
