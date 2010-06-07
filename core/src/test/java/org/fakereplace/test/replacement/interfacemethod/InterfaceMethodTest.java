@@ -1,5 +1,8 @@
 package org.fakereplace.test.replacement.interfacemethod;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 import org.fakereplace.test.util.ClassReplacer;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -25,8 +28,10 @@ public class InterfaceMethodTest
    }
 
    @Test(groups = "interface")
-   public void testAddingInterfaceMethodByReflection()
+   public void testAddingInterfaceMethodByReflection() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException
    {
-
+      Method method = SomeInterface.class.getDeclaredMethod("added");
+      ImplementingClass cls = new ImplementingClass();
+      assert method.invoke(cls).equals("added");
    }
 }
