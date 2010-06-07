@@ -49,7 +49,7 @@ public class MethodInvokationManipulator implements ClassManipulator
 
    public void transformClass(ClassFile file, ClassLoader loader)
    {
-      Map<String, Set<VirtualToStaticData>> virtualToStaticMethod = data.getManipulationDate(loader);
+      Map<String, Set<VirtualToStaticData>> virtualToStaticMethod = data.getManipulationData(loader);
       Map<Integer, VirtualToStaticData> methodCallLocations = new HashMap<Integer, VirtualToStaticData>();
       Map<VirtualToStaticData, Integer> newClassPoolLocations = new HashMap<VirtualToStaticData, Integer>();
       Map<VirtualToStaticData, Integer> newCallLocations = new HashMap<VirtualToStaticData, Integer>();

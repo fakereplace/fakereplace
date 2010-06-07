@@ -47,7 +47,7 @@ public class ConstructorInvocationManipulator implements ClassManipulator
    public void transformClass(ClassFile file, ClassLoader loader)
    {
 
-      Map<String, Set<ConstructorRewriteData>> constructorRewrites = data.getManipulationDate(loader);
+      Map<String, Set<ConstructorRewriteData>> constructorRewrites = data.getManipulationData(loader);
       if (constructorRewrites.isEmpty())
       {
          return;

@@ -37,7 +37,7 @@ public class StaticFieldManipulator implements ClassManipulator
 
    public void transformClass(ClassFile file, ClassLoader loader)
    {
-      Map<String, Set<StaticFieldAccessRewriteData>> staticMethodData = data.getManipulationDate(loader);
+      Map<String, Set<StaticFieldAccessRewriteData>> staticMethodData = data.getManipulationData(loader);
       if (staticMethodData.isEmpty())
       {
          return;

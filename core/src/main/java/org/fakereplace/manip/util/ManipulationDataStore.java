@@ -31,7 +31,7 @@ public class ManipulationDataStore<T extends ClassloaderFiltered<T>>
       }
    });
 
-   public Map<String, Set<T>> getManipulationDate(ClassLoader loader)
+   public Map<String, Set<T>> getManipulationData(ClassLoader loader)
    {
       if (loader == null)
       {
