@@ -1,9 +1,11 @@
 package org.fakereplace.reflection;
 
 import java.lang.reflect.AccessibleObject;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Map;
 
 import sun.reflect.Reflection;
+
+import com.google.common.collect.MapMaker;
 
 /**
  * tracks the accessible state of reflection items
@@ -12,7 +14,7 @@ import sun.reflect.Reflection;
  */
 public class AccessibleObjectReflectionDelegate
 {
-   static ConcurrentHashMap<AccessibleObject, Boolean> accessibleMap = new ConcurrentHashMap<AccessibleObject, Boolean>();
+   static Map<AccessibleObject, Boolean> accessibleMap = new MapMaker().weakKeys().makeMap();
 
    public static void setAccessible(AccessibleObject object, boolean accessible)
    {
