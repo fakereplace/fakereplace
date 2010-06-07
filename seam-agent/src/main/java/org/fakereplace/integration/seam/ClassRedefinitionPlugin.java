@@ -257,7 +257,7 @@ public class ClassRedefinitionPlugin implements ClassChangeAware
          Set<Object> data = InstanceTracker.get(SeamFilter.class.getName());
          for (Object i : data)
          {
-            Field filters = SeamFilter.class.getDeclaredField("filters");
+            Field filters = i.getClass().getDeclaredField("filters");
             filters.setAccessible(true);
             List<?> filterList = (List<?>) filters.get(i);
             ListIterator<?> it = filterList.listIterator();
