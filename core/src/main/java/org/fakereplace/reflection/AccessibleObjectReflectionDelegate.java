@@ -37,7 +37,7 @@ public class AccessibleObjectReflectionDelegate
     * @param object
     * @param callerStackDepth
     */
-   public static void ensureAccess(AccessibleObject object, int callerStackDepth, Class declaringClass, int modifiers) throws IllegalAccessException
+   public static void ensureAccess(AccessibleObject object, int callerStackDepth, Class<?> declaringClass, int modifiers) throws IllegalAccessException
    {
       if (!isAccessible(object))
       {
