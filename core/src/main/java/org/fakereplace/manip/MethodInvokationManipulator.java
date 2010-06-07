@@ -59,13 +59,27 @@ public class MethodInvokationManipulator implements ClassManipulator
       for (int i = 1; i < pool.getSize(); ++i)
       {
          // we have a method call
-         if (pool.getTag(i) == ConstPool.CONST_Methodref)
+         if (pool.getTag(i) == ConstPool.CONST_Methodref || pool.getTag(i) == ConstPool.CONST_InterfaceMethodref)
          {
-            if (virtualToStaticMethod.containsKey(pool.getMethodrefClassName(i)))
+            String className, methodDesc, methodName;
+            if (pool.getTag(i) == ConstPool.CONST_Methodref)
             {
-               for (VirtualToStaticData data : virtualToStaticMethod.get(pool.getMethodrefClassName(i)))
+               className = pool.getMethodrefClassName(i);
+               methodDesc = pool.getMethodrefType(i);
+               methodName = pool.getMethodrefName(i);
+            }
+            else
+            {
+               className = pool.getInterfaceMethodrefClassName(i);
+               methodDesc = pool.getInterfaceMethodrefType(i);
+               methodName = pool.getInterfaceMethodrefName(i);
+            }
+
+            if (virtualToStaticMethod.containsKey(className))
+            {
+               for (VirtualToStaticData data : virtualToStaticMethod.get(className))
                {
-                  if (pool.getMethodrefName(i).equals(data.getMethodName()) && pool.getMethodrefType(i).equals(data.getMethodDesc()))
+                  if (methodName.equals(data.getMethodName()) && methodDesc.equals(data.getMethodDesc()))
                   {
                      // store the location in the const pool of the method ref
                      methodCallLocations.put(i, data);
@@ -91,6 +105,7 @@ public class MethodInvokationManipulator implements ClassManipulator
                         newClassPoolLocations.put(data, newCpLoc);
                         int newNameAndType = pool.addNameAndTypeInfo(data.getNewMethodName(), data.getNewStaticMethodDesc());
                         newCallLocations.put(data, pool.addMethodrefInfo(newCpLoc, newNameAndType));
+
                      }
                      break;
                   }
@@ -121,7 +136,7 @@ public class MethodInvokationManipulator implements ClassManipulator
                   int index = it.next();
                   int op = it.byteAt(index);
                   // if the bytecode is a method invocation
-                  if (op == CodeIterator.INVOKEVIRTUAL || op == CodeIterator.INVOKESTATIC)
+                  if (op == CodeIterator.INVOKEVIRTUAL || op == CodeIterator.INVOKESTATIC || op == CodeIterator.INVOKEINTERFACE)
                   {
                      int val = it.s16bitAt(index + 1);
                      // if the method call is one of the methods we are
@@ -133,8 +148,15 @@ public class MethodInvokationManipulator implements ClassManipulator
                         it.writeByte(CodeIterator.INVOKESTATIC, index);
                         // change the method that is being called
                         it.write16bit(newCallLocations.get(data), index + 1);
+                        if (op == CodeIterator.INVOKEINTERFACE)
+                        {
+                           // INVOKEINTERFACE has some extra parameters
+                           it.writeByte(CodeIterator.NOP, index + 3);
+                           it.writeByte(CodeIterator.NOP, index + 4);
+                        }
                      }
                   }
+
                }
                m.getCodeAttribute().computeMaxStack();
             }

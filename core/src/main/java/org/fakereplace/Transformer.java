@@ -242,23 +242,32 @@ public class Transformer implements ClassFileTransformer
 
          manipulator.transformClass(file, loader);
 
-         if (!file.isInterface() && isClassReplacable(file.getName()) && (AccessFlag.ENUM & file.getAccessFlags()) == 0)
+         if (isClassReplacable(file.getName()) && (AccessFlag.ENUM & file.getAccessFlags()) == 0 && (AccessFlag.ANNOTATION & file.getAccessFlags()) == 0)
          {
             detector.addClassLoader(loader, file.getName());
-            addMethodForInstrumentation(file);
-            addFieldForInstrumentation(file);
-            addConstructorForInstrumentation(file);
-            if (classBeingRedefined == null)
+
+            if (file.isInterface())
             {
-               if (addSuperDelegatingMethods)
-               {
-                  addSuperClassMethodDelegates(file, loader);
-               }
+               addAbstractMethodForInstrumentation(file);
             }
             else
             {
-               addExistingSuperClassMethodDelegates(file, loader);
+               addMethodForInstrumentation(file);
+               addFieldForInstrumentation(file);
+               addConstructorForInstrumentation(file);
+               if (classBeingRedefined == null)
+               {
+                  if (addSuperDelegatingMethods)
+                  {
+                     addSuperClassMethodDelegates(file, loader);
+                  }
+               }
+               else
+               {
+                  addExistingSuperClassMethodDelegates(file, loader);
+               }
             }
+
          }
 
          if (classBeingRedefined == null)
@@ -348,6 +357,26 @@ public class Transformer implements ClassFileTransformer
          m.setCodeAttribute(ca);
          file.addMethod(m);
 
+      }
+      catch (DuplicateMemberException e)
+      {
+         // e.printStackTrace();
+      }
+   }
+
+   /**
+    * Adds a method to a class that re can redefine when the class is reloaded
+    * 
+    * @param file
+    * @throws DuplicateMemberException
+    */
+   public void addAbstractMethodForInstrumentation(ClassFile file) throws DuplicateMemberException
+   {
+      try
+      {
+         MethodInfo m = new MethodInfo(file.getConstPool(), Constants.ADDED_METHOD_NAME, Constants.ADDED_METHOD_DESCRIPTOR);
+         m.setAccessFlags(AccessFlag.PUBLIC | AccessFlag.ABSTRACT);
+         file.addMethod(m);
       }
       catch (DuplicateMemberException e)
       {

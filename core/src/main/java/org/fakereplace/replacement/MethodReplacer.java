@@ -57,47 +57,55 @@ public class MethodReplacer
          // stick our added methods into the class file
          // we can't finalise the code yet because we will probably need
          // the add stuff to them
-         MethodInfo m = new MethodInfo(file.getConstPool(), Constants.ADDED_METHOD_NAME, Constants.ADDED_METHOD_DESCRIPTOR);
-         m.setAccessFlags(0 | AccessFlag.PUBLIC);
-
-         Bytecode b = new Bytecode(file.getConstPool(), 5, 3);
-         if (BuiltinClassData.skipInstrumentation(file.getSuperclass()))
+         MethodInfo virtMethod = new MethodInfo(file.getConstPool(), Constants.ADDED_METHOD_NAME, Constants.ADDED_METHOD_DESCRIPTOR);
+         virtMethod.setAccessFlags(0 | AccessFlag.PUBLIC);
+         if (file.isInterface())
          {
-            b.add(Bytecode.ACONST_NULL);
-            b.add(Bytecode.ARETURN);
+            virtMethod.setAccessFlags(0 | AccessFlag.PUBLIC | AccessFlag.ABSTRACT);
          }
          else
          {
-            b.add(Bytecode.ALOAD_0);
-            b.add(Bytecode.ILOAD_1);
-            b.add(Bytecode.ALOAD_2);
-            b.addInvokespecial(file.getSuperclass(), Constants.ADDED_METHOD_NAME, Constants.ADDED_METHOD_DESCRIPTOR);
+            virtMethod.setAccessFlags(0 | AccessFlag.PUBLIC);
+            Bytecode b = new Bytecode(file.getConstPool(), 5, 3);
+            if (BuiltinClassData.skipInstrumentation(file.getSuperclass()))
+            {
+               b.add(Bytecode.ACONST_NULL);
+               b.add(Bytecode.ARETURN);
+            }
+            else
+            {
+               b.add(Bytecode.ALOAD_0);
+               b.add(Bytecode.ILOAD_1);
+               b.add(Bytecode.ALOAD_2);
+               b.addInvokespecial(file.getSuperclass(), Constants.ADDED_METHOD_NAME, Constants.ADDED_METHOD_DESCRIPTOR);
+               b.add(Bytecode.ARETURN);
+
+            }
+            virtualCodeAttribute = b.toCodeAttribute();
+            virtMethod.setCodeAttribute(virtualCodeAttribute);
+
+            MethodInfo m = new MethodInfo(file.getConstPool(), Constants.ADDED_STATIC_METHOD_NAME, Constants.ADDED_STATIC_METHOD_DESCRIPTOR);
+            m.setAccessFlags(AccessFlag.PUBLIC | AccessFlag.STATIC);
+            b = new Bytecode(file.getConstPool(), 5, 3);
+            b.add(Bytecode.ACONST_NULL);
             b.add(Bytecode.ARETURN);
-
-         }
-         virtualCodeAttribute = b.toCodeAttribute();
-         m.setCodeAttribute(virtualCodeAttribute);
-         file.addMethod(m);
-
-         m = new MethodInfo(file.getConstPool(), Constants.ADDED_STATIC_METHOD_NAME, Constants.ADDED_STATIC_METHOD_DESCRIPTOR);
-         m.setAccessFlags(AccessFlag.PUBLIC | AccessFlag.STATIC);
-         b = new Bytecode(file.getConstPool(), 5, 3);
-         b.add(Bytecode.ACONST_NULL);
-         b.add(Bytecode.ARETURN);
-         staticCodeAttribute = b.toCodeAttribute();
-         m.setCodeAttribute(staticCodeAttribute);
-         file.addMethod(m);
-
-         m = new MethodInfo(file.getConstPool(), "<init>", Constants.ADDED_CONSTRUCTOR_DESCRIPTOR);
-         m.setAccessFlags(AccessFlag.PUBLIC);
-         b = new Bytecode(file.getConstPool(), 5, 5);
-         if (ManipulationUtils.addBogusConstructorCall(file, b))
-         {
-            constructorCodeAttribute = b.toCodeAttribute();
-            m.setCodeAttribute(constructorCodeAttribute);
-            constructorCodeAttribute.setMaxLocals(6);
+            staticCodeAttribute = b.toCodeAttribute();
+            m.setCodeAttribute(staticCodeAttribute);
             file.addMethod(m);
+
+            m = new MethodInfo(file.getConstPool(), "<init>", Constants.ADDED_CONSTRUCTOR_DESCRIPTOR);
+            m.setAccessFlags(AccessFlag.PUBLIC);
+            b = new Bytecode(file.getConstPool(), 5, 5);
+            if (ManipulationUtils.addBogusConstructorCall(file, b))
+            {
+               constructorCodeAttribute = b.toCodeAttribute();
+               m.setCodeAttribute(constructorCodeAttribute);
+               constructorCodeAttribute.setMaxLocals(6);
+               file.addMethod(m);
+            }
          }
+
+         file.addMethod(virtMethod);
 
       }
       catch (DuplicateMemberException e)
@@ -184,13 +192,9 @@ public class MethodReplacer
             {
                // nop, we can't change this, just ignore it
             }
-            else if ((m.getAccessFlags() & AccessFlag.INTERFACE) == 0)
-            {
-               addMethod(file, loader, m, builder, virtualCodeAttribute, false, oldClass);
-            }
             else
             {
-               // interface method
+               addMethod(file, loader, m, builder, virtualCodeAttribute, false, oldClass);
             }
 
             // TODO deal with constructors and virtual methods
@@ -220,29 +224,31 @@ public class MethodReplacer
       // if we did not return from a virtual method we need to call the parent
       // method directly so to this end we append some stuff to the bottom of
       // the method declaration to propagate the call to the parent
-
-      try
+      if (!file.isInterface())
       {
-         Bytecode rcode = new Bytecode(staticCodeAttribute.getConstPool());
-         rcode.add(Opcode.ACONST_NULL);
-         rcode.add(Opcode.ARETURN);
-         CodeIterator cit = staticCodeAttribute.iterator();
-         cit.append(rcode.get());
-
-         staticCodeAttribute.computeMaxStack();
-         virtualCodeAttribute.computeMaxStack();
-         if (constructorCodeAttribute != null)
+         try
          {
-            constructorCodeAttribute.computeMaxStack();
+            Bytecode rcode = new Bytecode(staticCodeAttribute.getConstPool());
+            rcode.add(Opcode.ACONST_NULL);
+            rcode.add(Opcode.ARETURN);
+            CodeIterator cit = staticCodeAttribute.iterator();
+            cit.append(rcode.get());
+
+            staticCodeAttribute.computeMaxStack();
+            virtualCodeAttribute.computeMaxStack();
+            if (constructorCodeAttribute != null)
+            {
+               constructorCodeAttribute.computeMaxStack();
+            }
          }
-      }
-      catch (BadBytecode e)
-      {
-         e.printStackTrace();
+         catch (BadBytecode e)
+         {
+            e.printStackTrace();
+         }
       }
    }
 
-   private static String generateProxyInvocationBytecode(MethodInfo mInfo, ConstPool constPool, int methodNumber, String className, ClassLoader loader, boolean staticMethod) throws BadBytecode
+   private static String generateProxyInvocationBytecode(MethodInfo mInfo, ConstPool constPool, int methodNumber, String className, ClassLoader loader, boolean staticMethod, boolean isInterface) throws BadBytecode
    {
       String proxyName = GlobalClassDefinitionData.getProxyName();
       ClassFile proxy = new ClassFile(false, proxyName, "java.lang.Object");
@@ -338,6 +344,10 @@ public class MethodReplacer
       {
          proxyBytecode.addInvokestatic(className, Constants.ADDED_STATIC_METHOD_NAME, "(I[Ljava/lang/Object;)Ljava/lang/Object;");
       }
+      else if (isInterface)
+      {
+         proxyBytecode.addInvokeinterface(className, Constants.ADDED_METHOD_NAME, "(I[Ljava/lang/Object;)Ljava/lang/Object;", 3);
+      }
       else
       {
          proxyBytecode.addInvokevirtual(className, Constants.ADDED_METHOD_NAME, "(I[Ljava/lang/Object;)Ljava/lang/Object;");
@@ -357,46 +367,48 @@ public class MethodReplacer
       if (!staticMethod)
       {
          // as this method is never called the bytecode just returns
-         Bytecode b = new Bytecode(proxy.getConstPool());
-         String ret = DescriptorUtils.getReturnType(mInfo.getDescriptor());
-         if (ret.length() == 1)
+         MethodInfo method = new MethodInfo(proxy.getConstPool(), mInfo.getName(), mInfo.getDescriptor());
+         method.setAccessFlags(mInfo.getAccessFlags());
+         if ((method.getAccessFlags() & AccessFlag.ABSTRACT) == 0)
          {
-            if (ret.equals("V"))
+            Bytecode b = new Bytecode(proxy.getConstPool());
+            String ret = DescriptorUtils.getReturnType(mInfo.getDescriptor());
+            if (ret.length() == 1)
             {
-               b.add(Opcode.RETURN);
-            }
-            else if (ret.equals("D"))
-            {
-               b.add(Opcode.DLOAD_0);
-               b.add(Opcode.DRETURN);
-            }
-            else if (ret.equals("F"))
-            {
-               b.add(Opcode.FLOAD_0);
-               b.add(Opcode.FRETURN);
-            }
-            else if (ret.equals("J"))
-            {
-               b.add(Opcode.LLOAD_0);
-               b.add(Opcode.LRETURN);
+               if (ret.equals("V"))
+               {
+                  b.add(Opcode.RETURN);
+               }
+               else if (ret.equals("D"))
+               {
+                  b.add(Opcode.DLOAD_0);
+                  b.add(Opcode.DRETURN);
+               }
+               else if (ret.equals("F"))
+               {
+                  b.add(Opcode.FLOAD_0);
+                  b.add(Opcode.FRETURN);
+               }
+               else if (ret.equals("J"))
+               {
+                  b.add(Opcode.LLOAD_0);
+                  b.add(Opcode.LRETURN);
+               }
+               else
+               {
+                  b.add(Opcode.ILOAD_0);
+                  b.add(Opcode.IRETURN);
+               }
             }
             else
             {
-               b.add(Opcode.ILOAD_0);
-               b.add(Opcode.IRETURN);
+               b.add(Opcode.ACONST_NULL);
+               b.add(Opcode.ARETURN);
             }
+            method.setCodeAttribute(b.toCodeAttribute());
+            method.getCodeAttribute().computeMaxStack();
+            method.getCodeAttribute().setMaxLocals(types.length + 1);
          }
-         else
-         {
-            b.add(Opcode.ACONST_NULL);
-            b.add(Opcode.ARETURN);
-         }
-
-         MethodInfo method = new MethodInfo(proxy.getConstPool(), mInfo.getName(), mInfo.getDescriptor());
-         method.setAccessFlags(mInfo.getAccessFlags());
-         method.setCodeAttribute(b.toCodeAttribute());
-         method.getCodeAttribute().computeMaxStack();
-         method.getCodeAttribute().setMaxLocals(types.length + 1);
 
          copyMethodAttributes(mInfo, method);
          try
@@ -450,7 +462,7 @@ public class MethodReplacer
             // abstract methods don't get a body
             generateBoxedConditionalCodeBlock(methodCount, mInfo, file.getConstPool(), bytecode, staticMethod, false);
          }
-         String proxyName = generateProxyInvocationBytecode(mInfo, file.getConstPool(), methodCount, file.getName(), loader, staticMethod);
+         String proxyName = generateProxyInvocationBytecode(mInfo, file.getConstPool(), methodCount, file.getName(), loader, staticMethod, file.isInterface());
          ClassDataStore.registerProxyName(oldClass, proxyName);
          String newMethodDesc = mInfo.getDescriptor();
          if (!staticMethod)
