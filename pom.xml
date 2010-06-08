@@ -5,6 +5,7 @@
 
     <properties>
         <fakereplace.version>0.6-SNAPSHOT</fakereplace.version>
+        <arquillian.version>1.0.0.Alpha2</arquillian.version>
     </properties>
 
 
@@ -49,14 +50,7 @@
                 <artifactId>google-collections</artifactId>
                 <version>1.0</version>
             </dependency>
-
-            <dependency>
-                <groupId>org.testng</groupId>
-                <artifactId>testng</artifactId>
-                <version>5.11</version>
-                <classifier>jdk15</classifier>
-            </dependency>
-
+            
             <dependency>
                 <groupId>org.jboss.seam</groupId>
                 <artifactId>jboss-seam</artifactId>
@@ -74,6 +68,30 @@
                 <artifactId>jsf-api</artifactId>
                 <version>1.2_13</version>
             </dependency>
+            
+            <dependency> 
+               <groupId>org.testng</groupId> 
+               <artifactId>testng</artifactId> 
+               <version>5.11</version> 
+               <classifier>jdk15</classifier> 
+               <scope>test</scope> 
+            </dependency> 
+            
+            <dependency>
+               <groupId>org.jboss.arquillian</groupId>
+               <artifactId>arquillian-testng</artifactId>
+               <version>${arquillian.version}</version>
+               <scope>test</scope>
+            </dependency>
+            
+            <dependency>
+             <groupId>org.jboss.arquillian.container</groupId>
+             <artifactId>arquillian-jbossas-remote-51</artifactId>
+             <version>${arquillian.version}</version>
+             <scope>test</scope>
+          </dependency>
+            
+            
         </dependencies>
 
     </dependencyManagement>
