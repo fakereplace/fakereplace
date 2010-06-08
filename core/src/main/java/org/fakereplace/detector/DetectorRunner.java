@@ -19,6 +19,20 @@ import org.fakereplace.api.ClassChangeNotifier;
 
 import com.google.common.collect.MapMaker;
 
+/**
+ * This class is a massive hack
+ * 
+ * It scans files for timestamp changes, if any are found it waits a bit
+ * and then scans again, and keeps doing that until they stop changing. 
+ * 
+ * Then it hotswaps all the changed classes 
+ * 
+ * Ideally it would only be used when running outside a servlet environment
+ * and inside servlets a hot deploy filter could be used
+ * 
+ * @author Stuart Douglas <stuart@baileyroberts.com.au>
+ *
+ */
 public class DetectorRunner implements Runnable
 {
 
@@ -46,6 +60,11 @@ public class DetectorRunner implements Runnable
     */
    public synchronized void addClassLoader(ClassLoader classLoader, String instigatingClassName)
    {
+      // this should only be tripped by $Proxy classes
+      if (classLoader == null || instigatingClassName.contains("$Proxy"))
+      {
+         return;
+      }
       Set<File> roots = classLoaders.get(classLoader);
       if (roots == null)
       {

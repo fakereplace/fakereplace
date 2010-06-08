@@ -53,6 +53,10 @@ public class Enviroment
             return true;
          }
       }
+      if (className.contains("$Proxy"))
+      {
+         return true;
+      }
       return false;
    }
 
