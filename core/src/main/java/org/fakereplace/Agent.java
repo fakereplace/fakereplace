@@ -8,9 +8,11 @@ import java.io.IOException;
 import java.lang.instrument.ClassDefinition;
 import java.lang.instrument.Instrumentation;
 import java.lang.instrument.UnmodifiableClassException;
+import java.util.Set;
 
 import javassist.bytecode.ClassFile;
 
+import org.fakereplace.api.IntegrationInfo;
 import org.fakereplace.replacement.ClassRedefiner;
 
 /**
@@ -26,7 +28,8 @@ public class Agent
 
    public static void premain(java.lang.String s, java.lang.instrument.Instrumentation i)
    {
-      IntegrationLoader.getIntegrationInfo(ClassLoader.getSystemClassLoader());
+      Set<IntegrationInfo> integrationInfo = IntegrationLoader.getIntegrationInfo(ClassLoader.getSystemClassLoader());
+
       inst = i;
       inst.addTransformer(new Transformer(i));
    }

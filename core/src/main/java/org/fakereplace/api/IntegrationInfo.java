@@ -24,20 +24,37 @@ public interface IntegrationInfo
    public ClassFileTransformer getTransformer();
 
    /**
-    * If a classloader loads one of these classes it gets registered as
-    * an integration class. This means that the classloader that loaded
+    * returns the name of the ClassChangeAware object
+    * provided by this integration. 
+    * 
+    * This object is installed into the same ClassLoader
+    * that the integrations classes are in
+    * 
+    * Note that the ClassChangeAware object should register 
+    * itself with the ClassChangeNotifier
+    * 
+    * @return
+    */
+   public String getClassChangeAwareName();
+
+   /**
+    * If a classloader loads one of these classes it enables
+    * this integration module.
+    * 
+    * This also means that the classloader that loaded
     * the class will be intrumented to load classes from the integration.
     */
    public Set<String> getIntegrationClassNames();
 
    /**
-    * return a class definition that can be loaded into the same classloader
-    * that is running the app 
+    * If a classloader is registered as an instrumentation
+    * classloader it will attempt to load classes from here
+    * first.
     */
    public byte[] loadClass(String className);
 
    /**
-    * get a list of classes that should be turned into tracked instrances. 
+    * get a list of classes that should be turned into tracked instances. 
     * 
     * @return
     */

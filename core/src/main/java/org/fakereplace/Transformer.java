@@ -62,7 +62,7 @@ public class Transformer implements ClassFileTransformer
 
    static final String DUMP_DIRECTORY;
 
-   DetectorRunner detector = new DetectorRunner();
+   final DetectorRunner detector = new DetectorRunner();
 
    static
    {
@@ -207,12 +207,14 @@ public class Transformer implements ClassFileTransformer
             }
             return null;
          }
+
          boolean addSuperDelegatingMethods = true;
          if (classBeingRedefined == null)
          {
             AnnotationsAttribute at = (AnnotationsAttribute) file.getAttribute(AnnotationsAttribute.invisibleTag);
             if (at != null)
             {
+               // NoInstrument is used for testing or by integration modules
                Object an = at.getAnnotation(NoInstrument.class.getName());
                if (an != null)
                {
