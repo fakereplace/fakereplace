@@ -20,6 +20,11 @@ import javassist.bytecode.annotation.MemberValue;
 import javassist.bytecode.annotation.ShortMemberValue;
 import javassist.bytecode.annotation.StringMemberValue;
 
+/**
+ * Created a Javassist Annotation from a java one
+ * @author stuart
+ *
+ */
 public class AnnotationBuilder
 {
 

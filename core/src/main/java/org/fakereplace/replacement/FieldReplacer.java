@@ -26,7 +26,7 @@ import javassist.bytecode.SignatureAttribute;
 
 import org.fakereplace.Transformer;
 import org.fakereplace.boot.Constants;
-import org.fakereplace.boot.GlobalClassDefinitionData;
+import org.fakereplace.boot.ProxyDefinitionStore;
 import org.fakereplace.data.AnnotationDataStore;
 import org.fakereplace.data.BaseClassData;
 import org.fakereplace.data.ClassDataBuilder;
@@ -269,7 +269,7 @@ public class FieldReplacer
    private static void addStaticField(ClassFile file, ClassLoader loader, FieldInfo m, ClassDataBuilder builder, Class<?> oldClass)
    {
       // this is quite simple. First we create a proxy
-      String proxyName = GlobalClassDefinitionData.getProxyName();
+      String proxyName = ProxyDefinitionStore.getProxyName();
       ClassFile proxy = new ClassFile(false, proxyName, "java.lang.Object");
       ClassDataStore.registerProxyName(oldClass, proxyName);
       proxy.setAccessFlags(AccessFlag.PUBLIC);
@@ -292,7 +292,7 @@ public class FieldReplacer
          {
             throw new RuntimeException(e);
          }
-         GlobalClassDefinitionData.saveProxyDefinition(loader, proxyName, bytes.toByteArray());
+         ProxyDefinitionStore.saveProxyDefinition(loader, proxyName, bytes.toByteArray());
          builder.addFakeField(newField, proxyName);
       }
       catch (DuplicateMemberException e)
@@ -313,7 +313,7 @@ public class FieldReplacer
     */
    private static void addInstanceField(ClassFile file, ClassLoader loader, FieldInfo m, ClassDataBuilder builder, Class<?> oldClass, int arrayPosition)
    {
-      String proxyName = GlobalClassDefinitionData.getProxyName();
+      String proxyName = ProxyDefinitionStore.getProxyName();
       ClassFile proxy = new ClassFile(false, proxyName, "java.lang.Object");
       ClassDataStore.registerProxyName(oldClass, proxyName);
       FieldAccessor accessor = new FieldAccessor(oldClass, arrayPosition);
@@ -337,7 +337,7 @@ public class FieldReplacer
          {
             throw new RuntimeException(e);
          }
-         GlobalClassDefinitionData.saveProxyDefinition(loader, proxyName, bytes.toByteArray());
+         ProxyDefinitionStore.saveProxyDefinition(loader, proxyName, bytes.toByteArray());
          builder.addFakeField(newField, proxyName);
       }
       catch (DuplicateMemberException e)

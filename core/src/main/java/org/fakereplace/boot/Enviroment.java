@@ -2,6 +2,11 @@ package org.fakereplace.boot;
 
 import java.io.File;
 
+/**
+ * class that stores some basic enviroment info. 
+ * @author stuart
+ *
+ */
 public class Enviroment
 {
 

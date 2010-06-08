@@ -48,6 +48,8 @@ import com.google.common.collect.MapMaker;
  * This file is the transformer that instruments classes as they are added to
  * the system.
  * 
+ * It is doing to much at the moment, it needs to be split up a bit
+ * 
  * @author stuart
  * 
  */

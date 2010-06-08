@@ -30,7 +30,7 @@ import javassist.bytecode.SignatureAttribute;
 import org.fakereplace.BuiltinClassData;
 import org.fakereplace.Transformer;
 import org.fakereplace.boot.Constants;
-import org.fakereplace.boot.GlobalClassDefinitionData;
+import org.fakereplace.boot.ProxyDefinitionStore;
 import org.fakereplace.boot.Logger;
 import org.fakereplace.data.AnnotationDataStore;
 import org.fakereplace.data.BaseClassData;
@@ -250,7 +250,7 @@ public class MethodReplacer
 
    private static String generateProxyInvocationBytecode(MethodInfo mInfo, ConstPool constPool, int methodNumber, String className, ClassLoader loader, boolean staticMethod, boolean isInterface) throws BadBytecode
    {
-      String proxyName = GlobalClassDefinitionData.getProxyName();
+      String proxyName = ProxyDefinitionStore.getProxyName();
       ClassFile proxy = new ClassFile(false, proxyName, "java.lang.Object");
       proxy.setVersionToJava5();
       proxy.setAccessFlags(AccessFlag.PUBLIC);
@@ -436,7 +436,7 @@ public class MethodReplacer
          ByteArrayOutputStream bytes = new ByteArrayOutputStream();
          DataOutputStream dos = new DataOutputStream(bytes);
          proxy.write(dos);
-         GlobalClassDefinitionData.saveProxyDefinition(loader, proxyName, bytes.toByteArray());
+         ProxyDefinitionStore.saveProxyDefinition(loader, proxyName, bytes.toByteArray());
          return proxyName;
       }
       catch (IOException e)
@@ -636,7 +636,7 @@ public class MethodReplacer
     */
    private static String generateFakeConstructorBytecode(MethodInfo mInfo, ConstPool constPool, int methodNumber, String className, ClassLoader loader) throws BadBytecode
    {
-      String proxyName = GlobalClassDefinitionData.getProxyName();
+      String proxyName = ProxyDefinitionStore.getProxyName();
       ClassFile proxy = new ClassFile(false, proxyName, "java.lang.Object");
       proxy.setVersionToJava5();
       proxy.setAccessFlags(AccessFlag.PUBLIC);
@@ -674,7 +674,7 @@ public class MethodReplacer
          ByteArrayOutputStream bytes = new ByteArrayOutputStream();
          DataOutputStream dos = new DataOutputStream(bytes);
          proxy.write(dos);
-         GlobalClassDefinitionData.saveProxyDefinition(loader, proxyName, bytes.toByteArray());
+         ProxyDefinitionStore.saveProxyDefinition(loader, proxyName, bytes.toByteArray());
          return proxyName;
       }
       catch (IOException e)

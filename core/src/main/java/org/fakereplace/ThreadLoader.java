@@ -1,8 +1,11 @@
-/**
- * 
- */
 package org.fakereplace;
 
+/**
+ * This class can be used to load another class a create an instance. If the java 
+ * agent loads a class directly, it is not instrumented.
+ * @author stuart
+ *
+ */
 class ThreadLoader implements Runnable
 {
    final String className;

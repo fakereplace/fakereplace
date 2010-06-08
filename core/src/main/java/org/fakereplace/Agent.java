@@ -27,11 +27,14 @@ public class Agent
 
    static Instrumentation inst;
 
+   static Enviroment environment;
+
    public static void premain(java.lang.String s, java.lang.instrument.Instrumentation i)
    {
       Set<IntegrationInfo> integrationInfo = IntegrationLoader.getIntegrationInfo(ClassLoader.getSystemClassLoader());
       inst = i;
-      inst.addTransformer(new Transformer(i, integrationInfo, new Enviroment()));
+      environment = new Enviroment();
+      inst.addTransformer(new Transformer(i, integrationInfo, environment));
    }
 
    static public void redefine(ClassDefinition... classes) throws UnmodifiableClassException, ClassNotFoundException
@@ -51,7 +54,7 @@ public class Agent
                DataInputStream ds = new DataInputStream(new ByteArrayInputStream(d.getDefinitionClassFile()));
                ClassFile file = new ClassFile(ds);
                Transformer.getManipulator().transformClass(file, d.getDefinitionClass().getClassLoader());
-               FileOutputStream s = new FileOutputStream("/tmp/" + d.getDefinitionClass().getName() + ".class");
+               FileOutputStream s = new FileOutputStream(environment.getDumpDirectory() + '/' + d.getDefinitionClass().getName() + ".class");
                DataOutputStream dos = new DataOutputStream(s);
                file.write(dos);
                s.write(d.getDefinitionClassFile());

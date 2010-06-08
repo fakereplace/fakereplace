@@ -21,7 +21,7 @@ import javassist.bytecode.MethodInfo;
 import javassist.bytecode.Opcode;
 import javassist.bytecode.ParameterAnnotationsAttribute;
 
-import org.fakereplace.boot.GlobalClassDefinitionData;
+import org.fakereplace.boot.ProxyDefinitionStore;
 
 /**
  * Stores information about the annotations on reloaded classes
@@ -148,7 +148,7 @@ public class AnnotationDataStore
 
    static Class<?> createAnnotationsProxy(ClassLoader loader, AnnotationsAttribute annotations)
    {
-      String proxyName = GlobalClassDefinitionData.getProxyName();
+      String proxyName = ProxyDefinitionStore.getProxyName();
       ClassFile proxy = new ClassFile(false, proxyName, "java.lang.Object");
       proxy.setAccessFlags(AccessFlag.PUBLIC);
       AttributeInfo a = annotations.copy(proxy.getConstPool(), Collections.EMPTY_MAP);
@@ -165,7 +165,7 @@ public class AnnotationDataStore
          {
             throw new RuntimeException(e);
          }
-         GlobalClassDefinitionData.saveProxyDefinition(loader, proxyName, bytes.toByteArray());
+         ProxyDefinitionStore.saveProxyDefinition(loader, proxyName, bytes.toByteArray());
          return loader.loadClass(proxyName);
       }
       catch (ClassNotFoundException e)
@@ -176,7 +176,7 @@ public class AnnotationDataStore
 
    static Class<?> createParameterAnnotationsProxy(ClassLoader loader, ParameterAnnotationsAttribute annotations, int paramCount)
    {
-      String proxyName = GlobalClassDefinitionData.getProxyName();
+      String proxyName = ProxyDefinitionStore.getProxyName();
       ClassFile proxy = new ClassFile(false, proxyName, "java.lang.Object");
       proxy.setAccessFlags(AccessFlag.PUBLIC);
       StringBuilder sb = new StringBuilder();
@@ -208,7 +208,7 @@ public class AnnotationDataStore
          {
             throw new RuntimeException(e);
          }
-         GlobalClassDefinitionData.saveProxyDefinition(loader, proxyName, bytes.toByteArray());
+         ProxyDefinitionStore.saveProxyDefinition(loader, proxyName, bytes.toByteArray());
          return loader.loadClass(proxyName);
       }
       catch (Exception e)

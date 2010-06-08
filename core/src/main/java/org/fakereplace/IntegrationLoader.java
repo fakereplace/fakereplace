@@ -10,7 +10,6 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import org.fakereplace.api.IntegrationInfo;
-import org.fakereplace.boot.Constants;
 
 /**
  * 
@@ -78,10 +77,6 @@ public class IntegrationLoader
          e1.printStackTrace();
       }
 
-      for (String s : Constants.INTEGRATIONS)
-      {
-
-      }
       return integrations;
    }
 

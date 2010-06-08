@@ -14,7 +14,7 @@ import javassist.CtMethod;
 import javassist.NotFoundException;
 
 import org.fakereplace.boot.Constants;
-import org.fakereplace.boot.GlobalClassDefinitionData;
+import org.fakereplace.boot.ProxyDefinitionStore;
 import org.fakereplace.boot.Logger;
 
 public class ClassLoaderInstrumentation
@@ -85,7 +85,7 @@ public class ClassLoaderInstrumentation
          // if the data is not null then we define the class, link
          // it if requested and return it.
          CtMethod method = cls.getDeclaredMethod("loadClass", arg);
-         method.insertBefore("if($1.startsWith(\"" + Constants.GENERATED_CLASS_PACKAGE + "\")){ try{ Class find = findLoadedClass($1); if(find != null) return find; byte[] cd = " + GlobalClassDefinitionData.class.getName() + ".getProxyDefinition(this,$1); if(cd != null){ Class c = defineClass($1,cd,0,cd.length); if($2) resolveClass(c); return c; } }catch(Throwable e) {e.printStackTrace(); return null;}} if($1.startsWith(\"org.fakereplace.integration\")){ try{ byte[] cd = " + Transformer.class.getName() + ".getIntegrationClass(this,$1); if(cd != null){ Class c = defineClass($1,cd,0,cd.length); if($2) resolveClass(c); return c; } }catch(Throwable e) {e.printStackTrace(); return null;}}");
+         method.insertBefore("if($1.startsWith(\"" + Constants.GENERATED_CLASS_PACKAGE + "\")){ try{ Class find = findLoadedClass($1); if(find != null) return find; byte[] cd = " + ProxyDefinitionStore.class.getName() + ".getProxyDefinition(this,$1); if(cd != null){ Class c = defineClass($1,cd,0,cd.length); if($2) resolveClass(c); return c; } }catch(Throwable e) {e.printStackTrace(); return null;}} if($1.startsWith(\"org.fakereplace.integration\")){ try{ byte[] cd = " + Transformer.class.getName() + ".getIntegrationClass(this,$1); if(cd != null){ Class c = defineClass($1,cd,0,cd.length); if($2) resolveClass(c); return c; } }catch(Throwable e) {e.printStackTrace(); return null;}}");
 
          // now reload the instrumented class loader
          ClassDefinition cd = new ClassDefinition(cl, cls.toBytecode());
