@@ -25,7 +25,10 @@
 			<groupId>org.fakereplace</groupId>
 			<artifactId>fakereplace-seam-agent</artifactId>
 		</dependency>
-
+		<dependency>
+			<groupId>org.fakereplace</groupId>
+			<artifactId>fakereplace-jsf</artifactId>
+		</dependency>
 	</dependencies>
 
 

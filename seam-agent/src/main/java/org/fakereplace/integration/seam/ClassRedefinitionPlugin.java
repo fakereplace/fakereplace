@@ -5,17 +5,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
-
-import javax.el.BeanELResolver;
-import javax.el.CompositeELResolver;
-import javax.el.ELResolver;
 
 import org.fakereplace.api.ClassChangeAware;
 import org.fakereplace.api.ClassChangeNotifier;
@@ -168,84 +163,7 @@ public class ClassRedefinitionPlugin implements ClassChangeAware
       {
          e.printStackTrace();
       }
-      Set<Object> data = InstanceTracker.get("javax.el.BeanELResolver");
-      for (Object i : data)
-      {
-         clearBeanElResolver(i);
-      }
       Lifecycle.endCall();
-   }
-
-   public void clearElResolver(ELResolver resolver)
-   {
-      try
-      {
-         if (resolver instanceof CompositeELResolver)
-         {
-            CompositeELResolver c = (CompositeELResolver) resolver;
-
-            Field resolvers = getField(c.getClass(), "resolvers");
-            resolvers.setAccessible(true);
-            ELResolver[] resAr = (ELResolver[]) resolvers.get(c);
-            for (ELResolver r : resAr)
-            {
-               if (r instanceof BeanELResolver)
-               {
-                  Field cacheField = getField(r.getClass(), "cache");
-                  cacheField.setAccessible(true);
-                  Object cache = cacheField.get(r);
-                  try
-                  {
-                     Method m = cache.getClass().getMethod("clear");
-                     m.invoke(cache);
-                  }
-                  catch (NoSuchMethodException e)
-                  {
-                     // different version of jboss el
-                     Class<?> cacheClass = getClass().getClassLoader().loadClass("javax.el.BeanELResolver$ConcurrentCache");
-                     Constructor<?> con = cacheClass.getConstructor(int.class);
-                     con.setAccessible(true);
-                     Object cacheInstance = con.newInstance(100);
-                     cacheField.set(r, cacheInstance);
-                  }
-
-               }
-            }
-         }
-
-      }
-      catch (Exception e)
-      {
-         System.out.println("Could not clear EL cache:" + e.getMessage());
-      }
-   }
-
-   public void clearBeanElResolver(Object r)
-   {
-      try
-      {
-         Field cacheField = getField(r.getClass(), "cache");
-         cacheField.setAccessible(true);
-         Object cache = cacheField.get(r);
-         try
-         {
-            Method m = cache.getClass().getMethod("clear");
-            m.invoke(cache);
-         }
-         catch (NoSuchMethodException e)
-         {
-            // different version of jboss el
-            Class<?> cacheClass = getClass().getClassLoader().loadClass("javax.el.BeanELResolver$ConcurrentCache");
-            Constructor<?> con = cacheClass.getConstructor(int.class);
-            con.setAccessible(true);
-            Object cacheInstance = con.newInstance(100);
-            cacheField.set(r, cacheInstance);
-         }
-      }
-      catch (Exception e)
-      {
-         System.out.println("Could not clear EL cache:" + e.getMessage());
-      }
    }
 
    /**

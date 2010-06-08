@@ -1,4 +1,4 @@
-package org.fakereplace.integration.seam;
+package org.fakereplace.integration.jsf;
 
 import java.lang.instrument.ClassFileTransformer;
 import java.util.Collections;
@@ -7,7 +7,7 @@ import java.util.Set;
 
 import org.fakereplace.api.IntegrationInfo;
 
-public class SeamIntegrationInfo implements IntegrationInfo
+public class JsfIntegrationInfo implements IntegrationInfo
 {
 
    public String getClassChangeAwareName()
@@ -22,7 +22,8 @@ public class SeamIntegrationInfo implements IntegrationInfo
 
    public Set<String> getTrackedInstanceClassNames()
    {
-      Set<String> ret = new HashSet<String>();
+      Set<String> ret= new HashSet<String>();
+      ret.add("javax.el.BeanELResolver");
       ret.add("org.jboss.seam.servlet.SeamFilter");
       return ret;
    }
