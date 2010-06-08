@@ -44,7 +44,7 @@ public interface IntegrationInfo
     * This also means that the classloader that loaded
     * the class will be intrumented to load classes from the integration.
     */
-   public Set<String> getIntegrationClassNames();
+   public Set<String> getIntegrationTriggerClassNames();
 
    /**
     * If a classloader is registered as an instrumentation

@@ -5,13 +5,13 @@
 	<parent>
 		<artifactId>fakereplace-parent</artifactId>
 		<groupId>org.fakereplace</groupId>
-		<version>0.5</version>
+		<version>0.6-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.fakereplace</groupId>
 	<artifactId>fakereplace</artifactId>
 	<packaging>jar</packaging>
-	<version>0.5</version>
+	<version>0.6-SNAPSHOT</version>
 	<name>Fakereplace</name>
 
 	<dependencies>
@@ -20,23 +20,17 @@
 		<dependency>
 			<groupId>javassist</groupId>
 			<artifactId>javassist</artifactId>
-			<version>3.11.0.GA</version>
-			<type>jar</type>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 		    <groupId>com.google.collections</groupId>
 		    <artifactId>google-collections</artifactId>
-		    <version>1.0</version>
 		</dependency>
 		
 		<dependency>
 			<groupId>org.testng</groupId>
 			<artifactId>testng</artifactId>
 			<version>5.11</version>
-			<type>jar</type>
-			<classifier>jdk15</classifier>
-			<scope>compile</scope>
+            <classifier>jdk15</classifier>
 		</dependency>
 
 	</dependencies>

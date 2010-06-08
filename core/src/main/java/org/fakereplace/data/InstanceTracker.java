@@ -3,7 +3,8 @@ package org.fakereplace.data;
 import java.util.Map;
 import java.util.Set;
 
-import com.google.common.base.Function;
+import org.fakereplace.manip.util.MapFunction;
+
 import com.google.common.collect.MapMaker;
 
 /**
@@ -14,15 +15,7 @@ import com.google.common.collect.MapMaker;
 public class InstanceTracker
 {
 
-   static private Map<String, Map<Object, Object>> data = new MapMaker().weakKeys().initialCapacity(100).makeComputingMap(new Function<String, Map<Object, Object>>()
-   {
-
-      public Map<Object, Object> apply(String from)
-      {
-         return new MapMaker().weakKeys().initialCapacity(100).makeMap();
-      }
-
-   });
+   static private Map<String, Map<Object, Object>> data = new MapMaker().weakKeys().initialCapacity(100).makeComputingMap(new MapFunction(true));
 
    public static void add(String type, Object object)
    {

@@ -15,7 +15,7 @@ public class SeamIntegrationInfo implements IntegrationInfo
       return "org.fakereplace.integration.seam.ClassRedefinitionPlugin";
    }
 
-   public Set<String> getIntegrationClassNames()
+   public Set<String> getIntegrationTriggerClassNames()
    {
       return Collections.singleton("org.jboss.seam.servlet.SeamFilter");
    }

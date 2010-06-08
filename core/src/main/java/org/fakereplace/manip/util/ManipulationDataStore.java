@@ -8,7 +8,6 @@ import java.util.Set;
 import java.util.Map.Entry;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import com.google.common.base.Function;
 import com.google.common.collect.MapMaker;
 
 /**
@@ -23,13 +22,7 @@ public class ManipulationDataStore<T extends ClassloaderFiltered<T>>
    {
    };
 
-   Map<ClassLoader, Map<String, Set<T>>> cldata = new MapMaker().weakKeys().makeComputingMap(new Function<ClassLoader, Map<String, Set<T>>>()
-   {
-      public Map<String, Set<T>> apply(ClassLoader from)
-      {
-         return new MapMaker().makeMap();
-      }
-   });
+   Map<ClassLoader, Map<String, Set<T>>> cldata = new MapMaker().weakKeys().makeComputingMap(new MapFunction(false));
 
    public Map<String, Set<T>> getManipulationData(ClassLoader loader)
    {

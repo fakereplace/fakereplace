@@ -12,6 +12,7 @@ import java.lang.instrument.IllegalClassFormatException;
 import java.lang.instrument.Instrumentation;
 import java.net.URL;
 import java.security.ProtectionDomain;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -63,15 +64,30 @@ public class Transformer implements ClassFileTransformer
 
    static final Map<ClassLoader, Object> integrationClassloader = new MapMaker().weakKeys().makeMap();
 
+   static final Map<String, IntegrationInfo> integrationClassTriggers = new MapMaker().makeMap();
+
+   final Set<IntegrationInfo> integrationInfo;
+
+   final Set<String> trackedInstances = new HashSet<String>();
+
    DetectorRunner detector = null;
 
-   Transformer(Instrumentation i, Set<IntegrationInfo> integrationInfo, Enviroment enviroment)
+   Transformer(Instrumentation inst, Set<IntegrationInfo> integrationInfo, Enviroment enviroment)
    {
 
-      instrumentation = i;
+      instrumentation = inst;
       classLoaderInstrumenter = new ClassLoaderInstrumentation(instrumentation);
       ReflectionInstrumentationSetup.setup(manipulator);
       this.enviroment = enviroment;
+      this.integrationInfo = integrationInfo;
+      for (IntegrationInfo i : integrationInfo)
+      {
+         trackedInstances.addAll(i.getTrackedInstanceClassNames());
+         for (String j : i.getIntegrationTriggerClassNames())
+         {
+            integrationClassTriggers.put(j, i);
+         }
+      }
 
    }
 
@@ -116,16 +132,15 @@ public class Transformer implements ClassFileTransformer
             }
          }
 
-         // hook in seam support
-         // this is such a massive hack
-         if (file.getName().equals("org.jboss.seam.servlet.SeamFilter"))
+         if (integrationClassTriggers.containsKey(file.getName()))
          {
             integrationClassloader.put(loader, new Object());
             // we need to load the class in another thread
-            // otherwise it will not be instrumented
-            ThreadLoader.loadAsync("org.fakereplace.integration.seam.ClassRedefinitionPlugin", loader, true);
+            // otherwise it will not go through the javaagent
+            ThreadLoader.loadAsync(integrationClassTriggers.get(file.getName()).getClassChangeAwareName(), loader, true);
          }
-         if (file.getName().equals("javax.el.BeanELResolver") || file.getName().equals("org.jboss.seam.servlet.SeamFilter"))
+
+         if (trackedInstances.contains(file.getName()))
          {
             makeTrackedInstance(file);
          }
@@ -134,8 +149,8 @@ public class Transformer implements ClassFileTransformer
 
          if (enviroment.isClassReplacable(file.getName()) && (AccessFlag.ENUM & file.getAccessFlags()) == 0 && (AccessFlag.ANNOTATION & file.getAccessFlags()) == 0)
          {
-            // initilise the detector
-            // there is not point running it until replacable classes have been loaded
+            // Initialise the detector
+            // there is no point running it until replaceable classes have been loaded
             if (detector == null)
             {
                detector = new DetectorRunner();
@@ -166,7 +181,6 @@ public class Transformer implements ClassFileTransformer
                   addExistingSuperClassMethodDelegates(file, loader);
                }
             }
-
          }
 
          if (classBeingRedefined == null)
@@ -178,6 +192,7 @@ public class Transformer implements ClassFileTransformer
          ByteArrayOutputStream bs = new ByteArrayOutputStream();
          file.write(new DataOutputStream(bs));
 
+         // dump the class for debugging purposes
          if (enviroment.getDumpDirectory() != null)
          {
             FileOutputStream s = new FileOutputStream(enviroment.getDumpDirectory() + '/' + file.getName() + ".class");

@@ -4,9 +4,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.fakereplace.BuiltinClassData;
+import org.fakereplace.manip.util.MapFunction;
 import org.fakereplace.reflection.FieldAccessor;
 
-import com.google.common.base.Function;
 import com.google.common.collect.MapMaker;
 
 public class ClassDataStore
@@ -15,23 +15,9 @@ public class ClassDataStore
    static Map<String, Class<?>> proxyNameToReplacedClass = new ConcurrentHashMap<String, Class<?>>();
    static Map<String, FieldAccessor> proxyNameToFieldAccessor = new ConcurrentHashMap<String, FieldAccessor>();
 
-   static Map<ClassLoader, Map<String, ClassData>> classData = new MapMaker().weakKeys().makeComputingMap(new Function<ClassLoader, Map<String, ClassData>>()
-   {
+   static Map<ClassLoader, Map<String, ClassData>> classData = new MapMaker().weakKeys().makeComputingMap(new MapFunction(false));
 
-      public Map<String, ClassData> apply(ClassLoader from)
-      {
-         return new MapMaker().makeMap();
-      }
-   });
-
-   static Map<ClassLoader, Map<String, BaseClassData>> baseClassData = new MapMaker().weakKeys().makeComputingMap(new Function<ClassLoader, Map<String, BaseClassData>>()
-   {
-
-      public Map<String, BaseClassData> apply(ClassLoader from)
-      {
-         return new MapMaker().makeMap();
-      }
-   });
+   static Map<ClassLoader, Map<String, BaseClassData>> baseClassData = new MapMaker().weakKeys().makeComputingMap(new MapFunction(false));
 
    static Map<String, MethodData> proxyNameToMethodData = new ConcurrentHashMap<String, MethodData>();
 
