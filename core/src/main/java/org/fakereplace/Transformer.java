@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,6 +28,7 @@ import javassist.bytecode.MethodInfo;
 
 import org.fakereplace.api.IntegrationInfo;
 import org.fakereplace.boot.Constants;
+import org.fakereplace.boot.Enviroment;
 import org.fakereplace.data.BaseClassData;
 import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.data.InstanceTracker;
@@ -57,57 +57,21 @@ public class Transformer implements ClassFileTransformer
 
    ClassLoaderInstrumentation classLoaderInstrumenter;
 
-   static Manipulator manipulator = new Manipulator();
+   final Enviroment enviroment;
 
-   static final String[] replacablePackages;
+   static Manipulator manipulator = new Manipulator();
 
    static final Map<ClassLoader, Object> integrationClassloader = new MapMaker().weakKeys().makeMap();
 
-   static final String DUMP_DIRECTORY;
-
    DetectorRunner detector = null;
 
-   static
-   {
-      String dump = System.getProperty(Constants.DUMP_DIRECTORY_KEY);
-      if (dump != null)
-      {
-         File f = new File(dump);
-         if (!f.exists())
-         {
-            System.out.println("dump directory  " + dump + " does not exist ");
-            DUMP_DIRECTORY = null;
-         }
-         else
-         {
-            DUMP_DIRECTORY = dump;
-            System.out.println("dumping class definitions to " + dump);
-         }
-      }
-      else
-      {
-         DUMP_DIRECTORY = null;
-      }
-      String plist = System.getProperty(Constants.REPLACABLE_PACKAGES_KEY);
-      if (plist == null || plist.length() == 0)
-      {
-         System.out.println("-----------------------------------------------------------------");
-         System.out.println("System property " + Constants.REPLACABLE_PACKAGES_KEY + " was not specified, fakereplace is diabled");
-         System.out.println("-----------------------------------------------------------------");
-         replacablePackages = new String[0];
-      }
-      else
-      {
-         replacablePackages = plist.split(",");
-      }
-   }
-
-   Transformer(Instrumentation i, Set<IntegrationInfo> integrationInfo)
+   Transformer(Instrumentation i, Set<IntegrationInfo> integrationInfo, Enviroment enviroment)
    {
 
       instrumentation = i;
       classLoaderInstrumenter = new ClassLoaderInstrumentation(instrumentation);
       ReflectionInstrumentationSetup.setup(manipulator);
+      this.enviroment = enviroment;
 
    }
 
@@ -168,7 +132,7 @@ public class Transformer implements ClassFileTransformer
 
          manipulator.transformClass(file, loader);
 
-         if (isClassReplacable(file.getName()) && (AccessFlag.ENUM & file.getAccessFlags()) == 0 && (AccessFlag.ANNOTATION & file.getAccessFlags()) == 0)
+         if (enviroment.isClassReplacable(file.getName()) && (AccessFlag.ENUM & file.getAccessFlags()) == 0 && (AccessFlag.ANNOTATION & file.getAccessFlags()) == 0)
          {
             // initilise the detector
             // there is not point running it until replacable classes have been loaded
@@ -214,9 +178,9 @@ public class Transformer implements ClassFileTransformer
          ByteArrayOutputStream bs = new ByteArrayOutputStream();
          file.write(new DataOutputStream(bs));
 
-         if (DUMP_DIRECTORY != null)
+         if (enviroment.getDumpDirectory() != null)
          {
-            FileOutputStream s = new FileOutputStream(DUMP_DIRECTORY + '/' + file.getName() + ".class");
+            FileOutputStream s = new FileOutputStream(enviroment.getDumpDirectory() + '/' + file.getName() + ".class");
             DataOutputStream dos = new DataOutputStream(s);
             file.write(dos);
             s.close();
@@ -230,18 +194,6 @@ public class Transformer implements ClassFileTransformer
 
          throw new IllegalClassFormatException();
       }
-   }
-
-   public static boolean isClassReplacable(String className)
-   {
-      for (String i : replacablePackages)
-      {
-         if (className.startsWith(i))
-         {
-            return true;
-         }
-      }
-      return false;
    }
 
    /**

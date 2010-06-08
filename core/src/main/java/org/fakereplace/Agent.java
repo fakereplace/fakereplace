@@ -13,6 +13,7 @@ import java.util.Set;
 import javassist.bytecode.ClassFile;
 
 import org.fakereplace.api.IntegrationInfo;
+import org.fakereplace.boot.Enviroment;
 import org.fakereplace.replacement.ClassRedefiner;
 
 /**
@@ -30,7 +31,7 @@ public class Agent
    {
       Set<IntegrationInfo> integrationInfo = IntegrationLoader.getIntegrationInfo(ClassLoader.getSystemClassLoader());
       inst = i;
-      inst.addTransformer(new Transformer(i));
+      inst.addTransformer(new Transformer(i, integrationInfo, new Enviroment()));
    }
 
    static public void redefine(ClassDefinition... classes) throws UnmodifiableClassException, ClassNotFoundException
