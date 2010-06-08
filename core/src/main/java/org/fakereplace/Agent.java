@@ -29,7 +29,6 @@ public class Agent
    public static void premain(java.lang.String s, java.lang.instrument.Instrumentation i)
    {
       Set<IntegrationInfo> integrationInfo = IntegrationLoader.getIntegrationInfo(ClassLoader.getSystemClassLoader());
-
       inst = i;
       inst.addTransformer(new Transformer(i));
    }

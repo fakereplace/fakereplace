@@ -236,8 +236,8 @@ public class DetectorRunner implements Runnable
 
    public void run()
    {
-      // no need to do anything for the first 10 seconds
-      sleep(10000);
+      // no need to do anything for the first 5 seconds
+      sleep(5000);
       while (true)
       {
          // wait 2 seconds
