@@ -4,7 +4,7 @@
 
 
     <properties>
-        <fakereplace.version>0.6-SNAPSHOT</fakereplace.version>
+        <fakereplace.version>0.6</fakereplace.version>
         <arquillian.version>1.0.0.Alpha2</arquillian.version>
     </properties>
 
@@ -12,11 +12,9 @@
     <groupId>org.fakereplace</groupId>
     <artifactId>fakereplace-parent</artifactId>
     <packaging>pom</packaging>
-    <version>0.6-SNAPSHOT</version>
+    <version>0.6</version>
 
     <name>Fakereplace Parent</name>
-
-
 
     <modules>
         <module>core</module>
@@ -97,7 +95,6 @@
              <version>${arquillian.version}</version>
              <scope>test</scope>
           </dependency>
-            
             
         </dependencies>
 
