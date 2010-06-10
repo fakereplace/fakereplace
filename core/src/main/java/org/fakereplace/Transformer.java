@@ -224,7 +224,7 @@ public class Transformer implements ClassFileTransformer
       try
       {
          MethodInfo m = new MethodInfo(file.getConstPool(), Constants.ADDED_METHOD_NAME, Constants.ADDED_METHOD_DESCRIPTOR);
-         m.setAccessFlags(0 | AccessFlag.PUBLIC);
+         m.setAccessFlags(0 | AccessFlag.PUBLIC | AccessFlag.SYNTHETIC);
 
          Bytecode b = new Bytecode(file.getConstPool(), 5, 3);
          if (BuiltinClassData.skipInstrumentation(file.getSuperclass()))
@@ -253,7 +253,7 @@ public class Transformer implements ClassFileTransformer
       try
       {
          MethodInfo m = new MethodInfo(file.getConstPool(), Constants.ADDED_STATIC_METHOD_NAME, Constants.ADDED_STATIC_METHOD_DESCRIPTOR);
-         m.setAccessFlags(AccessFlag.PUBLIC | AccessFlag.STATIC);
+         m.setAccessFlags(AccessFlag.PUBLIC | AccessFlag.STATIC | AccessFlag.SYNTHETIC);
          Bytecode b = new Bytecode(file.getConstPool(), 5, 3);
          b.add(Bytecode.ACONST_NULL);
          b.add(Bytecode.ARETURN);
@@ -279,7 +279,7 @@ public class Transformer implements ClassFileTransformer
       try
       {
          MethodInfo m = new MethodInfo(file.getConstPool(), Constants.ADDED_METHOD_NAME, Constants.ADDED_METHOD_DESCRIPTOR);
-         m.setAccessFlags(AccessFlag.PUBLIC | AccessFlag.ABSTRACT);
+         m.setAccessFlags(AccessFlag.PUBLIC | AccessFlag.ABSTRACT | AccessFlag.SYNTHETIC);
          file.addMethod(m);
       }
       catch (DuplicateMemberException e)
@@ -301,7 +301,7 @@ public class Transformer implements ClassFileTransformer
       CodeAttribute ca = code.toCodeAttribute();
       ca.setMaxLocals(4);
       ret.setCodeAttribute(ca);
-      ret.setAccessFlags(AccessFlag.PUBLIC);
+      ret.setAccessFlags(AccessFlag.PUBLIC | AccessFlag.SYNTHETIC);
       try
       {
          ca.computeMaxStack();

@@ -30,8 +30,8 @@ import javassist.bytecode.SignatureAttribute;
 import org.fakereplace.BuiltinClassData;
 import org.fakereplace.Transformer;
 import org.fakereplace.boot.Constants;
-import org.fakereplace.boot.ProxyDefinitionStore;
 import org.fakereplace.boot.Logger;
+import org.fakereplace.boot.ProxyDefinitionStore;
 import org.fakereplace.data.AnnotationDataStore;
 import org.fakereplace.data.BaseClassData;
 import org.fakereplace.data.ClassDataBuilder;
@@ -61,11 +61,11 @@ public class MethodReplacer
          virtMethod.setAccessFlags(0 | AccessFlag.PUBLIC);
          if (file.isInterface())
          {
-            virtMethod.setAccessFlags(0 | AccessFlag.PUBLIC | AccessFlag.ABSTRACT);
+            virtMethod.setAccessFlags(0 | AccessFlag.PUBLIC | AccessFlag.ABSTRACT | AccessFlag.SYNTHETIC);
          }
          else
          {
-            virtMethod.setAccessFlags(0 | AccessFlag.PUBLIC);
+            virtMethod.setAccessFlags(0 | AccessFlag.PUBLIC | AccessFlag.SYNTHETIC);
             Bytecode b = new Bytecode(file.getConstPool(), 5, 3);
             if (BuiltinClassData.skipInstrumentation(file.getSuperclass()))
             {
@@ -85,7 +85,7 @@ public class MethodReplacer
             virtMethod.setCodeAttribute(virtualCodeAttribute);
 
             MethodInfo m = new MethodInfo(file.getConstPool(), Constants.ADDED_STATIC_METHOD_NAME, Constants.ADDED_STATIC_METHOD_DESCRIPTOR);
-            m.setAccessFlags(AccessFlag.PUBLIC | AccessFlag.STATIC);
+            m.setAccessFlags(AccessFlag.PUBLIC | AccessFlag.STATIC | AccessFlag.SYNTHETIC);
             b = new Bytecode(file.getConstPool(), 5, 3);
             b.add(Bytecode.ACONST_NULL);
             b.add(Bytecode.ARETURN);
@@ -94,7 +94,7 @@ public class MethodReplacer
             file.addMethod(m);
 
             m = new MethodInfo(file.getConstPool(), "<init>", Constants.ADDED_CONSTRUCTOR_DESCRIPTOR);
-            m.setAccessFlags(AccessFlag.PUBLIC);
+            m.setAccessFlags(AccessFlag.PUBLIC | AccessFlag.SYNTHETIC);
             b = new Bytecode(file.getConstPool(), 5, 5);
             if (ManipulationUtils.addBogusConstructorCall(file, b))
             {
