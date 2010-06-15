@@ -203,6 +203,13 @@ public class VirtualMethodTest
       assert getString(c).equals("VirtualChild1");
    }
 
+   @Test(groups = "virtualmethod")
+   public void testAddedDelegateMethodsDoNotBreakOnReplacement() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException
+   {
+      VirtualCaller c = new VirtualCaller();
+      assert c.toString().contains("VirtualCaller") : c.toString();
+   }
+
    @Test(groups = "virtualmethod", enabled = false)
    public void testOverrideWithSuperclassNotLoaded() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException
    {

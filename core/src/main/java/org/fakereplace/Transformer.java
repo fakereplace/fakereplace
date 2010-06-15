@@ -152,7 +152,8 @@ public class Transformer implements ClassFileTransformer
          if (enviroment.isClassReplacable(file.getName()) && (AccessFlag.ENUM & file.getAccessFlags()) == 0 && (AccessFlag.ANNOTATION & file.getAccessFlags()) == 0)
          {
             // Initialise the detector
-            // there is no point running it until replaceable classes have been loaded
+            // there is no point running it until replaceable classes have been
+            // loaded
             if (detector == null)
             {
                detector = new DetectorRunner();
@@ -202,7 +203,8 @@ public class Transformer implements ClassFileTransformer
             file.write(dos);
             s.close();
          }
-
+         // SerialVersionUIDChecker.testReflectionInfo(loader, file.getName(),
+         // file.getSuperclass(), classfileBuffer);
          return bs.toByteArray();
       }
       catch (Throwable e)
@@ -380,18 +382,14 @@ public class Transformer implements ClassFileTransformer
    }
 
    /**
-    * adds methods that call super.same_method() this is so that if the user decides to add this method 
+    * adds methods that call super.same_method() this is so that if the user
+    * decides to add this method
+    * 
     * @param file
     */
    public void addSuperClassMethodDelegates(ClassFile file, ClassLoader loader)
    {
       BaseClassData data = ClassDataStore.getBaseClassData(loader, file.getSuperclass());
-      if (data == null)
-      {
-         // add the methods from object as we can't just load the class
-         // as classes loaded by the javaagent are not transformed
-         data = ClassDataStore.getBaseClassData(loader, "java.lang.Object");
-      }
 
       while (data != null)
       {
@@ -436,15 +434,19 @@ public class Transformer implements ClassFileTransformer
          data = data.getSuperClassInformation();
          if (data == null)
          {
-            data = ClassDataStore.getBaseClassData(loader, "java.lang.Object");
+            // data = ClassDataStore.getBaseClassData(loader,
+            // "java.lang.Object");
          }
       }
 
    }
 
    /**
-    * adds methods that call super.same_method() this is so that if the user decides to add this method 
-    * this method adssumes that the class has already been loaded and the methods added, so it just adds the same ones again
+    * adds methods that call super.same_method() this is so that if the user
+    * decides to add this method
+    * this method adssumes that the class has already been loaded and the
+    * methods added, so it just adds the same ones again
+    * 
     * @param file
     */
    public void addExistingSuperClassMethodDelegates(ClassFile file, ClassLoader loader)
@@ -493,7 +495,9 @@ public class Transformer implements ClassFileTransformer
    }
 
    /**
-    * modifies a class so that all created instances are registered with InstanceTracker
+    * modifies a class so that all created instances are registered with
+    * InstanceTracker
+    * 
     * @param file
     * @throws BadBytecode
     */

@@ -18,7 +18,7 @@ import org.fakereplace.util.DescriptorUtils;
  * Class that holds various static helper methods that manipulate the bytecode
  * 
  * @author stuart
- *
+ * 
  */
 public class ManipulationUtils
 {
@@ -160,7 +160,9 @@ public class ManipulationUtils
    }
 
    /**
-    * add a bogus constructor call to a bytecode sequence so a constructor can pass bytecode validation
+    * add a bogus constructor call to a bytecode sequence so a constructor can
+    * pass bytecode validation
+    * 
     * @param bytecode
     */
    public static boolean addBogusConstructorCall(ClassFile file, Bytecode code)
@@ -220,6 +222,7 @@ public class ManipulationUtils
 
    /**
     * inserts a 16 bit offset into the bytecode
+    * 
     * @param b
     * @param value
     */
@@ -231,7 +234,8 @@ public class ManipulationUtils
    }
 
    /**
-    * Add a method to a class that simply delegates to the parent implementation of the method
+    * Add a method to a class that simply delegates to the parent implementation
+    * of the method
     */
    public static void addDelegatingMethod(ClassFile file, MethodData mData) throws BadBytecode, DuplicateMemberException
    {
@@ -314,7 +318,7 @@ public class ManipulationUtils
       ca.computeMaxStack();
       ca.setMaxLocals(maxLocals);
       m.setCodeAttribute(ca);
-      AttributeInfo myInfo = new AttributeInfo(file.getConstPool(), Constants.ADDED_SUPERCLASS_DELEGATING_METHOD_ATTRIBUTE, new byte[0]);
+      AttributeInfo myInfo = new AttributeInfo(file.getConstPool(), Constants.ADDED_SUPERCLASS_DELEGATING_METHOD_ATTRIBUTE, mData.getClassName().getBytes());
       m.addAttribute(myInfo);
       file.addMethod(m);
    }

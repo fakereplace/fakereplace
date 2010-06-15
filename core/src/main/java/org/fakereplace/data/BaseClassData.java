@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import javassist.bytecode.AttributeInfo;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.Descriptor;
 import javassist.bytecode.FieldInfo;
@@ -17,7 +18,7 @@ import org.fakereplace.util.DescriptorUtils;
 
 /**
  * This class holds everything there is to know about a class that has been seen
- * by the transformer. This stores the information about the original class, not 
+ * by the transformer. This stores the information about the original class, not
  * about any modifications
  * 
  * @author stuart
@@ -42,6 +43,7 @@ public class BaseClassData
       Set<MethodData> meths = new HashSet<MethodData>();
       for (Object o : file.getMethods())
       {
+         String methodClassName = className;
          MethodInfo m = (MethodInfo) o;
          MemberType type = MemberType.NORMAL;
          if ((m.getDescriptor().equals(Constants.ADDED_METHOD_DESCRIPTOR) && m.getName().equals(Constants.ADDED_METHOD_NAME)) || (m.getDescriptor().equals(Constants.ADDED_STATIC_METHOD_DESCRIPTOR) && m.getName().equals(Constants.ADDED_STATIC_METHOD_NAME)) || (m.getDescriptor().equals(Constants.ADDED_CONSTRUCTOR_DESCRIPTOR)))
@@ -50,10 +52,13 @@ public class BaseClassData
          }
          else if (m.getAttribute(Constants.ADDED_SUPERCLASS_DELEGATING_METHOD_ATTRIBUTE) != null)
          {
+            AttributeInfo at = m.getAttribute(Constants.ADDED_SUPERCLASS_DELEGATING_METHOD_ATTRIBUTE);
             type = MemberType.ADDED_DELEGATE;
+            // we want the class name to be the class that is being delegated to
+            methodClassName = new String(at.get());
          }
 
-         MethodData md = new MethodData(m.getName(), m.getDescriptor(), file.getName(), type, m.getAccessFlags());
+         MethodData md = new MethodData(m.getName(), m.getDescriptor(), methodClassName, type, m.getAccessFlags());
          meths.add(md);
       }
       this.methods = Collections.unmodifiableSet(meths);

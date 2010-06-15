@@ -23,15 +23,15 @@ import com.google.common.collect.MapMaker;
  * This class is a massive hack
  * 
  * It scans files for timestamp changes, if any are found it waits a bit
- * and then scans again, and keeps doing that until they stop changing. 
+ * and then scans again, and keeps doing that until they stop changing.
  * 
- * Then it hotswaps all the changed classes 
+ * Then it hotswaps all the changed classes
  * 
  * Ideally it would only be used when running outside a servlet environment
  * and inside servlets a hot deploy filter could be used
  * 
  * @author Stuart Douglas <stuart@baileyroberts.com.au>
- *
+ * 
  */
 public class DetectorRunner implements Runnable
 {
@@ -46,15 +46,24 @@ public class DetectorRunner implements Runnable
 
    /**
     * map of classloaders to root paths
-    * some classloaders can have several root paths, e.g. an ear level classloader loading
-    * several exploded jar
+    * some classloaders can have several root paths, e.g. an ear level
+    * classloader loading several exploded jar
     */
    static final Map<ClassLoader, Set<File>> classLoaders = (new MapMaker()).weakKeys().makeMap();
+
+   /**
+    * we store the timestamp of application.xml, if this is updated then the app
+    * has been
+    * re-deployed, so we do not want to hot replace the classes
+    */
+   static final Map<ClassLoader, Long> applicationXmlTimestamp = new HashMap<ClassLoader, Long>();
 
    Map<ClassLoader, Map<File, FileData>> files = (new MapMaker()).weakKeys().makeMap();
 
    /**
-    * adds a class loader to the map of class loaders that are scanned for changes
+    * adds a class loader to the map of class loaders that are scanned for
+    * changes
+    * 
     * @param classLoader
     * @param instigatingClassName
     */
@@ -70,6 +79,15 @@ public class DetectorRunner implements Runnable
       {
          roots = new HashSet<File>();
          classLoaders.put(classLoader, roots);
+         URL appxmls = classLoader.getResource("META-INF/application.xml");
+         if (appxmls != null)
+         {
+            File file = new File(appxmls.getFile());
+            if (file.exists())
+            {
+               applicationXmlTimestamp.put(classLoader, file.lastModified());
+            }
+         }
       }
 
       String resourceName = instigatingClassName.replace('.', '/') + ".class";
@@ -109,7 +127,8 @@ public class DetectorRunner implements Runnable
       }
       else
       {
-         System.out.println("ERROR: Could not discover classloader root for classloader of " + instigatingClassName);
+         // System.out.println("ERROR: Could not discover classloader root for classloader of "
+         // + instigatingClassName);
       }
    }
 
