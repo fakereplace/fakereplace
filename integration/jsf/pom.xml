@@ -30,6 +30,9 @@
     	<artifactId>fakereplace</artifactId>
     </dependency>
   </dependencies>
+  <scm>
+  	<developerConnection>scm:svn:https://fakereplace.googlecode.com/svn/trunk/integration/jsf</developerConnection>
+  </scm>
   <build>
 		<plugins>
 			<plugin>

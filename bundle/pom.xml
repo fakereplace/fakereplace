@@ -32,6 +32,9 @@
 	</dependencies>
 
 
+	<scm>
+		<developerConnection>scm:svn:https://fakereplace.googlecode.com/svn/trunk/bundle</developerConnection>
+	</scm>
 	<build>
 		<finalName>fakereplace</finalName>
 		<plugins>
