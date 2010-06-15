@@ -10,8 +10,8 @@
   </parent>
   
   <groupId>org.fakereplace</groupId>
-  <artifactId>fakereplace-seam-agent</artifactId>
-  <name>Seam Agent</name>
+  <artifactId>fakereplace-seam</artifactId>
+  <name>Fakereplace Seam Integration</name>
   <version>0.7-SNAPSHOT</version>
   <url>http://maven.apache.org</url>
   

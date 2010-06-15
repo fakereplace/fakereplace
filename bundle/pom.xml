@@ -23,7 +23,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.fakereplace</groupId>
-			<artifactId>fakereplace-seam-agent</artifactId>
+			<artifactId>fakereplace-seam</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.fakereplace</groupId>

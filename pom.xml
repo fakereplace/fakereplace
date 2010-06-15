@@ -18,9 +18,9 @@
 
     <modules>
         <module>core</module>
-        <module>seam-agent</module>
+        <module>integration/seam</module>
         <module>bundle</module>
-	<module>jsf</module>
+	<module>integration/jsf</module>
     </modules>
 
     <dependencyManagement>
@@ -34,7 +34,7 @@
             
             <dependency>
                 <groupId>org.fakereplace</groupId>
-                <artifactId>fakereplace-seam-agent</artifactId>
+                <artifactId>fakereplace-seam</artifactId>
                 <version>${fakereplace.version}</version>
             </dependency>
             
