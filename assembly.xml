@@ -26,13 +26,6 @@
          </includes>
       </fileSet>
       
-      <fileSet>
-         <directory>seam-agent/src/main/java</directory>
-         <outputDirectory>fakereplace/seam-agent-source</outputDirectory>
-         <includes>
-            <include>**</include>
-         </includes>
-      </fileSet>
    </fileSets>
 
    <moduleSets>
