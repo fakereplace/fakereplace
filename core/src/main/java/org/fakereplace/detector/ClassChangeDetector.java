@@ -13,52 +13,65 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.fakereplace.Agent;
 import org.fakereplace.api.ClassChangeNotifier;
+import org.fakereplace.manip.util.MapFunction;
 
 import com.google.common.collect.MapMaker;
 
 /**
- * This class is a massive hack
  * 
- * It scans files for timestamp changes, if any are found it waits a bit
- * and then scans again, and keeps doing that until they stop changing.
+ * This is responsible for scanning for file system changes,
+ * and if any are found it hot-replaces the files.
  * 
- * Then it hotswaps all the changed classes
+ * By default it is driven by a thread based scanner, however other scanners can
+ * assume responsibility for certain class loaders.
  * 
- * Ideally it would only be used when running outside a servlet environment
- * and inside servlets a hot deploy filter could be used
+ * This allows a filter based implementation to scan for changes on every
+ * request, while integrations that do not provide a filter can still use the
+ * thread based scanner
  * 
  * @author Stuart Douglas <stuart@baileyroberts.com.au>
  * 
  */
-public class DetectorRunner implements Runnable
+public class ClassChangeDetector
 {
 
-   static final int POLL_TIME = 2000;
-
    /**
-    * when a change is first detected we wait for DELAY_TIME then
-    * scan again, so allow the os to finish copying files.
+    * we only want one thread at a time scanning for changes,and in the case of
+    * a servlet / filter we don't want them to wait if another request is
+    * scanning
     */
-   static final int DELAY_TIME = 300;
+   public static final Lock lock = new ReentrantLock();
 
    /**
     * map of classloaders to root paths
     * some classloaders can have several root paths, e.g. an ear level
     * classloader loading several exploded jar
     */
-   static final Map<ClassLoader, Set<File>> classLoaders = (new MapMaker()).weakKeys().makeMap();
+   static final Map<ClassLoader, Set<File>> classLoaders = new MapMaker().weakKeys().makeMap();
 
    /**
-    * we store the timestamp of application.xml, if this is updated then the app
-    * has been
-    * re-deployed, so we do not want to hot replace the classes
+    * This is a map of all classloaders that should be scanned by the default
+    * thread based implementation. this should really be a weak set
     */
-   static final Map<ClassLoader, Long> applicationXmlTimestamp = new HashMap<ClassLoader, Long>();
+   static final Map<ClassLoader, Object> unclaimedClassLoaders = new MapMaker().weakKeys().makeMap();
 
-   Map<ClassLoader, Map<File, FileData>> files = (new MapMaker()).weakKeys().makeMap();
+   /**
+    * Map of an object that has claimed a ClassLoader to a ClassLoader.
+    */
+   static final Map<Object, Map<ClassLoader, Object>> claimedClassLoaders = new MapMaker().weakKeys().makeComputingMap(new MapFunction<Object, ClassLoader, Object>(true));
+
+   static final Map<ClassLoader, Map<File, FileData>> files = new MapMaker().weakKeys().makeMap();
+
+   /**
+    * the amount of time to wait between detecting a change and performing the
+    * hotswap
+    */
+   private static final int DELAY_TIME = 300;
 
    /**
     * adds a class loader to the map of class loaders that are scanned for
@@ -67,72 +80,71 @@ public class DetectorRunner implements Runnable
     * @param classLoader
     * @param instigatingClassName
     */
-   public synchronized void addClassLoader(ClassLoader classLoader, String instigatingClassName)
+   public static void addClassLoader(ClassLoader classLoader, String instigatingClassName)
    {
-      // this should only be tripped by $Proxy classes
-      if (classLoader == null || instigatingClassName.contains("$Proxy"))
+      try
       {
-         return;
-      }
-      Set<File> roots = classLoaders.get(classLoader);
-      if (roots == null)
-      {
-         roots = new HashSet<File>();
-         classLoaders.put(classLoader, roots);
-         URL appxmls = classLoader.getResource("META-INF/application.xml");
-         if (appxmls != null)
+         lock.lock();
+         // this should only be tripped by $Proxy classes, which need to be
+         // handled
+         // by integrations
+         if (classLoader == null || instigatingClassName.contains("$Proxy"))
          {
-            File file = new File(appxmls.getFile());
-            if (file.exists())
-            {
-               applicationXmlTimestamp.put(classLoader, file.lastModified());
-            }
+            return;
          }
-      }
+         Set<File> roots = classLoaders.get(classLoader);
+         if (roots == null)
+         {
+            roots = new HashSet<File>();
+            classLoaders.put(classLoader, roots);
+            unclaimedClassLoaders.put(classLoader, new Object());
+         }
 
-      String resourceName = instigatingClassName.replace('.', '/') + ".class";
-      URL url = classLoader.getResource(resourceName);
-      if (url == null)
-      {
-         return;
-      }
-      String path = url.getPath();
-      path = path.substring(0, path.length() - resourceName.length() - 1);
-      File f = new File(path);
-      if (f.isDirectory())
-      {
-         // we have the root path
-         if (!roots.contains(f))
+         String resourceName = instigatingClassName.replace('.', '/') + ".class";
+         URL url = classLoader.getResource(resourceName);
+         if (url == null)
          {
-            initRoot(f, classLoader);
-            roots.add(f);
-            // if there is a different classloader with the same root remove it
-            // as that probably means that the app has been undeployed
-            System.out.println("ADDING ROOT: " + f.getAbsolutePath() + " to CL " + classLoader);
-            Iterator<Entry<ClassLoader, Set<File>>> i = classLoaders.entrySet().iterator();
-            while (i.hasNext())
+            return;
+         }
+         String path = url.getPath();
+         path = path.substring(0, path.length() - resourceName.length() - 1);
+
+         File f = new File(path);
+         if (f.isDirectory())
+         {
+            // we have the root path
+            if (!roots.contains(f))
             {
-               Entry<ClassLoader, Set<File>> cl = i.next();
-               if (cl.getKey() == classLoader)
+               initRoot(f, classLoader);
+               roots.add(f);
+               // if there is a different classloader with the same root remove
+               // it
+               // as that probably means that the app has been undeployed
+               System.out.println("ADDING ROOT: " + f.getAbsolutePath() + " to CL " + classLoader);
+               Iterator<Entry<ClassLoader, Set<File>>> i = classLoaders.entrySet().iterator();
+               while (i.hasNext())
                {
-                  continue;
-               }
-               if (cl.getValue().contains(f))
-               {
-                  files.remove(cl.getKey());
-                  i.remove();
+                  Entry<ClassLoader, Set<File>> cl = i.next();
+                  if (cl.getKey() == classLoader)
+                  {
+                     continue;
+                  }
+                  if (cl.getValue().contains(f))
+                  {
+                     files.remove(cl.getKey());
+                     i.remove();
+                  }
                }
             }
          }
       }
-      else
+      finally
       {
-         // System.out.println("ERROR: Could not discover classloader root for classloader of "
-         // + instigatingClassName);
+         lock.unlock();
       }
    }
 
-   private void initRoot(File f, ClassLoader classLoader)
+   private static void initRoot(File f, ClassLoader classLoader)
    {
       if (!files.containsKey(classLoader))
       {
@@ -146,7 +158,7 @@ public class DetectorRunner implements Runnable
       }
    }
 
-   private void handleInitDirectory(File dir, File rootDir, Map<File, FileData> foundFiles, ClassLoader classLoader)
+   private static void handleInitDirectory(File dir, File rootDir, Map<File, FileData> foundFiles, ClassLoader classLoader)
    {
       if (!dir.isDirectory())
          return;
@@ -174,11 +186,15 @@ public class DetectorRunner implements Runnable
       }
    }
 
-   private synchronized boolean isFileSystemChanged()
+   private static boolean isFileSystemChanged(Set<ClassLoader> loaders)
    {
       Map<File, FileData> fls = new HashMap<File, FileData>();
       for (Entry<ClassLoader, Set<File>> e : classLoaders.entrySet())
       {
+         if (!loaders.contains(e.getKey()))
+         {
+            continue;
+         }
          for (File f : e.getValue())
          {
             handleInitDirectory(f, f, fls, e.getKey());
@@ -203,21 +219,22 @@ public class DetectorRunner implements Runnable
             }
          }
       }
-
       return false;
    }
 
-   private synchronized ClassChangeSet getChanges()
+   private static ClassChangeSet getChanges(Set<ClassLoader> loaders)
    {
       ClassChangeSet ret = new ClassChangeSet();
       Map<File, FileData> fls = new HashMap<File, FileData>();
       for (Entry<ClassLoader, Set<File>> e : classLoaders.entrySet())
       {
-
+         if (!loaders.contains(e.getKey()))
+         {
+            continue;
+         }
          for (File f : e.getValue())
          {
             handleInitDirectory(f, f, fls, e.getKey());
-
          }
          Map<File, FileData> oldFileMap = files.get(e.getKey());
          for (File newFile : fls.keySet())
@@ -272,25 +289,45 @@ public class DetectorRunner implements Runnable
       return ret;
    }
 
-   public void run()
+   public static void claimClassLoader(Object owner, ClassLoader classLoader)
    {
-      // no need to do anything for the first 5 seconds
-      sleep(5000);
-      while (true)
+      claimedClassLoaders.get(owner).put(classLoader, new Object());
+      unclaimedClassLoaders.remove(classLoader);
+   }
+
+   /**
+    * Runs on on any class loaders that have not been 'claimed' by an
+    * integration specific scanner
+    */
+   public static void runDefault()
+   {
+      run(unclaimedClassLoaders.keySet(), true);
+   }
+
+   public static void run(Object owner)
+   {
+      Map<ClassLoader, Object> aa = claimedClassLoaders.get(owner);
+      run(aa.keySet(), false);
+   }
+
+   private static void run(Set<ClassLoader> loaders, boolean useDelay)
+   {
+      if (lock.tryLock())
       {
-         // wait 2 seconds
-         sleep(POLL_TIME);
          try
          {
-            if (isFileSystemChanged())
+            if (isFileSystemChanged(loaders))
             {
                // wait for the stuff to be copied
                // we don't want half copied class filed
-               sleep(DELAY_TIME);
-               ClassChangeSet changes = getChanges();
+               if (useDelay)
+               {
+                  sleep(DELAY_TIME);
+               }
+               ClassChangeSet changes = getChanges(loaders);
                if (changes.getChangedClasses().isEmpty())
                {
-                  continue;
+                  return;
                }
                ClassDefinition[] defs = new ClassDefinition[changes.getChangedClasses().size()];
                Class<?>[] changed = new Class[changes.getChangedClasses().size()];
@@ -333,11 +370,16 @@ public class DetectorRunner implements Runnable
          {
             e.printStackTrace();
          }
+         finally
+         {
+            lock.unlock();
 
+         }
       }
+
    }
 
-   public void sleep(int millis)
+   protected static void sleep(int millis)
    {
       try
       {

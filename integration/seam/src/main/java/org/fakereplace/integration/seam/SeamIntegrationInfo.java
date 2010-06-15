@@ -1,10 +1,10 @@
 package org.fakereplace.integration.seam;
 
-import java.lang.instrument.ClassFileTransformer;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.fakereplace.api.ClassTransformer;
 import org.fakereplace.api.IntegrationInfo;
 
 public class SeamIntegrationInfo implements IntegrationInfo
@@ -27,9 +27,9 @@ public class SeamIntegrationInfo implements IntegrationInfo
       return ret;
    }
 
-   public ClassFileTransformer getTransformer()
+   public ClassTransformer getTransformer()
    {
-      return null;
+      return new SeamTransformer();
    }
 
    public byte[] loadClass(String className)

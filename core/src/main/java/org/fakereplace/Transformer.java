@@ -13,8 +13,10 @@ import java.lang.instrument.Instrumentation;
 import java.net.URL;
 import java.security.ProtectionDomain;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javassist.bytecode.AccessFlag;
 import javassist.bytecode.AnnotationsAttribute;
@@ -27,6 +29,7 @@ import javassist.bytecode.DuplicateMemberException;
 import javassist.bytecode.FieldInfo;
 import javassist.bytecode.MethodInfo;
 
+import org.fakereplace.api.ClassTransformer;
 import org.fakereplace.api.IntegrationInfo;
 import org.fakereplace.boot.Constants;
 import org.fakereplace.boot.Enviroment;
@@ -35,7 +38,8 @@ import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.data.InstanceTracker;
 import org.fakereplace.data.MemberType;
 import org.fakereplace.data.MethodData;
-import org.fakereplace.detector.DetectorRunner;
+import org.fakereplace.detector.ClassChangeDetector;
+import org.fakereplace.detector.ClassChangeDetectorRunner;
 import org.fakereplace.manip.Manipulator;
 import org.fakereplace.manip.util.ManipulationUtils;
 import org.fakereplace.reflection.ReflectionInstrumentationSetup;
@@ -72,7 +76,9 @@ public class Transformer implements ClassFileTransformer
 
    final Set<String> trackedInstances = new HashSet<String>();
 
-   DetectorRunner detector = null;
+   final List<ClassTransformer> integrationTransformers = new CopyOnWriteArrayList<ClassTransformer>();
+
+   ClassChangeDetectorRunner detectorRunner = null;
 
    Transformer(Instrumentation inst, Set<IntegrationInfo> integrationInfo, Enviroment enviroment)
    {
@@ -89,8 +95,12 @@ public class Transformer implements ClassFileTransformer
          {
             integrationClassTriggers.put(j, i);
          }
+         ClassTransformer t = i.getTransformer();
+         if (t != null)
+         {
+            integrationTransformers.add(t);
+         }
       }
-
    }
 
    public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException
@@ -98,7 +108,17 @@ public class Transformer implements ClassFileTransformer
       try
       {
          classLoaderInstrumenter.instrumentClassLoaderIfNessesary(loader, className);
-         ClassFile file = new ClassFile(new DataInputStream(new ByteArrayInputStream(classfileBuffer)));
+         byte[] data = classfileBuffer;
+         for (ClassTransformer i : integrationTransformers)
+         {
+            byte[] dt = i.transform(data, className);
+            if (dt != null)
+            {
+               data = dt;
+            }
+         }
+
+         ClassFile file = new ClassFile(new DataInputStream(new ByteArrayInputStream(data)));
 
          // we do not instrument any classes from fakereplace
          // if we did we get an endless loop
@@ -108,8 +128,8 @@ public class Transformer implements ClassFileTransformer
          {
             if (classBeingRedefined == null)
             {
-               BaseClassData data = new BaseClassData(file, loader);
-               ClassDataStore.saveClassData(loader, data.getInternalName(), data);
+               BaseClassData baseData = new BaseClassData(file, loader);
+               ClassDataStore.saveClassData(loader, baseData.getInternalName(), baseData);
             }
             return null;
          }
@@ -154,14 +174,14 @@ public class Transformer implements ClassFileTransformer
             // Initialise the detector
             // there is no point running it until replaceable classes have been
             // loaded
-            if (detector == null)
+            if (detectorRunner == null)
             {
-               detector = new DetectorRunner();
-               Thread t = new Thread(detector);
+               detectorRunner = new ClassChangeDetectorRunner();
+               Thread t = new Thread(detectorRunner);
                t.start();
             }
 
-            detector.addClassLoader(loader, file.getName());
+            ClassChangeDetector.addClassLoader(loader, file.getName());
 
             if (file.isInterface())
             {
@@ -188,8 +208,8 @@ public class Transformer implements ClassFileTransformer
 
          if (classBeingRedefined == null)
          {
-            BaseClassData data = new BaseClassData(file, loader);
-            ClassDataStore.saveClassData(loader, data.getInternalName(), data);
+            BaseClassData baseData = new BaseClassData(file, loader);
+            ClassDataStore.saveClassData(loader, baseData.getInternalName(), baseData);
          }
 
          ByteArrayOutputStream bs = new ByteArrayOutputStream();

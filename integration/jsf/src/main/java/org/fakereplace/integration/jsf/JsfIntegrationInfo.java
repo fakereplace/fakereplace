@@ -1,10 +1,10 @@
 package org.fakereplace.integration.jsf;
 
-import java.lang.instrument.ClassFileTransformer;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.fakereplace.api.ClassTransformer;
 import org.fakereplace.api.IntegrationInfo;
 
 public class JsfIntegrationInfo implements IntegrationInfo
@@ -27,7 +27,7 @@ public class JsfIntegrationInfo implements IntegrationInfo
       return ret;
    }
 
-   public ClassFileTransformer getTransformer()
+   public ClassTransformer getTransformer()
    {
       return null;
    }

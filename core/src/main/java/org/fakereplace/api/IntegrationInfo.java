@@ -1,36 +1,36 @@
 package org.fakereplace.api;
 
-import java.lang.instrument.ClassFileTransformer;
 import java.util.Set;
 
 /**
  * Integrations need to implementent this service to tell the transformer
- * about what they need. 
+ * about what they need.
  * 
- * Note: all class names should be returned in java (not JVM) format 
+ * Note: all class names should be returned in java (not JVM) format
  * 
  * @author stuart
- *
+ * 
  */
 public interface IntegrationInfo
 {
    /**
     * Integrations have a change to transform classes
     * They get to see the class before any manipulation is
-    * done to it. 
+    * done to it.
     * They do not get to transform reloaded classes.
+    * 
     * @return
     */
-   public ClassFileTransformer getTransformer();
+   public ClassTransformer getTransformer();
 
    /**
     * returns the name of the ClassChangeAware object
-    * provided by this integration. 
+    * provided by this integration.
     * 
     * This object is installed into the same ClassLoader
     * that the integrations classes are in
     * 
-    * Note that the ClassChangeAware object should register 
+    * Note that the ClassChangeAware object should register
     * itself with the ClassChangeNotifier
     * 
     * @return
@@ -54,7 +54,7 @@ public interface IntegrationInfo
    public byte[] loadClass(String className);
 
    /**
-    * get a list of classes that should be turned into tracked instances. 
+    * get a list of classes that should be turned into tracked instances.
     * 
     * @return
     */
