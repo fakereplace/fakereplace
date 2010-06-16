@@ -1,50 +1,76 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<parent>
-		<artifactId>fakereplace-parent</artifactId>
-		<groupId>org.fakereplace</groupId>
-		<version>0.8-SNAPSHOT</version>
-	</parent>
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.fakereplace</groupId>
-	<artifactId>fakereplace</artifactId>
-	<packaging>jar</packaging>
-	<version>0.8-SNAPSHOT</version>
-	<name>Fakereplace</name>
+  <modelVersion>4.0.0</modelVersion>
 
-	<dependencies>
-
-		<dependency>
-			<groupId>javassist</groupId>
-			<artifactId>javassist</artifactId>
-		</dependency>
-		<dependency>
-		    <groupId>com.google.collections</groupId>
-		    <artifactId>google-collections</artifactId>
-		</dependency>
-		
-		<dependency>
-			<groupId>org.testng</groupId>
-			<artifactId>testng</artifactId>
-			<version>5.11</version>
-            <classifier>jdk15</classifier>
-		</dependency>
-
-	</dependencies>
-
-
-	<scm>
-		<developerConnection>scm:svn:https://fakereplace.googlecode.com/svn/trunk/core</developerConnection>
-	</scm>
-	<build>
-		<finalName>fakereplace</finalName> 
-		<resources>
-			<resource>
-				<directory>src/main/resources</directory>
-				<filtering>true</filtering>
-			</resource>
-		</resources>
-
+  <parent>
+    <artifactId>fakereplace-parent</artifactId>
+    <groupId>org.fakereplace</groupId>
+    <version>0.8-SNAPSHOT</version>
+    <relativePath>../../pom.xml</relativePath>
+  </parent>
+  
+  <groupId>org.fakereplace</groupId>
+  <artifactId>fakereplace-weld</artifactId>
+  <name>Fakereplace Weld Integration</name>
+  <version>0.8-SNAPSHOT</version>
+  <url>http://maven.apache.org</url>
+  
+  <dependencies>
+    <dependency>
+      <groupId>org.jboss.weld</groupId>
+      <artifactId>weld-core</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>javassist</groupId>
+      <artifactId>javassist</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+    	<groupId>javax.faces</groupId>
+    	<artifactId>jsf-api</artifactId>
+    </dependency>
+    <dependency>
+    	<groupId>org.fakereplace</groupId>
+    	<artifactId>fakereplace</artifactId>
+    </dependency>
+    <dependency>
+		<groupId>org.testng</groupId>
+		<artifactId>testng</artifactId>
+		<version>5.11</version>
+        <classifier>jdk15</classifier>
+	</dependency>
+    <dependency>
+        <groupId>org.jboss.arquillian</groupId>
+        <artifactId>arquillian-testng</artifactId>
+        <scope>test</scope>
+     </dependency>
+     <dependency>
+         <groupId>org.jboss.arquillian.container</groupId>
+         <artifactId>arquillian-weld-embedded</artifactId>
+         <scope>test</scope>
+      </dependency>
+     <dependency>
+     	<groupId>org.slf4j</groupId>
+     	<artifactId>slf4j-simple</artifactId>
+     	<version>1.5.10</version>
+     	<scope>test</scope>
+     </dependency>
+	<dependency>
+		<groupId>javax.el</groupId>
+		<artifactId>el-api</artifactId>
+		<version>2.2</version>
+	</dependency>
+  </dependencies>
+  <scm>
+  	<developerConnection>scm:svn:https://fakereplace.googlecode.com/svn/trunk/integration/seam</developerConnection>
+  </scm>
+  <build>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -80,14 +106,13 @@
 		                <includes>
 		                  <include>com.google.collections:google-collections</include>
 		                  <include>javassist:javassist</include>
-		                  <include>org.fakereplace:seam-agent</include>
+		                  <include>org.fakereplace:*</include>
 		                </includes>
 		              </artifactSet>
 		            </configuration>
 		          </execution>
 		        </executions>
 		      </plugin>
-              
 			      <plugin>
 			        <groupId>org.apache.maven.plugins</groupId>
 			        <artifactId>maven-jar-plugin</artifactId>
@@ -102,7 +127,6 @@
 			          </archive>
 			        </configuration>
 			      </plugin>
-
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
@@ -126,13 +150,11 @@
 							<includes>
 								<include>**/*.java</include>
 							</includes>
-							<forkMode>once</forkMode>
 							<argLine>-javaagent:${project.build.directory}/${project.build.finalName}.jar -Dorg.fakereplace.packages=org.fakereplace.test -Dorg.fakereplace.dump=/tmp</argLine>
 						</configuration>
 					</execution>
 				</executions>
 			</plugin>
 		</plugins>
-	</build>
+ 	</build>
 </project>
-

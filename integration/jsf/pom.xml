@@ -6,6 +6,7 @@
     <artifactId>fakereplace-parent</artifactId>
     <groupId>org.fakereplace</groupId>
     <version>0.8-SNAPSHOT</version>
+    <relativePath>../../pom.xml</relativePath>
   </parent>
   
   <groupId>org.fakereplace</groupId>

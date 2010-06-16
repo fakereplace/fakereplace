@@ -13,10 +13,11 @@ import org.fakereplace.api.IntegrationInfo;
 
 /**
  * 
- * class that is responsible for loading any bundled integrations from 
+ * class that is responsible for loading any bundled integrations from
  * the fakereplace archive
  * 
- * We cannot use a normal service loader approach here, as everything can be bundled
+ * We cannot use a normal service loader approach here, as everything can be
+ * bundled
  * into a super jar. Instead we look for classes that take the form:
  * 
  * org.fakereplace.integration.$1.$1IntegrationInfo
@@ -24,7 +25,7 @@ import org.fakereplace.api.IntegrationInfo;
  * and load them
  * 
  * @author stuart
- *
+ * 
  */
 public class IntegrationLoader
 {
@@ -44,21 +45,28 @@ public class IntegrationLoader
 
             if (urlJar != null)
             {
-               JarURLConnection conn = (JarURLConnection) urlJar.openConnection();
-               JarFile file = conn.getJarFile();
-               Enumeration<JarEntry> it = file.entries();
-               while (it.hasMoreElements())
+               try
                {
-                  JarEntry entry = it.nextElement();
-                  if (entry.getName().contains(INTEGRATION_PACKAGE))
+                  JarURLConnection conn = (JarURLConnection) urlJar.openConnection();
+                  JarFile file = conn.getJarFile();
+                  Enumeration<JarEntry> it = file.entries();
+                  while (it.hasMoreElements())
                   {
-                     String end = entry.getName().substring(INTEGRATION_PACKAGE.length() + 1);
-                     if (end.length() > 0)
+                     JarEntry entry = it.nextElement();
+                     if (entry.getName().contains(INTEGRATION_PACKAGE))
                      {
-                        String subPack = end.substring(0, end.indexOf('/'));
-                        intPackages.add(subPack);
+                        String end = entry.getName().substring(INTEGRATION_PACKAGE.length() + 1);
+                        if (end.length() > 0)
+                        {
+                           String subPack = end.substring(0, end.indexOf('/'));
+                           intPackages.add(subPack);
+                        }
                      }
                   }
+               }
+               catch (Exception e)
+               {
+                  e.printStackTrace();
                }
             }
          }

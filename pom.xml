@@ -6,6 +6,7 @@
     <properties>
         <fakereplace.version>0.8-SNAPSHOT</fakereplace.version>
         <arquillian.version>1.0.0.Alpha2</arquillian.version>
+        <weld.version>1.0.1-Final</weld.version>
     </properties>
 
 
@@ -20,7 +21,8 @@
         <module>core</module>
         <module>integration/seam</module>
         <module>bundle</module>
-	<module>integration/jsf</module>
+		<module>integration/jsf</module>
+		<module>integration/weld</module>
     </modules>
 
     <dependencyManagement>
@@ -63,6 +65,12 @@
             </dependency>
             
             <dependency>
+                <groupId>org.jboss.weld</groupId>
+                <artifactId>weld-core</artifactId>
+                <version>${weld.version}</version>
+            </dependency>
+            
+            <dependency>
                 <groupId>javax.servlet</groupId>
                 <artifactId>servlet-api</artifactId>
                 <version>2.4</version>
@@ -92,6 +100,12 @@
             <dependency>
              <groupId>org.jboss.arquillian.container</groupId>
              <artifactId>arquillian-jbossas-remote-51</artifactId>
+             <version>${arquillian.version}</version>
+             <scope>test</scope>
+          </dependency>
+          <dependency>
+             <groupId>org.jboss.arquillian.container</groupId>
+             <artifactId>arquillian-weld-embedded</artifactId>
              <version>${arquillian.version}</version>
              <scope>test</scope>
           </dependency>
