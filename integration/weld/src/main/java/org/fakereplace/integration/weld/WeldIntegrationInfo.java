@@ -1,4 +1,4 @@
-package org.fakereplace.integration.seam;
+package org.fakereplace.integration.weld;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -7,7 +7,7 @@ import java.util.Set;
 import org.fakereplace.api.ClassTransformer;
 import org.fakereplace.api.IntegrationInfo;
 
-public class SeamIntegrationInfo implements IntegrationInfo
+public class WeldIntegrationInfo implements IntegrationInfo
 {
 
    public String getClassChangeAwareName()

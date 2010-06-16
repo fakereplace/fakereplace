@@ -1,4 +1,4 @@
-package org.fakereplace.integration.seam;
+package org.fakereplace.integration.weld;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
