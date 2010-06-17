@@ -17,7 +17,7 @@ import org.fakereplace.boot.Enviroment;
 import org.fakereplace.replacement.ClassRedefiner;
 
 /**
- * The agent entry point. 
+ * The agent entry point.
  * 
  * @author stuart
  * 
@@ -54,7 +54,12 @@ public class Agent
                DataInputStream ds = new DataInputStream(new ByteArrayInputStream(d.getDefinitionClassFile()));
                ClassFile file = new ClassFile(ds);
                Transformer.getManipulator().transformClass(file, d.getDefinitionClass().getClassLoader());
-               FileOutputStream s = new FileOutputStream(environment.getDumpDirectory() + '/' + d.getDefinitionClass().getName() + ".class");
+               String dumpDir = environment.getDumpDirectory();
+               if (dumpDir == null)
+               {
+                  dumpDir = "/tmp";
+               }
+               FileOutputStream s = new FileOutputStream(dumpDir + '/' + d.getDefinitionClass().getName() + ".class");
                DataOutputStream dos = new DataOutputStream(s);
                file.write(dos);
                s.write(d.getDefinitionClassFile());

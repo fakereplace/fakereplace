@@ -28,4 +28,14 @@ public class InstanceFieldTest
       assert ns.getSv().equals("aa");
    }
 
+   @Test(groups = "instancefield")
+   public void testChangingInstanceFieldType() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException
+   {
+      ClassReplacer rep = new ClassReplacer();
+      rep.queueClassForReplacement(ChangeFieldType.class, ChangeFieldType1.class);
+      rep.replaceQueuedClasses();
+      ChangeFieldType type = new ChangeFieldType();
+      assert type.getValue() == 20;
+   }
+
 }

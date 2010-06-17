@@ -3,6 +3,7 @@ package org.fakereplace;
 import java.io.IOException;
 import java.net.JarURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
@@ -47,19 +48,25 @@ public class IntegrationLoader
             {
                try
                {
-                  JarURLConnection conn = (JarURLConnection) urlJar.openConnection();
-                  JarFile file = conn.getJarFile();
-                  Enumeration<JarEntry> it = file.entries();
-                  while (it.hasMoreElements())
+                  URLConnection urlConnection = urlJar.openConnection();
+                  // in tests sometimes it can pick up integrations from the CP
+                  // rather than the jar
+                  if (urlConnection instanceof JarURLConnection)
                   {
-                     JarEntry entry = it.nextElement();
-                     if (entry.getName().contains(INTEGRATION_PACKAGE))
+                     JarURLConnection conn = (JarURLConnection) urlJar.openConnection();
+                     JarFile file = conn.getJarFile();
+                     Enumeration<JarEntry> it = file.entries();
+                     while (it.hasMoreElements())
                      {
-                        String end = entry.getName().substring(INTEGRATION_PACKAGE.length() + 1);
-                        if (end.length() > 0)
+                        JarEntry entry = it.nextElement();
+                        if (entry.getName().contains(INTEGRATION_PACKAGE))
                         {
-                           String subPack = end.substring(0, end.indexOf('/'));
-                           intPackages.add(subPack);
+                           String end = entry.getName().substring(INTEGRATION_PACKAGE.length() + 1);
+                           if (end.length() > 0)
+                           {
+                              String subPack = end.substring(0, end.indexOf('/'));
+                              intPackages.add(subPack);
+                           }
                         }
                      }
                   }
