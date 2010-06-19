@@ -322,4 +322,47 @@ public class ManipulationUtils
       m.addAttribute(myInfo);
       file.addMethod(m);
    }
+
+   public static void pushParametersIntoArray(Bytecode bc, String methodDescriptor)
+   {
+      String[] params = DescriptorUtils.descriptorStringToParameterArray(methodDescriptor);
+      // now we need an array:
+      bc.addIconst(params.length);
+      bc.addAnewarray("java.lang.Object");
+      // now we have our array sitting on top of the stack
+      // we need to stick our parameters into it. We do this is reverse
+      // as we can't pull them from the bottom of the stack
+      for (int i = params.length - 1; i >= 0; --i)
+      {
+
+         if (DescriptorUtils.isWide(params[i]))
+         {
+            // dup the array below the wide
+            bc.add(Opcode.DUP_X2);
+            // now do it again so we have two copies
+            bc.add(Opcode.DUP_X2);
+            // now pop it, the is the equivilent of a wide swap
+            bc.add(Opcode.POP);
+         }
+         else
+         {
+            // duplicate the array to place 3
+            bc.add(Opcode.DUP_X1);
+            // now swap
+            bc.add(Opcode.SWAP);
+         }
+         // now the parameter is above the array
+         // box it if nessesary
+         if (DescriptorUtils.isPrimitive(params[i]))
+         {
+            Boxing.box(bc, params[i].charAt(0));
+         }
+         // add the array index
+         bc.addIconst(i);
+         bc.add(Opcode.SWAP);
+         bc.add(Opcode.AASTORE);
+         // we still have the array on the top of the stack becuase we
+         // duplicated it earlier
+      }
+   }
 }

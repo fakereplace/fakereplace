@@ -15,9 +15,8 @@ import javassist.bytecode.Opcode;
 import org.fakereplace.boot.Constants;
 import org.fakereplace.boot.Logger;
 import org.fakereplace.manip.data.ConstructorRewriteData;
-import org.fakereplace.manip.util.Boxing;
 import org.fakereplace.manip.util.ManipulationDataStore;
-import org.fakereplace.util.DescriptorUtils;
+import org.fakereplace.manip.util.ManipulationUtils;
 
 public class ConstructorInvocationManipulator implements ClassManipulator
 {
@@ -30,7 +29,8 @@ public class ConstructorInvocationManipulator implements ClassManipulator
    }
 
    /**
-    * This class re-writes constructor access. It is more complex than other manipulators as the work can't be hidden away in a temporary class 
+    * This class re-writes constructor access. It is more complex than other
+    * manipulators as the work can't be hidden away in a temporary class
     * 
     * @param oldClass
     * @param newClass
@@ -73,7 +73,8 @@ public class ConstructorInvocationManipulator implements ClassManipulator
                      // we have found a method call
                      // now lets replace it
 
-                     // if we have not already stored a reference to the refinied constructor
+                     // if we have not already stored a reference to the
+                     // refinied constructor
                      // in the const pool
                      if (newCallLocation == null)
                      {
@@ -122,52 +123,19 @@ public class ConstructorInvocationManipulator implements ClassManipulator
                      {
                         ConstructorRewriteData data = methodCallLocations.get(val);
 
-                        // so we currently have all the arguments sitting on the stack, and we need to jigger them into
-                        // an array and then call our method. First thing to do is scribble over the existing
+                        // so we currently have all the arguments sitting on the
+                        // stack, and we need to jigger them into
+                        // an array and then call our method. First thing to do
+                        // is scribble over the existing
                         // instructions:
                         it.writeByte(CodeIterator.NOP, index);
                         it.writeByte(CodeIterator.NOP, index + 1);
                         it.writeByte(CodeIterator.NOP, index + 2);
 
                         Bytecode bc = new Bytecode(file.getConstPool());
-                        // now we need an array:
-                        bc.addIconst(data.getParameters().length);
-                        bc.addAnewarray("java.lang.Object");
-                        // now we have our array sitting on top of the stack
-                        // we need to stick our parameters into it. We do this is reverse
-                        // as we can't pull them from the bottom of the stack
-                        for (int i = data.getParameters().length - 1; i >= 0; --i)
-                        {
-
-                           if (DescriptorUtils.isWide(data.getParameters()[i]))
-                           {
-                              // dup the array below the wide
-                              bc.add(Opcode.DUP_X2);
-                              // now do it again so we have two copies
-                              bc.add(Opcode.DUP_X2);
-                              // now pop it, the is the equivilent of a wide swap
-                              bc.add(Opcode.POP);
-                           }
-                           else
-                           {
-                              // duplicate the array to place 3
-                              bc.add(Opcode.DUP_X1);
-                              // now swap
-                              bc.add(Opcode.SWAP);
-                           }
-                           // now the parameter is above the array
-                           // box it if nessesary
-                           if (DescriptorUtils.isPrimitive(data.getParameters()[i]))
-                           {
-                              Boxing.box(bc, data.getParameters()[i].charAt(0));
-                           }
-                           // add the array index
-                           bc.addIconst(i);
-                           bc.add(Opcode.SWAP);
-                           bc.add(Opcode.AASTORE);
-                           // we still have the array on the top of the stack becuase we duplicated it earlier
-                        }
-                        // so now our stack looks like unconstructed instance : array
+                        ManipulationUtils.pushParametersIntoArray(bc, data.getMethodDesc());
+                        // so now our stack looks like unconstructed instance :
+                        // array
                         // we need unconstructed instance : int : array : null
                         bc.addIconst(data.getMethodNo());
                         bc.add(Opcode.SWAP);

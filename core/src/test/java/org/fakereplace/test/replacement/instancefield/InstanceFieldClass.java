@@ -4,7 +4,7 @@ public class InstanceFieldClass
 {
 
    int afield;
-   private int bfield;
+   int bfield;
 
    @SomeAnnotation
    int cfield;

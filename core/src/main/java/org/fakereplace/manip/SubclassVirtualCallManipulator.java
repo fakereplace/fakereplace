@@ -68,14 +68,16 @@ public class SubclassVirtualCallManipulator implements ClassManipulator
                   run.add(Opcode.ILOAD_0);
                   run.addLdc(method.getName());
                   run.addLdc(method.getDescriptor());
-                  run.addInvokevirtual("org.fakereplace.runtime.VirtualDelegator", "run", "(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;");
+                  ManipulationUtils.pushParametersIntoArray(run, method.getDescriptor());
+                  run.addInvokevirtual("org.fakereplace.runtime.VirtualDelegator", "run", "(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;");
                   ManipulationUtils.MethodReturnRewriter.addReturnProxyMethod(method.getDescriptor(), run);
 
                   Bytecode cd = new Bytecode(file.getConstPool());
                   cd.add(Opcode.ILOAD_0);
+                  run.addLdc(file.getName());
                   cd.addLdc(method.getName());
                   cd.addLdc(method.getDescriptor());
-                  cd.addInvokevirtual("org.fakereplace.runtime.VirtualDelegator", "contains", "(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;)Z");
+                  cd.addInvokevirtual("org.fakereplace.runtime.VirtualDelegator", "contains", "(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z");
                   cd.add(Opcode.ICONST_0);
                   cd.add(Opcode.IF_ACMPNE); // if contains is true
                   ManipulationUtils.add16bit(cd, run.getSize() + 3);
