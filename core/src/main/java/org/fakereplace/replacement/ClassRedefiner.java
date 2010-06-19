@@ -24,6 +24,7 @@ public class ClassRedefiner
    static public ClassDefinition[] rewriteLoadedClasses(ClassDefinition... classDefinitions)
    {
       Set<ClassDefinition> defs = new HashSet<ClassDefinition>();
+      Set<Class<?>> changedClasses = new HashSet<Class<?>>();
       Set<Class<?>> classesToReload = new HashSet<Class<?>>();
       for (int i = 0; i < classDefinitions.length; ++i)
       {
@@ -34,7 +35,7 @@ public class ClassRedefiner
             modifyReloadedClass(file, d.getDefinitionClass().getClassLoader(), d.getDefinitionClass(), classesToReload);
             ByteArrayOutputStream bs = new ByteArrayOutputStream();
             file.write(new DataOutputStream(bs));
-
+            changedClasses.add(d.getDefinitionClass());
             ClassDefinition n = new ClassDefinition(d.getDefinitionClass(), bs.toByteArray());
             defs.add(n);
          }
@@ -45,6 +46,11 @@ public class ClassRedefiner
       }
       for (Class<?> c : classesToReload)
       {
+         // if it is already being reloaded
+         if (changedClasses.contains(c))
+         {
+            continue;
+         }
          try
          {
             // TODO: do this properly, test if they are availible on load and if

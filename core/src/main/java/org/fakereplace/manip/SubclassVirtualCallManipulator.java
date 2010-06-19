@@ -13,6 +13,7 @@ import org.fakereplace.manip.data.SubclassVirtualCallData;
 import org.fakereplace.manip.util.ManipulationDataStore;
 import org.fakereplace.manip.util.ManipulationUtils;
 import org.fakereplace.runtime.VirtualDelegator;
+import org.fakereplace.util.DescriptorUtils;
 
 /**
  * this manipulator adds code that looks like:
@@ -40,6 +41,7 @@ public class SubclassVirtualCallManipulator implements ClassManipulator
    public void addClassData(String className, ClassLoader classLoader, String methodName, String methodDesc)
    {
       data.add(className, new SubclassVirtualCallData(classLoader, className, methodName, methodDesc));
+      VirtualDelegator.add(classLoader, className, methodName, methodDesc);
    }
 
    public void clearRewrites(String className, ClassLoader classLoader)
@@ -66,42 +68,67 @@ public class SubclassVirtualCallManipulator implements ClassManipulator
                   // we have the method
                   // lets append our code to the top
                   // first create the stuff inside the coditionals
+
                   Bytecode run = new Bytecode(file.getConstPool());
-                  run.add(Opcode.ILOAD_0);
+                  run.add(Opcode.ALOAD_0);
                   run.addLdc(method.getName());
                   run.addLdc(method.getDescriptor());
+                  String[] params = DescriptorUtils.descriptorStringToParameterArray(method.getDescriptor());
+                  for (int i = 0; i < params.length; ++i)
+                  {
+                     if (params[i].length() > 1)
+                     {
+                        run.addAload(i + 1);
+                     }
+                     else if (params[i].equals("I") || params[i].equals("Z") || params[i].equals("S") || params[i].equals("B"))
+                     {
+                        run.addIload(i + 1);
+                     }
+                     else if (params[i].equals("F"))
+                     {
+                        run.addFload(i + 1);
+                     }
+                     else if (params[i].equals("J"))
+                     {
+                        run.addLload(i + 1);
+                     }
+                     else if (params[i].equals("D"))
+                     {
+                        run.addDload(i + 1);
+                     }
+                  }
                   ManipulationUtils.pushParametersIntoArray(run, method.getDescriptor());
-                  run.addInvokevirtual("org.fakereplace.runtime.VirtualDelegator", "run", "(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;");
+                  run.addInvokestatic("org.fakereplace.runtime.VirtualDelegator", "run", "(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;");
                   ManipulationUtils.MethodReturnRewriter.addReturnProxyMethod(method.getDescriptor(), run);
 
                   Bytecode cd = new Bytecode(file.getConstPool());
-                  cd.add(Opcode.ILOAD_0);
-                  run.addLdc(file.getName());
+                  cd.add(Opcode.ALOAD_0);
+                  cd.addLdc(file.getName());
                   cd.addLdc(method.getName());
                   cd.addLdc(method.getDescriptor());
-                  cd.addInvokevirtual("org.fakereplace.runtime.VirtualDelegator", "contains", "(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z");
-                  cd.add(Opcode.ICONST_0);
-                  cd.add(Opcode.IF_ACMPNE); // if contains is true
+                  cd.addInvokestatic("org.fakereplace.runtime.VirtualDelegator", "contains", "(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z");
+                  cd.add(Opcode.IFEQ); // if contains is true
                   ManipulationUtils.add16bit(cd, run.getSize() + 3);
 
                   Bytecode b = new Bytecode(file.getConstPool());
                   // this.getClass()
-                  b.add(Opcode.ILOAD_0);
+                  b.add(Opcode.ALOAD_0);
                   b.addInvokevirtual("java.lang.Object", "getClass", "()Ljava/lang/Class;");
                   b.addInvokevirtual("java.lang.Class", "getName", "()Ljava/lang/String;");
                   // now we have the class name on the stack
                   // push the class being manipulateds name onto the stack
                   b.addLdc(file.getName());
-                  b.addInvokevirtual("java.lang.Object", "equals", "(Ljava/lang/Object;)Z;");
+                  b.addInvokevirtual("java.lang.Object", "equals", "(Ljava/lang/Object;)Z");
                   // now we have a boolean on top of the stack
-                  cd.add(Opcode.ICONST_0);
-                  cd.add(Opcode.IF_ACMPNE); // if true
-                  ManipulationUtils.add16bit(cd, run.getSize() + cd.getSize() + 3);
+                  b.add(Opcode.IFNE); // if true jump
+                  ManipulationUtils.add16bit(b, run.getSize() + cd.getSize() + 3);
+
                   try
                   {
-                     method.getCodeAttribute().iterator().insertEx(run.get());
-                     method.getCodeAttribute().iterator().insertEx(cd.get());
-                     method.getCodeAttribute().iterator().insertEx(b.get());
+                     method.getCodeAttribute().iterator().insert(run.get());
+                     method.getCodeAttribute().iterator().insert(cd.get());
+                     method.getCodeAttribute().iterator().insert(b.get());
+                     method.getCodeAttribute().computeMaxStack();
                   }
                   catch (BadBytecode e)
                   {

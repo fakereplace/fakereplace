@@ -40,12 +40,18 @@ public class VirtualDelegator
    public static boolean contains(Object val, String callingClassName, String methodName, String methodDesc)
    {
       Class<?> c = val.getClass();
-      while (!c.getName().equals(callingClassName))
+      boolean breakNext = false;
+      while (!breakNext)
       {
          VirtualDelegatorData i = new VirtualDelegatorData(c.getClassLoader(), c.getName(), methodName, methodDesc);
          if (delegatingMethods.contains(i))
          {
             return true;
+         }
+
+         if (c.getName().equals(callingClassName))
+         {
+            breakNext = true;
          }
          c = c.getSuperclass();
       }
