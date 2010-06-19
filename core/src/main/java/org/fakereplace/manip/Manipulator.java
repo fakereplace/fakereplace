@@ -20,6 +20,7 @@ public class Manipulator
    final private StaticFieldManipulator staticFieldManipulator = new StaticFieldManipulator();
    final private InstanceFieldManipulator instanceFieldManapulator = new InstanceFieldManipulator();
    final private ConstructorInvocationManipulator constructorInvocationManipulator = new ConstructorInvocationManipulator();
+   final private SubclassVirtualCallManipulator subclassVirtualCallManilulator = new SubclassVirtualCallManipulator();
 
    final private Set<ClassManipulator> manipulators = new CopyOnWriteArraySet<ClassManipulator>();
 
@@ -29,6 +30,7 @@ public class Manipulator
       manipulators.add(staticFieldManipulator);
       manipulators.add(instanceFieldManapulator);
       manipulators.add(constructorInvocationManipulator);
+      manipulators.add(subclassVirtualCallManilulator);
    }
 
    public void removeRewrites(String className, ClassLoader classLoader)
@@ -59,6 +61,11 @@ public class Manipulator
    public void rewriteInstanceFieldAccess(AddedFieldData data)
    {
       instanceFieldManapulator.addField(data);
+   }
+
+   public void rewriteSubclassCalls(String className, ClassLoader classLoader, String methodName, String methodDesc)
+   {
+      subclassVirtualCallManilulator.addClassData(className, classLoader, methodName, methodDesc);
    }
 
    /**

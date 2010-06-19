@@ -12,6 +12,7 @@ import javassist.bytecode.Opcode;
 import org.fakereplace.manip.data.SubclassVirtualCallData;
 import org.fakereplace.manip.util.ManipulationDataStore;
 import org.fakereplace.manip.util.ManipulationUtils;
+import org.fakereplace.runtime.VirtualDelegator;
 
 /**
  * this manipulator adds code that looks like:
@@ -45,6 +46,7 @@ public class SubclassVirtualCallManipulator implements ClassManipulator
    {
       // we don't need to clear them. This is handled by clearing the data in
       // VirtualDelegator
+      VirtualDelegator.clear(classLoader, className);
    }
 
    public void transformClass(ClassFile file, ClassLoader loader)

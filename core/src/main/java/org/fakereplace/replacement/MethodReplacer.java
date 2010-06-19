@@ -47,10 +47,9 @@ import org.fakereplace.util.DescriptorUtils;
 
 public class MethodReplacer
 {
-   public static void handleMethodReplacement(ClassFile file, ClassLoader loader, Class<?> oldClass, ClassDataBuilder builder)
+   public static void handleMethodReplacement(ClassFile file, ClassLoader loader, Class<?> oldClass, ClassDataBuilder builder, Set<Class<?>> superclassesToHotswap)
    {
       // state for added static methods
-
       CodeAttribute staticCodeAttribute = null, virtualCodeAttribute = null, constructorCodeAttribute = null;
       try
       {
@@ -182,7 +181,11 @@ public class MethodReplacer
          {
             if ((m.getAccessFlags() & AccessFlag.STATIC) != 0)
             {
-               addMethod(file, loader, m, builder, staticCodeAttribute, true, oldClass);
+               Class<?> c = addMethod(file, loader, m, builder, staticCodeAttribute, true, oldClass);
+               if (c != null)
+               {
+                  superclassesToHotswap.add(c);
+               }
             }
             else if ((m.getName().equals("<init>")))
             {
@@ -194,7 +197,11 @@ public class MethodReplacer
             }
             else
             {
-               addMethod(file, loader, m, builder, virtualCodeAttribute, false, oldClass);
+               Class<?> c = addMethod(file, loader, m, builder, virtualCodeAttribute, false, oldClass);
+               if (c != null)
+               {
+                  superclassesToHotswap.add(c);
+               }
             }
 
             // TODO deal with constructors and virtual methods
@@ -361,7 +368,8 @@ public class MethodReplacer
       nInfo.setCodeAttribute(ca);
 
       // now we have the static method that actually does the we-writes.
-      // if this is a virtual method then we need to add another virtual method with the exact signature of the existing
+      // if this is a virtual method then we need to add another virtual method
+      // with the exact signature of the existing
       // method.
       // this is so that we do not need to instrument the reflection API to much
       if (!staticMethod)
@@ -450,7 +458,7 @@ public class MethodReplacer
     * Adds a method to a class
     * 
     */
-   private static void addMethod(ClassFile file, ClassLoader loader, MethodInfo mInfo, ClassDataBuilder builder, CodeAttribute bytecode, boolean staticMethod, Class oldClass)
+   private static Class addMethod(ClassFile file, ClassLoader loader, MethodInfo mInfo, ClassDataBuilder builder, CodeAttribute bytecode, boolean staticMethod, Class oldClass)
    {
 
       int methodCount = MethodIdentifierStore.getMethodNumber(mInfo.getName(), mInfo.getDescriptor());
@@ -473,12 +481,31 @@ public class MethodReplacer
 
          MethodData md = builder.addFakeMethod(mInfo.getName(), mInfo.getDescriptor(), proxyName, mInfo.getAccessFlags());
          ClassDataStore.registerReplacedMethod(proxyName, md);
-
+         if (!staticMethod)
+         {
+            Class<?> sup = oldClass.getSuperclass();
+            while (sup != null)
+            {
+               for (Method m : sup.getDeclaredMethods())
+               {
+                  if (m.getName().equals(mInfo.getName()))
+                  {
+                     if (DescriptorUtils.getDescriptor(m).equals(mInfo.getDescriptor()))
+                     {
+                        Transformer.getManipulator().rewriteSubclassCalls(sup.getName(), sup.getClassLoader(), mInfo.getName(), mInfo.getDescriptor());
+                        return sup;
+                     }
+                  }
+               }
+               sup = sup.getSuperclass();
+            }
+         }
       }
       catch (Exception e)
       {
          e.printStackTrace();
       }
+      return null;
    }
 
    /**
@@ -621,10 +648,13 @@ public class MethodReplacer
    }
 
    /**
-    * creates a class with a fake constructor that can be used by the reflection api
+    * creates a class with a fake constructor that can be used by the reflection
+    * api
     * 
-    * Constructors are not invoked through the proxy class, instead we have to do a lot more 
+    * Constructors are not invoked through the proxy class, instead we have to
+    * do a lot more
     * bytecode re-writing at the actual invocation sites
+    * 
     * @param mInfo
     * @param constPool
     * @param methodNumber

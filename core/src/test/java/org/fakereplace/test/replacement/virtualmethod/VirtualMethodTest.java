@@ -210,7 +210,7 @@ public class VirtualMethodTest
       assert c.toString().contains("VirtualCaller") : c.toString();
    }
 
-   @Test(groups = "virtualmethod", enabled = false)
+   @Test(groups = "virtualmethod", enabled = true)
    public void testOverrideWithSuperclassNotLoaded() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException
    {
       NoSupClass c = new NoSupChild();
