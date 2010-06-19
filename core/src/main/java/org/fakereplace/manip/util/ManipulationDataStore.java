@@ -11,9 +11,11 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import com.google.common.collect.MapMaker;
 
 /**
- * class that figures out which maniluation should be applied based on the classloader of the relative classes.
+ * class that figures out which maniluation should be applied based on the
+ * classloader of the relative classes.
+ * 
  * @author stuart
- *
+ * 
  * @param <T>
  */
 public class ManipulationDataStore<T extends ClassloaderFiltered<T>>
@@ -66,11 +68,14 @@ public class ManipulationDataStore<T extends ClassloaderFiltered<T>>
    }
 
    /**
-    * even though it is tempting to just try loaderOfClassBeingManipulated.loadClass(manipClassName) if this class
-    * has not been loaded yet then this will cause problems, as this class will not go through the agent. Instead we have 
-    * to try searching through the parent classloaders, which will not always work.
+    * even though it is tempting to just try
+    * loaderOfClassBeingManipulated.loadClass(manipClassName) if this class
+    * has not been loaded yet then this will cause problems, as this class will
+    * not go through the agent. Instead we have
+    * to try searching through the parent classloaders, which will not always
+    * work.
     * 
-    *  
+    * 
     * @param loaderOfClassBeingManipulated
     * @param loaderOfManipulatedClass
     * @return
@@ -113,5 +118,10 @@ public class ManipulationDataStore<T extends ClassloaderFiltered<T>>
             }
          }
       }
+   }
+
+   public Map<ClassLoader, Map<String, Set<T>>> getRawData()
+   {
+      return cldata;
    }
 }

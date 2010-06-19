@@ -4,10 +4,12 @@ public class InstanceFieldClass
 {
 
    int afield;
-   int bfield;
-   
+   private int bfield;
+
    @SomeAnnotation
    int cfield;
+
+   Object otherField;
 
    public void inc()
    {

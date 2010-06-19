@@ -9,6 +9,11 @@ public class InstanceFieldClass1
    int afield;
    int bfield;
 
+   long otherField;
+
+   private int yaf;
+   Object fa2;
+
    public InstanceFieldClass1()
    {
       sv = "aa";
