@@ -58,22 +58,34 @@ public class ClassRedefinitionPlugin implements ClassChangeAware
    {
       try
       {
-         Field cacheField = getField(r.getClass(), "cache");
-         cacheField.setAccessible(true);
-         Object cache = cacheField.get(r);
          try
          {
+            Field cacheField = getField(r.getClass(), "cache");
+            cacheField.setAccessible(true);
+            Object cache = cacheField.get(r);
+            try
+            {
+               Method m = cache.getClass().getMethod("clear");
+               m.invoke(cache);
+            }
+            catch (NoSuchMethodException e)
+            {
+               // different version of jboss el
+               Class<?> cacheClass = getClass().getClassLoader().loadClass("javax.el.BeanELResolver$ConcurrentCache");
+               Constructor<?> con = cacheClass.getConstructor(int.class);
+               con.setAccessible(true);
+               Object cacheInstance = con.newInstance(100);
+               cacheField.set(r, cacheInstance);
+            }
+
+         }
+         catch (NoSuchFieldException ee)
+         {
+            Field props = getField(r.getClass(), "properties");
+            props.setAccessible(true);
+            Object cache = props.get(r);
             Method m = cache.getClass().getMethod("clear");
             m.invoke(cache);
-         }
-         catch (NoSuchMethodException e)
-         {
-            // different version of jboss el
-            Class<?> cacheClass = getClass().getClassLoader().loadClass("javax.el.BeanELResolver$ConcurrentCache");
-            Constructor<?> con = cacheClass.getConstructor(int.class);
-            con.setAccessible(true);
-            Object cacheInstance = con.newInstance(100);
-            cacheField.set(r, cacheInstance);
          }
       }
       catch (Exception e)
