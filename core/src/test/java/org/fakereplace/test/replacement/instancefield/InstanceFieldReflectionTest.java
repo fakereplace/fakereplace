@@ -35,4 +35,64 @@ public class InstanceFieldReflectionTest
       assert r.getValue().equals("hi");
    }
 
+   @Test(groups = "instanceFieldByReflection")
+   public void testPublicAddedFieldsAccessible() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException
+   {
+      InstanceFieldReflection r = new InstanceFieldReflection();
+      Field field = InstanceFieldReflection.class.getField("vis");
+   }
+
+   @Test(groups = "instanceFieldByReflection", expectedExceptions = NoSuchFieldException.class)
+   public void testPrivateAddedFieldsNotAccessibleThroughGetField() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException
+   {
+      InstanceFieldReflection r = new InstanceFieldReflection();
+      Field field = InstanceFieldReflection.class.getField("hid");
+   }
+
+   @Test(groups = "instanceFieldByReflection")
+   public void testPrivateAddedFieldsAccessibleThroughGetDeclaredField() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException
+   {
+      InstanceFieldReflection r = new InstanceFieldReflection();
+      Field field = InstanceFieldReflection.class.getDeclaredField("hid");
+   }
+
+   public void testPublicAddedFieldAccessibleThroughGetFields()
+   {
+      boolean found = false;
+      for (Field f : InstanceFieldReflection.class.getFields())
+      {
+         if (f.getName().equals("vis"))
+         {
+            found = true;
+         }
+      }
+      assert found;
+   }
+
+   public void testPrivateAddedFieldNotAccessibleThroughGetFields()
+   {
+      boolean found = false;
+      for (Field f : InstanceFieldReflection.class.getFields())
+      {
+         if (f.getName().equals("hid"))
+         {
+            found = true;
+         }
+      }
+      assert !found;
+   }
+
+   public void testPrivateAddedFieldAccessibleThroughGetDeclaredFields()
+   {
+      boolean found = false;
+      for (Field f : InstanceFieldReflection.class.getDeclaredFields())
+      {
+         if (f.getName().equals("hid"))
+         {
+            found = true;
+         }
+      }
+      assert found;
+   }
+
 }
