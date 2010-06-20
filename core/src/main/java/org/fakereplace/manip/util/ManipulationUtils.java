@@ -261,12 +261,14 @@ public class ManipulationUtils
          {
             code.addLload(count);
             maxLocals += 2;
+            count++;
          }
          // double
          else if (p.equals("D"))
          {
             code.addDload(count);
             maxLocals += 2;
+            count++;
          }
          // float
          else if (p.equals("F"))

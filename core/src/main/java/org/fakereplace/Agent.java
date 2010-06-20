@@ -59,7 +59,7 @@ public class Agent
                {
                   dumpDir = "/tmp";
                }
-               FileOutputStream s = new FileOutputStream(dumpDir + '/' + d.getDefinitionClass().getName() + ".class");
+               FileOutputStream s = new FileOutputStream(dumpDir + '/' + d.getDefinitionClass().getName() + "1.class");
                DataOutputStream dos = new DataOutputStream(s);
                file.write(dos);
                s.write(d.getDefinitionClassFile());
