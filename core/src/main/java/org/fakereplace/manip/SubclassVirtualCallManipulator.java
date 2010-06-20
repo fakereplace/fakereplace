@@ -74,28 +74,32 @@ public class SubclassVirtualCallManipulator implements ClassManipulator
                   run.addLdc(method.getName());
                   run.addLdc(method.getDescriptor());
                   String[] params = DescriptorUtils.descriptorStringToParameterArray(method.getDescriptor());
+                  int count = 1;
                   for (int i = 0; i < params.length; ++i)
                   {
                      if (params[i].length() > 1)
                      {
-                        run.addAload(i + 1);
+                        run.addAload(count);
                      }
                      else if (params[i].equals("I") || params[i].equals("Z") || params[i].equals("S") || params[i].equals("B"))
                      {
-                        run.addIload(i + 1);
+                        run.addIload(count);
                      }
                      else if (params[i].equals("F"))
                      {
-                        run.addFload(i + 1);
+                        run.addFload(count);
                      }
                      else if (params[i].equals("J"))
                      {
-                        run.addLload(i + 1);
+                        run.addLload(count);
+                        count++;
                      }
                      else if (params[i].equals("D"))
                      {
-                        run.addDload(i + 1);
+                        run.addDload(count);
+                        count++;
                      }
+                     count++;
                   }
                   ManipulationUtils.pushParametersIntoArray(run, method.getDescriptor());
                   run.addInvokestatic("org.fakereplace.runtime.VirtualDelegator", "run", "(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;");

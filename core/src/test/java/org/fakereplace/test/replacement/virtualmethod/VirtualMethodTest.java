@@ -214,7 +214,7 @@ public class VirtualMethodTest
    public void testOverrideWithSuperclassNotLoaded() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException
    {
       NoSupClass c = new NoSupChild();
-      assert c.getStuff().equals("NoSupChild") : "Expected NoSupChild got:" + c.getStuff();
+      assert c.getStuff(0, 0, "", 0, 0).equals("NoSupChild") : "Expected NoSupChild got:" + c.getStuff(0, 0, "", 0, 0);
    }
 
    public String getString(Object o)
