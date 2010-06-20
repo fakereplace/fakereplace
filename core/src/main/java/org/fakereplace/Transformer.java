@@ -28,6 +28,7 @@ import javassist.bytecode.CodeIterator;
 import javassist.bytecode.DuplicateMemberException;
 import javassist.bytecode.FieldInfo;
 import javassist.bytecode.MethodInfo;
+import javassist.bytecode.Opcode;
 
 import org.fakereplace.api.ClassTransformer;
 import org.fakereplace.api.IntegrationInfo;
@@ -192,6 +193,7 @@ public class Transformer implements ClassFileTransformer
                addMethodForInstrumentation(file);
                addFieldForInstrumentation(file);
                addConstructorForInstrumentation(file);
+               addStaticConstructorForInstrumentation(file);
                if (classBeingRedefined == null)
                {
                   if (addSuperDelegatingMethods)
@@ -241,7 +243,7 @@ public class Transformer implements ClassFileTransformer
     * @param file
     * @throws DuplicateMemberException
     */
-   public void addMethodForInstrumentation(ClassFile file) throws DuplicateMemberException
+   public void addMethodForInstrumentation(ClassFile file)
    {
       try
       {
@@ -290,13 +292,30 @@ public class Transformer implements ClassFileTransformer
       }
    }
 
+   public static void addStaticConstructorForInstrumentation(ClassFile file)
+   {
+      try
+      {
+         MethodInfo m = new MethodInfo(file.getConstPool(), "<clinit>", "()V");
+         m.setAccessFlags(AccessFlag.PUBLIC | AccessFlag.STATIC);
+         Bytecode b = new Bytecode(file.getConstPool());
+         b.add(Opcode.RETURN);
+         m.setCodeAttribute(b.toCodeAttribute());
+         file.addMethod(m);
+      }
+      catch (DuplicateMemberException e)
+      {
+         // e.printStackTrace();
+      }
+   }
+
    /**
     * Adds a method to a class that re can redefine when the class is reloaded
     * 
     * @param file
     * @throws DuplicateMemberException
     */
-   public void addAbstractMethodForInstrumentation(ClassFile file) throws DuplicateMemberException
+   public void addAbstractMethodForInstrumentation(ClassFile file)
    {
       try
       {

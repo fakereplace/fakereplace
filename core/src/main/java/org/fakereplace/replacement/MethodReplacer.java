@@ -572,6 +572,12 @@ public class MethodReplacer
 
    private static void createRemovedMethod(ClassFile file, MethodData md, Class<?> oldClass, ClassDataBuilder builder)
    {
+      if (md.getMethodName().equals("<clinit>"))
+      {
+         return; // if the static constructor is removed it gets added later on
+                 // in the process
+      }
+
       // load up the existing method object
 
       MethodInfo m = new MethodInfo(file.getConstPool(), md.getMethodName(), md.getDescriptor());

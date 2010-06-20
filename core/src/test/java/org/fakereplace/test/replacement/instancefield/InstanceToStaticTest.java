@@ -37,7 +37,7 @@ public class InstanceToStaticTest
    {
       InstanceToStatic f1 = new InstanceToStatic();
 
-      Field f = f1.getClass().getField("field");
+      Field f = f1.getClass().getDeclaredField("field");
       f.setAccessible(true);
       f.setInt(null, 200);
       assert f.getInt(null) == 200;

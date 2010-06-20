@@ -81,6 +81,14 @@ public class FieldReplacer
                md = i;
                break;
             }
+            else if (i.getName().equals(m.getName()) && i.getType().equals(m.getDescriptor()))
+            {
+               // we have a field whoes access modifiers have changed.
+               if ((i.getAccessFlags() | AccessFlag.STATIC) == (m.getAccessFlags() | AccessFlag.STATIC))
+               {
+                  // change from / to static can be handled fine
+               }
+            }
          }
          // we do not need to deal with these
          if (m.getName().equals(Constants.ADDED_FIELD_NAME))
@@ -200,7 +208,8 @@ public class FieldReplacer
                // push the index
                cond.addIconst(i);
                // now push the value
-               // TODO: we probably want to skip all this in the object case as it is already null
+               // TODO: we probably want to skip all this in the object case as
+               // it is already null
                if (d.getDescriptor().length() > 1)
                {
                   cond.add(Opcode.ACONST_NULL);
@@ -302,8 +311,10 @@ public class FieldReplacer
    }
 
    /**
-    * This will create a proxy with a non static field. This field does not store anything, it
-    * merely provides a Field object for reflection. Attempts to change and read it's value are 
+    * This will create a proxy with a non static field. This field does not
+    * store anything, it
+    * merely provides a Field object for reflection. Attempts to change and read
+    * it's value are
     * redirected to the actual array based store
     * 
     * @param file
