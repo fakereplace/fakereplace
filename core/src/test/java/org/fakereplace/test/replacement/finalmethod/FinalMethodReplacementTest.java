@@ -19,7 +19,7 @@ public class FinalMethodReplacementTest
       cr.replaceQueuedClasses();
    }
 
-   @Test
+   @Test(enabled = false)
    public void testNonFinalMethodIsNonFinal() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException
    {
       FinalMethodClass cl = new FinalMethodClass();
@@ -28,7 +28,7 @@ public class FinalMethodReplacementTest
       assert method.invoke(cl).equals("finalMethod-replaced");
    }
 
-   @Test
+   @Test(enabled = false)
    public void testFinalMethodIsFinal() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException
    {
       FinalMethodClass cl = new FinalMethodClass();
