@@ -46,7 +46,7 @@ public class ClassDataBuilder
 
    public MethodData addFakeMethod(String name, String descriptor, String proxyName, int accessFlags)
    {
-      MethodData data = new MethodData(name, descriptor, proxyName, MemberType.FAKE, accessFlags);
+      MethodData data = new MethodData(name, descriptor, proxyName, MemberType.FAKE, accessFlags, false);
       fakeMethods.add(data);
       return data;
    }
@@ -60,7 +60,7 @@ public class ClassDataBuilder
 
    public void removeRethod(MethodData md)
    {
-      MethodData nmd = new MethodData(md.getMethodName(), md.getDescriptor(), md.getClassName(), MemberType.REMOVED_METHOD, md.getAccessFlags());
+      MethodData nmd = new MethodData(md.getMethodName(), md.getDescriptor(), md.getClassName(), MemberType.REMOVED_METHOD, md.getAccessFlags(), false);
       removedMethods.add(nmd);
    }
 

@@ -421,8 +421,9 @@ public class Transformer implements ClassFileTransformer
    }
 
    /**
-    * adds methods that call super.same_method() this is so that if the user
-    * decides to add this method
+    * adds methods that call super.same_method()
+    * this is so that if the user decides to add this method the virtual
+    * call will work
     * 
     * @param file
     */

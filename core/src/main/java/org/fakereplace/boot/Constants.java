@@ -24,4 +24,6 @@ public class Constants
 
    public static final String ADDED_SUPERCLASS_DELEGATING_METHOD_ATTRIBUTE = "org.fakereplace.superclassDelegatingMethod";
 
+   public static final String FINAL_METHOD_ATTRIBUTE = "org.fakereplace.final";
+
 }

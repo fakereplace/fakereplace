@@ -40,6 +40,7 @@ public class BaseClassData
       internalName = Descriptor.toJvmName(file.getName());
       this.loader = loader;
       superClassName = Descriptor.toJvmName(file.getSuperclass());
+      boolean finalMethod = false;
       Set<MethodData> meths = new HashSet<MethodData>();
       for (Object o : file.getMethods())
       {
@@ -57,8 +58,19 @@ public class BaseClassData
             // we want the class name to be the class that is being delegated to
             methodClassName = new String(at.get());
          }
+         else if (m.getAttribute(Constants.ADDED_SUPERCLASS_DELEGATING_METHOD_ATTRIBUTE) != null)
+         {
+            AttributeInfo at = m.getAttribute(Constants.ADDED_SUPERCLASS_DELEGATING_METHOD_ATTRIBUTE);
+            type = MemberType.ADDED_DELEGATE;
+            // we want the class name to be the class that is being delegated to
+            methodClassName = new String(at.get());
+         }
+         else if (m.getAttribute(Constants.FINAL_METHOD_ATTRIBUTE) != null)
+         {
+            finalMethod = true;
+         }
 
-         MethodData md = new MethodData(m.getName(), m.getDescriptor(), methodClassName, type, m.getAccessFlags());
+         MethodData md = new MethodData(m.getName(), m.getDescriptor(), methodClassName, type, m.getAccessFlags(), finalMethod);
          meths.add(md);
       }
       this.methods = Collections.unmodifiableSet(meths);
@@ -93,7 +105,7 @@ public class BaseClassData
       for (Method m : cls.getMethods())
       {
          MemberType type = MemberType.NORMAL;
-         MethodData md = new MethodData(m.getName(), DescriptorUtils.getDescriptor(m), cls.getName(), type, m.getModifiers());
+         MethodData md = new MethodData(m.getName(), DescriptorUtils.getDescriptor(m), cls.getName(), type, m.getModifiers(), false);
          meths.add(md);
       }
       this.methods = Collections.unmodifiableSet(meths);

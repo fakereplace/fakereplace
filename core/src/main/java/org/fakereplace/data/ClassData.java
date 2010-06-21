@@ -33,7 +33,7 @@ public class ClassData
    private final String superClassName;
    private final boolean signitureModified;
 
-   private final static MethodData NULL_METHOD_DATA = new MethodData("", "", "", null, 0);
+   private final static MethodData NULL_METHOD_DATA = new MethodData("", "", "", null, 0, false);
 
    ClassData(BaseClassData data, Set<MethodData> addMethods, Set<MethodData> removedMethods, Set<FieldData> addedFields, Set<FieldData> removedFields)
    {

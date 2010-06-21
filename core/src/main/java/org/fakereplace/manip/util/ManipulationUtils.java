@@ -284,7 +284,7 @@ public class ManipulationUtils
          }
          count++;
       }
-      code.addInvokespecial(mData.getClassName(), mData.getMethodName(), mData.getDescriptor());
+      code.addInvokespecial(file.getSuperclass(), mData.getMethodName(), mData.getDescriptor());
       String p = DescriptorUtils.getReturnTypeInJvmFormat(mData.getDescriptor());
       // int char short boolean byte
       if (p.equals("I") || p.equals("C") || p.equals("S") || p.equals("Z") || p.equals("B"))

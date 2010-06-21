@@ -22,7 +22,7 @@
         <module>integration/seam</module>
         <module>bundle</module>
 		<module>integration/jsf</module>
-		<module>integration/weld</module>
+
     </modules>
 
     <dependencyManagement>

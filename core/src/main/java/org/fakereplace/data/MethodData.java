@@ -24,7 +24,8 @@ public class MethodData
    final private String argumentDescriptor;
    /**
     * the return type of the method
-   final  */
+    * final
+    */
    final private String returnTypeDescriptor;
 
    final private MemberType type;
@@ -39,7 +40,9 @@ public class MethodData
     */
    final private String className;
 
-   public MethodData(String name, String descriptor, String className, MemberType type, int accessFlags)
+   final private boolean finalMethod;
+
+   public MethodData(String name, String descriptor, String className, MemberType type, int accessFlags, boolean finalMethod)
    {
       this.methodName = name;
       this.descriptor = descriptor;
@@ -49,6 +52,7 @@ public class MethodData
       this.type = type;
       this.accessFlags = accessFlags;
       this.methodNo = 0;
+      this.finalMethod = finalMethod;
    }
 
    public MethodData(String name, String descriptor, String className, MemberType type, int accessFlags, int methodNo)
@@ -61,6 +65,7 @@ public class MethodData
       this.type = type;
       this.accessFlags = accessFlags;
       this.methodNo = methodNo;
+      this.finalMethod = false;
    }
 
    /**
@@ -180,6 +185,11 @@ public class MethodData
    public String getReturnTypeDescriptor()
    {
       return returnTypeDescriptor;
+   }
+
+   public boolean isFinalMethod()
+   {
+      return finalMethod;
    }
 
 }

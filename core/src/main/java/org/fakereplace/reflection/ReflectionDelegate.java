@@ -3,6 +3,7 @@ package org.fakereplace.reflection;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +16,7 @@ import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.data.FieldData;
 import org.fakereplace.data.MemberType;
 import org.fakereplace.data.MethodData;
+import org.fakereplace.data.ModifiedMethod;
 import org.fakereplace.util.DescriptorUtils;
 import org.fakereplace.util.InvocationUtil;
 
@@ -29,6 +31,15 @@ import sun.reflect.Reflection;
  */
 public class ReflectionDelegate
 {
+
+   public static int getModifiers(Method method)
+   {
+      if (method.isAnnotationPresent(ModifiedMethod.class))
+      {
+         return method.getModifiers() | Modifier.FINAL;
+      }
+      return method.getModifiers();
+   }
 
    public static Object invoke(Method method, Object instance, Object[] args) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException
    {

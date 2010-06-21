@@ -12,10 +12,15 @@ import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
 import javassist.NotFoundException;
+import javassist.bytecode.AccessFlag;
 
 import org.fakereplace.boot.Constants;
-import org.fakereplace.boot.ProxyDefinitionStore;
 import org.fakereplace.boot.Logger;
+import org.fakereplace.boot.ProxyDefinitionStore;
+import org.fakereplace.data.BaseClassData;
+import org.fakereplace.data.ClassDataStore;
+import org.fakereplace.data.MethodData;
+import org.fakereplace.manip.FinalMethodManipulator;
 
 public class ClassLoaderInstrumentation
 {
@@ -41,12 +46,14 @@ public class ClassLoaderInstrumentation
    {
       try
       {
-
+         if (trasformedClassLoaders.contains(cl) || failedTransforms.contains(cl))
+         {
+            return;
+         }
          // we are using the high level javassist bytecode here because we
          // have access to the class object
          if (cl.getClassLoader() != null)
          {
-
             URL resource = cl.getClassLoader().getResource(cl.getName().replace('.', '/') + ".class");
             InputStream in = null;
             try
@@ -86,11 +93,37 @@ public class ClassLoaderInstrumentation
          // it if requested and return it.
          CtMethod method = cls.getDeclaredMethod("loadClass", arg);
          method.insertBefore("if($1.startsWith(\"" + Constants.GENERATED_CLASS_PACKAGE + "\")){ try{ Class find = findLoadedClass($1); if(find != null) return find; byte[] cd = " + ProxyDefinitionStore.class.getName() + ".getProxyDefinition(this,$1); if(cd != null){ Class c = defineClass($1,cd,0,cd.length); if($2) resolveClass(c); return c; } }catch(Throwable e) {e.printStackTrace(); return null;}} if($1.startsWith(\"org.fakereplace.integration\")){ try{ byte[] cd = " + Transformer.class.getName() + ".getIntegrationClass(this,$1); if(cd != null){ Class c = defineClass($1,cd,0,cd.length); if($2) resolveClass(c); return c; } }catch(Throwable e) {e.printStackTrace(); return null;}}");
-
+         BaseClassData data = ClassDataStore.getBaseClassData(cl.getClassLoader(), cl.getName());
+         for (Object i : cls.getDeclaredMethods())
+         {
+            CtMethod m = (CtMethod) i;
+            MethodData dta = null;
+            if (data != null)
+            {
+               for (MethodData md : data.getMethods())
+               {
+                  if (md.getDescriptor().equals(m.getMethodInfo().getDescriptor()) && md.getMethodName().equals(m.getName()))
+                  {
+                     dta = md;
+                     break;
+                  }
+               }
+               if (dta == null)
+               {
+                  continue;
+               }
+               if (dta.isFinalMethod())
+               {
+                  m.setModifiers(m.getModifiers() & ~AccessFlag.FINAL);
+               }
+            }
+         }
+         FinalMethodManipulator.addClassLoader(cl.getName());
          // now reload the instrumented class loader
          ClassDefinition cd = new ClassDefinition(cl, cls.toBytecode());
          ClassDefinition[] ar = new ClassDefinition[1];
          ar[0] = cd;
+
          instrumentation.redefineClasses(ar);
          // make a note of the fact that we have transformed this class
          // loader

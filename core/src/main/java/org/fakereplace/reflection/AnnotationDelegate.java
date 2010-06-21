@@ -6,6 +6,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import org.fakereplace.data.AnnotationDataStore;
+import org.fakereplace.data.ModifiedMethod;
 
 public class AnnotationDelegate
 {
@@ -106,7 +107,32 @@ public class AnnotationDelegate
       if (AnnotationDataStore.isMethodDataRecorded(clazz))
       {
          Annotation[] result = AnnotationDataStore.getMethodAnnotations(clazz);
-         return result;
+         Annotation[] ret = new Annotation[result.length - 1];
+         int rc = 0;
+         for (Annotation a : result)
+         {
+            if (!(a instanceof ModifiedMethod))
+            {
+               ret[rc] = a;
+               rc++;
+            }
+         }
+         return ret;
+      }
+      if (clazz.isAnnotationPresent(ModifiedMethod.class))
+      {
+         Annotation[] d = clazz.getAnnotations();
+         Annotation[] ret = new Annotation[d.length - 1];
+         int rc = 0;
+         for (Annotation a : d)
+         {
+            if (!(a instanceof ModifiedMethod))
+            {
+               ret[rc] = a;
+               rc++;
+            }
+         }
+         return ret;
       }
       return clazz.getAnnotations();
    }
