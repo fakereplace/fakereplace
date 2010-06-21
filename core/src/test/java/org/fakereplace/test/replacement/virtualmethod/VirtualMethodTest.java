@@ -210,21 +210,21 @@ public class VirtualMethodTest
       assert c.toString().contains("VirtualCaller") : c.toString();
    }
 
-   @Test(groups = "virtualmethod", enabled = true)
+   @Test(groups = "virtualmethod")
    public void testOverrideWithSuperclassNotLoaded() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException
    {
       NoSupClass c = new NoSupChild();
       assert c.getStuff(0, 0, "", 0, 0).equals("NoSupChild") : "Expected NoSupChild got:" + c.getStuff(0, 0, "", 0, 0);
    }
 
-   @Test(groups = "virtualmethod", enabled = true)
+   @Test(groups = "virtualmethod")
    public void testOverrideWithSuperclassNotLoadedSuperclassNotChanged() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException
    {
       NoSupClass c = new NoSupClass();
       assert c.getStuff(0, 0, "", 0, 0).equals("NoSupClass") : "Expected NoSupClass got:" + c.getStuff(0, 0, "", 0, 0);
    }
 
-   @Test(groups = "virtualmethod", enabled = true)
+   @Test(groups = "virtualmethod")
    public void testOverrideWithSuperclassNotLoadedOtherChildNotChanged() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException
    {
       NoSupUnmodifiedChild c = new NoSupUnmodifiedChild();
