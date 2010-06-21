@@ -474,8 +474,7 @@ public class Transformer implements ClassFileTransformer
          data = data.getSuperClassInformation();
          if (data == null)
          {
-            // data = ClassDataStore.getBaseClassData(loader,
-            // "java.lang.Object");
+            data = ClassDataStore.getBaseClassData(loader, "java.lang.Object");
          }
       }
 
