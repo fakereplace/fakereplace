@@ -26,6 +26,7 @@ public class ClassData
    private final String className;
    private final String internalName;
    private final Map<String, Map<String, Set<MethodData>>> methods = new ConcurrentHashMap<String, Map<String, Set<MethodData>>>();
+   // TODO: this leaks memory
    private final Map<Method, MethodData> methodsByMethod = new MapMaker().makeComputingMap(new MethodResolver());
    private final Map<String, FieldData> fields = new ConcurrentHashMap<String, FieldData>();
    private final ClassLoader loader;
@@ -176,6 +177,7 @@ public class ClassData
 
    /**
     * replaces a method if it already exists
+    * 
     * @param data
     */
    public void replaceMethod(MethodData data)
@@ -251,14 +253,16 @@ public class ClassData
          {
             return NULL_METHOD_DATA;
          }
-
-         String args = '(' + DescriptorUtils.classArrayToDescriptorString(from.getParameterTypes()) + ')';
-         MethodData m = dta.getMethodData(from.getName(), args);
-         if (m == null)
+         String descriptor = DescriptorUtils.getDescriptor(from);
+         for (MethodData m : dta.getMethods())
          {
-            return NULL_METHOD_DATA;
+            if (m.getMethodName().equals(from.getName()) && descriptor.equals(m.getDescriptor()))
+            {
+               return m;
+            }
          }
-         return m;
+         return NULL_METHOD_DATA;
+
       }
 
    }
