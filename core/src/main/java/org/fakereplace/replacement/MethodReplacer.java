@@ -389,22 +389,22 @@ public class MethodReplacer
                }
                else if (ret.equals("D"))
                {
-                  b.add(Opcode.DLOAD_0);
+                  b.add(Opcode.DCONST_0);
                   b.add(Opcode.DRETURN);
                }
                else if (ret.equals("F"))
                {
-                  b.add(Opcode.FLOAD_0);
+                  b.add(Opcode.FCONST_0);
                   b.add(Opcode.FRETURN);
                }
                else if (ret.equals("J"))
                {
-                  b.add(Opcode.LLOAD_0);
+                  b.add(Opcode.LCONST_0);
                   b.add(Opcode.LRETURN);
                }
                else
                {
-                  b.add(Opcode.ILOAD_0);
+                  b.add(Opcode.ICONST_0);
                   b.add(Opcode.IRETURN);
                }
             }
@@ -415,7 +415,7 @@ public class MethodReplacer
             }
             method.setCodeAttribute(b.toCodeAttribute());
             method.getCodeAttribute().computeMaxStack();
-            method.getCodeAttribute().setMaxLocals(types.length + 1);
+            method.getCodeAttribute().setMaxLocals(locals);
          }
 
          copyMethodAttributes(mInfo, method);
@@ -575,7 +575,7 @@ public class MethodReplacer
       if (md.getMethodName().equals("<clinit>"))
       {
          return; // if the static constructor is removed it gets added later on
-                 // in the process
+         // in the process
       }
 
       // load up the existing method object
