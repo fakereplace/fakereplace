@@ -13,7 +13,7 @@
     <groupId>org.fakereplace</groupId>
     <artifactId>fakereplace-parent</artifactId>
     <packaging>pom</packaging>
-    <version>0.8</version>
+    <version>0.9-SNAPSHOT</version>
 
     <name>Fakereplace Parent</name>
 
@@ -115,7 +115,7 @@
     </dependencyManagement>
 
     <scm>
-    	<developerConnection>scm:svn:https://fakereplace.googlecode.com/svn/tags/0.8</developerConnection>
+    	<developerConnection>scm:svn:https://fakereplace.googlecode.com/svn/trunk</developerConnection>
     </scm>
     <build>
         <plugins>
