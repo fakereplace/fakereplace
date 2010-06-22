@@ -1,46 +1,154 @@
 package org.fakereplace.reflection;
 
 import java.lang.annotation.Annotation;
+import java.lang.annotation.Inherited;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.fakereplace.data.AnnotationDataStore;
 import org.fakereplace.data.ModifiedMethod;
 
 public class AnnotationDelegate
 {
-   static public boolean isAnnotationPresent(Class clazz, Class anType)
-   {
-      if (AnnotationDataStore.isClassDataRecorded(clazz))
-      {
-         boolean result = AnnotationDataStore.isClassAnnotationPresent(clazz, anType);
-         // TODO: @Inherited
 
-         return result;
+   private static boolean heiracheyChanged(Class<?> clazz)
+   {
+      Class<?> c = clazz;
+      while (c != Object.class && c != null)
+      {
+         if (AnnotationDataStore.isClassDataRecorded(c))
+         {
+            return true;
+         }
+         c = c.getSuperclass();
+      }
+      return false;
+   }
+
+   static public boolean isAnnotationPresent(Class<?> clazz, Class anType)
+   {
+      if (anType.isAnnotationPresent(Inherited.class) && heiracheyChanged(clazz))
+      {
+         Class<?> c = clazz;
+         while (c != null && c != Object.class)
+         {
+            if (AnnotationDataStore.isClassDataRecorded(c))
+            {
+               if (AnnotationDataStore.isClassAnnotationPresent(c, anType))
+               {
+                  return true;
+               }
+            }
+            else
+            {
+               // can't just use getAnnotation, as an inherited annotation
+               // may have been removed from a parent class
+               Annotation[] declared = c.getDeclaredAnnotations();
+               for (Annotation a : declared)
+               {
+                  if (a.annotationType() == anType)
+                  {
+                     return true;
+                  }
+               }
+            }
+            c = c.getSuperclass();
+         }
+         return false;
+      }
+      else if (AnnotationDataStore.isClassDataRecorded(clazz))
+      {
+         return AnnotationDataStore.isClassAnnotationPresent(clazz, anType);
       }
       return clazz.isAnnotationPresent(anType);
    }
 
    static public Annotation getAnnotation(Class<?> clazz, Class anType)
    {
-      if (AnnotationDataStore.isClassDataRecorded(clazz))
+      if (anType.isAnnotationPresent(Inherited.class) && heiracheyChanged(clazz))
       {
-         Annotation result = AnnotationDataStore.getClassAnnotation(clazz, anType);
-         // TODO: @Inherited
-
+         Annotation result = null;
+         Class<?> c = clazz;
+         while (result == null && c != null && c != Object.class)
+         {
+            if (AnnotationDataStore.isClassDataRecorded(c))
+            {
+               result = AnnotationDataStore.getClassAnnotation(c, anType);
+            }
+            else
+            {
+               // can't just use getAnnotation, as an inherited annotation
+               // may have been removed from a parent class
+               Annotation[] declared = c.getDeclaredAnnotations();
+               for (Annotation a : declared)
+               {
+                  if (a.annotationType() == anType)
+                  {
+                     result = a;
+                     break;
+                  }
+               }
+            }
+            c = c.getSuperclass();
+         }
          return result;
+      }
+      else if (AnnotationDataStore.isClassDataRecorded(clazz))
+      {
+         return AnnotationDataStore.getClassAnnotation(clazz, anType);
       }
       return clazz.getAnnotation(anType);
    }
 
    static public Annotation[] getAnnotations(Class<?> clazz)
    {
-      if (AnnotationDataStore.isClassDataRecorded(clazz))
+      if (heiracheyChanged(clazz))
       {
-         Annotation[] result = AnnotationDataStore.getClassAnnotations(clazz);
-         return result;
+         Annotation[] pres;
+         if (AnnotationDataStore.isClassDataRecorded(clazz))
+         {
+            pres = AnnotationDataStore.getClassAnnotations(clazz);
+         }
+         else
+         {
+            pres = clazz.getDeclaredAnnotations();
+         }
+         List<Annotation> result = new ArrayList<Annotation>();
+         for (Annotation a : pres)
+         {
+            result.add(a);
+         }
+         Class<?> c = clazz.getSuperclass();
+         while (c != Object.class && c != null)
+         {
+            if (AnnotationDataStore.isClassDataRecorded(c))
+            {
+               pres = AnnotationDataStore.getClassAnnotations(c);
+            }
+            else
+            {
+               pres = c.getDeclaredAnnotations();
+            }
+            for (Annotation a : pres)
+            {
+               if (a.annotationType().isAnnotationPresent(Inherited.class))
+               {
+                  result.add(a);
+               }
+            }
+            c = c.getSuperclass();
+         }
+         Annotation[] ret = new Annotation[result.size()];
+         int count = 0;
+         for (Annotation a : result)
+         {
+            ret[count++] = a;
+         }
+         return ret;
       }
       return clazz.getAnnotations();
    }
