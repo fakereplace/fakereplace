@@ -1,5 +1,6 @@
 package org.fakereplace.test.replacement.annotated.method;
 
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 
 import org.fakereplace.test.util.ClassReplacer;
@@ -32,6 +33,25 @@ public class AnnotatedMethodTest
    }
 
    @Test
+   public void testAnnotatedElementGetDeclaredAnnotations() throws SecurityException, NoSuchMethodException
+   {
+      Method m1 = MethodAnnotated.class.getMethod("method1");
+      Method m2 = MethodAnnotated.class.getMethod("method2");
+      Method m3 = MethodAnnotated.class.getMethod("method3");
+      Method m4 = MethodAnnotated.class.getMethod("method4");
+
+      assert getDeclaredAnnotations(m1).length == 1 : m1.getDeclaredAnnotations().length;
+      assert getDeclaredAnnotations(m1)[0].annotationType() == MethodAnnotation.class;
+
+      assert getDeclaredAnnotations(m2).length == 0;
+
+      assert getDeclaredAnnotations(m3).length == 1;
+      assert getDeclaredAnnotations(m3)[0].annotationType() == MethodAnnotation.class;
+
+      assert getDeclaredAnnotations(m4).length == 0;
+   }
+
+   @Test
    public void testMethodAnnotationGetDeclaredAnnotations() throws SecurityException, NoSuchMethodException
    {
       Method m1 = MethodAnnotated.class.getMethod("method1");
@@ -51,6 +71,25 @@ public class AnnotatedMethodTest
    }
 
    @Test
+   public void testAnnotatedElementGetAnnotations() throws SecurityException, NoSuchMethodException
+   {
+      Method m1 = MethodAnnotated.class.getMethod("method1");
+      Method m2 = MethodAnnotated.class.getMethod("method2");
+      Method m3 = MethodAnnotated.class.getMethod("method3");
+      Method m4 = MethodAnnotated.class.getMethod("method4");
+
+      assert getAnnotations(m1).length == 1 : m1.getDeclaredAnnotations().length;
+      assert getAnnotations(m1)[0].annotationType() == MethodAnnotation.class;
+
+      assert getAnnotations(m2).length == 0;
+
+      assert getAnnotations(m3).length == 1;
+      assert getAnnotations(m3)[0].annotationType() == MethodAnnotation.class;
+
+      assert getAnnotations(m4).length == 0;
+   }
+
+   @Test
    public void testMethodAnnotationGetAnnotations() throws SecurityException, NoSuchMethodException
    {
       Method m1 = MethodAnnotated.class.getMethod("method1");
@@ -67,6 +106,16 @@ public class AnnotatedMethodTest
       assert m3.getAnnotations()[0].annotationType() == MethodAnnotation.class;
 
       assert m4.getAnnotations().length == 0;
+   }
+
+   public java.lang.annotation.Annotation[] getDeclaredAnnotations(AnnotatedElement element)
+   {
+      return element.getDeclaredAnnotations();
+   }
+
+   public java.lang.annotation.Annotation[] getAnnotations(AnnotatedElement element)
+   {
+      return element.getDeclaredAnnotations();
    }
 
 }

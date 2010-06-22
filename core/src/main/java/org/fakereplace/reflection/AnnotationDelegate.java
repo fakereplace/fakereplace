@@ -1,6 +1,7 @@
 package org.fakereplace.reflection;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -284,6 +285,92 @@ public class AnnotationDelegate
          return result;
       }
       return clazz.getParameterAnnotations();
+   }
+
+   // AnnotatedElement
+
+   static public boolean isAnnotationPresent(AnnotatedElement clazz, Class anType)
+   {
+      if (clazz instanceof Class<?>)
+      {
+         return isAnnotationPresent((Class) clazz, anType);
+      }
+      else if (clazz instanceof Field)
+      {
+         return isAnnotationPresent((Field) clazz, anType);
+      }
+      else if (clazz instanceof Method)
+      {
+         return isAnnotationPresent((Method) clazz, anType);
+      }
+      else if (clazz instanceof Constructor<?>)
+      {
+         return isAnnotationPresent((Constructor<?>) clazz, anType);
+      }
+      return clazz.isAnnotationPresent(anType);
+   }
+
+   static public Annotation getAnnotation(AnnotatedElement clazz, Class anType)
+   {
+      if (clazz instanceof Class<?>)
+      {
+         return getAnnotation((Class) clazz, anType);
+      }
+      else if (clazz instanceof Field)
+      {
+         return getAnnotation((Field) clazz, anType);
+      }
+      else if (clazz instanceof Method)
+      {
+         return getAnnotation((Method) clazz, anType);
+      }
+      else if (clazz instanceof Constructor<?>)
+      {
+         return getAnnotation((Constructor<?>) clazz, anType);
+      }
+      return clazz.getAnnotation(anType);
+   }
+
+   static public Annotation[] getAnnotations(AnnotatedElement clazz)
+   {
+      if (clazz instanceof Class<?>)
+      {
+         return getAnnotations((Class) clazz);
+      }
+      else if (clazz instanceof Field)
+      {
+         return getAnnotations((Field) clazz);
+      }
+      else if (clazz instanceof Method)
+      {
+         return getAnnotations((Method) clazz);
+      }
+      else if (clazz instanceof Constructor<?>)
+      {
+         return getAnnotations((Constructor<?>) clazz);
+      }
+      return clazz.getAnnotations();
+   }
+
+   static public Annotation[] getDeclaredAnnotations(AnnotatedElement clazz)
+   {
+      if (clazz instanceof Class<?>)
+      {
+         return getDeclaredAnnotations((Class) clazz);
+      }
+      else if (clazz instanceof Field)
+      {
+         return getDeclaredAnnotations((Field) clazz);
+      }
+      else if (clazz instanceof Method)
+      {
+         return getDeclaredAnnotations((Method) clazz);
+      }
+      else if (clazz instanceof Constructor<?>)
+      {
+         return getDeclaredAnnotations((Constructor<?>) clazz);
+      }
+      return clazz.getDeclaredAnnotations();
    }
 
 }
