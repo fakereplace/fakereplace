@@ -44,6 +44,16 @@ public class AnnotationDelegate
       return clazz.getAnnotations();
    }
 
+   static public Annotation[] getDeclaredAnnotations(Class<?> clazz)
+   {
+      if (AnnotationDataStore.isClassDataRecorded(clazz))
+      {
+         Annotation[] result = AnnotationDataStore.getClassAnnotations(clazz);
+         return result;
+      }
+      return clazz.getDeclaredAnnotations();
+   }
+
    static public boolean isAnnotationPresent(Field clazz, Class anType)
    {
       if (AnnotationDataStore.isFieldDataRecorded(clazz))
@@ -78,6 +88,16 @@ public class AnnotationDelegate
       return clazz.getAnnotations();
    }
 
+   static public Annotation[] getDeclaredAnnotations(Field clazz)
+   {
+      if (AnnotationDataStore.isFieldDataRecorded(clazz))
+      {
+         Annotation[] result = AnnotationDataStore.getFieldAnnotations(clazz);
+         return result;
+      }
+      return clazz.getDeclaredAnnotations();
+   }
+
    static public boolean isAnnotationPresent(Method clazz, Class anType)
    {
       if (AnnotationDataStore.isMethodDataRecorded(clazz))
@@ -107,8 +127,22 @@ public class AnnotationDelegate
       if (AnnotationDataStore.isMethodDataRecorded(clazz))
       {
          Annotation[] result = AnnotationDataStore.getMethodAnnotations(clazz);
-         Annotation[] ret = new Annotation[result.length - 1];
+
          int rc = 0;
+         boolean found = false;
+         for (Annotation a : result)
+         {
+            if (a instanceof ModifiedMethod)
+            {
+               found = true;
+               break;
+            }
+         }
+         if (!found)
+         {
+            return result;
+         }
+         Annotation[] ret = new Annotation[result.length - 1];
          for (Annotation a : result)
          {
             if (!(a instanceof ModifiedMethod))
@@ -135,6 +169,55 @@ public class AnnotationDelegate
          return ret;
       }
       return clazz.getAnnotations();
+   }
+
+   static public Annotation[] getDeclaredAnnotations(Method clazz)
+   {
+      if (AnnotationDataStore.isMethodDataRecorded(clazz))
+      {
+         Annotation[] result = AnnotationDataStore.getMethodAnnotations(clazz);
+
+         int rc = 0;
+         boolean found = false;
+         for (Annotation a : result)
+         {
+            if (a instanceof ModifiedMethod)
+            {
+               found = true;
+               break;
+            }
+         }
+         if (!found)
+         {
+            return result;
+         }
+         Annotation[] ret = new Annotation[result.length - 1];
+         for (Annotation a : result)
+         {
+            if (!(a instanceof ModifiedMethod))
+            {
+               ret[rc] = a;
+               rc++;
+            }
+         }
+         return ret;
+      }
+      if (clazz.isAnnotationPresent(ModifiedMethod.class))
+      {
+         Annotation[] d = clazz.getDeclaredAnnotations();
+         Annotation[] ret = new Annotation[d.length - 1];
+         int rc = 0;
+         for (Annotation a : d)
+         {
+            if (!(a instanceof ModifiedMethod))
+            {
+               ret[rc] = a;
+               rc++;
+            }
+         }
+         return ret;
+      }
+      return clazz.getDeclaredAnnotations();
    }
 
    static public Annotation[][] getParameterAnnotations(Method clazz)
@@ -181,6 +264,16 @@ public class AnnotationDelegate
          return result;
       }
       return clazz.getAnnotations();
+   }
+
+   static public Annotation[] getDeclaredAnnotations(Constructor<?> clazz)
+   {
+      if (AnnotationDataStore.isConstructorDataRecorded(clazz))
+      {
+         Annotation[] result = AnnotationDataStore.getConstructorAnnotations(clazz);
+         return result;
+      }
+      return clazz.getDeclaredAnnotations();
    }
 
    static public Annotation[][] getParameterAnnotations(Constructor<?> clazz)

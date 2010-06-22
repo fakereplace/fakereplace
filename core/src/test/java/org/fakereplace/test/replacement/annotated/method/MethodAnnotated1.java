@@ -18,4 +18,9 @@ public class MethodAnnotated1
    {
 
    }
+
+   public void method4()
+   {
+
+   }
 }

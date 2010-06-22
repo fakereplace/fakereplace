@@ -3,42 +3,70 @@ package org.fakereplace.test.replacement.annotated.method;
 import java.lang.reflect.Method;
 
 import org.fakereplace.test.util.ClassReplacer;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 public class AnnotatedMethodTest
 {
 
-   @Test
-   public void testMethodAnnotations() throws SecurityException, NoSuchMethodException
+   @BeforeClass
+   public void setup()
    {
       ClassReplacer r = new ClassReplacer();
       r.queueClassForReplacement(MethodAnnotated.class, MethodAnnotated1.class);
       r.replaceQueuedClasses();
+   }
+
+   @Test
+   public void testMethodAnnotationGetAnnotation() throws SecurityException, NoSuchMethodException
+   {
 
       Method m1 = MethodAnnotated.class.getMethod("method1");
       Method m2 = MethodAnnotated.class.getMethod("method2");
       Method m3 = MethodAnnotated.class.getMethod("method3");
+      Method m4 = MethodAnnotated.class.getMethod("method4");
       assert m1.getAnnotation(MethodAnnotation.class).value().equals("1");
       assert !m2.isAnnotationPresent(MethodAnnotation.class);
       assert m3.getAnnotation(MethodAnnotation.class).value().equals("3");
-
+      assert !m4.isAnnotationPresent(MethodAnnotation.class);
    }
 
    @Test
-   public void testMethodParameterAnnotations() throws SecurityException, NoSuchMethodException
+   public void testMethodAnnotationGetDeclaredAnnotations() throws SecurityException, NoSuchMethodException
    {
-      ClassReplacer r = new ClassReplacer();
-      r.queueClassForReplacement(MethodParameterAnnotated.class, MethodParameterAnnotated1.class);
-      r.replaceQueuedClasses();
+      Method m1 = MethodAnnotated.class.getMethod("method1");
+      Method m2 = MethodAnnotated.class.getMethod("method2");
+      Method m3 = MethodAnnotated.class.getMethod("method3");
+      Method m4 = MethodAnnotated.class.getMethod("method4");
 
-      Method m1 = MethodParameterAnnotated.class.getMethod("method1", int.class);
-      Method m2 = MethodParameterAnnotated.class.getMethod("method2", int.class);
-      Method m3 = MethodParameterAnnotated.class.getMethod("method3", int.class);
+      assert m1.getDeclaredAnnotations().length == 1 : m1.getDeclaredAnnotations().length;
+      assert m1.getDeclaredAnnotations()[0].annotationType() == MethodAnnotation.class;
 
-      assert ((MethodAnnotation) m1.getParameterAnnotations()[0][0]).value().equals("1");
-      assert m2.getParameterAnnotations()[0].length == 0;
-      assert ((MethodAnnotation) m3.getParameterAnnotations()[0][0]).value().equals("3");
+      assert m2.getDeclaredAnnotations().length == 0;
 
+      assert m3.getDeclaredAnnotations().length == 1;
+      assert m3.getDeclaredAnnotations()[0].annotationType() == MethodAnnotation.class;
+
+      assert m4.getDeclaredAnnotations().length == 0;
+   }
+
+   @Test
+   public void testMethodAnnotationGetAnnotations() throws SecurityException, NoSuchMethodException
+   {
+      Method m1 = MethodAnnotated.class.getMethod("method1");
+      Method m2 = MethodAnnotated.class.getMethod("method2");
+      Method m3 = MethodAnnotated.class.getMethod("method3");
+      Method m4 = MethodAnnotated.class.getMethod("method4");
+
+      assert m1.getAnnotations().length == 1 : m1.getDeclaredAnnotations().length;
+      assert m1.getAnnotations()[0].annotationType() == MethodAnnotation.class;
+
+      assert m2.getAnnotations().length == 0;
+
+      assert m3.getAnnotations().length == 1;
+      assert m3.getAnnotations()[0].annotationType() == MethodAnnotation.class;
+
+      assert m4.getAnnotations().length == 0;
    }
 
 }
