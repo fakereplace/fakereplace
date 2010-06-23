@@ -60,14 +60,14 @@ public class ClassDataBuilder
 
    public void removeRethod(MethodData md)
    {
-      MethodData nmd = new MethodData(md.getMethodName(), md.getDescriptor(), md.getClassName(), MemberType.REMOVED_METHOD, md.getAccessFlags(), false);
+      MethodData nmd = new MethodData(md.getMethodName(), md.getDescriptor(), md.getClassName(), MemberType.REMOVED, md.getAccessFlags(), false);
       removedMethods.add(nmd);
    }
 
    public void removeField(FieldData md)
    {
-      FieldData nd = new FieldData(md, MemberType.REMOVED_METHOD);
-      removedFields.add(md);
+      FieldData nd = new FieldData(md, MemberType.REMOVED);
+      removedFields.add(nd);
    }
 
 }

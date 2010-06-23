@@ -135,7 +135,7 @@ public class ConstructorReflectionDelegate
                   Class<?> c = clazz.getClassLoader().loadClass(i.getClassName());
                   visible.add(i.getConstructor(c));
                }
-               else if (i.getType() == MemberType.REMOVED_METHOD)
+               else if (i.getType() == MemberType.REMOVED)
                {
                   Class<?> c = clazz.getClassLoader().loadClass(i.getClassName());
                   visible.remove(i.getConstructor(c));

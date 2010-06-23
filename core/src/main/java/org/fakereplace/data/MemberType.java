@@ -23,7 +23,7 @@ public enum MemberType
     * This is a method that we have to implement with a noop as it was removed
     * from the source
     */
-   REMOVED_METHOD,
+   REMOVED,
    /**
     * This is a method that has been added that should not be visible to the
     * user

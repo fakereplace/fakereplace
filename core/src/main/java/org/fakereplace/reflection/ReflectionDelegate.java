@@ -153,7 +153,7 @@ public class ReflectionDelegate
                   Class<?> c = clazz.getClassLoader().loadClass(i.getClassName());
                   visible.add(i.getMethod(c));
                }
-               else if (i.getType() == MemberType.REMOVED_METHOD)
+               else if (i.getType() == MemberType.REMOVED)
                {
                   Class<?> c = clazz.getClassLoader().loadClass(i.getClassName());
                   visible.remove(i.getMethod(c));
@@ -255,7 +255,7 @@ public class ReflectionDelegate
          try
          {
             Class<?> c = clazz.getClassLoader().loadClass(md.getClassName());
-            meth = c.getMethod(name, parameters);
+            meth = c.getDeclaredMethod(name, parameters);
 
             return meth;
          }

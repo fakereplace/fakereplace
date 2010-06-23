@@ -15,7 +15,12 @@ public class ClassReplacer
 
    Map<Class, Class> queuedClassReplacements = new HashMap<Class, Class>();
 
-   ClassPool pool = ClassPool.getDefault();
+   ClassPool pool = new ClassPool();
+
+   public ClassReplacer()
+   {
+      pool.appendSystemPath();
+   }
 
    public void queueClassForReplacement(Class oldClass, Class newClass)
    {
