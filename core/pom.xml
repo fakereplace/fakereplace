@@ -128,6 +128,16 @@
 							</includes>
 							<forkMode>once</forkMode>
 							<argLine>-javaagent:${project.build.directory}/${project.build.finalName}.jar -Dorg.fakereplace.packages=org.fakereplace.test -Dorg.fakereplace.dump=/tmp</argLine>
+							<properties>
+								<property>
+					              <name>listener</name>
+					              <value>org.fakereplace.test.coverage.report.CoverageReporter</value>
+					            </property>
+					            <property>
+					              <name>reporter</name>
+					              <value>org.fakereplace.test.coverage.report.CoverageListener</value>
+					            </property>
+				            </properties>
 						</configuration>
 					</execution>
 				</executions>
