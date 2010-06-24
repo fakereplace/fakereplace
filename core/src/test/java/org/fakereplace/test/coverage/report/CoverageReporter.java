@@ -39,7 +39,7 @@ public class CoverageReporter implements IReporter
          return;
       }
       startHtml(m_out);
-      m_out.write("Hover over passed overage to see test that covers assertion");
+      m_out.write("Hover over passed coverage to see test that covers assertion");
       createTable("Public members", CoverageListener.getPublictest());
       createTable("Private members", CoverageListener.getPrivatetest());
 
@@ -63,7 +63,11 @@ public class CoverageReporter implements IReporter
          for (ChangeTestType t : ChangeTestType.values())
          {
             String val = "<td style='background-color:red;'>X</td>";
-            if (data.containsKey(i))
+            if (!t.isApplicableToRemoved() && i.isRemoved())
+            {
+               val = "<td/>";
+            }
+            else if (data.containsKey(i))
             {
                Map<ChangeTestType, Set<String>> v = data.get(i);
                if (v.containsKey(t))

@@ -3,6 +3,10 @@ package org.fakereplace.test.replacement.staticmethod;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import org.fakereplace.test.coverage.ChangeTestType;
+import org.fakereplace.test.coverage.CodeChangeType;
+import org.fakereplace.test.coverage.Coverage;
+import org.fakereplace.test.coverage.MultipleCoverage;
 import org.fakereplace.test.util.ClassReplacer;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -18,24 +22,47 @@ public class StaticMethodTest
    }
 
    @Test(groups = "staticmethod")
+   @MultipleCoverage( {
+         @Coverage(privateMember = false, change = CodeChangeType.ADD_STATIC_METHOD, test = ChangeTestType.GET_BY_NAME),
+         @Coverage(privateMember = false, change = CodeChangeType.ADD_STATIC_METHOD, test = ChangeTestType.INVOKE_BY_REFLECTION) })
    public void testStaticMethodByReflection() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException
    {
 
       StaticClass ns = new StaticClass();
       Class c = StaticClass.class;
-
       Method m = c.getMethod("method2");
-
       Integer res = (Integer) m.invoke(null);
       assert res == 1 : "Failed to replace static method";
    }
 
-   @Test(groups = "staticmethod", expectedExceptions = NoSuchMethodException.class)
-   public void testRemovedStaticMethodByReflection() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException
+   @Test(groups = "staticmethod")
+   @MultipleCoverage( {
+         @Coverage(privateMember = false, change = CodeChangeType.ADD_STATIC_METHOD, test = ChangeTestType.GET_DECLARED_BY_NAME),
+         @Coverage(privateMember = false, change = CodeChangeType.ADD_STATIC_METHOD, test = ChangeTestType.INVOKE_BY_REFLECTION) })
+   public void testStaticMethodDeclaredByReflection() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException
    {
 
+      StaticClass ns = new StaticClass();
+      Class c = StaticClass.class;
+      Method m = c.getDeclaredMethod("method2");
+      Integer res = (Integer) m.invoke(null);
+      assert res == 1 : "Failed to replace static method";
+   }
+
+   @Coverage(privateMember = false, change = CodeChangeType.REMOVE_STATIC_METHOD, test = ChangeTestType.GET_BY_NAME)
+   @Test(groups = "staticmethod", expectedExceptions = NoSuchMethodException.class)
+   public void testRemovedStaticMethodByNameByReflection() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException
+   {
       Class c = StaticClass.class;
       Method m = c.getMethod("method1");
+   }
+
+   @Coverage(privateMember = false, change = CodeChangeType.REMOVE_STATIC_METHOD, test = ChangeTestType.GET_DECLARED_BY_NAME)
+   @Test(groups = "staticmethod", expectedExceptions = NoSuchMethodException.class)
+   public void testRemovedStaticMethodByDeclaredNameByReflection() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException
+   {
+      Class c = StaticClass.class;
+      Method m = c.getDeclaredMethod("method1");
    }
 
    @Test(groups = "staticmethod")
