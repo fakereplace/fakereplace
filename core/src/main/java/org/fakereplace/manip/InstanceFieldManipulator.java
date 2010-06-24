@@ -111,7 +111,9 @@ public class InstanceFieldManipulator implements ClassManipulator
                            b.add(Opcode.SWAP);
 
                            b.addGetfield(file.getName(), Constants.ADDED_FIELD_NAME, Constants.ADDED_FIELD_DESCRIPTOR);
-                           b.addOpcode(Opcode.SWAP); // we need to keep swapping the value to put to the top
+                           b.addOpcode(Opcode.SWAP); // we need to keep swapping
+                                                     // the value to put to the
+                                                     // top
                            b.addLdc(arrayPos);
                            b.addOpcode(Opcode.SWAP);
                            b.add(Opcode.AASTORE);

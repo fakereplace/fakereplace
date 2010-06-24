@@ -2,6 +2,10 @@ package org.fakereplace.test.replacement.staticfield;
 
 import java.lang.reflect.Field;
 
+import org.fakereplace.test.coverage.ChangeTestType;
+import org.fakereplace.test.coverage.CodeChangeType;
+import org.fakereplace.test.coverage.Coverage;
+import org.fakereplace.test.coverage.MultipleCoverage;
 import org.fakereplace.test.util.ClassReplacer;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -24,6 +28,7 @@ public class StaticToInstanceTest
    }
 
    @Test
+   @Coverage(change = CodeChangeType.STATIC_FIELD_TO_INSTANCE, privateMember = true, test = ChangeTestType.ACCESS_THROUGH_BYTECODE)
    public void testStaticToInstance()
    {
       StaticToInstance f1 = new StaticToInstance();
@@ -33,6 +38,9 @@ public class StaticToInstanceTest
    }
 
    @Test
+   @MultipleCoverage( {
+         @Coverage(change = CodeChangeType.STATIC_FIELD_TO_INSTANCE, privateMember = true, test = ChangeTestType.GET_DECLARED_BY_NAME),
+         @Coverage(change = CodeChangeType.STATIC_FIELD_TO_INSTANCE, privateMember = true, test = ChangeTestType.INVOKE_BY_REFLECTION) })
    public void testStaticToInstanceViaReflection() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException
    {
       StaticToInstance f1 = new StaticToInstance();
