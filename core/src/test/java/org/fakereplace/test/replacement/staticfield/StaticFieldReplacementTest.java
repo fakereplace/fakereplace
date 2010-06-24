@@ -90,4 +90,10 @@ public class StaticFieldReplacementTest
       assert ((ParameterizedType) f.getGenericType()).getActualTypeArguments()[0].equals(String.class);
    }
 
+   @Test(expectedExceptions = NoSuchFieldException.class)
+   public void testStaticFieldGetFieldNonPublicFieldsNotAccessible() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException, NoSuchFieldException
+   {
+      Field f = StaticFieldClass.class.getField("list");
+   }
+
 }

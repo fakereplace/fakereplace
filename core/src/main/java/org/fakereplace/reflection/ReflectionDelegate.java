@@ -413,8 +413,13 @@ public class ReflectionDelegate
       {
          return clazz.getField(name);
       }
+      if (!AccessFlag.isPublic(fd.getAccessFlags()))
+      {
+         throw new NoSuchFieldException(clazz.getName() + "." + name);
+      }
       switch (fd.getMemberType())
       {
+
       case NORMAL:
          return clazz.getField(name);
       case FAKE:
