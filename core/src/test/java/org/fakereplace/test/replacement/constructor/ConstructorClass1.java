@@ -13,7 +13,7 @@ public class ConstructorClass1
       value = a;
    }
 
-   public ConstructorClass1(List<String> a)
+   private ConstructorClass1(List<String> a)
    {
       value = "h";
    }

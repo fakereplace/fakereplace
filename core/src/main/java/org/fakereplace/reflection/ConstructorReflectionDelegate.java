@@ -88,6 +88,11 @@ public class ConstructorReflectionDelegate
                Class<?> c = clazz.getClassLoader().loadClass(i.getClassName());
                visible.add(i.getConstructor(c));
             }
+            else if (i.getType() == MemberType.REMOVED)
+            {
+               Class<?> c = clazz.getClassLoader().loadClass(i.getClassName());
+               visible.remove(i.getConstructor(c));
+            }
          }
 
          Constructor<?>[] ret = new Constructor[visible.size()];
@@ -226,7 +231,7 @@ public class ConstructorReflectionDelegate
          try
          {
             Class<?> c = clazz.getClassLoader().loadClass(md.getClassName());
-            meth = c.getConstructor(parameters);
+            meth = c.getDeclaredConstructor(parameters);
             return meth;
          }
          catch (NoSuchMethodException e)

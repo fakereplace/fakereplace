@@ -4,10 +4,11 @@ public enum ChangeTestType
 {
    GET_BY_NAME("Get by name"),
    GET_DECLARED_BY_NAME("Get declared by name"),
-   GET_DELCARED_ALL("Get declared all"),
+   GET_DECLARED_ALL("Get declared all"),
    GET_ALL("Get all"),
    INVOKE_BY_REFLECTION("Invoke by reflection", false),
-   ACCESS_THROUGH_BYTECODE("Access through bytecode", false);
+   ACCESS_THROUGH_BYTECODE("Access through bytecode", false),
+   GET_DECLARED_CLASS("getDeclaringClass works", false);
 
    private final String label;
    private final boolean applicableToRemoved;

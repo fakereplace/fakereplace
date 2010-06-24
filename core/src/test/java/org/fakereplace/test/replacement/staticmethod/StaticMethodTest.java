@@ -65,6 +65,7 @@ public class StaticMethodTest
       Method m = c.getDeclaredMethod("method1");
    }
 
+   @Coverage(privateMember = false, change = CodeChangeType.ADD_STATIC_METHOD, test = ChangeTestType.GET_DECLARED_CLASS)
    @Test(groups = "staticmethod")
    public void testCorrectClassReturned() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException
    {
@@ -74,17 +75,14 @@ public class StaticMethodTest
    }
 
    @Test(groups = "staticmethod")
-   public void testStaticFieldAccessByReflection() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException
+   public void testStaticMethodInvokationByReflection() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException
    {
 
       Class c = StaticClass.class;
       Method m = c.getMethod("add");
-
       m.invoke(null);
-
       m = c.getMethod("getValue");
       Integer res = (Integer) m.invoke(null);
-
       assert res == 1 : "Failed to replace static method";
    }
 
