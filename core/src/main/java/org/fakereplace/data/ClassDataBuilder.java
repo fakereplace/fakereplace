@@ -37,9 +37,9 @@ public class ClassDataBuilder
       return baseData;
    }
 
-   public FieldData addFakeField(FieldInfo newField, String proxyName)
+   public FieldData addFakeField(FieldInfo newField, String proxyName, int modifiers)
    {
-      FieldData data = new FieldData(newField, MemberType.FAKE, proxyName);
+      FieldData data = new FieldData(newField, MemberType.FAKE, proxyName, modifiers);
       fakeFields.add(data);
       return data;
    }

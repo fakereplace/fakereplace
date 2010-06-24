@@ -14,12 +14,12 @@ public class FieldData
    final private MemberType memberType;
    final private String className;
 
-   public FieldData(FieldInfo info, MemberType memberType, String className)
+   public FieldData(FieldInfo info, MemberType memberType, String className, int modifiers)
    {
-      this.accessFlags = info.getAccessFlags();
-      this.pack = AccessFlag.isPackage(accessFlags);
-      this.priv = AccessFlag.isPrivate(accessFlags);
-      this.prot = AccessFlag.isProtected(accessFlags);
+      this.accessFlags = modifiers;
+      this.pack = AccessFlag.isPackage(modifiers);
+      this.priv = AccessFlag.isPrivate(modifiers);
+      this.prot = AccessFlag.isProtected(modifiers);
       this.type = info.getDescriptor();
       this.name = info.getName();
       this.className = className;

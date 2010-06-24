@@ -168,7 +168,6 @@ public class AnnotationDelegate
       if (AnnotationDataStore.isFieldDataRecorded(clazz))
       {
          boolean result = AnnotationDataStore.isFieldAnnotationPresent(clazz, anType);
-         // TODO: @Inherited
 
          return result;
       }
@@ -180,7 +179,6 @@ public class AnnotationDelegate
       if (AnnotationDataStore.isFieldDataRecorded(clazz))
       {
          Annotation result = AnnotationDataStore.getFieldAnnotation(clazz, anType);
-         // TODO: @Inherited
 
          return result;
       }
@@ -212,7 +210,6 @@ public class AnnotationDelegate
       if (AnnotationDataStore.isMethodDataRecorded(clazz))
       {
          boolean result = AnnotationDataStore.isMethodAnnotationPresent(clazz, anType);
-         // TODO: @Inherited
 
          return result;
       }
@@ -224,7 +221,6 @@ public class AnnotationDelegate
       if (AnnotationDataStore.isMethodDataRecorded(clazz))
       {
          Annotation result = AnnotationDataStore.getMethodAnnotation(clazz, anType);
-         // TODO: @Inherited
 
          return result;
       }
@@ -346,7 +342,6 @@ public class AnnotationDelegate
       if (AnnotationDataStore.isConstructorDataRecorded(clazz))
       {
          boolean result = AnnotationDataStore.isConstructorAnnotationPresent(clazz, anType);
-         // TODO: @Inherited
 
          return result;
       }
@@ -358,7 +353,6 @@ public class AnnotationDelegate
       if (AnnotationDataStore.isConstructorDataRecorded(clazz))
       {
          Annotation result = AnnotationDataStore.getConstructorAnnotation(clazz, anType);
-         // TODO: @Inherited
 
          return result;
       }

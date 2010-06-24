@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javassist.bytecode.AccessFlag;
@@ -302,11 +303,22 @@ public class ReflectionDelegate
             return clazz.getDeclaredFields();
          }
          Field[] meth = clazz.getDeclaredFields();
+
+         Collection<FieldData> fieldData = cd.getFields();
          List<Field> visible = new ArrayList<Field>(meth.length);
          for (int i = 0; i < meth.length; ++i)
          {
-            if (!meth[i].getName().equals(Constants.ADDED_FIELD_NAME))
-               visible.add(meth[i]);
+            for (FieldData f : fieldData)
+            {
+               if (f.getAccessFlags() == meth[i].getModifiers() && f.getName().equals(meth[i].getName()))
+               {
+                  if (f.getMemberType() == MemberType.NORMAL)
+                  {
+                     visible.add(meth[i]);
+                     break;
+                  }
+               }
+            }
          }
 
          for (FieldData i : cd.getFields())
@@ -344,11 +356,21 @@ public class ReflectionDelegate
          }
 
          Field[] meth = clazz.getFields();
+         Collection<FieldData> fieldData = cd.getFields();
          List<Field> visible = new ArrayList<Field>(meth.length);
          for (int i = 0; i < meth.length; ++i)
          {
-            if (!meth[i].getName().equals(Constants.ADDED_FIELD_NAME))
-               visible.add(meth[i]);
+            for (FieldData f : fieldData)
+            {
+               if (f.getAccessFlags() == meth[i].getModifiers() && f.getName().equals(meth[i].getName()))
+               {
+                  if (f.getMemberType() == MemberType.NORMAL)
+                  {
+                     visible.add(meth[i]);
+                     break;
+                  }
+               }
+            }
          }
 
          ClassData cta = cd;
@@ -391,7 +413,6 @@ public class ReflectionDelegate
       {
          return clazz.getField(name);
       }
-
       switch (fd.getMemberType())
       {
       case NORMAL:

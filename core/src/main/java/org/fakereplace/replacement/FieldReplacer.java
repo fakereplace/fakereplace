@@ -302,7 +302,7 @@ public class FieldReplacer
             throw new RuntimeException(e);
          }
          ProxyDefinitionStore.saveProxyDefinition(loader, proxyName, bytes.toByteArray());
-         builder.addFakeField(newField, proxyName);
+         builder.addFakeField(newField, proxyName, m.getAccessFlags());
       }
       catch (DuplicateMemberException e)
       {
@@ -349,7 +349,7 @@ public class FieldReplacer
             throw new RuntimeException(e);
          }
          ProxyDefinitionStore.saveProxyDefinition(loader, proxyName, bytes.toByteArray());
-         builder.addFakeField(newField, proxyName);
+         builder.addFakeField(newField, proxyName, m.getAccessFlags());
       }
       catch (DuplicateMemberException e)
       {

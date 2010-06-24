@@ -9,7 +9,7 @@ public class StaticFieldClass1
 {
    public static long longField = 0;
 
-   public static List<String> list = null;
+   static List<String> list = null;
 
    public static long incAndGet()
    {
