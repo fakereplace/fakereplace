@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.fakereplace.util.DescriptorUtils;
 
@@ -25,10 +24,11 @@ public class ClassData
 
    private final String className;
    private final String internalName;
-   private final Map<String, Map<String, Set<MethodData>>> methods = new ConcurrentHashMap<String, Map<String, Set<MethodData>>>();
+   private final Map<String, Map<String, Set<MethodData>>> methods = new MapMaker().makeMap();
    // TODO: this leaks memory
    private final Map<Method, MethodData> methodsByMethod = new MapMaker().makeComputingMap(new MethodResolver());
-   private final Map<String, FieldData> fields = new ConcurrentHashMap<String, FieldData>();
+   private final Map<String, FieldData> fields = new MapMaker().makeMap();
+   private final Set<MethodData> methodSet = new HashSet<MethodData>();
    private final ClassLoader loader;
    private final String superClassName;
    private final boolean signitureModified;
@@ -77,6 +77,13 @@ public class ClassData
          addMethod(m);
       }
 
+      for (String nm : methods.keySet())
+      {
+         for (String i : methods.get(nm).keySet())
+         {
+            methodSet.addAll(methods.get(nm).get(i));
+         }
+      }
    }
 
    public MethodData getData(Method method)
@@ -200,17 +207,7 @@ public class ClassData
 
    public Collection<MethodData> getMethods()
    {
-
-      Set<MethodData> results = new HashSet<MethodData>();
-      for (String nm : methods.keySet())
-      {
-
-         for (String i : methods.get(nm).keySet())
-         {
-            results.addAll(methods.get(nm).get(i));
-         }
-      }
-      return results;
+      return methodSet;
    }
 
    public Collection<FieldData> getFields()
