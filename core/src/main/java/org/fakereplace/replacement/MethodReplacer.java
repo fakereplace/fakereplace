@@ -255,7 +255,8 @@ public class MethodReplacer
       }
    }
 
-   private static String generateProxyInvocationBytecode(MethodInfo mInfo, ConstPool constPool, int methodNumber, String className, ClassLoader loader, boolean staticMethod, boolean isInterface) throws BadBytecode
+   private static String generateProxyInvocationBytecode(MethodInfo mInfo, ConstPool constPool, int methodNumber, String className, ClassLoader loader, boolean staticMethod, boolean isInterface)
+         throws BadBytecode
    {
       String proxyName = ProxyDefinitionStore.getProxyName();
       ClassFile proxy = new ClassFile(false, proxyName, "java.lang.Object");
@@ -458,11 +459,9 @@ public class MethodReplacer
     * Adds a method to a class
     * 
     */
-   private static Class addMethod(ClassFile file, ClassLoader loader, MethodInfo mInfo, ClassDataBuilder builder, CodeAttribute bytecode, boolean staticMethod, Class oldClass)
+   private static Class<?> addMethod(ClassFile file, ClassLoader loader, MethodInfo mInfo, ClassDataBuilder builder, CodeAttribute bytecode, boolean staticMethod, Class oldClass)
    {
-
       int methodCount = MethodIdentifierStore.getMethodNumber(mInfo.getName(), mInfo.getDescriptor());
-
       try
       {
          if ((AccessFlag.ABSTRACT & mInfo.getAccessFlags()) == 0)
@@ -522,7 +521,8 @@ public class MethodReplacer
     * @param addedMethod
     * @throws BadBytecode
     */
-   private static void generateBoxedConditionalCodeBlock(int methodNumber, MethodInfo mInfo, ConstPool methodConstPool, CodeAttribute addedMethod, boolean staticMethod, boolean constructor) throws BadBytecode
+   private static void generateBoxedConditionalCodeBlock(int methodNumber, MethodInfo mInfo, ConstPool methodConstPool, CodeAttribute addedMethod, boolean staticMethod, boolean constructor)
+         throws BadBytecode
    {
       // we need to insert a conditional
       Bytecode bc = new Bytecode(mInfo.getConstPool());

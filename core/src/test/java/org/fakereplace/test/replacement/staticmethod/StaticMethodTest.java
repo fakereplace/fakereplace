@@ -49,6 +49,24 @@ public class StaticMethodTest
       assert res == 1 : "Failed to replace static method";
    }
 
+   @Test(groups = "staticmethod")
+   @Coverage(privateMember = true, change = CodeChangeType.ADD_STATIC_METHOD, test = ChangeTestType.GET_DECLARED_BY_NAME)
+   public void testStaticPrivateMethodDeclaredByReflection() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException
+   {
+      StaticClass ns = new StaticClass();
+      Class c = StaticClass.class;
+      Method m = c.getDeclaredMethod("privateMethod");
+   }
+
+   @Test(groups = "staticmethod", expectedExceptions = NoSuchMethodException.class)
+   @Coverage(privateMember = true, change = CodeChangeType.ADD_STATIC_METHOD, test = ChangeTestType.GET_DECLARED_BY_NAME)
+   public void testStaticPrivateMethodByReflection() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException
+   {
+      StaticClass ns = new StaticClass();
+      Class c = StaticClass.class;
+      Method m = c.getMethod("privateMethod");
+   }
+
    @Coverage(privateMember = false, change = CodeChangeType.REMOVE_STATIC_METHOD, test = ChangeTestType.GET_BY_NAME)
    @Test(groups = "staticmethod", expectedExceptions = NoSuchMethodException.class)
    public void testRemovedStaticMethodByNameByReflection() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException

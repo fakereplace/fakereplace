@@ -22,6 +22,11 @@ public class StaticClass1
       return value;
    }
 
+   private static void privateMethod()
+   {
+
+   }
+
    public static int getInt()
    {
       return 10;

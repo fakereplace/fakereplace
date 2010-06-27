@@ -26,6 +26,11 @@ public class VirtualClass1
       return null;
    }
 
+   private void privateFunction()
+   {
+
+   }
+
    @Override
    public String toString()
    {

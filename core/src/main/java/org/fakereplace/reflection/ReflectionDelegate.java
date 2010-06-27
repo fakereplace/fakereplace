@@ -213,6 +213,10 @@ public class ReflectionDelegate
       case FAKE:
          try
          {
+            if (!AccessFlag.isPublic(md.getAccessFlags()))
+            {
+               throw new NoSuchMethodException(clazz.getName() + "." + name);
+            }
             Class<?> c = superClass.getClassLoader().loadClass(md.getClassName());
             meth = c.getMethod(name, parameters);
             return meth;
