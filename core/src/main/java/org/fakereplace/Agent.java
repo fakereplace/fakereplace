@@ -12,8 +12,10 @@ import java.util.Set;
 
 import javassist.bytecode.ClassFile;
 
+import org.fakereplace.api.ClassChangeNotifier;
 import org.fakereplace.api.IntegrationInfo;
 import org.fakereplace.boot.Enviroment;
+import org.fakereplace.classloading.ClassIdentifier;
 import org.fakereplace.classloading.ClassLookupManager;
 import org.fakereplace.replacement.AddedClass;
 import org.fakereplace.replacement.ClassRedefiner;
@@ -41,6 +43,22 @@ public class Agent
 
    static public void redefine(ClassDefinition[] classes, AddedClass[] addedData) throws UnmodifiableClassException, ClassNotFoundException
    {
+
+      ClassIdentifier[] addedClass = new ClassIdentifier[addedData.length];
+      int count = 0;
+      for (AddedClass i : addedData)
+      {
+         addedClass[count++] = i.getClassIdentifier();
+      }
+      Class<?>[] changedClasses = new Class<?>[classes.length];
+      count = 0;
+      for (ClassDefinition i : classes)
+      {
+         changedClasses[count++] = i.getDefinitionClass();
+      }
+
+      ClassChangeNotifier.beforeChange(changedClasses, addedClass);
+
       ClassDefinition[] modifiedClasses = ClassRedefiner.rewriteLoadedClasses(classes);
       try
       {
@@ -49,6 +67,8 @@ public class Agent
             ClassLookupManager.addClassInfo(c.getClassName(), c.getLoader(), c.getData());
          }
          inst.redefineClasses(modifiedClasses);
+
+         ClassChangeNotifier.notify(changedClasses, addedClass);
       }
       catch (Throwable e)
       {

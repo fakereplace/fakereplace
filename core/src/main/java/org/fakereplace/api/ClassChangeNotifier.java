@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.fakereplace.classloading.ClassIdentifier;
+
 import com.google.common.collect.MapMaker;
 
 public class ClassChangeNotifier
@@ -12,7 +14,8 @@ public class ClassChangeNotifier
    static Map<ClassLoader, Set<ClassChangeAware>> classChangeAwares = new MapMaker().weakKeys().makeMap();
 
    /**
-    * These are objects that want to be notified but that do not have a dependency on fakereplace.
+    * These are objects that want to be notified but that do not have a
+    * dependency on fakereplace.
     */
    static Map<ClassLoader, Set<Object>> unlinkedAwares = new MapMaker().weakKeys().makeMap();
 
@@ -35,7 +38,7 @@ public class ClassChangeNotifier
       unlinkedAwares.get(aware.getClass().getClassLoader()).add(aware);
    }
 
-   public static void notify(Class<?>[] changed, Class<?>[] newClasses)
+   public static void notify(Class<?>[] changed, ClassIdentifier[] newClasses)
    {
       Class<?>[] a = new Class[0];
       for (Set<ClassChangeAware> c : classChangeAwares.values())
@@ -63,7 +66,7 @@ public class ClassChangeNotifier
       }
    }
 
-   public static void beforeChange(Class<?>[] changed, Class<?>[] newClasses)
+   public static void beforeChange(Class<?>[] changed, ClassIdentifier[] newClasses)
    {
       Class<?>[] a = new Class[0];
       for (Set<ClassChangeAware> c : classChangeAwares.values())

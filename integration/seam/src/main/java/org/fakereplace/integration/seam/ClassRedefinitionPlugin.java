@@ -14,6 +14,7 @@ import java.util.Set;
 
 import org.fakereplace.api.ClassChangeAware;
 import org.fakereplace.api.ClassChangeNotifier;
+import org.fakereplace.classloading.ClassIdentifier;
 import org.fakereplace.data.InstanceTracker;
 import org.jboss.seam.Component;
 import org.jboss.seam.ScopeType;
@@ -81,7 +82,7 @@ public class ClassRedefinitionPlugin implements ClassChangeAware
       return getField(clazz.getSuperclass(), name);
    }
 
-   public void beforeChange(Class<?>[] changed, Class<?>[] added)
+   public void beforeChange(Class<?>[] changed, ClassIdentifier[] added)
    {
       disableHotDeployFilter();
       if (!Lifecycle.isApplicationInitialized())
@@ -123,7 +124,7 @@ public class ClassRedefinitionPlugin implements ClassChangeAware
       }
    }
 
-   public void notify(Class<?>[] changed, Class<?>[] added)
+   public void notify(Class<?>[] changed, ClassIdentifier[] added)
    {
       if (!Lifecycle.isApplicationInitialized())
       {

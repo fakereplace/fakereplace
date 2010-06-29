@@ -17,9 +17,9 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.fakereplace.Agent;
-import org.fakereplace.api.ClassChangeNotifier;
 import org.fakereplace.manip.util.MapFunction;
 import org.fakereplace.replacement.AddedClass;
+import org.fakereplace.util.FileReader;
 
 import com.google.common.collect.MapMaker;
 
@@ -249,7 +249,29 @@ public class ClassChangeDetector
                d = d.replace('/', '.');
                d = d.replace('\\', '.');
                d = d.substring(0, d.length() - ".class".length());
-               ret.getNewClasses().add(new NewClassData(d, nf.getClassLoader()));
+               FileInputStream stream = null;
+               try
+               {
+                  stream = new FileInputStream(nf.getFile());
+                  byte[] cd = FileReader.readFileBytes(stream);
+                  ret.getNewClasses().add(new AddedClass(d, cd, nf.getClassLoader()));
+               }
+               catch (Exception ex)
+               {
+                  ex.printStackTrace();
+               }
+               finally
+               {
+                  try
+                  {
+                     stream.close();
+                  }
+                  catch (IOException e1)
+                  {
+                     e1.printStackTrace();
+                  }
+               }
+
                oldFileMap.put(nf.getFile(), nf);
 
             }
@@ -332,7 +354,7 @@ public class ClassChangeDetector
                }
                ClassDefinition[] defs = new ClassDefinition[changes.getChangedClasses().size()];
                Class<?>[] changed = new Class[changes.getChangedClasses().size()];
-               Class<?>[] newClasses = new Class[changes.getNewClasses().size()];
+               AddedClass[] newClasses = new AddedClass[changes.getNewClasses().size()];
                int count = 0;
                for (ChangedClassData i : changes.getChangedClasses())
                {
@@ -341,19 +363,14 @@ public class ClassChangeDetector
                   defs[count++] = new ClassDefinition(i.javaClass, i.classFile);
                }
                count = 0;
-               for (NewClassData i : changes.getNewClasses())
+               for (AddedClass i : changes.getNewClasses())
                {
-                  if (i.getJavaClass() == null)
-                  {
-                     System.out.println("ADDING NEW CLASS: " + i.getJavaClass().getName());
-                     newClasses[count++] = i.getJavaClass();
-                  }
+                  System.out.println("ADDING NEW CLASS: " + i.getClassName());
+                  newClasses[count++] = i;
                }
                try
                {
-                  ClassChangeNotifier.beforeChange(changed, newClasses);
-                  Agent.redefine(defs, new AddedClass[0]);
-                  ClassChangeNotifier.notify(changed, newClasses);
+                  Agent.redefine(defs, newClasses);
                }
                catch (UnmodifiableClassException e)
                {

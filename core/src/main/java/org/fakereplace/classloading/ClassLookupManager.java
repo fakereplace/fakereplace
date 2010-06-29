@@ -16,7 +16,7 @@ import com.google.common.collect.MapMaker;
  */
 public class ClassLookupManager
 {
-   private static Map<ClassInfo, byte[]> classData = new MapMaker().makeMap();
+   private static Map<ClassIdentifier, byte[]> classData = new MapMaker().makeMap();
 
    public static byte[] getClassData(String className, ClassLoader loader)
    {
@@ -28,51 +28,11 @@ public class ClassLookupManager
       {
          return Transformer.getIntegrationClass(loader, className);
       }
-      return classData.get(new ClassInfo(className, loader));
+      return classData.get(new ClassIdentifier(className, loader));
    }
 
    public static void addClassInfo(String className, ClassLoader loader, byte[] data)
    {
-      classData.put(new ClassInfo(className, loader), data);
-   }
-
-   private static class ClassInfo
-   {
-      private final String className;
-      private final ClassLoader loader;
-
-      public ClassInfo(String className, ClassLoader loader)
-      {
-         this.className = className;
-         this.loader = loader;
-      }
-
-      public String getClassName()
-      {
-         return className;
-      }
-
-      public ClassLoader getLoader()
-      {
-         return loader;
-      }
-
-      @Override
-      public int hashCode()
-      {
-         return className.hashCode();
-      }
-
-      @Override
-      public boolean equals(Object obj)
-      {
-         if (obj instanceof ClassInfo)
-         {
-            ClassInfo c = (ClassInfo) obj;
-            return c.loader == loader && c.className.equals(className);
-         }
-         return false;
-      }
-
+      classData.put(new ClassIdentifier(className, loader), data);
    }
 }

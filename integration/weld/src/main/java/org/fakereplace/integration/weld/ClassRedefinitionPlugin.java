@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 
-import org.fakereplace.api.ClassChangeAware;
+import bsh.ClassIdentifier;
 
 public class ClassRedefinitionPlugin implements ClassChangeAware
 {
@@ -49,12 +49,12 @@ public class ClassRedefinitionPlugin implements ClassChangeAware
       return getField(clazz.getSuperclass(), name);
    }
 
-   public void beforeChange(Class<?>[] changed, Class<?>[] added)
+   public void beforeChange(Class<?>[] changed, ClassIdentifier[] added)
    {
 
    }
 
-   public void notify(Class<?>[] changed, Class<?>[] added)
+   public void notify(Class<?>[] changed, ClassIdentifier[] added)
    {
 
    }

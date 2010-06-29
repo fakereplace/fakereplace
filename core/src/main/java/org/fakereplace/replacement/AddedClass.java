@@ -1,5 +1,7 @@
 package org.fakereplace.replacement;
 
+import org.fakereplace.classloading.ClassIdentifier;
+
 public class AddedClass
 {
    private final String className;
@@ -8,7 +10,6 @@ public class AddedClass
 
    public AddedClass(String className, byte[] data, ClassLoader loader)
    {
-      super();
       this.className = className;
       this.data = data;
       this.loader = loader;
@@ -29,4 +30,8 @@ public class AddedClass
       return loader;
    }
 
+   public ClassIdentifier getClassIdentifier()
+   {
+      return new ClassIdentifier(className, loader);
+   }
 }
