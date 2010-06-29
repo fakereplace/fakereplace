@@ -19,6 +19,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.fakereplace.Agent;
 import org.fakereplace.api.ClassChangeNotifier;
 import org.fakereplace.manip.util.MapFunction;
+import org.fakereplace.replacement.AddedClass;
 
 import com.google.common.collect.MapMaker;
 
@@ -351,7 +352,7 @@ public class ClassChangeDetector
                try
                {
                   ClassChangeNotifier.beforeChange(changed, newClasses);
-                  Agent.redefine(defs);
+                  Agent.redefine(defs, new AddedClass[0]);
                   ClassChangeNotifier.notify(changed, newClasses);
                }
                catch (UnmodifiableClassException e)

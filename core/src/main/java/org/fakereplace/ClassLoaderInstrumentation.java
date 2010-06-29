@@ -14,9 +14,8 @@ import javassist.CtMethod;
 import javassist.NotFoundException;
 import javassist.bytecode.AccessFlag;
 
-import org.fakereplace.boot.Constants;
 import org.fakereplace.boot.Logger;
-import org.fakereplace.boot.ProxyDefinitionStore;
+import org.fakereplace.classloading.ClassLookupManager;
 import org.fakereplace.data.BaseClassData;
 import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.data.MethodData;
@@ -92,7 +91,10 @@ public class ClassLoaderInstrumentation
          // if the data is not null then we define the class, link
          // it if requested and return it.
          CtMethod method = cls.getDeclaredMethod("loadClass", arg);
-         method.insertBefore("if($1.startsWith(\"" + Constants.GENERATED_CLASS_PACKAGE + "\")){ try{ Class find = findLoadedClass($1); if(find != null) return find; byte[] cd = " + ProxyDefinitionStore.class.getName() + ".getProxyDefinition(this,$1); if(cd != null){ Class c = defineClass($1,cd,0,cd.length); if($2) resolveClass(c); return c; } }catch(Throwable e) {e.printStackTrace(); return null;}} if($1.startsWith(\"org.fakereplace.integration\")){ try{ byte[] cd = " + Transformer.class.getName() + ".getIntegrationClass(this,$1); if(cd != null){ Class c = defineClass($1,cd,0,cd.length); if($2) resolveClass(c); return c; } }catch(Throwable e) {e.printStackTrace(); return null;}}");
+         method
+               .insertBefore("byte[] bdata = "
+                     + ClassLookupManager.class.getName()
+                     + ".getClassData($1,this); if(bdata != null){ try{ Class find = findLoadedClass($1); if(find != null) return find; Class c = defineClass($1,bdata,0,bdata.length); if($2) resolveClass(c); return c;  }catch(Throwable e) {e.printStackTrace(); return null;}}");
          BaseClassData data = ClassDataStore.getBaseClassData(cl.getClassLoader(), cl.getName());
          for (Object i : cls.getDeclaredMethods())
          {

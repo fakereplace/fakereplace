@@ -14,6 +14,8 @@ import javassist.bytecode.ClassFile;
 
 import org.fakereplace.api.IntegrationInfo;
 import org.fakereplace.boot.Enviroment;
+import org.fakereplace.classloading.ClassLookupManager;
+import org.fakereplace.replacement.AddedClass;
 import org.fakereplace.replacement.ClassRedefiner;
 
 /**
@@ -37,11 +39,15 @@ public class Agent
       inst.addTransformer(new Transformer(i, integrationInfo, environment));
    }
 
-   static public void redefine(ClassDefinition... classes) throws UnmodifiableClassException, ClassNotFoundException
+   static public void redefine(ClassDefinition[] classes, AddedClass[] addedData) throws UnmodifiableClassException, ClassNotFoundException
    {
       ClassDefinition[] modifiedClasses = ClassRedefiner.rewriteLoadedClasses(classes);
       try
       {
+         for (AddedClass c : addedData)
+         {
+            ClassLookupManager.addClassInfo(c.getClassName(), c.getLoader(), c.getData());
+         }
          inst.redefineClasses(modifiedClasses);
       }
       catch (Throwable e)
