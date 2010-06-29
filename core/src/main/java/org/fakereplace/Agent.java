@@ -44,13 +44,13 @@ public class Agent
    static public void redefine(ClassDefinition[] classes, AddedClass[] addedData) throws UnmodifiableClassException, ClassNotFoundException
    {
 
-      ClassIdentifier[] addedClass = new ClassIdentifier[addedData.length];
+      final ClassIdentifier[] addedClass = new ClassIdentifier[addedData.length];
       int count = 0;
       for (AddedClass i : addedData)
       {
          addedClass[count++] = i.getClassIdentifier();
       }
-      Class<?>[] changedClasses = new Class<?>[classes.length];
+      final Class<?>[] changedClasses = new Class<?>[classes.length];
       count = 0;
       for (ClassDefinition i : classes)
       {
@@ -68,7 +68,18 @@ public class Agent
          }
          inst.redefineClasses(modifiedClasses);
 
-         ClassChangeNotifier.notify(changedClasses, addedClass);
+         // we run the integration in a new thread
+         // as it may cause new classes to be loaded
+         // and they need to be transformed
+         Thread t = new Thread(new Runnable()
+         {
+
+            public void run()
+            {
+               ClassChangeNotifier.notify(changedClasses, addedClass);
+            }
+         });
+         t.start();
       }
       catch (Throwable e)
       {
