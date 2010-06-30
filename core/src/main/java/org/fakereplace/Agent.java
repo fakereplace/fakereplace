@@ -68,18 +68,7 @@ public class Agent
          }
          inst.redefineClasses(modifiedClasses);
 
-         // we run the integration in a new thread
-         // as it may cause new classes to be loaded
-         // and they need to be transformed
-         Thread t = new Thread(new Runnable()
-         {
-
-            public void run()
-            {
-               ClassChangeNotifier.notify(changedClasses, addedClass);
-            }
-         });
-         t.start();
+         ClassChangeNotifier.notify(changedClasses, addedClass);
       }
       catch (Throwable e)
       {
