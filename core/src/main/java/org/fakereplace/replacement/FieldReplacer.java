@@ -34,6 +34,7 @@ import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.data.FieldData;
 import org.fakereplace.data.MemberType;
 import org.fakereplace.manip.data.AddedFieldData;
+import org.fakereplace.manip.staticfield.StaticFieldClassFactory;
 import org.fakereplace.manip.util.Boxing;
 import org.fakereplace.manip.util.ManipulationUtils;
 import org.fakereplace.reflection.FieldAccessor;
@@ -277,37 +278,31 @@ public class FieldReplacer
     */
    private static void addStaticField(ClassFile file, ClassLoader loader, FieldInfo m, ClassDataBuilder builder, Class<?> oldClass)
    {
-      // this is quite simple. First we create a proxy
-      String proxyName = ProxyDefinitionStore.getProxyName();
-      ClassFile proxy = new ClassFile(false, proxyName, "java.lang.Object");
-      ClassDataStore.registerProxyName(oldClass, proxyName);
-      proxy.setAccessFlags(AccessFlag.PUBLIC);
-      FieldInfo newField = new FieldInfo(proxy.getConstPool(), m.getName(), m.getDescriptor());
-      newField.setAccessFlags(AccessFlag.PUBLIC | AccessFlag.STATIC);
+      // this will generate the class holding the satic field if is does not
+      // already exist. This allows
+      // the static field to hold its value accross multiple replacements
 
-      copyFieldAttributes(m, newField);
+      String sig = null;
+      SignatureAttribute sat = (SignatureAttribute) m.getAttribute(SignatureAttribute.tag);
+      if (sat != null)
+      {
+         sig = sat.getSignature();
+      }
 
+      String proxyName = StaticFieldClassFactory.getStaticFieldClass(oldClass, m.getName(), m.getDescriptor(), sig);
       try
       {
-         proxy.addField(newField);
-         Transformer.getManipulator().rewriteStaticFieldAccess(file.getName(), proxyName, m.getName(), loader);
-         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-         DataOutputStream dos = new DataOutputStream(bytes);
-         try
-         {
-            proxy.write(dos);
-         }
-         catch (IOException e)
-         {
-            throw new RuntimeException(e);
-         }
-         ProxyDefinitionStore.saveProxyDefinition(loader, proxyName, bytes.toByteArray());
-         builder.addFakeField(newField, proxyName, m.getAccessFlags());
+         Field fieldFromProxy = loader.loadClass(proxyName).getDeclaredField(m.getName());
+         AnnotationDataStore.recordFieldAnnotations(fieldFromProxy, (AnnotationsAttribute) m.getAttribute(AnnotationsAttribute.visibleTag));
       }
-      catch (DuplicateMemberException e)
+      catch (Exception e)
       {
-         // can't happen
+         // should not happen
+         e.printStackTrace();
       }
+      Transformer.getManipulator().rewriteStaticFieldAccess(file.getName(), proxyName, m.getName(), loader);
+      builder.addFakeField(m, proxyName, m.getAccessFlags());
+
    }
 
    /**
