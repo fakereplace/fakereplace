@@ -168,7 +168,7 @@ public class Transformer implements ClassFileTransformer
             makeTrackedInstance(file);
          }
 
-         manipulator.transformClass(file, loader);
+         manipulator.transformClass(file, loader, enviroment);
 
          if (enviroment.isClassReplacable(file.getName()) && (AccessFlag.ENUM & file.getAccessFlags()) == 0 && (AccessFlag.ANNOTATION & file.getAccessFlags()) == 0)
          {

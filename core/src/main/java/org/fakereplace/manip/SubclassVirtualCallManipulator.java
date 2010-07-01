@@ -9,6 +9,7 @@ import javassist.bytecode.ClassFile;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.Opcode;
 
+import org.fakereplace.boot.Enviroment;
 import org.fakereplace.manip.data.SubclassVirtualCallData;
 import org.fakereplace.manip.util.ManipulationDataStore;
 import org.fakereplace.manip.util.ManipulationUtils;
@@ -51,7 +52,7 @@ public class SubclassVirtualCallManipulator implements ClassManipulator
       VirtualDelegator.clear(classLoader, className);
    }
 
-   public void transformClass(ClassFile file, ClassLoader loader)
+   public void transformClass(ClassFile file, ClassLoader loader, Enviroment environment)
    {
       Map<String, Set<SubclassVirtualCallData>> loaderData = data.getManipulationData(loader);
       if (loaderData.containsKey(file.getName()))

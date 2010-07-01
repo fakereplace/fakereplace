@@ -5,6 +5,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 import javassist.bytecode.ClassFile;
 
+import org.fakereplace.boot.Enviroment;
 import org.fakereplace.manip.data.AddedFieldData;
 
 /**
@@ -90,12 +91,12 @@ public class Manipulator
       methodInvokationManipulator.replaceVirtualMethodInvokationWithLocal(oldClass, methodName, newMethodName, methodDesc, newStaticMethodDesc, classLoader);
    }
 
-   public void transformClass(ClassFile file, ClassLoader classLoader)
+   public void transformClass(ClassFile file, ClassLoader classLoader, Enviroment e)
    {
       // first we are going to transform virtual method calls to static ones
       for (ClassManipulator m : manipulators)
       {
-         m.transformClass(file, classLoader);
+         m.transformClass(file, classLoader, e);
       }
    }
 

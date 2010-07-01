@@ -10,6 +10,7 @@ import javassist.bytecode.CodeIterator;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.MethodInfo;
 
+import org.fakereplace.boot.Enviroment;
 import org.fakereplace.boot.Logger;
 import org.fakereplace.manip.data.StaticFieldAccessRewriteData;
 import org.fakereplace.manip.util.ManipulationDataStore;
@@ -35,7 +36,7 @@ public class StaticFieldManipulator implements ClassManipulator
       data.add(oldClass, new StaticFieldAccessRewriteData(oldClass, newClass, fieldName, classLoader));
    }
 
-   public void transformClass(ClassFile file, ClassLoader loader)
+   public void transformClass(ClassFile file, ClassLoader loader, Enviroment environment)
    {
       Map<String, Set<StaticFieldAccessRewriteData>> staticMethodData = data.getManipulationData(loader);
       if (staticMethodData.isEmpty())

@@ -11,6 +11,7 @@ import javassist.bytecode.MethodInfo;
 import javassist.bytecode.annotation.Annotation;
 
 import org.fakereplace.boot.Constants;
+import org.fakereplace.boot.Enviroment;
 import org.fakereplace.data.ModifiedMethod;
 
 /**
@@ -34,7 +35,7 @@ public class FinalMethodManipulator implements ClassManipulator
       classLoaders.add(nm);
    }
 
-   public void transformClass(ClassFile file, ClassLoader loader)
+   public void transformClass(ClassFile file, ClassLoader loader, Enviroment environment)
    {
       if (classLoaders.contains(file.getName()))
       {

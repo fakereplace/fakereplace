@@ -79,7 +79,7 @@ public class Agent
             {
                DataInputStream ds = new DataInputStream(new ByteArrayInputStream(d.getDefinitionClassFile()));
                ClassFile file = new ClassFile(ds);
-               Transformer.getManipulator().transformClass(file, d.getDefinitionClass().getClassLoader());
+               Transformer.getManipulator().transformClass(file, d.getDefinitionClass().getClassLoader(), environment);
                String dumpDir = environment.getDumpDirectory();
                if (dumpDir == null)
                {

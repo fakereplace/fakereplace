@@ -13,6 +13,7 @@ import javassist.bytecode.MethodInfo;
 import javassist.bytecode.Opcode;
 
 import org.fakereplace.boot.Constants;
+import org.fakereplace.boot.Enviroment;
 import org.fakereplace.boot.Logger;
 import org.fakereplace.manip.data.AddedFieldData;
 import org.fakereplace.manip.util.Boxing;
@@ -31,7 +32,7 @@ public class InstanceFieldManipulator implements ClassManipulator
       data.add(dt.getClassName(), dt);
    }
 
-   public void transformClass(ClassFile file, ClassLoader loader)
+   public void transformClass(ClassFile file, ClassLoader loader, Enviroment environment)
    {
 
       Map<String, Set<AddedFieldData>> addedFieldData = data.getManipulationData(loader);

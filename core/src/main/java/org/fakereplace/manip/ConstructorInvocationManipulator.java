@@ -13,6 +13,7 @@ import javassist.bytecode.MethodInfo;
 import javassist.bytecode.Opcode;
 
 import org.fakereplace.boot.Constants;
+import org.fakereplace.boot.Enviroment;
 import org.fakereplace.boot.Logger;
 import org.fakereplace.manip.data.ConstructorRewriteData;
 import org.fakereplace.manip.util.ManipulationDataStore;
@@ -44,7 +45,7 @@ public class ConstructorInvocationManipulator implements ClassManipulator
       data.add(clazz, d);
    }
 
-   public void transformClass(ClassFile file, ClassLoader loader)
+   public void transformClass(ClassFile file, ClassLoader loader, Enviroment environment)
    {
 
       Map<String, Set<ConstructorRewriteData>> constructorRewrites = data.getManipulationData(loader);

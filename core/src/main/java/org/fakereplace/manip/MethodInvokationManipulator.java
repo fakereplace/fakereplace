@@ -10,6 +10,7 @@ import javassist.bytecode.CodeIterator;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.MethodInfo;
 
+import org.fakereplace.boot.Enviroment;
 import org.fakereplace.boot.Logger;
 import org.fakereplace.manip.data.VirtualToStaticData;
 import org.fakereplace.manip.util.ManipulationDataStore;
@@ -47,7 +48,7 @@ public class MethodInvokationManipulator implements ClassManipulator
       data.add(oldClass, d);
    }
 
-   public void transformClass(ClassFile file, ClassLoader loader)
+   public void transformClass(ClassFile file, ClassLoader loader, Enviroment environment)
    {
       Map<String, Set<VirtualToStaticData>> virtualToStaticMethod = data.getManipulationData(loader);
       Map<Integer, VirtualToStaticData> methodCallLocations = new HashMap<Integer, VirtualToStaticData>();
