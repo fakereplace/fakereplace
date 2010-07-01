@@ -61,13 +61,13 @@ import com.google.common.collect.MapMaker;
 public class Transformer implements ClassFileTransformer
 {
 
-   Instrumentation instrumentation;
+   final Instrumentation instrumentation;
 
-   ClassLoaderInstrumentation classLoaderInstrumenter;
+   final ClassLoaderInstrumentation classLoaderInstrumenter;
 
    final Enviroment enviroment;
 
-   static Manipulator manipulator = new Manipulator();
+   static final Manipulator manipulator = new Manipulator();
 
    static final Map<ClassLoader, Object> integrationClassloader = new MapMaker().weakKeys().makeMap();
 
@@ -435,7 +435,8 @@ public class Transformer implements ClassFileTransformer
       {
          for (MethodData m : data.getMethods())
          {
-            if (m.isStatic() || (AccessFlag.ABSTRACT & m.getAccessFlags()) != 0 || (AccessFlag.FINAL & m.getAccessFlags()) != 0 || (AccessFlag.PRIVATE & m.getAccessFlags()) != 0 || (AccessFlag.NATIVE & m.getAccessFlags()) != 0)
+            if (m.isStatic() || (AccessFlag.ABSTRACT & m.getAccessFlags()) != 0 || (AccessFlag.FINAL & m.getAccessFlags()) != 0 || (AccessFlag.PRIVATE & m.getAccessFlags()) != 0
+                  || (AccessFlag.NATIVE & m.getAccessFlags()) != 0)
             {
                continue;
             }
@@ -498,7 +499,8 @@ public class Transformer implements ClassFileTransformer
          {
             continue;
          }
-         if (m.isStatic() || (AccessFlag.ABSTRACT & m.getAccessFlags()) != 0 || (AccessFlag.FINAL & m.getAccessFlags()) != 0 || (AccessFlag.PRIVATE & m.getAccessFlags()) != 0 || (AccessFlag.NATIVE & m.getAccessFlags()) != 0)
+         if (m.isStatic() || (AccessFlag.ABSTRACT & m.getAccessFlags()) != 0 || (AccessFlag.FINAL & m.getAccessFlags()) != 0 || (AccessFlag.PRIVATE & m.getAccessFlags()) != 0
+               || (AccessFlag.NATIVE & m.getAccessFlags()) != 0)
          {
             continue;
          }

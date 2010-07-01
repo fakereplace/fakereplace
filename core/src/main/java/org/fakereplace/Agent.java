@@ -43,22 +43,22 @@ public class Agent
 
    static public void redefine(ClassDefinition[] classes, AddedClass[] addedData) throws UnmodifiableClassException, ClassNotFoundException
    {
-
       final ClassIdentifier[] addedClass = new ClassIdentifier[addedData.length];
       int count = 0;
       for (AddedClass i : addedData)
       {
          addedClass[count++] = i.getClassIdentifier();
       }
+
       final Class<?>[] changedClasses = new Class<?>[classes.length];
       count = 0;
       for (ClassDefinition i : classes)
       {
          changedClasses[count++] = i.getDefinitionClass();
       }
-
+      // notify the integration classes that stuff is about to change
       ClassChangeNotifier.beforeChange(changedClasses, addedClass);
-
+      // re-write the classes so their field
       ClassDefinition[] modifiedClasses = ClassRedefiner.rewriteLoadedClasses(classes);
       try
       {

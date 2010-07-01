@@ -43,6 +43,7 @@ import org.fakereplace.manip.util.Boxing;
 import org.fakereplace.manip.util.ManipulationUtils;
 import org.fakereplace.manip.util.ParameterRewriter;
 import org.fakereplace.manip.util.ManipulationUtils.MethodReturnRewriter;
+import org.fakereplace.util.AccessFlagUtils;
 import org.fakereplace.util.DescriptorUtils;
 
 public class MethodReplacer
@@ -127,11 +128,32 @@ public class MethodReplacer
       {
          MethodInfo m = (MethodInfo) it.next();
          MethodData md = null;
-
+         boolean upgradedVisibility = false;
          for (MethodData i : methods)
          {
-            if (i.getMethodName().equals(m.getName()) && i.getDescriptor().equals(m.getDescriptor()) && i.getAccessFlags() == m.getAccessFlags())
+            if (i.getMethodName().equals(m.getName()) && i.getDescriptor().equals(m.getDescriptor()))
             {
+
+               // if the access flags do not match then what we need to do
+               // depends on what has changed
+               if (i.getAccessFlags() != m.getAccessFlags())
+               {
+                  if (AccessFlagUtils.upgradeVisibility(m.getAccessFlags(), i.getAccessFlags()))
+                  {
+                     upgradedVisibility = true;
+                  }
+                  else if (AccessFlagUtils.downgradeVisibility(m.getAccessFlags(), i.getAccessFlags()))
+                  {
+                     // ignore this, we don't need to do anything
+                  }
+                  else
+                  {
+                     // we can't handle this yet
+                     continue;
+                  }
+               }
+               m.setAccessFlags(i.getAccessFlags());
+
                // if it is the constructor
                if (m.getName().equals("<init>"))
                {
@@ -167,6 +189,7 @@ public class MethodReplacer
                      throw new RuntimeException(e);
                   }
                }
+
                md = i;
                break;
             }
@@ -177,7 +200,10 @@ public class MethodReplacer
             break;
          }
          // This is a newly added method.
-         if (md == null)
+         // or the visilbility has been upgraded
+         // with the visiblity upgrade we just copy the method
+         // so it is still in the original
+         if (md == null || upgradedVisibility)
          {
             if ((m.getAccessFlags() & AccessFlag.STATIC) != 0)
             {
@@ -203,12 +229,16 @@ public class MethodReplacer
                   superclassesToHotswap.add(c);
                }
             }
-
-            // TODO deal with constructors and virtual methods
-            // remove the actual definition
-            it.remove();
+            if (!upgradedVisibility)
+            {
+               it.remove();
+            }
          }
-         else
+         else if (md != null)
+         {
+            methods.remove(md);
+         }
+         if (upgradedVisibility && md != null)
          {
             methods.remove(md);
          }
@@ -526,6 +556,7 @@ public class MethodReplacer
    {
       // we need to insert a conditional
       Bytecode bc = new Bytecode(mInfo.getConstPool());
+      CodeAttribute ca = (CodeAttribute) mInfo.getCodeAttribute().copy(mInfo.getConstPool(), Collections.emptyMap());
       if (staticMethod)
       {
          bc.addOpcode(Opcode.ILOAD_0);
@@ -539,8 +570,8 @@ public class MethodReplacer
       bc.addOpcode(Opcode.IF_ICMPNE);
 
       // now we need to fix local variables and unbox parameters etc
-      ParameterRewriter.mangleParameters(staticMethod, constructor, mInfo.getCodeAttribute(), mInfo.getDescriptor(), mInfo.getCodeAttribute().getMaxLocals());
-      int newMax = mInfo.getCodeAttribute().getMaxLocals() + 2;
+      ParameterRewriter.mangleParameters(staticMethod, constructor, ca, mInfo.getDescriptor(), ca.getMaxLocals());
+      int newMax = ca.getMaxLocals() + 2;
       if (constructor)
       {
          // for the extra
@@ -551,17 +582,17 @@ public class MethodReplacer
          addedMethod.setMaxLocals(newMax);
       }
       // later
-      int offset = mInfo.getCodeAttribute().getCodeLength();
+      int offset = ca.getCodeLength();
       // offset is +3, 2 for the branch offset after the IF_ICMPNE and 1 to
       // take it past the end of the code
       ManipulationUtils.add16bit(bc, offset + 3); // add the branch offset
       // now we need to insert our generated conditional at the start of the
       // new method
-      CodeIterator newInfo = mInfo.getCodeAttribute().iterator();
+      CodeIterator newInfo = ca.iterator();
       newInfo.insert(bc.get());
       // now insert the new method code at the beginning of the static method
       // code attribute
-      addedMethod.iterator().insert(mInfo.getCodeAttribute().getCode());
+      addedMethod.iterator().insert(ca.getCode());
       // now we need to make sure the function is returning an object
       // rewriteFakeMethod makes sure that the return type is properly boxed
       if (!constructor)
