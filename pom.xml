@@ -22,6 +22,7 @@
         <module>integration/seam</module>
         <module>bundle</module>
 		<module>integration/jsf</module>
+		<module>integration/metawidget</module>
 
     </modules>
 
@@ -43,6 +44,12 @@
             <dependency>
                 <groupId>org.fakereplace</groupId>
                 <artifactId>fakereplace-jsf</artifactId>
+                <version>${fakereplace.version}</version>
+            </dependency>
+            
+            <dependency>
+                <groupId>org.fakereplace</groupId>
+                <artifactId>fakereplace-metawidget</artifactId>
                 <version>${fakereplace.version}</version>
             </dependency>
             

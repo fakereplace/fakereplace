@@ -1,5 +1,6 @@
 package org.fakereplace;
 
+import java.beans.Introspector;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -67,6 +68,8 @@ public class Agent
             ClassLookupManager.addClassInfo(c.getClassName(), c.getLoader(), c.getData());
          }
          inst.redefineClasses(modifiedClasses);
+
+         Introspector.flushCaches();
 
          ClassChangeNotifier.notify(changedClasses, addedClass);
       }

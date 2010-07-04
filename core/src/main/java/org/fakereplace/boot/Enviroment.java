@@ -1,11 +1,13 @@
 package org.fakereplace.boot;
 
 import java.io.File;
+import java.net.URL;
 
 /**
- * class that stores some basic enviroment info. 
+ * class that stores some basic enviroment info.
+ * 
  * @author stuart
- *
+ * 
  */
 public class Enviroment
 {
@@ -38,9 +40,6 @@ public class Enviroment
       String plist = System.getProperty(Constants.REPLACABLE_PACKAGES_KEY);
       if (plist == null || plist.length() == 0)
       {
-         System.out.println("-----------------------------------------------------------------");
-         System.out.println("System property " + Constants.REPLACABLE_PACKAGES_KEY + " was not specified, fakereplace is diabled");
-         System.out.println("-----------------------------------------------------------------");
          replacablePackages = new String[0];
       }
       else
@@ -49,7 +48,7 @@ public class Enviroment
       }
    }
 
-   public boolean isClassReplacable(String className)
+   public boolean isClassReplacable(String className, ClassLoader loader)
    {
       for (String i : replacablePackages)
       {
@@ -61,6 +60,17 @@ public class Enviroment
       if (className.contains("$Proxy"))
       {
          return true;
+      }
+      if (loader != null)
+      {
+         URL u = loader.getResource(className.replace('.', '/') + ".class");
+         if (u != null)
+         {
+            if (u.getProtocol().equals("file"))
+            {
+               return true;
+            }
+         }
       }
       return false;
    }

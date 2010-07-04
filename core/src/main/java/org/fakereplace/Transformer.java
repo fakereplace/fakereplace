@@ -170,7 +170,7 @@ public class Transformer implements ClassFileTransformer
 
          manipulator.transformClass(file, loader, enviroment);
 
-         if (enviroment.isClassReplacable(file.getName()) && (AccessFlag.ENUM & file.getAccessFlags()) == 0 && (AccessFlag.ANNOTATION & file.getAccessFlags()) == 0)
+         if (enviroment.isClassReplacable(file.getName(), loader) && (AccessFlag.ENUM & file.getAccessFlags()) == 0 && (AccessFlag.ANNOTATION & file.getAccessFlags()) == 0)
          {
             // Initialise the detector
             // there is no point running it until replaceable classes have been

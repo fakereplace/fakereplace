@@ -1,7 +1,6 @@
 package org.fakereplace.integration.jsf;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.fakereplace.api.ClassTransformer;
@@ -22,9 +21,7 @@ public class JsfIntegrationInfo implements IntegrationInfo
 
    public Set<String> getTrackedInstanceClassNames()
    {
-      Set<String> ret = new HashSet<String>();
-      ret.add("javax.el.BeanELResolver");
-      return ret;
+      return Collections.singleton("javax.el.BeanELResolver");
    }
 
    public ClassTransformer getTransformer()
