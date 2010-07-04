@@ -26,7 +26,8 @@ import org.fakereplace.boot.ProxyDefinitionStore;
 /**
  * Stores information about the annotations on reloaded classes
  * 
- * TODO: This leaks Class's. everthing should be stored in weak hashaps keyed on the class object
+ * TODO: This leaks Class's. everthing should be stored in weak hashaps keyed on
+ * the class object
  * 
  * @author stuart
  * 

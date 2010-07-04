@@ -66,7 +66,7 @@ public class Enviroment
          URL u = loader.getResource(className.replace('.', '/') + ".class");
          if (u != null)
          {
-            if (u.getProtocol().equals("file"))
+            if (u.getProtocol().equals("file") || u.getProtocol().equals("vfsfile"))
             {
                return true;
             }

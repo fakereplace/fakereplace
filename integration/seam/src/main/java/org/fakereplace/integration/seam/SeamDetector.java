@@ -16,6 +16,6 @@ public class SeamDetector
 
    public static void run(Object key)
    {
-      ClassChangeDetector.run(key);
+     ClassChangeDetector.run(key);
    }
 }
