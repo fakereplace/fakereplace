@@ -435,8 +435,7 @@ public class Transformer implements ClassFileTransformer
       {
          for (MethodData m : data.getMethods())
          {
-            if (m.isStatic() || (AccessFlag.ABSTRACT & m.getAccessFlags()) != 0 || (AccessFlag.FINAL & m.getAccessFlags()) != 0 || (AccessFlag.PRIVATE & m.getAccessFlags()) != 0
-                  || (AccessFlag.NATIVE & m.getAccessFlags()) != 0)
+            if (m.isStatic() || (AccessFlag.ABSTRACT & m.getAccessFlags()) != 0 || (AccessFlag.FINAL & m.getAccessFlags()) != 0 || (AccessFlag.PRIVATE & m.getAccessFlags()) != 0 || (AccessFlag.NATIVE & m.getAccessFlags()) != 0)
             {
                continue;
             }
@@ -483,9 +482,8 @@ public class Transformer implements ClassFileTransformer
 
    /**
     * adds methods that call super.same_method() this is so that if the user
-    * decides to add this method
-    * this method adssumes that the class has already been loaded and the
-    * methods added, so it just adds the same ones again
+    * decides to add this method this method assumes that the class has already
+    * been loaded and the methods added, so it just adds the same ones again
     * 
     * @param file
     */
@@ -499,8 +497,7 @@ public class Transformer implements ClassFileTransformer
          {
             continue;
          }
-         if (m.isStatic() || (AccessFlag.ABSTRACT & m.getAccessFlags()) != 0 || (AccessFlag.FINAL & m.getAccessFlags()) != 0 || (AccessFlag.PRIVATE & m.getAccessFlags()) != 0
-               || (AccessFlag.NATIVE & m.getAccessFlags()) != 0)
+         if (m.isStatic() || (AccessFlag.ABSTRACT & m.getAccessFlags()) != 0 || (AccessFlag.FINAL & m.getAccessFlags()) != 0 || (AccessFlag.PRIVATE & m.getAccessFlags()) != 0 || (AccessFlag.NATIVE & m.getAccessFlags()) != 0)
          {
             continue;
          }

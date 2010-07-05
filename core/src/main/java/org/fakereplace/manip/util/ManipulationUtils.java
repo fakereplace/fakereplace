@@ -343,7 +343,7 @@ public class ManipulationUtils
             bc.add(Opcode.DUP_X2);
             // now do it again so we have two copies
             bc.add(Opcode.DUP_X2);
-            // now pop it, the is the equivilent of a wide swap
+            // now pop it, the is the equivalent of a wide swap
             bc.add(Opcode.POP);
          }
          else
