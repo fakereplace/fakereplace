@@ -189,9 +189,9 @@ public class ClassChangeDetector
 
    private static boolean isFileSystemChanged(Set<ClassLoader> loaders)
    {
-      Map<File, FileData> fls = new HashMap<File, FileData>();
       for (Entry<ClassLoader, Set<File>> e : classLoaders.entrySet())
       {
+         Map<File, FileData> fls = new HashMap<File, FileData>();
          if (!loaders.contains(e.getKey()))
          {
             continue;
@@ -245,7 +245,7 @@ public class ClassChangeDetector
             if (oldFile == null)
             {
                // deal with a new file
-               String d = nf.file.getAbsolutePath().substring(nf.getRoot().getAbsolutePath().length() + 1);
+               String d = nf.getFile().getAbsolutePath().substring(nf.getRoot().getAbsolutePath().length() + 1);
                d = d.replace('/', '.');
                d = d.replace('\\', '.');
                d = d.substring(0, d.length() - ".class".length());
