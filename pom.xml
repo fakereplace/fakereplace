@@ -23,7 +23,6 @@
         <module>bundle</module>
 		<module>integration/jsf</module>
 		<module>integration/metawidget</module>
-
     </modules>
 
     <dependencyManagement>

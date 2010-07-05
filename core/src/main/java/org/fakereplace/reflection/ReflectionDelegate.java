@@ -243,7 +243,15 @@ public class ReflectionDelegate
          Method meth = clazz.getDeclaredMethod(name, parameters);
          return meth;
       }
-      String args = '(' + DescriptorUtils.classArrayToDescriptorString(parameters) + ')';
+      String args;
+      if (parameters != null)
+      {
+         args = '(' + DescriptorUtils.classArrayToDescriptorString(parameters) + ')';
+      }
+      else
+      {
+         args = "()";
+      }
       MethodData md = cd.getMethodData(name, args);
       if (md == null)
       {
