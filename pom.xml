@@ -4,7 +4,7 @@
 
 
     <properties>
-        <fakereplace.version>0.9</fakereplace.version>
+        <fakereplace.version>0.10-SNAPSHOT</fakereplace.version>
         <arquillian.version>1.0.0.Alpha2</arquillian.version>
         <weld.version>1.0.1-Final</weld.version>
     </properties>
