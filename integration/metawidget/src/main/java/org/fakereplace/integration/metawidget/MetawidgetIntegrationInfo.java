@@ -9,6 +9,10 @@ import org.fakereplace.api.IntegrationInfo;
 
 public class MetawidgetIntegrationInfo implements IntegrationInfo
 {
+   
+   public final static String BASE_PROPERTY_STYLE = "org.metawidget.inspector.impl.propertystyle.BasePropertyStyle";
+   public final static String BASE_ACTION_STYLE = "org.metawidget.inspector.impl.actionstyle.BaseActionStyle";
+   
 
    public String getClassChangeAwareName()
    {
@@ -17,14 +21,14 @@ public class MetawidgetIntegrationInfo implements IntegrationInfo
 
    public Set<String> getIntegrationTriggerClassNames()
    {
-      return Collections.singleton("org.metawidget.inspector.impl.actionstyle.BaseActionStyle");
+      return Collections.singleton(BASE_ACTION_STYLE);
    }
 
    public Set<String> getTrackedInstanceClassNames()
    {
       Set<String> ret = new HashSet<String>();
-      ret.add("org.metawidget.inspector.impl.propertystyle.BasePropertyStyle");
-      ret.add("org.metawidget.inspector.impl.actionstyle.BaseActionStyle");
+      ret.add(BASE_ACTION_STYLE);
+      ret.add(BASE_PROPERTY_STYLE);
       return ret;
    }
 

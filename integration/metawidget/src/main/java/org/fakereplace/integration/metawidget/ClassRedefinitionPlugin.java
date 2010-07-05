@@ -50,15 +50,17 @@ public class ClassRedefinitionPlugin implements ClassChangeAware
    {
 
    }
-
+   /**
+    * clear the action and properties caches
+    */
    public void notify(Class<?>[] changed, ClassIdentifier[] added)
    {
-      Set<Object> data = InstanceTracker.get("org.metawidget.inspector.impl.actionstyle.BaseActionStyle");
+      Set<Object> data = InstanceTracker.get(MetawidgetIntegrationInfo.BASE_ACTION_STYLE);
       for (Object i : data)
       {
          clearMap(changed, i, "mActionCache");
       }
-      data = InstanceTracker.get("org.metawidget.inspector.impl.propertystyle.BasePropertyStyle");
+      data = InstanceTracker.get(MetawidgetIntegrationInfo.BASE_PROPERTY_STYLE);
       for (Object i : data)
       {
          clearMap(changed, i, "mPropertiesCache");
