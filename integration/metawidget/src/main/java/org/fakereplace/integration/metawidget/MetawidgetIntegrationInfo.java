@@ -14,6 +14,16 @@ public class MetawidgetIntegrationInfo implements IntegrationInfo
    public final static String BASE_ACTION_STYLE = "org.metawidget.inspector.impl.actionstyle.BaseActionStyle";
    
 
+   private static final Set<String> classNames;
+   
+   static
+   {
+      Set<String> ret = new HashSet<String>();
+      ret.add(BASE_ACTION_STYLE);
+      ret.add(BASE_PROPERTY_STYLE);
+      classNames = Collections.unmodifiableSet(ret);
+   }
+   
    public String getClassChangeAwareName()
    {
       return "org.fakereplace.integration.metawidget.ClassRedefinitionPlugin";
@@ -21,15 +31,12 @@ public class MetawidgetIntegrationInfo implements IntegrationInfo
 
    public Set<String> getIntegrationTriggerClassNames()
    {
-      return Collections.singleton(BASE_ACTION_STYLE);
+      return classNames;
    }
 
    public Set<String> getTrackedInstanceClassNames()
    {
-      Set<String> ret = new HashSet<String>();
-      ret.add(BASE_ACTION_STYLE);
-      ret.add(BASE_PROPERTY_STYLE);
-      return ret;
+      return classNames;
    }
 
    public ClassTransformer getTransformer()
