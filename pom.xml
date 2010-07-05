@@ -4,7 +4,7 @@
 
 
     <properties>
-        <fakereplace.version>0.9-SNAPSHOT</fakereplace.version>
+        <fakereplace.version>0.9</fakereplace.version>
         <arquillian.version>1.0.0.Alpha2</arquillian.version>
         <weld.version>1.0.1-Final</weld.version>
     </properties>
@@ -13,7 +13,7 @@
     <groupId>org.fakereplace</groupId>
     <artifactId>fakereplace-parent</artifactId>
     <packaging>pom</packaging>
-    <version>0.9-SNAPSHOT</version>
+    <version>0.9</version>
 
     <name>Fakereplace Parent</name>
 
@@ -121,7 +121,7 @@
     </dependencyManagement>
 
     <scm>
-    	<developerConnection>scm:svn:https://fakereplace.googlecode.com/svn/trunk</developerConnection>
+    	<developerConnection>scm:svn:https://fakereplace.googlecode.com/svn/tags/0.9</developerConnection>
     </scm>
     <build>
         <plugins>
