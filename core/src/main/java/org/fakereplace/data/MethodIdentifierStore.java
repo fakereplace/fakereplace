@@ -6,8 +6,8 @@ import java.util.Map;
 /**
  * Returns a method number for a generated method. Methods with the same name
  * and descriptor are assigned the same number to make emulating virtual calls
- * easier. The redifined method can call super.REDEFINED_METHOD with the same 
- * method number and if the method exists on the superclass then it is handled 
+ * easier. The redifined method can call super.REDEFINED_METHOD with the same
+ * method number and if the method exists on the superclass then it is handled
  * automatically
  * 
  * @author Stuart Douglas <stuart@baileyroberts.com.au>
@@ -31,5 +31,18 @@ public class MethodIdentifierStore
          im.put(descriptor, methodNo++);
       }
       return im.get(descriptor);
+   }
+
+   /**
+    * gets a unique method number for artifical methods that are added by
+    * fakereplace
+    * 
+    * @param name
+    * @param descriptor
+    * @return
+    */
+   public static synchronized int getUniqueMethodNumber()
+   {
+      return methodNo++;
    }
 }
