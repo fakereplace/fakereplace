@@ -2,6 +2,7 @@ package org.fakereplace;
 
 import java.beans.Introspector;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.FileOutputStream;
@@ -9,6 +10,7 @@ import java.io.IOException;
 import java.lang.instrument.ClassDefinition;
 import java.lang.instrument.Instrumentation;
 import java.lang.instrument.UnmodifiableClassException;
+import java.lang.reflect.Method;
 import java.util.Set;
 
 import javassist.bytecode.ClassFile;
@@ -75,29 +77,55 @@ public class Agent
       }
       catch (Throwable e)
       {
-         // dump the classes to /tmp so we can look at them
-         for (ClassDefinition d : modifiedClasses)
+         try
          {
-            try
+            Method defineClass = ClassLoader.class.getDeclaredMethod("defineClass", String.class, byte[].class, int.class, int.class);
+            defineClass.setAccessible(true);
+            // dump the classes to /tmp so we can look at them
+            for (ClassDefinition d : modifiedClasses)
             {
-               DataInputStream ds = new DataInputStream(new ByteArrayInputStream(d.getDefinitionClassFile()));
-               ClassFile file = new ClassFile(ds);
-               Transformer.getManipulator().transformClass(file, d.getDefinitionClass().getClassLoader(), environment);
-               String dumpDir = environment.getDumpDirectory();
-               if (dumpDir == null)
+               try
                {
-                  dumpDir = "/tmp";
+                  ByteArrayInputStream bin = new ByteArrayInputStream(d.getDefinitionClassFile());
+                  DataInputStream dis = new DataInputStream(bin);
+                  ClassFile file = new ClassFile(dis);
+
+                  Transformer.getManipulator().transformClass(file, d.getDefinitionClass().getClassLoader(), environment);
+                  ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                  DataOutputStream dos = new DataOutputStream(bos);
+                  file.write(dos);
+                  dos.close();
+
+                  System.out.println("TRYING TO LOAD: " + d.getDefinitionClass().getName());
+
+                  ClassLoader cl = new ClassLoader(d.getDefinitionClass().getClassLoader())
+                  {
+                  };
+
+                  defineClass.invoke(cl, d.getDefinitionClass().getName(), bos.toByteArray(), 0, bos.toByteArray().length);
+
+                  String dumpDir = environment.getDumpDirectory();
+                  if (dumpDir == null)
+                  {
+                     dumpDir = "/tmp";
+                  }
+                  FileOutputStream s = new FileOutputStream(dumpDir + '/' + d.getDefinitionClass().getName() + "1.class");
+                  dos = new DataOutputStream(s);
+                  file.write(dos);
+                  dos.flush();
+                  dos.close();
+                  // s.write(d.getDefinitionClassFile());
+                  s.close();
                }
-               FileOutputStream s = new FileOutputStream(dumpDir + '/' + d.getDefinitionClass().getName() + "1.class");
-               DataOutputStream dos = new DataOutputStream(s);
-               file.write(dos);
-               s.write(d.getDefinitionClassFile());
-               s.close();
+               catch (IOException a)
+               {
+                  a.printStackTrace();
+               }
             }
-            catch (IOException a)
-            {
-               a.printStackTrace();
-            }
+         }
+         catch (Exception ex)
+         {
+            ex.printStackTrace();
          }
          throw (new RuntimeException(e));
       }

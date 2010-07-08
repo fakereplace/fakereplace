@@ -113,12 +113,13 @@ public class InstanceFieldManipulator implements ClassManipulator
 
                            b.addGetfield(file.getName(), Constants.ADDED_FIELD_NAME, Constants.ADDED_FIELD_DESCRIPTOR);
                            b.addOpcode(Opcode.SWAP); // we need to keep swapping
-                                                     // the value to put to the
-                                                     // top
+                           // the value to put to the
+                           // top
                            b.addLdc(arrayPos);
+                           Boxing.boxInt(b);
                            b.addOpcode(Opcode.SWAP);
-                           b.add(Opcode.AASTORE);
-
+                           b.addInvokevirtual("org.fakereplace.runtime.NullSafeConcurrentHashMap", "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
+                           b.add(Opcode.POP);
                            it.insertEx(b.get());
                         }
                         else if (op == Opcode.GETFIELD)
@@ -126,7 +127,9 @@ public class InstanceFieldManipulator implements ClassManipulator
                            Bytecode b = new Bytecode(file.getConstPool());
                            b.addGetfield(file.getName(), Constants.ADDED_FIELD_NAME, Constants.ADDED_FIELD_DESCRIPTOR);
                            b.addLdc(arrayPos);
-                           b.add(Opcode.AALOAD);
+                           Boxing.boxInt(b);
+                           b.addInvokevirtual("org.fakereplace.runtime.NullSafeConcurrentHashMap", "get", "(Ljava/lang/Object;)Ljava/lang/Object;");
+
                            if (DescriptorUtils.isPrimitive(data.getDescriptor()))
                            {
                               Boxing.unbox(b, data.getDescriptor().charAt(0));

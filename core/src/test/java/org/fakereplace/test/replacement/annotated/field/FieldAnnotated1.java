@@ -9,4 +9,9 @@ public class FieldAnnotated1
 
    @FieldAnnotation("3")
    public int field3;
+
+   public void fn()
+   {
+      field1 = field3;
+   }
 }

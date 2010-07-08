@@ -1,28 +1,30 @@
 package org.fakereplace.reflection;
 
 import java.lang.reflect.Field;
+import java.util.Map;
 
 /**
  * Class that knows how to set and get replaced fields.
- * This is very inefficent, and should be replaced with 
+ * This is very inefficent, and should be replaced with
  * bytecode generation based reflection
+ * 
  * @author stuart
- *
+ * 
  */
 public class FieldAccessor
 {
 
    final Class<?> clazz;
-   final int arrayItem;
-   final Field array;
+   final Integer mapKey;
+   final Field map;
 
-   public FieldAccessor(Class<?> clazz, int arrayItem)
+   public FieldAccessor(Class<?> clazz, int mapKey)
    {
       this.clazz = clazz;
-      this.arrayItem = arrayItem;
+      this.mapKey = mapKey;
       try
       {
-         this.array = clazz.getField(org.fakereplace.boot.Constants.ADDED_FIELD_NAME);
+         this.map = clazz.getField(org.fakereplace.boot.Constants.ADDED_FIELD_NAME);
       }
       catch (Exception e)
       {
@@ -34,8 +36,8 @@ public class FieldAccessor
    {
       try
       {
-         Object[] ar = (Object[]) array.get(object);
-         ar[arrayItem] = value;
+         Map ar = (Map) map.get(object);
+         ar.put(mapKey, value);
       }
       catch (Exception e)
       {
@@ -47,8 +49,8 @@ public class FieldAccessor
    {
       try
       {
-         Object[] ar = (Object[]) array.get(object);
-         return ar[arrayItem];
+         Map ar = (Map) map.get(object);
+         return ar.get(mapKey);
       }
       catch (Exception e)
       {

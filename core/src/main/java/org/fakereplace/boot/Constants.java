@@ -8,9 +8,9 @@ public class Constants
 
    public static final String ADDED_METHOD_DESCRIPTOR = "(I[Ljava/lang/Object;)Ljava/lang/Object;";
 
-   public static final String ADDED_FIELD_NAME = "______REDEFINED_FIELD_ARRAY_$";
+   public static final String ADDED_FIELD_NAME = "$FAKEREPLACE_ADDED_FIELD_MAP";
 
-   public static final String ADDED_FIELD_DESCRIPTOR = "[Ljava/lang/Object;";
+   public static final String ADDED_FIELD_DESCRIPTOR = "Lorg/fakereplace/runtime/NullSafeConcurrentHashMap;";
 
    public static final String ADDED_STATIC_METHOD_NAME = "______REDEFINED_STATIC_METHOD_DELEGATOR_$";
 

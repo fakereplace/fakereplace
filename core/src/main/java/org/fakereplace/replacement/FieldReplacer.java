@@ -32,6 +32,7 @@ import org.fakereplace.data.BaseClassData;
 import org.fakereplace.data.ClassDataBuilder;
 import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.data.FieldData;
+import org.fakereplace.data.FieldReferenceDataStore;
 import org.fakereplace.data.MemberType;
 import org.fakereplace.manip.data.AddedFieldData;
 import org.fakereplace.manip.staticfield.StaticFieldClassFactory;
@@ -106,8 +107,8 @@ public class FieldReplacer
             }
             else
             {
-               addedFields.add(new AddedFieldData(noAddedFields, m.getName(), m.getDescriptor(), file.getName(), loader));
-               addInstanceField(file, loader, m, builder, oldClass, noAddedFields);
+               int fieldNo = addInstanceField(file, loader, m, builder, oldClass);
+               addedFields.add(new AddedFieldData(fieldNo, m.getName(), m.getDescriptor(), file.getName(), loader));
                noAddedFields++;
             }
             it.remove();
@@ -182,7 +183,6 @@ public class FieldReplacer
     */
    private static void instrumentConstructors(ClassFile file, List<AddedFieldData> addedFields) throws BadBytecode
    {
-      int addedFieldsLengthIndex = file.getConstPool().addIntegerInfo(addedFields.size());
       for (Object mo : file.getMethods())
       {
          MethodInfo m = (MethodInfo) mo;
@@ -195,19 +195,22 @@ public class FieldReplacer
             Bytecode cond = new Bytecode(file.getConstPool());
             // push this onto the stack
             cond.addAload(0);
-            // put the array size on the stack
-            cond.addLdc(addedFieldsLengthIndex);
-            // create the array
-            cond.addAnewarray("java.lang.Object");
+            // create the map
+            cond.addNew("org.fakereplace.runtime.NullSafeConcurrentHashMap");
+            cond.add(Opcode.DUP); // dup for const call
+            cond.addInvokespecial("org.fakereplace.runtime.NullSafeConcurrentHashMap", "<init>", "()V");
             cond.add(Opcode.DUP_X1);
             cond.addPutfield(file.getName(), Constants.ADDED_FIELD_NAME, Constants.ADDED_FIELD_DESCRIPTOR);
             for (int i = 0; i < addedFields.size(); ++i)
             {
-               // duplicate the array
+               // duplicate the map
                cond.add(Opcode.DUP);
                AddedFieldData d = addedFields.get(i);
                // push the index
-               cond.addIconst(i);
+               cond.addIconst(d.getArrayIndex());
+               // box the integer
+               Boxing.boxInt(cond);
+
                // now push the value
                // TODO: we probably want to skip all this in the object case as
                // it is already null
@@ -236,9 +239,10 @@ public class FieldReplacer
                   }
                   Boxing.box(cond, c);
                }
-               cond.add(Opcode.AASTORE);
+               cond.addInvokevirtual("org.fakereplace.runtime.NullSafeConcurrentHashMap", "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
+               cond.add(Opcode.POP);
             }
-            cond.add(Opcode.POP);
+            cond.add(Opcode.POP); // we don't need the map on the stack any more
             Bytecode b = new Bytecode(file.getConstPool());
             b.addAload(0);
             b.addGetfield(file.getName(), Constants.ADDED_FIELD_NAME, Constants.ADDED_FIELD_DESCRIPTOR);
@@ -317,12 +321,19 @@ public class FieldReplacer
     * @param m
     * @param data
     */
-   private static void addInstanceField(ClassFile file, ClassLoader loader, FieldInfo m, ClassDataBuilder builder, Class<?> oldClass, int arrayPosition)
+   private static int addInstanceField(ClassFile file, ClassLoader loader, FieldInfo m, ClassDataBuilder builder, Class<?> oldClass)
    {
+      String sig = null;
+      SignatureAttribute sigat = (SignatureAttribute) m.getAttribute(SignatureAttribute.tag);
+      if (sigat != null)
+      {
+         sig = sigat.getSignature();
+      }
+      int fieldNo = FieldReferenceDataStore.getMethodNo(m.getName(), m.getDescriptor(), sig);
       String proxyName = ProxyDefinitionStore.getProxyName();
       ClassFile proxy = new ClassFile(false, proxyName, "java.lang.Object");
       ClassDataStore.registerProxyName(oldClass, proxyName);
-      FieldAccessor accessor = new FieldAccessor(oldClass, arrayPosition);
+      FieldAccessor accessor = new FieldAccessor(oldClass, fieldNo);
       ClassDataStore.registerFieldAccessor(proxyName, accessor);
       proxy.setAccessFlags(AccessFlag.PUBLIC);
       FieldInfo newField = new FieldInfo(proxy.getConstPool(), m.getName(), m.getDescriptor());
@@ -350,6 +361,7 @@ public class FieldReplacer
       {
          // can't happen
       }
+      return fieldNo;
    }
 
    public static void copyFieldAttributes(FieldInfo oldField, FieldInfo newField)
