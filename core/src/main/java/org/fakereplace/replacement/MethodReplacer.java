@@ -57,6 +57,7 @@ public class MethodReplacer
          // stick our added methods into the class file
          // we can't finalise the code yet because we will probably need
          // the add stuff to them
+
          MethodInfo virtMethod = new MethodInfo(file.getConstPool(), Constants.ADDED_METHOD_NAME, Constants.ADDED_METHOD_DESCRIPTOR);
          virtMethod.setAccessFlags(0 | AccessFlag.PUBLIC);
          if (file.isInterface())
@@ -66,7 +67,7 @@ public class MethodReplacer
          else
          {
             virtMethod.setAccessFlags(0 | AccessFlag.PUBLIC | AccessFlag.SYNTHETIC);
-            Bytecode b = new Bytecode(file.getConstPool(), 5, 3);
+            Bytecode b = new Bytecode(file.getConstPool(), 0, 3);
             if (BuiltinClassData.skipInstrumentation(file.getSuperclass()))
             {
                b.add(Bytecode.ACONST_NULL);
@@ -86,7 +87,7 @@ public class MethodReplacer
 
             MethodInfo m = new MethodInfo(file.getConstPool(), Constants.ADDED_STATIC_METHOD_NAME, Constants.ADDED_STATIC_METHOD_DESCRIPTOR);
             m.setAccessFlags(AccessFlag.PUBLIC | AccessFlag.STATIC | AccessFlag.SYNTHETIC);
-            b = new Bytecode(file.getConstPool(), 5, 3);
+            b = new Bytecode(file.getConstPool(), 0, 3);
             b.add(Bytecode.ACONST_NULL);
             b.add(Bytecode.ARETURN);
             staticCodeAttribute = b.toCodeAttribute();
@@ -95,7 +96,7 @@ public class MethodReplacer
 
             m = new MethodInfo(file.getConstPool(), "<init>", Constants.ADDED_CONSTRUCTOR_DESCRIPTOR);
             m.setAccessFlags(AccessFlag.PUBLIC | AccessFlag.SYNTHETIC);
-            b = new Bytecode(file.getConstPool(), 5, 5);
+            b = new Bytecode(file.getConstPool(), 0, 4);
             if (ManipulationUtils.addBogusConstructorCall(file, b))
             {
                constructorCodeAttribute = b.toCodeAttribute();
@@ -285,8 +286,7 @@ public class MethodReplacer
       }
    }
 
-   private static String generateProxyInvocationBytecode(MethodInfo mInfo, ConstPool constPool, int methodNumber, String className, ClassLoader loader, boolean staticMethod, boolean isInterface)
-         throws BadBytecode
+   private static String generateProxyInvocationBytecode(MethodInfo mInfo, ConstPool constPool, int methodNumber, String className, ClassLoader loader, boolean staticMethod, boolean isInterface) throws BadBytecode
    {
       String proxyName = ProxyDefinitionStore.getProxyName();
       ClassFile proxy = new ClassFile(false, proxyName, "java.lang.Object");
@@ -551,8 +551,7 @@ public class MethodReplacer
     * @param addedMethod
     * @throws BadBytecode
     */
-   private static void generateBoxedConditionalCodeBlock(int methodNumber, MethodInfo mInfo, ConstPool methodConstPool, CodeAttribute addedMethod, boolean staticMethod, boolean constructor)
-         throws BadBytecode
+   private static void generateBoxedConditionalCodeBlock(int methodNumber, MethodInfo mInfo, ConstPool methodConstPool, CodeAttribute addedMethod, boolean staticMethod, boolean constructor) throws BadBytecode
    {
       // we need to insert a conditional
       Bytecode bc = new Bytecode(mInfo.getConstPool());
