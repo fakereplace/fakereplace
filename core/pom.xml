@@ -107,6 +107,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
+                    <skipTests>true</skipTests>
 					<excludes>
 						<exclude>**/*.java</exclude>
 					</excludes>
@@ -119,6 +120,7 @@
 							<goal>test</goal>
 						</goals>
 						<configuration>
+                            <skipTests>false</skipTests>
 							<skip>false</skip>
 							<excludes>
 								<exclude>none</exclude>
