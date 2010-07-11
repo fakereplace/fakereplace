@@ -1,5 +1,6 @@
 package org.fakereplace.manip.util;
 
+import javassist.bytecode.BadBytecode;
 import javassist.bytecode.Bytecode;
 import javassist.bytecode.CodeAttribute;
 import javassist.bytecode.Opcode;
@@ -15,7 +16,12 @@ import org.fakereplace.util.DescriptorUtils;
  */
 public class ParameterRewriter
 {
-   public static void mangleParameters(boolean staticMethod, boolean constructor, CodeAttribute attribute, String methodSigniture, int existingLocalVaraiables)
+   /**
+    * Takes method parameters out of an array and puts them into local variables
+    * 
+    * @return the length of the added code
+    */
+   public static int mangleParameters(boolean staticMethod, boolean constructor, CodeAttribute attribute, String methodSigniture, int existingLocalVaraiables)
    {
       try
       {
@@ -121,11 +127,11 @@ public class ParameterRewriter
 
          }
          attribute.iterator().insert(0, code.get());
-
+         return code.length();
       }
-      catch (Exception e)
+      catch (BadBytecode e)
       {
-
+         throw new RuntimeException(e);
       }
 
    }

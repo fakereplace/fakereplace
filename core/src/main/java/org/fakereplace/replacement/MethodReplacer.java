@@ -286,7 +286,8 @@ public class MethodReplacer
       }
    }
 
-   private static String generateProxyInvocationBytecode(MethodInfo mInfo, ConstPool constPool, int methodNumber, String className, ClassLoader loader, boolean staticMethod, boolean isInterface) throws BadBytecode
+   private static String generateProxyInvocationBytecode(MethodInfo mInfo, ConstPool constPool, int methodNumber, String className, ClassLoader loader, boolean staticMethod, boolean isInterface)
+         throws BadBytecode
    {
       String proxyName = ProxyDefinitionStore.getProxyName();
       ClassFile proxy = new ClassFile(false, proxyName, "java.lang.Object");
@@ -551,8 +552,10 @@ public class MethodReplacer
     * @param addedMethod
     * @throws BadBytecode
     */
-   private static void generateBoxedConditionalCodeBlock(int methodNumber, MethodInfo mInfo, ConstPool methodConstPool, CodeAttribute addedMethod, boolean staticMethod, boolean constructor) throws BadBytecode
+   private static void generateBoxedConditionalCodeBlock(int methodNumber, MethodInfo mInfo, ConstPool methodConstPool, CodeAttribute addedMethod, boolean staticMethod, boolean constructor)
+         throws BadBytecode
    {
+
       // we need to insert a conditional
       Bytecode bc = new Bytecode(mInfo.getConstPool());
       CodeAttribute ca = (CodeAttribute) mInfo.getCodeAttribute().copy(mInfo.getConstPool(), Collections.emptyMap());
@@ -569,7 +572,7 @@ public class MethodReplacer
       bc.addOpcode(Opcode.IF_ICMPNE);
 
       // now we need to fix local variables and unbox parameters etc
-      ParameterRewriter.mangleParameters(staticMethod, constructor, ca, mInfo.getDescriptor(), ca.getMaxLocals());
+      int addedCodeLength = ParameterRewriter.mangleParameters(staticMethod, constructor, ca, mInfo.getDescriptor(), ca.getMaxLocals());
       int newMax = ca.getMaxLocals() + 2;
       if (constructor)
       {
@@ -585,6 +588,7 @@ public class MethodReplacer
       // offset is +3, 2 for the branch offset after the IF_ICMPNE and 1 to
       // take it past the end of the code
       ManipulationUtils.add16bit(bc, offset + 3); // add the branch offset
+
       // now we need to insert our generated conditional at the start of the
       // new method
       CodeIterator newInfo = ca.iterator();
@@ -592,12 +596,26 @@ public class MethodReplacer
       // now insert the new method code at the beginning of the static method
       // code attribute
       addedMethod.iterator().insert(ca.getCode());
+
+      // update the exception table
+
+      int exOffset = bc.length() + addedCodeLength;
+      for (int i = 0; i < mInfo.getCodeAttribute().getExceptionTable().size(); ++i)
+      {
+         int start = mInfo.getCodeAttribute().getExceptionTable().startPc(i) + exOffset;
+         int end = mInfo.getCodeAttribute().getExceptionTable().endPc(i) + exOffset;
+         int handler = mInfo.getCodeAttribute().getExceptionTable().handlerPc(i) + exOffset;
+         int type = mInfo.getCodeAttribute().getExceptionTable().catchType(i);
+         addedMethod.getExceptionTable().add(start, end, handler, type);
+      }
+
       // now we need to make sure the function is returning an object
       // rewriteFakeMethod makes sure that the return type is properly boxed
       if (!constructor)
       {
          MethodReturnRewriter.rewriteFakeMethod(addedMethod.iterator(), mInfo.getDescriptor());
       }
+
    }
 
    private static void createRemovedMethod(ClassFile file, MethodData md, Class<?> oldClass, ClassDataBuilder builder)

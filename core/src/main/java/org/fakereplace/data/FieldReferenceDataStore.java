@@ -24,7 +24,7 @@ public class FieldReferenceDataStore
       }
    });
 
-   public static Integer getMethodNo(String fieldName, String desc, String sig)
+   public static Integer getFieldNo(String fieldName, String desc, String sig)
    {
       return addedFieldNumbers.get(new FieldReference(fieldName, desc, sig));
    }
