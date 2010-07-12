@@ -218,7 +218,7 @@ public class Transformer implements ClassFileTransformer
          file.write(new DataOutputStream(bs));
 
          // dump the class for debugging purposes
-         if (enviroment.getDumpDirectory() != null)
+         if (enviroment.getDumpDirectory() != null && classBeingRedefined != null)
          {
             FileOutputStream s = new FileOutputStream(enviroment.getDumpDirectory() + '/' + file.getName() + ".class");
             DataOutputStream dos = new DataOutputStream(s);

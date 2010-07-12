@@ -4,7 +4,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.fakereplace.test.coverage.ChangeTestType;
 import org.fakereplace.test.coverage.CodeChangeType;
@@ -42,6 +46,15 @@ public class VirtualMethodTest
       res = (Integer) get.invoke(ns);
       assert res.equals(new Integer(3)) : "Expected 3 got " + res;
 
+      Map<String, String> tmap = new HashMap<String, String>();
+      tmap.put("a", "b");
+      Set<String> tset = new HashSet<String>();
+      tset.add("c");
+      Method clear = c.getMethod("clearFunction", Map.class, Set.class, int.class);
+      clear.invoke(ns, tmap, tset, 0);
+      assert tmap.isEmpty();
+      assert tset.isEmpty();
+
    }
 
    @Test(groups = "virtualmethod")
@@ -72,6 +85,14 @@ public class VirtualMethodTest
       caller.add(ns);
       int val = ns.getValue();
       assert val == 11 : "expected 10 got " + val;
+
+      Map<String, String> tmap = new HashMap<String, String>();
+      tmap.put("a", "b");
+      Set<String> tset = new HashSet<String>();
+      tset.add("c");
+      ns.clear(tmap, tset);
+      assert tmap.isEmpty();
+      assert tset.isEmpty();
 
    }
 
@@ -112,9 +133,7 @@ public class VirtualMethodTest
       assert ((ParameterizedType) meth.getGenericParameterTypes()[0]).getActualTypeArguments()[0].equals(Integer.class);
    }
 
-   @MultipleCoverage( {
-         @Coverage(change = CodeChangeType.ADD_INSTANCE_METHOD, privateMember = false, test = ChangeTestType.GET_DECLARED_ALL),
-         @Coverage(change = CodeChangeType.ADD_INSTANCE_METHOD, privateMember = true, test = ChangeTestType.GET_DECLARED_ALL) })
+   @MultipleCoverage( { @Coverage(change = CodeChangeType.ADD_INSTANCE_METHOD, privateMember = false, test = ChangeTestType.GET_DECLARED_ALL), @Coverage(change = CodeChangeType.ADD_INSTANCE_METHOD, privateMember = true, test = ChangeTestType.GET_DECLARED_ALL) })
    @Test(groups = "virtualmethod")
    public void testVirtualMethodgetDeclaredMethods() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException
    {
@@ -167,9 +186,7 @@ public class VirtualMethodTest
       assert stuff;
    }
 
-   @MultipleCoverage( {
-         @Coverage(change = CodeChangeType.ADD_INSTANCE_METHOD, privateMember = false, test = ChangeTestType.GET_ALL),
-         @Coverage(change = CodeChangeType.ADD_INSTANCE_METHOD, privateMember = true, test = ChangeTestType.GET_ALL) })
+   @MultipleCoverage( { @Coverage(change = CodeChangeType.ADD_INSTANCE_METHOD, privateMember = false, test = ChangeTestType.GET_ALL), @Coverage(change = CodeChangeType.ADD_INSTANCE_METHOD, privateMember = true, test = ChangeTestType.GET_ALL) })
    @Test(groups = "virtualmethod")
    public void testVirtualMethodgetMethods() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException
    {

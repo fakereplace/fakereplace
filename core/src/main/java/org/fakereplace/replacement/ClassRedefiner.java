@@ -84,6 +84,11 @@ public class ClassRedefiner
       {
          throw new RuntimeException("BaseData is null for " + file.getName());
       }
+      if (!file.getSuperclass().equals(b.getSuperClassName()))
+      {
+         System.out.println("Superclass changed from " + b.getSuperClassName() + " to " + file.getSuperclass() + " in class " + file.getName());
+      }
+
       ClassDataBuilder builder = new ClassDataBuilder(b);
       AnnotationReplacer.processAnnotations(file, oldClass, builder);
 

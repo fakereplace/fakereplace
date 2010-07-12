@@ -6,7 +6,7 @@ public class InstanceFieldReflection1
    String value = "hi";
 
    public int vis;
-
+   @SomeAnnotation
    private int hid;
 
    public String getValue()

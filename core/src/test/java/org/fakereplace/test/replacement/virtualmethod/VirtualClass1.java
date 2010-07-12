@@ -1,6 +1,8 @@
 package org.fakereplace.test.replacement.virtualmethod;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.fakereplace.util.NoInstrument;
 
@@ -24,6 +26,17 @@ public class VirtualClass1
    public List<String> getStuff(List<Integer> aList)
    {
       return null;
+   }
+
+   public void clear(Map<String, String> map, Set<String> set)
+   {
+      clearFunction(map, set, 0);
+   }
+
+   public void clearFunction(Map<String, String> map, Set<String> set, int i)
+   {
+      map.clear();
+      set.clear();
    }
 
    private void privateFunction()

@@ -52,4 +52,14 @@ public class InstanceFieldClass1
       return sv;
    }
 
+   public Object getFa2()
+   {
+      return fa2;
+   }
+
+   public void setFa2(Object fa2)
+   {
+      this.fa2 = fa2;
+   }
+
 }

@@ -38,4 +38,11 @@ public class InstanceFieldTest
       assert type.getValue() == 20;
    }
 
+   @Test(groups = "instancefield")
+   public void testSettingObjectInstanceField() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException
+   {
+      InstanceFieldClass ns = new InstanceFieldClass();
+      ns.setFa2(this);
+      assert ns.getFa2() == this;
+   }
 }

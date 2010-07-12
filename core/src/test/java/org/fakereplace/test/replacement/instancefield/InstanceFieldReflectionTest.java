@@ -90,6 +90,7 @@ public class InstanceFieldReflectionTest
          if (f.getName().equals("hid"))
          {
             found = true;
+            assert f.isAnnotationPresent(SomeAnnotation.class);
          }
       }
       assert found;

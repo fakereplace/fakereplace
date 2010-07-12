@@ -39,7 +39,7 @@ public class BaseClassData
       className = file.getName();
       internalName = Descriptor.toJvmName(file.getName());
       this.loader = loader;
-      superClassName = Descriptor.toJvmName(file.getSuperclass());
+      superClassName = file.getSuperclass();
       boolean finalMethod = false;
       Set<MethodData> meths = new HashSet<MethodData>();
       for (Object o : file.getMethods())

@@ -121,7 +121,7 @@ public class ClassChangeDetector
                // if there is a different classloader with the same root remove
                // it
                // as that probably means that the app has been undeployed
-               System.out.println("ADDING ROOT: " + f.getAbsolutePath() + " to CL " + classLoader);
+               System.out.println("ADDING FAKEREPLACE SEARCH DIRECTORY: " + f.getAbsolutePath() + " for ClassLoader " + classLoader);
                Iterator<Entry<ClassLoader, Set<File>>> i = classLoaders.entrySet().iterator();
                while (i.hasNext())
                {

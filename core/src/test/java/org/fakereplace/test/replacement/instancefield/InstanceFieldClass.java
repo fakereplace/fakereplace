@@ -36,4 +36,12 @@ public class InstanceFieldClass
       return null;
    }
 
+   public Object getFa2()
+   {
+      return null;
+   }
+
+   public void setFa2(Object fa2)
+   {
+   }
 }

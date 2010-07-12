@@ -1,5 +1,6 @@
 package org.fakereplace.runtime;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -14,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @param <K>
  * @param <V>
  */
-public class NullSafeConcurrentHashMap<K, V> implements Map<K, V>
+public class NullSafeConcurrentHashMap<K, V> implements Map<K, V>, Serializable
 {
    final ConcurrentHashMap<K, V> map = new ConcurrentHashMap<K, V>();
 

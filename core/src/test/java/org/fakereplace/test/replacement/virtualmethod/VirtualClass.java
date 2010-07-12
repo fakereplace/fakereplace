@@ -1,5 +1,8 @@
 package org.fakereplace.test.replacement.virtualmethod;
 
+import java.util.Map;
+import java.util.Set;
+
 public class VirtualClass
 {
 
@@ -8,5 +11,10 @@ public class VirtualClass
    public Integer getValue()
    {
       return value;
+   }
+
+   public void clear(Map<String, String> map, Set<String> set)
+   {
+
    }
 }
