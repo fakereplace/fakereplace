@@ -208,7 +208,7 @@ public class ReflectionDelegate
       switch (md.getType())
       {
       case NORMAL:
-         Method meth = clazz.getMethod(name, parameters);
+         Method meth = superClass.getMethod(name, parameters);
          return meth;
       case FAKE:
          try
