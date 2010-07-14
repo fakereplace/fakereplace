@@ -19,7 +19,9 @@ public class NullSafeConcurrentHashMap<K, V> implements Map<K, V>, Serializable
 {
    final ConcurrentHashMap<K, V> map = new ConcurrentHashMap<K, V>();
 
-   final Object NULL_VALUE = new Object();
+   final Serializable NULL_VALUE = new Serializable()
+   {
+   };
 
    public void clear()
    {
