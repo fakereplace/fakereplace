@@ -181,9 +181,10 @@ public class Transformer implements ClassFileTransformer
                Thread t = new Thread(detectorRunner);
                t.start();
             }
-
-            ClassChangeDetector.addClassLoader(loader, file.getName());
-
+            if (classBeingRedefined == null)
+            {
+               ClassChangeDetector.addClassLoader(loader, file.getName());
+            }
             if (file.isInterface())
             {
                addAbstractMethodForInstrumentation(file);
