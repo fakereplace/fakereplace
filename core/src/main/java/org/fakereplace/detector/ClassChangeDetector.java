@@ -11,8 +11,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -68,6 +68,8 @@ public class ClassChangeDetector
 
    static final Map<ClassLoader, Map<File, FileData>> files = new MapMaker().weakKeys().makeMap();
 
+   static final Map<String, ClassLoader> classesToClassLoader = new MapMaker().weakValues().makeMap();
+
    /**
     * the amount of time to wait between detecting a change and performing the
     * hotswap
@@ -93,6 +95,20 @@ public class ClassChangeDetector
          {
             return;
          }
+         // if the same class is getting loaded again clear out any references
+         // to the old class loader, as it is probably a redeployment
+         if (classesToClassLoader.containsKey(instigatingClassName))
+         {
+            ClassLoader old = classesToClassLoader.get(instigatingClassName);
+            files.remove(old);
+            classLoaders.remove(old);
+            unclaimedClassLoaders.remove(old);
+            for (Entry<Object, Map<ClassLoader, Object>> e : claimedClassLoaders.entrySet())
+            {
+               e.getValue().remove(old);
+            }
+         }
+         classesToClassLoader.put(instigatingClassName, classLoader);
          Set<File> roots = classLoaders.get(classLoader);
          if (roots == null)
          {
