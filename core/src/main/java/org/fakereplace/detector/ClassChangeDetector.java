@@ -242,9 +242,10 @@ public class ClassChangeDetector
    private static ClassChangeSet getChanges(Set<ClassLoader> loaders)
    {
       ClassChangeSet ret = new ClassChangeSet();
-      Map<File, FileData> fls = new HashMap<File, FileData>();
       for (Entry<ClassLoader, Set<File>> e : classLoaders.entrySet())
       {
+
+         Map<File, FileData> fls = new HashMap<File, FileData>();
          if (!loaders.contains(e.getKey()))
          {
             continue;
