@@ -1,7 +1,6 @@
 package org.fakereplace.manip.util;
 
 import javassist.bytecode.Bytecode;
-import javassist.bytecode.Opcode;
 
 /**
  * This class is responsible for generating bytecode fragments to box/unbox
@@ -76,68 +75,42 @@ public class Boxing
 
    static public void boxInt(Bytecode bc)
    {
-      bc.addNew("java.lang.Integer");
-      bc.add(Opcode.DUP_X1);
-      bc.add(Opcode.SWAP);
-      bc.addInvokespecial("java.lang.Integer", "<init>", "(I)V");
+      bc.addInvokestatic("java.lang.Integer", "valueOf", "(I)Ljava/lang/Integer;");
    }
 
    static public void boxLong(Bytecode bc)
    {
-      bc.addNew("java.lang.Long");
-      bc.add(Opcode.DUP_X2);
-      bc.add(Opcode.DUP_X2);
-      bc.add(Opcode.POP);
-      bc.addInvokespecial("java.lang.Long", "<init>", "(J)V");
+      bc.addInvokestatic("java.lang.Long", "valueOf", "(J)Ljava/lang/Long;");
    }
 
    static public void boxShort(Bytecode bc)
    {
-      bc.addNew("java.lang.Short");
-      bc.add(Opcode.DUP_X1);
-      bc.add(Opcode.SWAP);
-      bc.addInvokespecial("java.lang.Short", "<init>", "(S)V");
+      bc.addInvokestatic("java.lang.Short", "valueOf", "(S)Ljava/lang/Short;");
    }
 
    static public void boxByte(Bytecode bc)
    {
-      bc.addNew("java.lang.Byte");
-      bc.add(Opcode.DUP_X1);
-      bc.add(Opcode.SWAP);
-      bc.addInvokespecial("java.lang.Byte", "<init>", "(B)V");
+      bc.addInvokestatic("java.lang.Byte", "valueOf", "(B)Ljava/lang/Byte;");
    }
 
    static public void boxFloat(Bytecode bc)
    {
-      bc.addNew("java.lang.Float");
-      bc.add(Opcode.DUP_X1);
-      bc.add(Opcode.SWAP);
-      bc.addInvokespecial("java.lang.Float", "<init>", "(F)V");
+      bc.addInvokestatic("java.lang.Float", "valueOf", "(F)Ljava/lang/Float;");
    }
 
    static public void boxDouble(Bytecode bc)
    {
-      bc.addNew("java.lang.Double");
-      bc.add(Opcode.DUP_X2);
-      bc.add(Opcode.DUP_X2);
-      bc.add(Opcode.POP);
-      bc.addInvokespecial("java.lang.Double", "<init>", "(D)V");
+      bc.addInvokestatic("java.lang.Double", "valueOf", "(D)Ljava/lang/Double;");
    }
 
    static public void boxChar(Bytecode bc)
    {
-      bc.addNew("java.lang.Character");
-      bc.add(Opcode.DUP_X1);
-      bc.add(Opcode.SWAP);
-      bc.addInvokespecial("java.lang.Character", "<init>", "(C)V");
+      bc.addInvokestatic("java.lang.Character", "valueOf", "(C)Ljava/lang/Character;");
    }
 
    static public void boxBoolean(Bytecode bc)
    {
-      bc.addNew("java.lang.Boolean");
-      bc.add(Opcode.DUP_X1);
-      bc.add(Opcode.SWAP);
-      bc.addInvokespecial("java.lang.Boolean", "<init>", "(Z)V");
+      bc.addInvokestatic("java.lang.Boolean", "valueOf", "(Z)Ljava/lang/Boolean;");
    }
 
    // unboxing
