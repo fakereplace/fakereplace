@@ -33,10 +33,12 @@ public class BaseClassData
    private final Set<FieldData> fields;
    private final ClassLoader loader;
    private final String superClassName;
+   private final boolean replaceable;
 
-   public BaseClassData(ClassFile file, ClassLoader loader)
+   public BaseClassData(ClassFile file, ClassLoader loader, boolean replaceable)
    {
       className = file.getName();
+      this.replaceable = replaceable;
       internalName = Descriptor.toJvmName(file.getName());
       this.loader = loader;
       superClassName = file.getSuperclass();
@@ -93,6 +95,7 @@ public class BaseClassData
       className = cls.getName();
       internalName = Descriptor.toJvmName(cls.getName());
       this.loader = cls.getClassLoader();
+      replaceable = false;
       if (cls.getSuperclass() != null)
       {
          superClassName = Descriptor.toJvmName(cls.getSuperclass().getName());
@@ -167,6 +170,11 @@ public class BaseClassData
    public Collection<FieldData> getFields()
    {
       return fields;
+   }
+
+   public boolean isReplaceable()
+   {
+      return replaceable;
    }
 
 }

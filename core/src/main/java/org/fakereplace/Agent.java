@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.lang.instrument.ClassDefinition;
 import java.lang.instrument.Instrumentation;
 import java.lang.instrument.UnmodifiableClassException;
-import java.lang.reflect.Method;
 import java.util.Set;
 
 import javassist.bytecode.ClassFile;
@@ -79,8 +78,6 @@ public class Agent
       {
          try
          {
-            Method defineClass = ClassLoader.class.getDeclaredMethod("defineClass", String.class, byte[].class, int.class, int.class);
-            defineClass.setAccessible(true);
             // dump the classes to /tmp so we can look at them
             for (ClassDefinition d : modifiedClasses)
             {
@@ -95,14 +92,6 @@ public class Agent
                   DataOutputStream dos = new DataOutputStream(bos);
                   file.write(dos);
                   dos.close();
-
-                  System.out.println("TRYING TO LOAD: " + d.getDefinitionClass().getName());
-
-                  ClassLoader cl = new ClassLoader(d.getDefinitionClass().getClassLoader())
-                  {
-                  };
-
-                  defineClass.invoke(cl, d.getDefinitionClass().getName(), bos.toByteArray(), 0, bos.toByteArray().length);
 
                   String dumpDir = environment.getDumpDirectory();
                   if (dumpDir == null)

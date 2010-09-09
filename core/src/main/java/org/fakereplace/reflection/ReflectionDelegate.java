@@ -84,7 +84,7 @@ public class ReflectionDelegate
       {
          ClassData cd = ClassDataStore.getModifiedClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
 
-         if (cd == null)
+         if (cd == null || !cd.isReplaceable())
          {
             return clazz.getDeclaredMethods();
          }
@@ -147,17 +147,20 @@ public class ReflectionDelegate
          ClassData cta = cd;
          while (cta != null)
          {
-            for (MethodData i : cta.getMethods())
+            if (cta.isReplaceable())
             {
-               if (i.getType() == MemberType.FAKE && AccessFlag.isPublic(i.getAccessFlags()))
+               for (MethodData i : cta.getMethods())
                {
-                  Class<?> c = clazz.getClassLoader().loadClass(i.getClassName());
-                  visible.add(i.getMethod(c));
-               }
-               else if (i.getType() == MemberType.REMOVED)
-               {
-                  Class<?> c = clazz.getClassLoader().loadClass(i.getClassName());
-                  visible.remove(i.getMethod(c));
+                  if (i.getType() == MemberType.FAKE && AccessFlag.isPublic(i.getAccessFlags()))
+                  {
+                     Class<?> c = clazz.getClassLoader().loadClass(i.getClassName());
+                     visible.add(i.getMethod(c));
+                  }
+                  else if (i.getType() == MemberType.REMOVED)
+                  {
+                     Class<?> c = clazz.getClassLoader().loadClass(i.getClassName());
+                     visible.remove(i.getMethod(c));
+                  }
                }
             }
             cta = cta.getSuperClassInformation();
@@ -238,7 +241,7 @@ public class ReflectionDelegate
 
       ClassData cd = ClassDataStore.getModifiedClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
 
-      if (cd == null)
+      if (cd == null || !cd.isReplaceable())
       {
          Method meth = clazz.getDeclaredMethod(name, parameters);
          return meth;

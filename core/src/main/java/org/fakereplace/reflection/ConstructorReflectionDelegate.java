@@ -67,7 +67,7 @@ public class ConstructorReflectionDelegate
       {
          ClassData cd = ClassDataStore.getModifiedClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
 
-         if (cd == null)
+         if (cd == null || !cd.isReplaceable())
          {
             return clazz.getDeclaredConstructors();
          }
@@ -115,7 +115,7 @@ public class ConstructorReflectionDelegate
       {
          ClassData cd = ClassDataStore.getModifiedClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
 
-         if (cd == null)
+         if (cd == null || !cd.isReplaceable())
          {
             return clazz.getConstructors();
          }
@@ -167,7 +167,7 @@ public class ConstructorReflectionDelegate
 
       ClassData cd = ClassDataStore.getModifiedClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
 
-      if (cd == null)
+      if (cd == null || !cd.isReplaceable())
       {
          Constructor<?> meth = clazz.getConstructor(parameters);
          return meth;
@@ -209,7 +209,7 @@ public class ConstructorReflectionDelegate
 
       ClassData cd = ClassDataStore.getModifiedClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
 
-      if (cd == null)
+      if (cd == null || !cd.isReplaceable())
       {
          Constructor<?> meth = clazz.getDeclaredConstructor(parameters);
          return meth;

@@ -129,7 +129,7 @@ public class Transformer implements ClassFileTransformer
          {
             if (classBeingRedefined == null)
             {
-               BaseClassData baseData = new BaseClassData(file, loader);
+               BaseClassData baseData = new BaseClassData(file, loader, false);
                ClassDataStore.saveClassData(loader, baseData.getInternalName(), baseData);
             }
             return null;
@@ -170,7 +170,8 @@ public class Transformer implements ClassFileTransformer
 
          manipulator.transformClass(file, loader, enviroment);
 
-         if (enviroment.isClassReplacable(file.getName(), loader) && (AccessFlag.ENUM & file.getAccessFlags()) == 0 && (AccessFlag.ANNOTATION & file.getAccessFlags()) == 0)
+         boolean replaceable = enviroment.isClassReplacable(file.getName(), loader);
+         if (replaceable && (AccessFlag.ENUM & file.getAccessFlags()) == 0 && (AccessFlag.ANNOTATION & file.getAccessFlags()) == 0)
          {
             // Initialise the detector
             // there is no point running it until replaceable classes have been
@@ -211,7 +212,7 @@ public class Transformer implements ClassFileTransformer
 
          if (classBeingRedefined == null)
          {
-            BaseClassData baseData = new BaseClassData(file, loader);
+            BaseClassData baseData = new BaseClassData(file, loader, replaceable);
             ClassDataStore.saveClassData(loader, baseData.getInternalName(), baseData);
          }
 

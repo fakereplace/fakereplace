@@ -32,6 +32,7 @@ public class ClassData
    private final ClassLoader loader;
    private final String superClassName;
    private final boolean signitureModified;
+   private final boolean replaceable;
 
    private final static MethodData NULL_METHOD_DATA = new MethodData("", "", "", null, 0, false);
 
@@ -41,8 +42,8 @@ public class ClassData
       internalName = data.getInternalName();
       loader = data.getLoader();
       superClassName = data.getSuperClassName();
-      signitureModified = true;
-
+      signitureModified = removedFields.isEmpty() && removedMethods.isEmpty() && addedFields.isEmpty() && addMethods.isEmpty();
+      replaceable = data.isReplaceable();
       for (MethodData m : data.getMethods())
       {
          if (!removedMethods.contains(m))
@@ -102,6 +103,7 @@ public class ClassData
       internalName = data.getInternalName();
       loader = data.getLoader();
       superClassName = data.getSuperClassName();
+      replaceable = data.isReplaceable();
       for (MethodData m : data.getMethods())
       {
          addMethod(m);
@@ -262,5 +264,10 @@ public class ClassData
 
       }
 
+   }
+
+   public boolean isReplaceable()
+   {
+      return replaceable;
    }
 }
