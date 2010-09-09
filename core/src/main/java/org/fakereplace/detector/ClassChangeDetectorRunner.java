@@ -1,6 +1,5 @@
 package org.fakereplace.detector;
 
-
 /**
  * 
  * Calls the ClassChangeDetector every POLL_TIME milliseconds
@@ -15,6 +14,11 @@ public class ClassChangeDetectorRunner implements Runnable
 
    public void run()
    {
+      String detect = System.getProperty("org.fakereplace.detector");
+      if (detect == null || !detect.equals("true"))
+      {
+         return;
+      }
       // no need to do anything for the first 5 seconds
       sleep(5000);
       while (true)
