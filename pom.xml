@@ -1,140 +1,142 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+   <modelVersion>4.0.0</modelVersion>
 
 
-    <properties>
-        <fakereplace.version>0.10-SNAPSHOT</fakereplace.version>
-        <arquillian.version>1.0.0.Alpha2</arquillian.version>
-        <weld.version>1.0.1-Final</weld.version>
-    </properties>
+   <properties>
+      <fakereplace.version>0.10-SNAPSHOT</fakereplace.version>
+      <arquillian.version>1.0.0.Alpha2</arquillian.version>
+      <weld.version>1.0.1-Final</weld.version>
+   </properties>
 
 
-    <groupId>org.fakereplace</groupId>
-    <artifactId>fakereplace-parent</artifactId>
-    <packaging>pom</packaging>
-    <version>0.10-SNAPSHOT</version>
+   <groupId>org.fakereplace</groupId>
+   <artifactId>fakereplace-parent</artifactId>
+   <packaging>pom</packaging>
+   <version>0.10-SNAPSHOT</version>
 
-    <name>Fakereplace Parent</name>
+   <name>Fakereplace Parent</name>
 
-    <modules>
-        <module>core</module>
-        <module>integration/seam</module>
-        <module>bundle</module>
-		<module>integration/jsf</module>
-		<module>integration/metawidget</module>
-    </modules>
+   <modules>
+      <module>core</module>
+      <module>integration/seam</module>
+      <module>bundle</module>
+      <module>integration/jsf</module>
+      <module>integration/metawidget</module>
+   </modules>
 
-    <dependencyManagement>
-        <dependencies>
-        
-            <dependency>
-                <groupId>org.fakereplace</groupId>
-                <artifactId>fakereplace</artifactId>
-                <version>${fakereplace.version}</version>
-            </dependency>
-            
-            <dependency>
-                <groupId>org.fakereplace</groupId>
-                <artifactId>fakereplace-seam</artifactId>
-                <version>${fakereplace.version}</version>
-            </dependency>
-            
-            <dependency>
-                <groupId>org.fakereplace</groupId>
-                <artifactId>fakereplace-jsf</artifactId>
-                <version>${fakereplace.version}</version>
-            </dependency>
-            
-            <dependency>
-                <groupId>org.fakereplace</groupId>
-                <artifactId>fakereplace-metawidget</artifactId>
-                <version>${fakereplace.version}</version>
-            </dependency>
-            
-            <dependency>
-                <groupId>javassist</groupId>
-                <artifactId>javassist</artifactId>
-                <version>3.12.0.GA</version>
-            </dependency>
+   <dependencyManagement>
+      <dependencies>
 
-            <dependency>
-                <groupId>com.google.collections</groupId>
-                <artifactId>google-collections</artifactId>
-                <version>1.0</version>
-            </dependency>
-            
-            <dependency>
-                <groupId>org.jboss.seam</groupId>
-                <artifactId>jboss-seam</artifactId>
-                <version>2.1.2</version>
-            </dependency>
-            
-            <dependency>
-                <groupId>org.jboss.weld</groupId>
-                <artifactId>weld-core</artifactId>
-                <version>${weld.version}</version>
-            </dependency>
-            
-            <dependency>
-                <groupId>javax.servlet</groupId>
-                <artifactId>servlet-api</artifactId>
-                <version>2.4</version>
-            </dependency>
-            
-            <dependency>
-                <groupId>javax.faces</groupId>
-                <artifactId>jsf-api</artifactId>
-                <version>1.2_13</version>
-            </dependency>
-            
-            <dependency> 
-               <groupId>org.testng</groupId> 
-               <artifactId>testng</artifactId> 
-               <version>5.11</version> 
-               <classifier>jdk15</classifier> 
-               <scope>test</scope> 
-            </dependency> 
-            
-            <dependency>
-               <groupId>org.jboss.arquillian</groupId>
-               <artifactId>arquillian-testng</artifactId>
-               <version>${arquillian.version}</version>
-               <scope>test</scope>
-            </dependency>
-            
-            <dependency>
-             <groupId>org.jboss.arquillian.container</groupId>
-             <artifactId>arquillian-jbossas-remote-51</artifactId>
-             <version>${arquillian.version}</version>
-             <scope>test</scope>
-          </dependency>
-          <dependency>
-             <groupId>org.jboss.arquillian.container</groupId>
-             <artifactId>arquillian-weld-embedded</artifactId>
-             <version>${arquillian.version}</version>
-             <scope>test</scope>
-          </dependency>
-            
-        </dependencies>
+         <dependency>
+            <groupId>org.fakereplace</groupId>
+            <artifactId>fakereplace</artifactId>
+            <version>${fakereplace.version}</version>
+         </dependency>
 
-    </dependencyManagement>
+         <dependency>
+            <groupId>org.fakereplace</groupId>
+            <artifactId>fakereplace-seam</artifactId>
+            <version>${fakereplace.version}</version>
+         </dependency>
 
-    <scm>
-    	<developerConnection>scm:svn:https://fakereplace.googlecode.com/svn/trunk</developerConnection>
-    </scm>
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.2-beta-5</version>
-                <configuration>
-                    <descriptors>
-                        <descriptor>assembly.xml</descriptor>
-                    </descriptors>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+         <dependency>
+            <groupId>org.fakereplace</groupId>
+            <artifactId>fakereplace-jsf</artifactId>
+            <version>${fakereplace.version}</version>
+         </dependency>
+
+         <dependency>
+            <groupId>org.fakereplace</groupId>
+            <artifactId>fakereplace-metawidget</artifactId>
+            <version>${fakereplace.version}</version>
+         </dependency>
+
+         <dependency>
+            <groupId>javassist</groupId>
+            <artifactId>javassist</artifactId>
+            <version>3.12.0.GA</version>
+         </dependency>
+
+         <dependency>
+            <groupId>com.google.collections</groupId>
+            <artifactId>google-collections</artifactId>
+            <version>1.0</version>
+         </dependency>
+
+         <dependency>
+            <groupId>org.jboss.seam</groupId>
+            <artifactId>jboss-seam</artifactId>
+            <version>2.1.2</version>
+         </dependency>
+
+         <dependency>
+            <groupId>org.jboss.weld</groupId>
+            <artifactId>weld-core</artifactId>
+            <version>${weld.version}</version>
+         </dependency>
+
+         <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.4</version>
+         </dependency>
+
+         <dependency>
+            <groupId>javax.faces</groupId>
+            <artifactId>jsf-api</artifactId>
+            <version>1.2_13</version>
+         </dependency>
+
+         <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>5.11</version>
+            <classifier>jdk15</classifier>
+            <scope>test</scope>
+         </dependency>
+
+         <dependency>
+            <groupId>org.jboss.arquillian</groupId>
+            <artifactId>arquillian-testng</artifactId>
+            <version>${arquillian.version}</version>
+            <scope>test</scope>
+         </dependency>
+
+         <dependency>
+            <groupId>org.jboss.arquillian.container</groupId>
+            <artifactId>arquillian-jbossas-remote-51</artifactId>
+            <version>${arquillian.version}</version>
+            <scope>test</scope>
+         </dependency>
+         
+         <dependency>
+            <groupId>org.jboss.arquillian.container</groupId>
+            <artifactId>arquillian-weld-embedded</artifactId>
+            <version>${arquillian.version}</version>
+            <scope>test</scope>
+         </dependency>
+
+      </dependencies>
+   </dependencyManagement>
+
+   <scm>
+      <developerConnection>scm:git:git@github.com:fakereplace/fakereplace.git</developerConnection>
+   </scm>
+   
+   <build>
+      <plugins>
+         <plugin>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <version>2.2-beta-5</version>
+            <configuration>
+               <descriptors>
+                  <descriptor>assembly.xml</descriptor>
+               </descriptors>
+            </configuration>
+         </plugin>
+      </plugins>
+   </build>
 
 </project>
