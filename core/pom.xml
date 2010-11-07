@@ -24,14 +24,12 @@
          <groupId>com.google.collections</groupId>
          <artifactId>google-collections</artifactId>
       </dependency>
-
+      
       <dependency>
          <groupId>org.testng</groupId>
          <artifactId>testng</artifactId>
-         <version>5.11</version>
          <classifier>jdk15</classifier>
       </dependency>
-
    </dependencies>
 
 
@@ -132,9 +130,7 @@
                         <include>**/*.java</include>
                      </includes>
                      <forkMode>once</forkMode>
-                     <argLine>-javaagent:${project.build.directory}/${project.build.finalName}.jar
-                        -Dorg.fakereplace.packages=org.fakereplace.test
-                        -Dorg.fakereplace.dump=/tmp</argLine>
+                     <argLine>-javaagent:${project.build.directory}/${project.build.finalName}.jar -Dorg.fakereplace.packages=org.fakereplace.test -Dorg.fakereplace.dump=/tmp</argLine>
                      <properties>
                         <property>
                            <name>listener</name>
