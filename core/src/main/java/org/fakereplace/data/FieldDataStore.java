@@ -17,7 +17,7 @@ import com.google.common.collect.MapMaker;
  */
 public class FieldDataStore
 {
-   private static final Map<Object, Map<Integer, Object>> fieldData = new MapMaker().makeComputingMap(new Function<Object, Map<Integer, Object>>()
+   private static final Map<Object, Map<Integer, Object>> fieldData = new MapMaker().weakKeys().makeComputingMap(new Function<Object, Map<Integer, Object>>()
    {
       public Map<Integer, Object> apply(Object from)
       {

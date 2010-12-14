@@ -71,7 +71,7 @@ public class ReflectionDelegate
       if (!AccessibleObjectReflectionDelegate.isAccessible(method))
       {
          // todo: cache these checks
-         Class caller = sun.reflect.Reflection.getCallerClass(2);
+         Class<?> caller = sun.reflect.Reflection.getCallerClass(2);
          Reflection.ensureMemberAccess(caller, method.getDeclaringClass(), instance, method.getModifiers());
       }
       method.setAccessible(true);
@@ -191,7 +191,7 @@ public class ReflectionDelegate
       }
       String args = '(' + DescriptorUtils.classArrayToDescriptorString(parameters) + ')';
       MethodData md = cd.getMethodData(name, args);
-      Class superClass = clazz;
+      Class<?> superClass = clazz;
       while (superClass.getSuperclass() != null && (md == null || md.getType() == MemberType.ADDED_DELEGATE) && superClass != Object.class)
       {
          superClass = superClass.getSuperclass();
@@ -236,11 +236,9 @@ public class ReflectionDelegate
       throw new NoSuchMethodException();
    }
 
-   public static Method getDeclaredMethod(Class clazz, String name, Class... parameters) throws NoSuchMethodException
+   public static Method getDeclaredMethod(Class<?> clazz, String name, Class<?>... parameters) throws NoSuchMethodException
    {
-
       ClassData cd = ClassDataStore.getModifiedClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
-
       if (cd == null || !cd.isReplaceable())
       {
          Method meth = clazz.getDeclaredMethod(name, parameters);
@@ -309,14 +307,13 @@ public class ReflectionDelegate
 
    public static Field[] getDeclaredFields(Class<?> clazz)
    {
+      if (!ClassDataStore.isClassReplaced(clazz))
+      {
+         return clazz.getDeclaredFields();
+      }
       try
       {
          ClassData cd = ClassDataStore.getModifiedClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
-
-         if (cd == null)
-         {
-            return clazz.getDeclaredFields();
-         }
          Field[] meth = clazz.getDeclaredFields();
 
          Collection<FieldData> fieldData = cd.getFields();
@@ -361,6 +358,10 @@ public class ReflectionDelegate
 
    public static Field[] getFields(Class<?> clazz)
    {
+      if (!ClassDataStore.isClassReplaced(clazz))
+      {
+         return clazz.getFields();
+      }
       try
       {
          ClassData cd = ClassDataStore.getModifiedClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
@@ -417,6 +418,10 @@ public class ReflectionDelegate
 
    public static Field getField(Class<?> clazz, String name) throws NoSuchFieldException
    {
+      if (!ClassDataStore.isClassReplaced(clazz))
+      {
+         return clazz.getField(name);
+      }
       ClassData cd = ClassDataStore.getModifiedClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
 
       if (cd == null)
@@ -458,6 +463,11 @@ public class ReflectionDelegate
 
    public static Field getDeclaredField(Class<?> clazz, String name) throws NoSuchFieldException
    {
+      if (!ClassDataStore.isClassReplaced(clazz))
+      {
+         return clazz.getDeclaredField(name);
+      }
+
       ClassData cd = ClassDataStore.getModifiedClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
 
       if (cd == null)
@@ -479,7 +489,6 @@ public class ReflectionDelegate
          {
             Class<?> c = clazz.getClassLoader().loadClass(fd.getClassName());
             return c.getDeclaredField(name);
-
          }
          catch (NoSuchFieldException e)
          {

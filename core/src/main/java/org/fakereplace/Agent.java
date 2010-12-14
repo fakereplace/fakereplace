@@ -19,6 +19,7 @@ import org.fakereplace.api.IntegrationInfo;
 import org.fakereplace.boot.Enviroment;
 import org.fakereplace.classloading.ClassIdentifier;
 import org.fakereplace.classloading.ClassLookupManager;
+import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.replacement.AddedClass;
 import org.fakereplace.replacement.ClassRedefiner;
 
@@ -57,6 +58,7 @@ public class Agent
       for (ClassDefinition i : classes)
       {
          changedClasses[count++] = i.getDefinitionClass();
+         ClassDataStore.markClassReplaced(i.getClass());
       }
       // notify the integration classes that stuff is about to change
       ClassChangeNotifier.beforeChange(changedClasses, addedClass);

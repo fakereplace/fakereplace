@@ -12,21 +12,33 @@ import com.google.common.collect.MapMaker;
 public class ClassDataStore
 {
 
-   static Map<String, Class<?>> proxyNameToReplacedClass = new ConcurrentHashMap<String, Class<?>>();
-   static Map<String, FieldAccessor> proxyNameToFieldAccessor = new ConcurrentHashMap<String, FieldAccessor>();
+   static final Map<String, Class<?>> proxyNameToReplacedClass = new ConcurrentHashMap<String, Class<?>>();
+   private static final Map<String, FieldAccessor> proxyNameToFieldAccessor = new ConcurrentHashMap<String, FieldAccessor>();
 
-   static Map<ClassLoader, Map<String, ClassData>> classData = new MapMaker().weakKeys().makeComputingMap(new MapFunction(false));
+   private static final Map<ClassLoader, Map<String, ClassData>> classData = new MapMaker().weakKeys().makeComputingMap(new MapFunction<ClassLoader, String, ClassData>(false));
 
-   static Map<ClassLoader, Map<String, BaseClassData>> baseClassData = new MapMaker().weakKeys().makeComputingMap(new MapFunction(false));
+   private static final Map<ClassLoader, Map<String, BaseClassData>> baseClassData = new MapMaker().weakKeys().makeComputingMap(new MapFunction<ClassLoader, String, BaseClassData>(false));
 
-   static Map<String, MethodData> proxyNameToMethodData = new ConcurrentHashMap<String, MethodData>();
+   private static final Map<String, MethodData> proxyNameToMethodData = new ConcurrentHashMap<String, MethodData>();
+
+   private static final Map<Class<?>, Object> replacedClasses = new MapMaker().weakKeys().makeMap();
 
    /**
     * takes the place of the null key on ConcurrentHashMap
     */
-   static ClassLoader nullLoader = new ClassLoader()
+   private static ClassLoader nullLoader = new ClassLoader()
    {
    };
+
+   public static void markClassReplaced(Class<?> clazz)
+   {
+      replacedClasses.put(clazz, nullLoader);
+   }
+
+   public static boolean isClassReplaced(Class<?> clazz)
+   {
+      return replacedClasses.containsKey(clazz);
+   }
 
    public static void saveClassData(ClassLoader loader, String className, ClassDataBuilder data)
    {
