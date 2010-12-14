@@ -26,7 +26,6 @@ import javassist.bytecode.ClassFile;
 import javassist.bytecode.CodeAttribute;
 import javassist.bytecode.CodeIterator;
 import javassist.bytecode.DuplicateMemberException;
-import javassist.bytecode.FieldInfo;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.Opcode;
 
@@ -193,7 +192,6 @@ public class Transformer implements ClassFileTransformer
             else
             {
                addMethodForInstrumentation(file);
-               addFieldForInstrumentation(file);
                addConstructorForInstrumentation(file);
                addStaticConstructorForInstrumentation(file);
                if (classBeingRedefined == null)
@@ -361,30 +359,6 @@ public class Transformer implements ClassFileTransformer
 
    }
 
-   /**
-    * Add's a field to the class that can store data from added fields
-    * 
-    * @param file
-    * @throws DuplicateMemberException
-    */
-   public void addFieldForInstrumentation(ClassFile file) throws DuplicateMemberException
-   {
-      try
-      {
-         if ((file.getAccessFlags() & AccessFlag.INTERFACE) == 0)
-         {
-            FieldInfo m = new FieldInfo(file.getConstPool(), Constants.ADDED_FIELD_NAME, Constants.ADDED_FIELD_DESCRIPTOR);
-            m.setAccessFlags(0 | AccessFlag.PUBLIC);
-            file.addField(m);
-         }
-      }
-      catch (DuplicateMemberException e)
-      {
-         // e.printStackTrace();
-      }
-
-   }
-
    public static Manipulator getManipulator()
    {
       return manipulator;
@@ -423,9 +397,8 @@ public class Transformer implements ClassFileTransformer
    }
 
    /**
-    * adds methods that call super.same_method()
-    * this is so that if the user decides to add this method the virtual
-    * call will work
+    * adds methods that call super.same_method() this is so that if the user
+    * decides to add this method the virtual call will work
     * 
     * @param file
     */

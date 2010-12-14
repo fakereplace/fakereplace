@@ -81,10 +81,6 @@ public class BaseClassData
       {
          FieldInfo m = (FieldInfo) o;
          MemberType mt = MemberType.NORMAL;
-         if (m.getName().equals(Constants.ADDED_FIELD_NAME))
-         {
-            mt = MemberType.ADDED_SYSTEM;
-         }
          fieldData.add(new FieldData(m, mt, className, m.getAccessFlags()));
       }
       this.fields = Collections.unmodifiableSet(fieldData);

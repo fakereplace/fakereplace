@@ -14,18 +14,12 @@ import java.util.Set;
 import javassist.bytecode.AccessFlag;
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.AttributeInfo;
-import javassist.bytecode.BadBytecode;
-import javassist.bytecode.Bytecode;
 import javassist.bytecode.ClassFile;
-import javassist.bytecode.CodeIterator;
 import javassist.bytecode.DuplicateMemberException;
 import javassist.bytecode.FieldInfo;
-import javassist.bytecode.MethodInfo;
-import javassist.bytecode.Opcode;
 import javassist.bytecode.SignatureAttribute;
 
 import org.fakereplace.Transformer;
-import org.fakereplace.boot.Constants;
 import org.fakereplace.boot.ProxyDefinitionStore;
 import org.fakereplace.data.AnnotationDataStore;
 import org.fakereplace.data.BaseClassData;
@@ -36,8 +30,6 @@ import org.fakereplace.data.FieldReferenceDataStore;
 import org.fakereplace.data.MemberType;
 import org.fakereplace.manip.data.AddedFieldData;
 import org.fakereplace.manip.staticfield.StaticFieldClassFactory;
-import org.fakereplace.manip.util.Boxing;
-import org.fakereplace.manip.util.ManipulationUtils;
 import org.fakereplace.reflection.FieldAccessor;
 
 public class FieldReplacer
@@ -91,12 +83,6 @@ public class FieldReplacer
                   // change from / to static can be handled fine
                }
             }
-         }
-         // we do not need to deal with these
-         if (m.getName().equals(Constants.ADDED_FIELD_NAME))
-         {
-            it.remove();
-            continue;
          }
          // This is a newly added field.
          if (md == null)
@@ -153,121 +139,9 @@ public class FieldReplacer
          }
       }
 
-      // if we have added instance fields we need to instrument all the
-      // constructors to create the
-      // arrays fist thing
-      if (noAddedFields > 0)
-      {
-         try
-         {
-            instrumentConstructors(file, addedFields);
-         }
-         catch (Exception e)
-         {
-            throw new RuntimeException(e);
-         }
-      }
       for (AddedFieldData a : addedFields)
       {
          Transformer.getManipulator().rewriteInstanceFieldAccess(a);
-      }
-   }
-
-   /**
-    * initilizes the generated field straight after the call to super() or
-    * this()
-    * 
-    * @param file
-    * @param addedFields
-    * @throws BadBytecode
-    */
-   private static void instrumentConstructors(ClassFile file, List<AddedFieldData> addedFields) throws BadBytecode
-   {
-      for (Object mo : file.getMethods())
-      {
-         MethodInfo m = (MethodInfo) mo;
-         if (m.getName().equals("<init>"))
-         {
-            // we want to add:
-            // if(added_field == null) added_field = new Object[size];
-
-            // create the body of the conditional first
-            Bytecode cond = new Bytecode(file.getConstPool());
-            // push this onto the stack
-            cond.addAload(0);
-            // create the map
-            cond.addNew("org.fakereplace.runtime.NullSafeConcurrentHashMap");
-            cond.add(Opcode.DUP); // dup for const call
-            cond.addInvokespecial("org.fakereplace.runtime.NullSafeConcurrentHashMap", "<init>", "()V");
-            cond.add(Opcode.DUP_X1);
-            cond.addPutfield(file.getName(), Constants.ADDED_FIELD_NAME, Constants.ADDED_FIELD_DESCRIPTOR);
-            for (int i = 0; i < addedFields.size(); ++i)
-            {
-               // duplicate the map
-               cond.add(Opcode.DUP);
-               AddedFieldData d = addedFields.get(i);
-               // push the index
-               cond.addIconst(d.getArrayIndex());
-               // box the integer
-               Boxing.boxInt(cond);
-
-               // now push the value
-               // TODO: we probably want to skip all this in the object case as
-               // it is already null
-               if (d.getDescriptor().length() > 1)
-               {
-                  cond.add(Opcode.ACONST_NULL);
-               }
-               else
-               {
-                  char c = d.getDescriptor().charAt(0);
-                  if (c == 'J')
-                  {
-                     cond.add(Opcode.LCONST_0);
-                  }
-                  else if (c == 'F')
-                  {
-                     cond.add(Opcode.FCONST_0);
-                  }
-                  else if (c == 'D')
-                  {
-                     cond.add(Opcode.DCONST_0);
-                  }
-                  else
-                  {
-                     cond.add(Opcode.ICONST_0);
-                  }
-                  Boxing.box(cond, c);
-               }
-               cond.addInvokevirtual("org.fakereplace.runtime.NullSafeConcurrentHashMap", "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
-               cond.add(Opcode.POP);
-            }
-            cond.add(Opcode.POP); // we don't need the map on the stack any more
-            Bytecode b = new Bytecode(file.getConstPool());
-            b.addAload(0);
-            b.addGetfield(file.getName(), Constants.ADDED_FIELD_NAME, Constants.ADDED_FIELD_DESCRIPTOR);
-            b.add(Opcode.IFNONNULL);
-            ManipulationUtils.add16bit(b, cond.getSize() + 3);
-            CodeIterator it = m.getCodeAttribute().iterator();
-            it.skipConstructor();
-            // built up the bytecode to insert
-            // if we try and insert one after the other weirdness happens
-            // not sure why
-            byte[] bcd = new byte[b.getSize() + cond.getSize()];
-            int count = 0;
-            for (int i = 0; i < b.getSize(); ++i)
-            {
-               bcd[i] = b.get()[i];
-               count++;
-            }
-            for (int i = 0; i < cond.getSize(); ++i)
-            {
-               bcd[count] = cond.get()[i];
-               count++;
-            }
-            it.insert(bcd);
-            m.getCodeAttribute().computeMaxStack();
-         }
       }
    }
 
@@ -311,10 +185,9 @@ public class FieldReplacer
 
    /**
     * This will create a proxy with a non static field. This field does not
-    * store anything, it
-    * merely provides a Field object for reflection. Attempts to change and read
-    * it's value are
-    * redirected to the actual array based store
+    * store anything, it merely provides a Field object for reflection. Attempts
+    * to change and read it's value are redirected to the actual array based
+    * store
     * 
     * @param file
     * @param loader
