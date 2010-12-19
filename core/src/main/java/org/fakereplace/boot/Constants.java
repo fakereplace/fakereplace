@@ -22,4 +22,6 @@ public class Constants
 
    public static final String FINAL_METHOD_ATTRIBUTE = "org.fakereplace.final";
 
+   public static final String FIELD_NAME = "java.lang.reflect.Field";
+
 }
