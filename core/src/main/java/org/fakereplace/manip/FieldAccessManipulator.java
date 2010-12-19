@@ -99,7 +99,7 @@ public class FieldAccessManipulator implements ClassManipulator
                methodName = pool.getInterfaceMethodrefName(i);
             }
 
-            if (className.equals("java.lang.reflect.Field"))
+            if (className.equals(Constants.FIELD_NAME))
             {
                RewriteData data = manipulationData.get(methodName);
                if (data != null)
@@ -114,7 +114,7 @@ public class FieldAccessManipulator implements ClassManipulator
                   {
                      if (fieldAccessLocation == null)
                      {
-                        fieldAccessLocation = pool.addClassInfo("org.fakereplace.reflection.FieldAccess");
+                        fieldAccessLocation = pool.addClassInfo("org.fakereplace.reflection.FieldReflection");
                         int nt = pool.addNameAndTypeInfo("isFakeField", "(Ljava/lang/reflect/Field;)Z");
                         isFakeFieldLocation = pool.addMethodrefInfo(fieldAccessLocation, nt);
                      }
@@ -155,8 +155,6 @@ public class FieldAccessManipulator implements ClassManipulator
                      if (methodCallLocations.containsKey(val))
                      {
                         RewriteData data = methodCallLocations.get(val);
-                        // now we need to do some very hard bytecode
-                        // manipulation.
                         Bytecode b = new Bytecode(file.getConstPool());
                         prepareForIsFakeFieldCall(b, data);
                         b.addInvokestatic(fieldAccessLocation, "isFakeField", "(Ljava/lang/reflect/Field;)Z");

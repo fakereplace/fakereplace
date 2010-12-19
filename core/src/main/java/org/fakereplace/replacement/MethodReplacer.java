@@ -57,7 +57,6 @@ public class MethodReplacer
          // stick our added methods into the class file
          // we can't finalise the code yet because we will probably need
          // the add stuff to them
-
          MethodInfo virtMethod = new MethodInfo(file.getConstPool(), Constants.ADDED_METHOD_NAME, Constants.ADDED_METHOD_DESCRIPTOR);
          virtMethod.setAccessFlags(0 | AccessFlag.PUBLIC);
          if (file.isInterface())
@@ -80,7 +79,6 @@ public class MethodReplacer
                b.add(Bytecode.ALOAD_2);
                b.addInvokespecial(file.getSuperclass(), Constants.ADDED_METHOD_NAME, Constants.ADDED_METHOD_DESCRIPTOR);
                b.add(Bytecode.ARETURN);
-
             }
             virtualCodeAttribute = b.toCodeAttribute();
             virtMethod.setCodeAttribute(virtualCodeAttribute);
@@ -105,9 +103,7 @@ public class MethodReplacer
                file.addMethod(m);
             }
          }
-
          file.addMethod(virtMethod);
-
       }
       catch (DuplicateMemberException e)
       {
@@ -286,8 +282,7 @@ public class MethodReplacer
       }
    }
 
-   private static String generateProxyInvocationBytecode(MethodInfo mInfo, ConstPool constPool, int methodNumber, String className, ClassLoader loader, boolean staticMethod, boolean isInterface)
-         throws BadBytecode
+   private static String generateProxyInvocationBytecode(MethodInfo mInfo, ConstPool constPool, int methodNumber, String className, ClassLoader loader, boolean staticMethod, boolean isInterface) throws BadBytecode
    {
       String proxyName = ProxyDefinitionStore.getProxyName();
       ClassFile proxy = new ClassFile(false, proxyName, "java.lang.Object");
@@ -552,8 +547,7 @@ public class MethodReplacer
     * @param addedMethod
     * @throws BadBytecode
     */
-   private static void generateBoxedConditionalCodeBlock(int methodNumber, MethodInfo mInfo, ConstPool methodConstPool, CodeAttribute addedMethod, boolean staticMethod, boolean constructor)
-         throws BadBytecode
+   private static void generateBoxedConditionalCodeBlock(int methodNumber, MethodInfo mInfo, ConstPool methodConstPool, CodeAttribute addedMethod, boolean staticMethod, boolean constructor) throws BadBytecode
    {
 
       // we need to insert a conditional
@@ -706,8 +700,7 @@ public class MethodReplacer
     * api
     * 
     * Constructors are not invoked through the proxy class, instead we have to
-    * do a lot more
-    * bytecode re-writing at the actual invocation sites
+    * do a lot more bytecode re-writing at the actual invocation sites
     * 
     * @param mInfo
     * @param constPool

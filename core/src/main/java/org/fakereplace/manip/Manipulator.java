@@ -24,6 +24,7 @@ public class Manipulator
    final private SubclassVirtualCallManipulator subclassVirtualCallManilulator = new SubclassVirtualCallManipulator();
    final private FinalMethodManipulator finalMethodManipulator = new FinalMethodManipulator();
    final private FieldAccessManipulator fieldAccessManipulator = new FieldAccessManipulator();
+   final private MethodAccessManipulator methodAccessManipulator = new MethodAccessManipulator();
 
    final private Set<ClassManipulator> manipulators = new CopyOnWriteArraySet<ClassManipulator>();
 
@@ -36,6 +37,7 @@ public class Manipulator
       manipulators.add(subclassVirtualCallManilulator);
       manipulators.add(finalMethodManipulator);
       manipulators.add(fieldAccessManipulator);
+      manipulators.add(methodAccessManipulator);
    }
 
    public void removeRewrites(String className, ClassLoader classLoader)

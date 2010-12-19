@@ -15,7 +15,6 @@ import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.data.MemberType;
 import org.fakereplace.data.MethodData;
 import org.fakereplace.util.DescriptorUtils;
-import org.fakereplace.util.InvocationUtil;
 
 import sun.reflect.Reflection;
 
@@ -25,7 +24,7 @@ public class ConstructorReflectionDelegate
    @SuppressWarnings("restriction")
    public static Object newInstance(Constructor<?> method, Object... args) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException, InstantiationException
    {
-      if (InvocationUtil.executeFakeCall(method))
+      if (fakeCallRequired(method))
       {
          MethodData data = ClassDataStore.getMethodInformation(method.getDeclaringClass().getName());
          Class<?> info = ClassDataStore.getRealClassFromProxyName(method.getDeclaringClass().getName());
@@ -254,5 +253,10 @@ public class ConstructorReflectionDelegate
          return ClassDataStore.getRealClassFromProxyName(c.getName());
       }
       return c;
+   }
+
+   public static boolean fakeCallRequired(Constructor<?> method)
+   {
+      return method.getDeclaringClass().getName().startsWith(Constants.GENERATED_CLASS_PACKAGE);
    }
 }

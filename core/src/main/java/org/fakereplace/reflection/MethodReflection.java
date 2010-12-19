@@ -40,7 +40,7 @@ public class MethodReflection
 
    public static Object invoke(Method method, Object instance, Object[] args) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException
    {
-      if (InvocationUtil.executeFakeCall(method))
+      if (!Modifier.isStatic(method.getModifiers()))
       {
          MethodData info = ClassDataStore.getMethodInformation(method.getDeclaringClass().getName());
          try
@@ -288,5 +288,10 @@ public class MethodReflection
          return ClassDataStore.getRealClassFromProxyName(c.getName());
       }
       return c;
+   }
+
+   public static boolean fakeCallRequired(Method method)
+   {
+      return method.getDeclaringClass().getName().startsWith(Constants.GENERATED_CLASS_PACKAGE);
    }
 }
