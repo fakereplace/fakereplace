@@ -25,5 +25,7 @@ public class Constants
    public static final String FIELD_NAME = "java.lang.reflect.Field";
 
    public static final String METHOD_NAME = "java.lang.reflect.Method";
+   
+   public static final String CONSTRUCTOR_NAME = "java.lang.reflect.Constructor";
 
 }
