@@ -7,5 +7,17 @@ public class InstanceFieldReflection
    {
       return "";
    }
+   
+
+   public long getLongValue()
+   {
+      return 0;
+   }
+
+   public int getIntValue()
+   {
+      return 0;
+   }
+
 
 }

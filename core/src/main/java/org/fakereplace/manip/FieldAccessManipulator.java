@@ -45,6 +45,7 @@ public class FieldAccessManipulator implements ClassManipulator
       // field access setters
       setupData("set", "(Ljava/lang/Object;Ljava/lang/Object;)V", "(Ljava/lang/reflect/Field;Ljava/lang/Object;Ljava/lang/Object;)V", true, false);
       setupData("setBoolean", "(Ljava/lang/Object;Z)V", "(Ljava/lang/reflect/Field;Ljava/lang/Object;Z)V", true, false);
+      setupData("setBtye", "(Ljava/lang/Object;B)V", "(Ljava/lang/reflect/Field;Ljava/lang/Object;B)V", true, false);
       setupData("setChar", "(Ljava/lang/Object;C)V", "(Ljava/lang/reflect/Field;Ljava/lang/Object;C)V", true, false);
       setupData("setDouble", "(Ljava/lang/Object;D)V", "(Ljava/lang/reflect/Field;Ljava/lang/Object;D)V", true, true);
       setupData("setFloat", "(Ljava/lang/Object;F)V", "(Ljava/lang/reflect/Field;Ljava/lang/Object;F)V", true, false);
@@ -76,7 +77,6 @@ public class FieldAccessManipulator implements ClassManipulator
       Map<Integer, RewriteData> methodCallLocations = new HashMap<Integer, RewriteData>();
       Map<RewriteData, Integer> newClassPoolLocations = new HashMap<RewriteData, Integer>();
       Integer fieldAccessLocation = null;
-      Integer isFakeFieldLocation = null;
       // first we need to scan the constant pool looking for
       // CONSTANT_method_info_ref structures
       ConstPool pool = file.getConstPool();
@@ -85,17 +85,15 @@ public class FieldAccessManipulator implements ClassManipulator
          // we have a method call
          if (pool.getTag(i) == ConstPool.CONST_Methodref || pool.getTag(i) == ConstPool.CONST_InterfaceMethodref)
          {
-            String className, methodDesc, methodName;
+            String className,  methodName;
             if (pool.getTag(i) == ConstPool.CONST_Methodref)
             {
                className = pool.getMethodrefClassName(i);
-               methodDesc = pool.getMethodrefType(i);
                methodName = pool.getMethodrefName(i);
             }
             else
             {
                className = pool.getInterfaceMethodrefClassName(i);
-               methodDesc = pool.getInterfaceMethodrefType(i);
                methodName = pool.getInterfaceMethodrefName(i);
             }
 
@@ -115,8 +113,6 @@ public class FieldAccessManipulator implements ClassManipulator
                      if (fieldAccessLocation == null)
                      {
                         fieldAccessLocation = pool.addClassInfo("org.fakereplace.reflection.FieldReflection");
-                        int nt = pool.addNameAndTypeInfo("isFakeField", "(Ljava/lang/reflect/Field;)Z");
-                        isFakeFieldLocation = pool.addMethodrefInfo(fieldAccessLocation, nt);
                      }
                      int newNameAndType = pool.addNameAndTypeInfo(data.getMethodName(), data.getNewMethodDescriptor());
                      newClassPoolLocations.put(data, newNameAndType);
@@ -202,6 +198,8 @@ public class FieldAccessManipulator implements ClassManipulator
             // we need Field, instance, widevalue , Field
             b.add(Opcode.DUP2_X2);
             b.add(Opcode.POP2);
+            b.add(Opcode.DUP2_X2);
+            b.add(Opcode.POP);
          }
          else
          {
@@ -209,10 +207,10 @@ public class FieldAccessManipulator implements ClassManipulator
             // we need Field, instance, widevalue , Field
             b.add(Opcode.DUP_X2);
             b.add(Opcode.POP);
+            b.add(Opcode.DUP_X2);
+            b.add(Opcode.POP);
+            b.add(Opcode.DUP_X2);
          }
-         b.add(Opcode.DUP_X2);
-         b.add(Opcode.POP);
-         b.add(Opcode.DUP_X2);
       }
       else
       {

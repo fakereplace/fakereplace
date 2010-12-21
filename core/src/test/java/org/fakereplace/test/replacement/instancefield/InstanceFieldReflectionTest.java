@@ -3,6 +3,7 @@ package org.fakereplace.test.replacement.instancefield;
 import java.lang.reflect.Field;
 
 import org.fakereplace.test.util.ClassReplacer;
+import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -24,6 +25,26 @@ public class InstanceFieldReflectionTest
       Field field = InstanceFieldReflection.class.getDeclaredField("value");
       field.set(r, "hello world");
       assert r.getValue().equals("hello world");
+   }
+   
+   @Test(groups = "instanceFieldByReflection")
+   public void testSettingPrimitiveFieldByReflection() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException
+   {
+      InstanceFieldReflection r = new InstanceFieldReflection();
+      Field field = InstanceFieldReflection.class.getDeclaredField("intValue");
+      field.setInt(r, 10);
+      Assert.assertEquals( r.getIntValue(),10);
+      Assert.assertEquals( field.getInt(r),10);
+   }
+   
+   @Test(groups = "instanceFieldByReflection")
+   public void testSettingWideFieldByReflection() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException
+   {
+      InstanceFieldReflection r = new InstanceFieldReflection();
+      Field field = InstanceFieldReflection.class.getDeclaredField("longValue");
+      field.setLong(r, 10L);
+      Assert.assertEquals( r.getLongValue(),10);
+      Assert.assertEquals( field.getLong(r),10);
    }
 
    @Test(groups = "instanceFieldByReflection")
