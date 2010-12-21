@@ -172,7 +172,7 @@ public class FieldAccessManipulator implements ClassManipulator
                            it.writeByte(CodeIterator.NOP, index + 3);
                            it.writeByte(CodeIterator.NOP, index + 4);
                         }
-                        it.insert(b.get());
+                        it.insertEx(b.get());
                      }
                   }
 
@@ -181,7 +181,7 @@ public class FieldAccessManipulator implements ClassManipulator
             }
             catch (Exception e)
             {
-               Logger.log(this, "Bad byte code transforming " + file.getName());
+               Logger.log(this, "Bad byte code transforming " + file.getName() + "." + m.getName());
                e.printStackTrace();
             }
          }

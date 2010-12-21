@@ -130,7 +130,7 @@ public class MethodAccessManipulator implements ClassManipulator
                         it.writeByte(CodeIterator.NOP, index);
                         it.writeByte(CodeIterator.NOP, index + 1);
                         it.writeByte(CodeIterator.NOP, index + 2);
-                        it.insert(b.get());
+                        it.insertEx(b.get());
                      }
                   }
 
