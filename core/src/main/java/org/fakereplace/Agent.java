@@ -22,6 +22,7 @@ import org.fakereplace.classloading.ClassLookupManager;
 import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.replacement.AddedClass;
 import org.fakereplace.replacement.ClassRedefiner;
+import org.fakereplace.replacement.ReplacementResult;
 
 /**
  * The agent entry point.
@@ -41,7 +42,7 @@ public class Agent
       Set<IntegrationInfo> integrationInfo = IntegrationLoader.getIntegrationInfo(ClassLoader.getSystemClassLoader());
       inst = i;
       environment = new Enviroment();
-      inst.addTransformer(new Transformer(i, integrationInfo, environment));
+      inst.addTransformer(new Transformer(i, integrationInfo, environment), true);
    }
 
    static public void redefine(ClassDefinition[] classes, AddedClass[] addedData) throws UnmodifiableClassException, ClassNotFoundException
@@ -63,15 +64,18 @@ public class Agent
       // notify the integration classes that stuff is about to change
       ClassChangeNotifier.beforeChange(changedClasses, addedClass);
       // re-write the classes so their field
-      ClassDefinition[] modifiedClasses = ClassRedefiner.rewriteLoadedClasses(classes);
+      ReplacementResult result = ClassRedefiner.rewriteLoadedClasses(classes);
       try
       {
          for (AddedClass c : addedData)
          {
             ClassLookupManager.addClassInfo(c.getClassName(), c.getLoader(), c.getData());
          }
-         inst.redefineClasses(modifiedClasses);
-
+         inst.redefineClasses(result.getClasses());
+         if (!result.getClassesToRetransform().isEmpty())
+         {
+            inst.retransformClasses(result.getClassesToRetransform().toArray(new Class[result.getClassesToRetransform().size()]));
+         }
          Introspector.flushCaches();
 
          ClassChangeNotifier.notify(changedClasses, addedClass);
@@ -81,7 +85,7 @@ public class Agent
          try
          {
             // dump the classes to /tmp so we can look at them
-            for (ClassDefinition d : modifiedClasses)
+            for (ClassDefinition d : classes)
             {
                try
                {

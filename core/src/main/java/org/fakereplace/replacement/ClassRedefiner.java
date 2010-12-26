@@ -5,7 +5,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.instrument.ClassDefinition;
 import java.util.HashSet;
 import java.util.Set;
@@ -17,11 +16,10 @@ import org.fakereplace.boot.Logger;
 import org.fakereplace.data.BaseClassData;
 import org.fakereplace.data.ClassDataBuilder;
 import org.fakereplace.data.ClassDataStore;
-import org.fakereplace.util.FileReader;
 
 public class ClassRedefiner
 {
-   static public ClassDefinition[] rewriteLoadedClasses(ClassDefinition... classDefinitions)
+   static public ReplacementResult rewriteLoadedClasses(ClassDefinition... classDefinitions)
    {
       Set<ClassDefinition> defs = new HashSet<ClassDefinition>();
       Set<Class<?>> changedClasses = new HashSet<Class<?>>();
@@ -44,36 +42,14 @@ public class ClassRedefiner
             Logger.log(ClassRedefiner.class, "IO Error");
          }
       }
-      for (Class<?> c : classesToReload)
-      {
-         // if it is already being reloaded
-         if (changedClasses.contains(c))
-         {
-            continue;
-         }
-         try
-         {
-            // TODO: do this properly, test if they are availible on load and if
-            // not store the bytes
-            InputStream res = c.getClassLoader().getResourceAsStream(c.getName().replace('.', '/') + ".class");
-            byte[] data = FileReader.readFileBytes(res);
-            ClassDefinition n = new ClassDefinition(c, data);
-            defs.add(n);
-         }
-         catch (Exception e)
-         {
-
-            System.out.println("COULD NOT LOAD CLASS DEF: " + c.getName());
-            e.printStackTrace();
-         }
-      }
+      classesToReload.removeAll(changedClasses);
       ClassDefinition[] ret = new ClassDefinition[defs.size()];
       int count = 0;
       for (ClassDefinition c : defs)
       {
          ret[count++] = c;
       }
-      return ret;
+      return new ReplacementResult(ret, classesToReload);
 
    }
 

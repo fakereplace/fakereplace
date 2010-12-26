@@ -60,25 +60,25 @@ import com.google.common.collect.MapMaker;
 public class Transformer implements ClassFileTransformer
 {
 
-   final Instrumentation instrumentation;
+   private final Instrumentation instrumentation;
 
-   final ClassLoaderInstrumentation classLoaderInstrumenter;
+   private final ClassLoaderInstrumentation classLoaderInstrumenter;
 
-   final Enviroment enviroment;
+   private final Enviroment enviroment;
 
-   static final Manipulator manipulator = new Manipulator();
+   private static final Manipulator manipulator = new Manipulator();
 
-   static final Map<ClassLoader, Object> integrationClassloader = new MapMaker().weakKeys().makeMap();
+   private static final Map<ClassLoader, Object> integrationClassloader = new MapMaker().weakKeys().makeMap();
 
-   static final Map<String, IntegrationInfo> integrationClassTriggers = new MapMaker().makeMap();
+   private static final Map<String, IntegrationInfo> integrationClassTriggers = new MapMaker().makeMap();
 
-   final Set<IntegrationInfo> integrationInfo;
+   private final Set<IntegrationInfo> integrationInfo;
 
-   final Set<String> trackedInstances = new HashSet<String>();
+   private final Set<String> trackedInstances = new HashSet<String>();
 
-   final List<ClassTransformer> integrationTransformers = new CopyOnWriteArrayList<ClassTransformer>();
+   private final List<ClassTransformer> integrationTransformers = new CopyOnWriteArrayList<ClassTransformer>();
 
-   ClassChangeDetectorRunner detectorRunner = null;
+   private ClassChangeDetectorRunner detectorRunner = null;
 
    Transformer(Instrumentation inst, Set<IntegrationInfo> integrationInfo, Enviroment enviroment)
    {
@@ -414,7 +414,8 @@ public class Transformer implements ClassFileTransformer
       {
          for (MethodData m : data.getMethods())
          {
-            if (m.isStatic() || (AccessFlag.ABSTRACT & m.getAccessFlags()) != 0 || (AccessFlag.FINAL & m.getAccessFlags()) != 0 || (AccessFlag.PRIVATE & m.getAccessFlags()) != 0 || (AccessFlag.NATIVE & m.getAccessFlags()) != 0)
+            if (m.isStatic() || (AccessFlag.ABSTRACT & m.getAccessFlags()) != 0 || (AccessFlag.FINAL & m.getAccessFlags()) != 0 || (AccessFlag.PRIVATE & m.getAccessFlags()) != 0
+                  || (AccessFlag.NATIVE & m.getAccessFlags()) != 0)
             {
                continue;
             }
@@ -476,7 +477,8 @@ public class Transformer implements ClassFileTransformer
          {
             continue;
          }
-         if (m.isStatic() || (AccessFlag.ABSTRACT & m.getAccessFlags()) != 0 || (AccessFlag.FINAL & m.getAccessFlags()) != 0 || (AccessFlag.PRIVATE & m.getAccessFlags()) != 0 || (AccessFlag.NATIVE & m.getAccessFlags()) != 0)
+         if (m.isStatic() || (AccessFlag.ABSTRACT & m.getAccessFlags()) != 0 || (AccessFlag.FINAL & m.getAccessFlags()) != 0 || (AccessFlag.PRIVATE & m.getAccessFlags()) != 0
+               || (AccessFlag.NATIVE & m.getAccessFlags()) != 0)
          {
             continue;
          }
