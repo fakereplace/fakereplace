@@ -13,13 +13,6 @@ public enum MemberType
 
    FAKE_CONSTRUCTOR,
    /**
-    * added delegates are methods that the transformer added at load time to
-    * directly call a superclass method so subclasses can use the normal
-    * virtual method resolution rules
-    * 
-    */
-   ADDED_DELEGATE,
-   /**
     * This is a method that we have to implement with a noop as it was removed
     * from the source
     */

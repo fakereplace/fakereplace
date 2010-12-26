@@ -1,6 +1,5 @@
 package org.fakereplace.manip.util;
 
-import javassist.bytecode.AttributeInfo;
 import javassist.bytecode.BadBytecode;
 import javassist.bytecode.Bytecode;
 import javassist.bytecode.ClassFile;
@@ -10,7 +9,6 @@ import javassist.bytecode.DuplicateMemberException;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.Opcode;
 
-import org.fakereplace.boot.Constants;
 import org.fakereplace.data.MethodData;
 import org.fakereplace.util.DescriptorUtils;
 
@@ -320,8 +318,6 @@ public class ManipulationUtils
       ca.computeMaxStack();
       ca.setMaxLocals(maxLocals);
       m.setCodeAttribute(ca);
-      AttributeInfo myInfo = new AttributeInfo(file.getConstPool(), Constants.ADDED_SUPERCLASS_DELEGATING_METHOD_ATTRIBUTE, mData.getClassName().getBytes());
-      m.addAttribute(myInfo);
       file.addMethod(m);
    }
 

@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import javassist.bytecode.AttributeInfo;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.Descriptor;
 import javassist.bytecode.FieldInfo;
@@ -49,23 +48,11 @@ public class BaseClassData
          String methodClassName = className;
          MethodInfo m = (MethodInfo) o;
          MemberType type = MemberType.NORMAL;
-         if ((m.getDescriptor().equals(Constants.ADDED_METHOD_DESCRIPTOR) && m.getName().equals(Constants.ADDED_METHOD_NAME)) || (m.getDescriptor().equals(Constants.ADDED_STATIC_METHOD_DESCRIPTOR) && m.getName().equals(Constants.ADDED_STATIC_METHOD_NAME)) || (m.getDescriptor().equals(Constants.ADDED_CONSTRUCTOR_DESCRIPTOR)))
+         if ((m.getDescriptor().equals(Constants.ADDED_METHOD_DESCRIPTOR) && m.getName().equals(Constants.ADDED_METHOD_NAME))
+               || (m.getDescriptor().equals(Constants.ADDED_STATIC_METHOD_DESCRIPTOR) && m.getName().equals(Constants.ADDED_STATIC_METHOD_NAME))
+               || (m.getDescriptor().equals(Constants.ADDED_CONSTRUCTOR_DESCRIPTOR)))
          {
             type = MemberType.ADDED_SYSTEM;
-         }
-         else if (m.getAttribute(Constants.ADDED_SUPERCLASS_DELEGATING_METHOD_ATTRIBUTE) != null)
-         {
-            AttributeInfo at = m.getAttribute(Constants.ADDED_SUPERCLASS_DELEGATING_METHOD_ATTRIBUTE);
-            type = MemberType.ADDED_DELEGATE;
-            // we want the class name to be the class that is being delegated to
-            methodClassName = new String(at.get());
-         }
-         else if (m.getAttribute(Constants.ADDED_SUPERCLASS_DELEGATING_METHOD_ATTRIBUTE) != null)
-         {
-            AttributeInfo at = m.getAttribute(Constants.ADDED_SUPERCLASS_DELEGATING_METHOD_ATTRIBUTE);
-            type = MemberType.ADDED_DELEGATE;
-            // we want the class name to be the class that is being delegated to
-            methodClassName = new String(at.get());
          }
          else if (m.getAttribute(Constants.FINAL_METHOD_ATTRIBUTE) != null)
          {

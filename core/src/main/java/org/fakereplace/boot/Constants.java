@@ -18,14 +18,12 @@ public class Constants
 
    public static final String DUMP_DIRECTORY_KEY = "org.fakereplace.dump";
 
-   public static final String ADDED_SUPERCLASS_DELEGATING_METHOD_ATTRIBUTE = "org.fakereplace.superclassDelegatingMethod";
-
    public static final String FINAL_METHOD_ATTRIBUTE = "org.fakereplace.final";
 
    public static final String FIELD_NAME = "java.lang.reflect.Field";
 
    public static final String METHOD_NAME = "java.lang.reflect.Method";
-   
+
    public static final String CONSTRUCTOR_NAME = "java.lang.reflect.Constructor";
 
 }

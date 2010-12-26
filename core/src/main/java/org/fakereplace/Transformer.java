@@ -36,14 +36,11 @@ import org.fakereplace.boot.Enviroment;
 import org.fakereplace.data.BaseClassData;
 import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.data.InstanceTracker;
-import org.fakereplace.data.MemberType;
-import org.fakereplace.data.MethodData;
 import org.fakereplace.detector.ClassChangeDetector;
 import org.fakereplace.detector.ClassChangeDetectorRunner;
 import org.fakereplace.manip.Manipulator;
 import org.fakereplace.manip.util.ManipulationUtils;
 import org.fakereplace.reflection.ReflectionInstrumentationSetup;
-import org.fakereplace.util.DoNotAddSuperDelegatingMethods;
 import org.fakereplace.util.NoInstrument;
 
 import com.google.common.collect.MapMaker;
@@ -72,8 +69,6 @@ public class Transformer implements ClassFileTransformer
 
    private static final Map<String, IntegrationInfo> integrationClassTriggers = new MapMaker().makeMap();
 
-   private final Set<IntegrationInfo> integrationInfo;
-
    private final Set<String> trackedInstances = new HashSet<String>();
 
    private final List<ClassTransformer> integrationTransformers = new CopyOnWriteArrayList<ClassTransformer>();
@@ -87,7 +82,6 @@ public class Transformer implements ClassFileTransformer
       classLoaderInstrumenter = new ClassLoaderInstrumentation(instrumentation);
       ReflectionInstrumentationSetup.setup(manipulator);
       this.enviroment = enviroment;
-      this.integrationInfo = integrationInfo;
       for (IntegrationInfo i : integrationInfo)
       {
          trackedInstances.addAll(i.getTrackedInstanceClassNames());
@@ -135,10 +129,13 @@ public class Transformer implements ClassFileTransformer
                BaseClassData baseData = new BaseClassData(file, loader, false);
                ClassDataStore.saveClassData(loader, baseData.getInternalName(), baseData);
             }
+            else
+            {
+               manipulator.transformClass(file, loader, enviroment);
+            }
             return null;
          }
 
-         boolean addSuperDelegatingMethods = true;
          if (classBeingRedefined == null)
          {
             AnnotationsAttribute at = (AnnotationsAttribute) file.getAttribute(AnnotationsAttribute.invisibleTag);
@@ -149,11 +146,6 @@ public class Transformer implements ClassFileTransformer
                if (an != null)
                {
                   return null;
-               }
-               an = at.getAnnotation(DoNotAddSuperDelegatingMethods.class.getName());
-               if (an != null)
-               {
-                  addSuperDelegatingMethods = false;
                }
             }
          }
@@ -198,17 +190,6 @@ public class Transformer implements ClassFileTransformer
                addMethodForInstrumentation(file);
                addConstructorForInstrumentation(file);
                addStaticConstructorForInstrumentation(file);
-               if (classBeingRedefined == null)
-               {
-                  if (addSuperDelegatingMethods)
-                  {
-                     addSuperClassMethodDelegates(file, loader);
-                  }
-               }
-               else
-               {
-                  addExistingSuperClassMethodDelegates(file, loader);
-               }
             }
          }
 
@@ -398,119 +379,6 @@ public class Transformer implements ClassFileTransformer
          {
          }
       }
-   }
-
-   /**
-    * adds methods that call super.same_method() this is so that if the user
-    * decides to add this method the virtual call will work
-    * 
-    * @param file
-    */
-   public void addSuperClassMethodDelegates(ClassFile file, ClassLoader loader)
-   {
-      BaseClassData data = ClassDataStore.getBaseClassData(loader, file.getSuperclass());
-
-      while (data != null)
-      {
-         for (MethodData m : data.getMethods())
-         {
-            if (m.isStatic() || (AccessFlag.ABSTRACT & m.getAccessFlags()) != 0 || (AccessFlag.FINAL & m.getAccessFlags()) != 0 || (AccessFlag.PRIVATE & m.getAccessFlags()) != 0
-                  || (AccessFlag.NATIVE & m.getAccessFlags()) != 0)
-            {
-               continue;
-            }
-            boolean found = false;
-            for (Object mio : file.getMethods())
-            {
-               MethodInfo mi = (MethodInfo) mio;
-               if (mi.getName().equals(m.getMethodName()) || mi.getDescriptor().equals(m.getDescriptor()))
-               {
-                  found = true;
-                  break;
-               }
-            }
-            if (found)
-            {
-               continue;
-            }
-            try
-            {
-               ManipulationUtils.addDelegatingMethod(file, m);
-            }
-            catch (DuplicateMemberException e)
-            {
-               e.printStackTrace();
-            }
-            catch (BadBytecode e)
-            {
-               e.printStackTrace();
-            }
-
-         }
-         if (data.getClassName().equals("java.lang.Object"))
-         {
-            break;
-         }
-         data = data.getSuperClassInformation();
-         if (data == null)
-         {
-            data = ClassDataStore.getBaseClassData(null, "java.lang.Object");
-         }
-      }
-
-   }
-
-   /**
-    * adds methods that call super.same_method() this is so that if the user
-    * decides to add this method this method assumes that the class has already
-    * been loaded and the methods added, so it just adds the same ones again
-    * 
-    * @param file
-    */
-   public void addExistingSuperClassMethodDelegates(ClassFile file, ClassLoader loader)
-   {
-      BaseClassData data = ClassDataStore.getBaseClassData(loader, file.getName());
-
-      for (MethodData m : data.getMethods())
-      {
-         if (m.getType() != MemberType.ADDED_DELEGATE)
-         {
-            continue;
-         }
-         if (m.isStatic() || (AccessFlag.ABSTRACT & m.getAccessFlags()) != 0 || (AccessFlag.FINAL & m.getAccessFlags()) != 0 || (AccessFlag.PRIVATE & m.getAccessFlags()) != 0
-               || (AccessFlag.NATIVE & m.getAccessFlags()) != 0)
-         {
-            continue;
-         }
-         boolean found = false;
-         for (Object mio : file.getMethods())
-         {
-            MethodInfo mi = (MethodInfo) mio;
-            if (mi.getName().equals(m.getMethodName()) || mi.getDescriptor().equals(m.getDescriptor()))
-            {
-               found = true;
-               break;
-            }
-         }
-         if (found)
-         {
-            continue;
-         }
-         try
-         {
-            ManipulationUtils.addDelegatingMethod(file, m);
-         }
-         catch (DuplicateMemberException e)
-         {
-            e.printStackTrace();
-         }
-         catch (BadBytecode e)
-         {
-            e.printStackTrace();
-         }
-
-      }
-
    }
 
    /**

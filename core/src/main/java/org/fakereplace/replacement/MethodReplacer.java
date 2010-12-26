@@ -41,8 +41,8 @@ import org.fakereplace.data.MethodData;
 import org.fakereplace.data.MethodIdentifierStore;
 import org.fakereplace.manip.util.Boxing;
 import org.fakereplace.manip.util.ManipulationUtils;
-import org.fakereplace.manip.util.ParameterRewriter;
 import org.fakereplace.manip.util.ManipulationUtils.MethodReturnRewriter;
+import org.fakereplace.manip.util.ParameterRewriter;
 import org.fakereplace.util.AccessFlagUtils;
 import org.fakereplace.util.DescriptorUtils;
 
@@ -249,10 +249,6 @@ public class MethodReplacer
          {
             createRemovedMethod(file, md, oldClass, builder);
          }
-         else if (md.getType() == MemberType.ADDED_DELEGATE)
-         {
-            // TODO:
-         }
       }
 
       // if we did not return from a virtual method we need to call the parent
@@ -282,7 +278,8 @@ public class MethodReplacer
       }
    }
 
-   private static String generateProxyInvocationBytecode(MethodInfo mInfo, ConstPool constPool, int methodNumber, String className, ClassLoader loader, boolean staticMethod, boolean isInterface) throws BadBytecode
+   private static String generateProxyInvocationBytecode(MethodInfo mInfo, ConstPool constPool, int methodNumber, String className, ClassLoader loader, boolean staticMethod, boolean isInterface)
+         throws BadBytecode
    {
       String proxyName = ProxyDefinitionStore.getProxyName();
       ClassFile proxy = new ClassFile(false, proxyName, "java.lang.Object");
@@ -547,7 +544,8 @@ public class MethodReplacer
     * @param addedMethod
     * @throws BadBytecode
     */
-   private static void generateBoxedConditionalCodeBlock(int methodNumber, MethodInfo mInfo, ConstPool methodConstPool, CodeAttribute addedMethod, boolean staticMethod, boolean constructor) throws BadBytecode
+   private static void generateBoxedConditionalCodeBlock(int methodNumber, MethodInfo mInfo, ConstPool methodConstPool, CodeAttribute addedMethod, boolean staticMethod, boolean constructor)
+         throws BadBytecode
    {
 
       // we need to insert a conditional
