@@ -2,18 +2,20 @@ package org.fakereplace.data;
 
 import java.util.Map;
 
+import org.fakereplace.com.google.common.base.Function;
+import org.fakereplace.com.google.common.collect.MapMaker;
 import org.fakereplace.runtime.NullSafeConcurrentHashMap;
 
-import com.google.common.base.Function;
-import com.google.common.collect.MapMaker;
+import org.fakereplace.com.google.common.base.Function;
+import org.fakereplace.com.google.common.collect.MapMaker;
 
 /**
  * This class holds field data for added fields. It maintains a weakly
  * referenced computing map of instance -> field value.
- * 
- * 
+ *
+ *
  * @author Stuart Douglas
- * 
+ *
  */
 public class FieldDataStore
 {

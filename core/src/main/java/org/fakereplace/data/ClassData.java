@@ -9,15 +9,15 @@ import java.util.Set;
 
 import org.fakereplace.util.DescriptorUtils;
 
-import com.google.common.base.Function;
-import com.google.common.collect.MapMaker;
+import org.fakereplace.com.google.common.base.Function;
+import org.fakereplace.com.google.common.collect.MapMaker;
 
 /**
  * This class holds everything there is to know about a class that has been seen
  * by the transformer
- * 
+ *
  * @author stuart
- * 
+ *
  */
 public class ClassData
 {
@@ -123,7 +123,7 @@ public class ClassData
    /**
     * Searches through parent classloaders of the classes class loader to find
     * the ClassData structure for the super class
-    * 
+    *
     * @return
     */
    public ClassData getSuperClassInformation()
@@ -186,7 +186,7 @@ public class ClassData
 
    /**
     * replaces a method if it already exists
-    * 
+    *
     * @param data
     */
    public void replaceMethod(MethodData data)
@@ -221,7 +221,7 @@ public class ClassData
     * gets the method data based on name and signature. If there is multiple
     * methods with the same name and signature it is undefined which one will be
     * returned
-    * 
+    *
     * @param name
     * @param arguments
     * @return

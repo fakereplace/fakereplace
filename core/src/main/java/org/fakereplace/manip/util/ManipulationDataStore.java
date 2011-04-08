@@ -8,14 +8,15 @@ import java.util.Set;
 import java.util.Map.Entry;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import com.google.common.collect.MapMaker;
+import org.fakereplace.com.google.common.collect.MapMaker;
+import org.fakereplace.com.google.common.collect.MapMaker;
 
 /**
  * class that figures out which maniluation should be applied based on the
  * classloader of the relative classes.
- * 
+ *
  * @author stuart
- * 
+ *
  * @param <T>
  */
 public class ManipulationDataStore<T extends ClassloaderFiltered<T>>
@@ -74,8 +75,8 @@ public class ManipulationDataStore<T extends ClassloaderFiltered<T>>
     * not go through the agent. Instead we have
     * to try searching through the parent classloaders, which will not always
     * work.
-    * 
-    * 
+    *
+    *
     * @param loaderOfClassBeingManipulated
     * @param loaderOfManipulatedClass
     * @return

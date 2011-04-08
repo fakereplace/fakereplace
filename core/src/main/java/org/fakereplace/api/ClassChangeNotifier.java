@@ -7,7 +7,7 @@ import java.util.Set;
 
 import org.fakereplace.classloading.ClassIdentifier;
 
-import com.google.common.collect.MapMaker;
+import org.fakereplace.com.google.common.collect.MapMaker;
 
 public class ClassChangeNotifier
 {

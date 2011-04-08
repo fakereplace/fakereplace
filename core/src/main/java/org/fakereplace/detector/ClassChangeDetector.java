@@ -17,26 +17,27 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.fakereplace.Agent;
+import org.fakereplace.com.google.common.collect.MapMaker;
 import org.fakereplace.manip.util.MapFunction;
 import org.fakereplace.replacement.AddedClass;
 import org.fakereplace.util.FileReader;
 
-import com.google.common.collect.MapMaker;
+import org.fakereplace.com.google.common.collect.MapMaker;
 
 /**
- * 
+ *
  * This is responsible for scanning for file system changes,
  * and if any are found it hot-replaces the files.
- * 
+ *
  * By default it is driven by a thread based scanner, however other scanners can
  * assume responsibility for certain class loaders.
- * 
+ *
  * This allows a filter based implementation to scan for changes on every
  * request, while integrations that do not provide a filter can still use the
  * thread based scanner
- * 
+ *
  * @author Stuart Douglas <stuart@baileyroberts.com.au>
- * 
+ *
  */
 public class ClassChangeDetector
 {
@@ -79,7 +80,7 @@ public class ClassChangeDetector
    /**
     * adds a class loader to the map of class loaders that are scanned for
     * changes
-    * 
+    *
     * @param classLoader
     * @param instigatingClassName
     */

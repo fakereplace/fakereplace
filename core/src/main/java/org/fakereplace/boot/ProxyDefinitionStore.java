@@ -5,13 +5,13 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.fakereplace.manip.util.MapFunction;
 
-import com.google.common.collect.MapMaker;
+import org.fakereplace.com.google.common.collect.MapMaker;
 
 /**
  * This class holds proxy definitions, that are later loaded by the relevant ClassLoaders
- * 
+ *
  * @author stuart
- * 
+ *
  */
 public class ProxyDefinitionStore
 {
@@ -33,7 +33,7 @@ public class ProxyDefinitionStore
 
    /**
     * Returns a unique proxy name
-    * 
+    *
     * @return
     */
    public static String getProxyName()

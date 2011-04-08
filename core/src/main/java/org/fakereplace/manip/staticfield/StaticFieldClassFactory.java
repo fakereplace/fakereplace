@@ -14,20 +14,20 @@ import javassist.bytecode.SignatureAttribute;
 import org.fakereplace.boot.ProxyDefinitionStore;
 import org.fakereplace.data.ClassDataStore;
 
-import com.google.common.base.Function;
-import com.google.common.collect.MapMaker;
+import org.fakereplace.com.google.common.base.Function;
+import org.fakereplace.com.google.common.collect.MapMaker;
 
 /**
  * Factory that generated classes to hold added static field instances. If a
  * request comes for a field with the same name, type and signiture
  * then the same (existing) class is returned, so that static fields can hold
  * their values across replacements
- * 
+ *
  * Modifiers and annotations are ignored, these are handled by instrumentation
  * of the reflection API
- * 
+ *
  * @author stuart
- * 
+ *
  */
 public class StaticFieldClassFactory
 {

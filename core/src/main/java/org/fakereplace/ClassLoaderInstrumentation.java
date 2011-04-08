@@ -1,5 +1,17 @@
 package org.fakereplace;
 
+import javassist.ClassPool;
+import javassist.CtClass;
+import javassist.CtMethod;
+import javassist.NotFoundException;
+import javassist.bytecode.AccessFlag;
+import org.fakereplace.boot.Logger;
+import org.fakereplace.classloading.ClassLookupManager;
+import org.fakereplace.data.BaseClassData;
+import org.fakereplace.data.ClassDataStore;
+import org.fakereplace.data.MethodData;
+import org.fakereplace.manip.FinalMethodManipulator;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.instrument.ClassDefinition;
@@ -7,19 +19,6 @@ import java.lang.instrument.Instrumentation;
 import java.net.URL;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
-
-import javassist.ClassPool;
-import javassist.CtClass;
-import javassist.CtMethod;
-import javassist.NotFoundException;
-import javassist.bytecode.AccessFlag;
-
-import org.fakereplace.boot.Logger;
-import org.fakereplace.classloading.ClassLookupManager;
-import org.fakereplace.data.BaseClassData;
-import org.fakereplace.data.ClassDataStore;
-import org.fakereplace.data.MethodData;
-import org.fakereplace.manip.FinalMethodManipulator;
 
 public class ClassLoaderInstrumentation
 {
@@ -38,7 +37,7 @@ public class ClassLoaderInstrumentation
    /**
     * This method instruments class loaders so that they can load our helper
     * classes.
-    * 
+    *
     * @param cl
     */
    public void redefineClassLoader(Class<?> cl)
@@ -51,6 +50,7 @@ public class ClassLoaderInstrumentation
          }
          // we are using the high level javassist bytecode here because we
          // have access to the class object
+         CtClass cls = null;
          if (cl.getClassLoader() != null)
          {
             URL resource = cl.getClassLoader().getResource(cl.getName().replace('.', '/') + ".class");
@@ -58,11 +58,10 @@ public class ClassLoaderInstrumentation
             try
             {
                in = resource.openStream();
-               ClassPool.getDefault().makeClass(in);
+               cls = ClassPool.getDefault().makeClass(in);
             }
             catch (Exception e)
             {
-               throw new RuntimeException(e);
             }
             finally
             {
@@ -75,8 +74,10 @@ public class ClassLoaderInstrumentation
                }
             }
          }
-
-         CtClass cls = ClassPool.getDefault().getCtClass(cl.getName());
+         if(cls == null) {
+            cls = ClassPool.getDefault().getCtClass(cl.getName());
+         }
+         cls.defrost();
          CtClass str = ClassPool.getDefault().getCtClass("java.lang.String");
          CtClass[] arg = new CtClass[2];
          arg[0] = str;
@@ -90,6 +91,7 @@ public class ClassLoaderInstrumentation
          // return the data to the correct classloader.
          // if the data is not null then we define the class, link
          // it if requested and return it.
+
          CtMethod method = cls.getDeclaredMethod("loadClass", arg);
          method
                .insertBefore("byte[] bdata = "
@@ -130,6 +132,7 @@ public class ClassLoaderInstrumentation
          // make a note of the fact that we have transformed this class
          // loader
          trasformedClassLoaders.add(cl);
+          System.out.println("INSTRUMENTED: " + cl);
       }
       catch (NotFoundException e)
       {
@@ -152,7 +155,7 @@ public class ClassLoaderInstrumentation
    /**
     * Checks to see if a class loader has already been instrumented and if not
     * instriments it
-    * 
+    *
     * @param loader
     */
    void instrumentClassLoaderIfNessesary(ClassLoader loader, String className)

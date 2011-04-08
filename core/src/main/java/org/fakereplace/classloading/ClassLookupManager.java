@@ -1,18 +1,17 @@
 package org.fakereplace.classloading;
 
-import java.util.Map;
-
 import org.fakereplace.Transformer;
 import org.fakereplace.boot.Constants;
 import org.fakereplace.boot.ProxyDefinitionStore;
+import org.fakereplace.com.google.common.collect.MapMaker;
 
-import com.google.common.collect.MapMaker;
+import java.util.Map;
 
 /**
  * this class is resposible for serving up classes to instrumented ClassLoaders
- * 
+ *
  * @author stuart
- * 
+ *
  */
 public class ClassLookupManager
 {

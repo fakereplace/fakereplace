@@ -33,6 +33,7 @@ import org.fakereplace.api.ClassTransformer;
 import org.fakereplace.api.IntegrationInfo;
 import org.fakereplace.boot.Constants;
 import org.fakereplace.boot.Enviroment;
+import org.fakereplace.com.google.common.collect.MapMaker;
 import org.fakereplace.data.BaseClassData;
 import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.data.InstanceTracker;
@@ -43,16 +44,16 @@ import org.fakereplace.manip.util.ManipulationUtils;
 import org.fakereplace.reflection.ReflectionInstrumentationSetup;
 import org.fakereplace.util.NoInstrument;
 
-import com.google.common.collect.MapMaker;
+import org.fakereplace.com.google.common.collect.MapMaker;
 
 /**
  * This file is the transformer that instruments classes as they are added to
  * the system.
- * 
+ *
  * It is doing to much at the moment, it needs to be split up a bit
- * 
+ *
  * @author stuart
- * 
+ *
  */
 public class Transformer implements ClassFileTransformer
 {
@@ -224,7 +225,7 @@ public class Transformer implements ClassFileTransformer
 
    /**
     * Adds a method to a class that re can redefine when the class is reloaded
-    * 
+    *
     * @param file
     * @throws DuplicateMemberException
     */
@@ -296,7 +297,7 @@ public class Transformer implements ClassFileTransformer
 
    /**
     * Adds a method to a class that re can redefine when the class is reloaded
-    * 
+    *
     * @param file
     * @throws DuplicateMemberException
     */
@@ -384,7 +385,7 @@ public class Transformer implements ClassFileTransformer
    /**
     * modifies a class so that all created instances are registered with
     * InstanceTracker
-    * 
+    *
     * @param file
     * @throws BadBytecode
     */

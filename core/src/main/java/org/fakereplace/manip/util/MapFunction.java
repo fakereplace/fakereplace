@@ -2,8 +2,9 @@ package org.fakereplace.manip.util;
 
 import java.util.Map;
 
-import com.google.common.base.Function;
-import com.google.common.collect.MapMaker;
+import org.fakereplace.com.google.common.base.Function;
+import org.fakereplace.com.google.common.collect.MapMaker;
+import org.fakereplace.com.google.common.collect.MapMaker;
 
 public class MapFunction<F, K, V> implements Function<F, Map<K, V>>
 {

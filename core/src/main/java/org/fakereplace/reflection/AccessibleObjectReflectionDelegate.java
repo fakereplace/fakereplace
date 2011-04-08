@@ -3,9 +3,10 @@ package org.fakereplace.reflection;
 import java.lang.reflect.AccessibleObject;
 import java.util.Map;
 
+import org.fakereplace.com.google.common.collect.MapMaker;
 import sun.reflect.Reflection;
 
-import com.google.common.collect.MapMaker;
+import org.fakereplace.com.google.common.collect.MapMaker;
 
 /**
  * tracks the accessible state of reflection items
@@ -32,7 +33,7 @@ public class AccessibleObjectReflectionDelegate
    }
 
    /**
-    * makes sure that a caller has permission to access an AccessibleObject and 
+    * makes sure that a caller has permission to access an AccessibleObject and
     * calls setAccessible
     * @param object
     * @param callerStackDepth
