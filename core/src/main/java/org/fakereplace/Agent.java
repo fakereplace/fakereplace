@@ -1,5 +1,16 @@
 package org.fakereplace;
 
+import javassist.bytecode.ClassFile;
+import org.fakereplace.api.ClassChangeNotifier;
+import org.fakereplace.api.IntegrationInfo;
+import org.fakereplace.boot.Enviroment;
+import org.fakereplace.classloading.ClassIdentifier;
+import org.fakereplace.classloading.ClassLookupManager;
+import org.fakereplace.data.ClassDataStore;
+import org.fakereplace.replacement.AddedClass;
+import org.fakereplace.replacement.ClassRedefiner;
+import org.fakereplace.replacement.ReplacementResult;
+
 import java.beans.Introspector;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -12,23 +23,11 @@ import java.lang.instrument.Instrumentation;
 import java.lang.instrument.UnmodifiableClassException;
 import java.util.Set;
 
-import javassist.bytecode.ClassFile;
-
-import org.fakereplace.api.ClassChangeNotifier;
-import org.fakereplace.api.IntegrationInfo;
-import org.fakereplace.boot.Enviroment;
-import org.fakereplace.classloading.ClassIdentifier;
-import org.fakereplace.classloading.ClassLookupManager;
-import org.fakereplace.data.ClassDataStore;
-import org.fakereplace.replacement.AddedClass;
-import org.fakereplace.replacement.ClassRedefiner;
-import org.fakereplace.replacement.ReplacementResult;
-
 /**
  * The agent entry point.
- * 
+ *
  * @author stuart
- * 
+ *
  */
 public class Agent
 {
@@ -43,6 +42,15 @@ public class Agent
       inst = i;
       environment = new Enviroment();
       inst.addTransformer(new Transformer(i, integrationInfo, environment), true);
+
+
+      //Add jboss AS7 CL support
+      String modules = System.getProperty("jboss.modules.system.pkgs");
+       if(modules == null || modules.isEmpty()) {
+           System.setProperty("jboss.modules.system.pkgs","org.fakereplace");
+       } else {
+           System.setProperty("jboss.modules.system.pkgs",modules + ",org.fakereplace");
+       }
    }
 
    static public void redefine(ClassDefinition[] classes, AddedClass[] addedData) throws UnmodifiableClassException, ClassNotFoundException
