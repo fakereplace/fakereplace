@@ -50,8 +50,6 @@ public class ReflectionInstrumentationSetup
       manipulator.replaceVirtualMethodInvokationWithStatic("java.lang.reflect.AnnotatedElement", "org.fakereplace.reflection.AnnotationDelegate", "getAnnotations", "()[Ljava/lang/annotation/Annotation;", "(Ljava/lang/reflect/AnnotatedElement;)[Ljava/lang/annotation/Annotation;", null);
       manipulator.replaceVirtualMethodInvokationWithStatic("java.lang.reflect.AnnotatedElement", "org.fakereplace.reflection.AnnotationDelegate", "getDeclaredAnnotations", "()[Ljava/lang/annotation/Annotation;", "(Ljava/lang/reflect/AnnotatedElement;)[Ljava/lang/annotation/Annotation;", null);
 
-      // replace constructor invocation
-      manipulator.replaceVirtualMethodInvokationWithStatic("java.lang.reflect.Constructor", "org.fakereplace.reflection.ConstructorReflectionDelegate", "newInstance", "([Ljava/lang/Object;)Ljava/lang/Object;", "(Ljava/lang/reflect/Constructor;[Ljava/lang/Object;)Ljava/lang/Object;", null);
       // method modifiers
       manipulator.replaceVirtualMethodInvokationWithStatic("java.lang.reflect.Method", "org.fakereplace.reflection.MethodReflection", "getModifiers", "()I", "(Ljava/lang/reflect/Method;)I", null);
       // fields

@@ -1,21 +1,21 @@
 package org.fakereplace.manip;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import javassist.bytecode.Bytecode;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.CodeIterator;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.Opcode;
-
 import org.fakereplace.boot.Constants;
 import org.fakereplace.boot.Enviroment;
 import org.fakereplace.boot.Logger;
+import org.fakereplace.reflection.ConstructorReflection;
 import org.fakereplace.util.JumpMarker;
 import org.fakereplace.util.JumpUtils;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * manipulator that replaces Method.invokewith the following:
@@ -26,9 +26,9 @@ import org.fakereplace.util.JumpUtils;
  *  else
  *     method.invoke
  * </code>
- * 
+ *
  * @author stuart
- * 
+ *
  */
 public class ConstructorAccessManipulator implements ClassManipulator
 {
@@ -71,7 +71,7 @@ public class ConstructorAccessManipulator implements ClassManipulator
                   // method in the const pool
                   if (newCallLocation == null)
                   {
-                     constructorReflectionLocation = pool.addClassInfo("org.fakereplace.reflection.ConstructorReflection");
+                     constructorReflectionLocation = pool.addClassInfo(ConstructorReflection.class.getName());
                      int nt = pool.addNameAndTypeInfo("fakeCallRequired", "(Ljava/lang/reflect/Constructor;)Z");
                      fakeCallRequiredLocation = pool.addMethodrefInfo(constructorReflectionLocation, nt);
                      newCallLocation = pool.addNameAndTypeInfo(METHOD_NAME, REPLACED_METHOD_DESCRIPTOR);

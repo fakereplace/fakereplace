@@ -1,18 +1,17 @@
 package org.fakereplace.manip;
 
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
-
 import javassist.bytecode.ClassFile;
-
 import org.fakereplace.boot.Enviroment;
 import org.fakereplace.manip.data.AddedFieldData;
 
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
+
 /**
  * Class that maintains a set of manipulations to apply to classes
- * 
+ *
  * @author stuart
- * 
+ *
  */
 public class Manipulator
 {
@@ -21,6 +20,7 @@ public class Manipulator
    final private StaticFieldManipulator staticFieldManipulator = new StaticFieldManipulator();
    final private InstanceFieldManipulator instanceFieldManapulator = new InstanceFieldManipulator();
    final private ConstructorInvocationManipulator constructorInvocationManipulator = new ConstructorInvocationManipulator();
+   final private ConstructorAccessManipulator constructorAccessManipulator = new ConstructorAccessManipulator();
    final private SubclassVirtualCallManipulator subclassVirtualCallManilulator = new SubclassVirtualCallManipulator();
    final private FinalMethodManipulator finalMethodManipulator = new FinalMethodManipulator();
    final private FieldAccessManipulator fieldAccessManipulator = new FieldAccessManipulator();
@@ -38,6 +38,7 @@ public class Manipulator
       manipulators.add(finalMethodManipulator);
       manipulators.add(fieldAccessManipulator);
       manipulators.add(methodAccessManipulator);
+      manipulators.add(constructorAccessManipulator);
    }
 
    public void removeRewrites(String className, ClassLoader classLoader)
@@ -50,7 +51,7 @@ public class Manipulator
 
    /**
     * rewrites static field access to the same field on another class
-    * 
+    *
     * @param oldClass
     * @param newClass
     * @param fieldName
@@ -78,7 +79,7 @@ public class Manipulator
    /**
     * This can also be used to replace a static invokation with another static
     * invokation
-    * 
+    *
     * @param oldClass
     * @param newClass
     * @param methodName

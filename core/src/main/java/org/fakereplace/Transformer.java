@@ -1,5 +1,30 @@
 package org.fakereplace;
 
+import javassist.bytecode.AccessFlag;
+import javassist.bytecode.AnnotationsAttribute;
+import javassist.bytecode.BadBytecode;
+import javassist.bytecode.Bytecode;
+import javassist.bytecode.ClassFile;
+import javassist.bytecode.CodeAttribute;
+import javassist.bytecode.CodeIterator;
+import javassist.bytecode.DuplicateMemberException;
+import javassist.bytecode.MethodInfo;
+import javassist.bytecode.Opcode;
+import org.fakereplace.api.ClassTransformer;
+import org.fakereplace.api.IntegrationInfo;
+import org.fakereplace.boot.Constants;
+import org.fakereplace.boot.Enviroment;
+import org.fakereplace.com.google.common.collect.MapMaker;
+import org.fakereplace.data.BaseClassData;
+import org.fakereplace.data.ClassDataStore;
+import org.fakereplace.data.InstanceTracker;
+import org.fakereplace.detector.ClassChangeDetector;
+import org.fakereplace.detector.ClassChangeDetectorRunner;
+import org.fakereplace.manip.Manipulator;
+import org.fakereplace.manip.util.ManipulationUtils;
+import org.fakereplace.reflection.ReflectionInstrumentationSetup;
+import org.fakereplace.util.NoInstrument;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -17,34 +42,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
-
-import javassist.bytecode.AccessFlag;
-import javassist.bytecode.AnnotationsAttribute;
-import javassist.bytecode.BadBytecode;
-import javassist.bytecode.Bytecode;
-import javassist.bytecode.ClassFile;
-import javassist.bytecode.CodeAttribute;
-import javassist.bytecode.CodeIterator;
-import javassist.bytecode.DuplicateMemberException;
-import javassist.bytecode.MethodInfo;
-import javassist.bytecode.Opcode;
-
-import org.fakereplace.api.ClassTransformer;
-import org.fakereplace.api.IntegrationInfo;
-import org.fakereplace.boot.Constants;
-import org.fakereplace.boot.Enviroment;
-import org.fakereplace.com.google.common.collect.MapMaker;
-import org.fakereplace.data.BaseClassData;
-import org.fakereplace.data.ClassDataStore;
-import org.fakereplace.data.InstanceTracker;
-import org.fakereplace.detector.ClassChangeDetector;
-import org.fakereplace.detector.ClassChangeDetectorRunner;
-import org.fakereplace.manip.Manipulator;
-import org.fakereplace.manip.util.ManipulationUtils;
-import org.fakereplace.reflection.ReflectionInstrumentationSetup;
-import org.fakereplace.util.NoInstrument;
-
-import org.fakereplace.com.google.common.collect.MapMaker;
 
 /**
  * This file is the transformer that instruments classes as they are added to
@@ -121,7 +118,7 @@ public class Transformer implements ClassFileTransformer
 
          // we do not instrument any classes from fakereplace
          // if we did we get an endless loop
-         // we also aviod instrumenting much of the java/lang and
+         // we also avoid instrumenting much of the java/lang and
          // java/io namespace except for java/lang/reflect/Proxy
          if (BuiltinClassData.skipInstrumentation(className))
          {
