@@ -1,32 +1,28 @@
 package org.fakereplace.test.replacement.instancefield;
 
-public class InstanceFieldReflection1
-{
+public class InstanceFieldReflection1 {
 
-   String value = "hi";
-   
-   long longValue =0;
-   
-   int intValue = 0;
+    String value = "hi";
 
-   public int vis;
-   
-   @SomeAnnotation
-   private int hid;
+    long longValue = 0;
 
-   public String getValue()
-   {
-      return value;
-   }
+    int intValue = 0;
 
-   public long getLongValue()
-   {
-      return longValue;
-   }
+    public int vis;
 
-   public int getIntValue()
-   {
-      return intValue;
-   }
+    @SomeAnnotation
+    private int hid;
+
+    public String getValue() {
+        return value;
+    }
+
+    public long getLongValue() {
+        return longValue;
+    }
+
+    public int getIntValue() {
+        return intValue;
+    }
 
 }

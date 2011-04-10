@@ -17,7 +17,6 @@
 package org.fakereplace.com.google.common.collect;
 
 import org.fakereplace.com.google.common.annotations.GwtCompatible;
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -28,64 +27,65 @@ import java.util.Iterator;
  * the backing collection as desired per the <a
  * href="http://en.wikipedia.org/wiki/Decorator_pattern">decorator pattern</a>.
  *
- * @see ForwardingObject
  * @author Kevin Bourrillion
+ * @see ForwardingObject
  */
 @GwtCompatible
 public abstract class ForwardingCollection<E> extends ForwardingObject
-    implements Collection<E> {
+        implements Collection<E> {
 
-  @Override protected abstract Collection<E> delegate();
+    @Override
+    protected abstract Collection<E> delegate();
 
-  public Iterator<E> iterator() {
-    return delegate().iterator();
-  }
+    public Iterator<E> iterator() {
+        return delegate().iterator();
+    }
 
-  public int size() {
-    return delegate().size();
-  }
+    public int size() {
+        return delegate().size();
+    }
 
-  public boolean removeAll(Collection<?> collection) {
-    return delegate().removeAll(collection);
-  }
+    public boolean removeAll(Collection<?> collection) {
+        return delegate().removeAll(collection);
+    }
 
-  public boolean isEmpty() {
-    return delegate().isEmpty();
-  }
+    public boolean isEmpty() {
+        return delegate().isEmpty();
+    }
 
-  public boolean contains(Object object) {
-    return delegate().contains(object);
-  }
+    public boolean contains(Object object) {
+        return delegate().contains(object);
+    }
 
-  public Object[] toArray() {
-    return delegate().toArray();
-  }
+    public Object[] toArray() {
+        return delegate().toArray();
+    }
 
-  public <T> T[] toArray(T[] array) {
-    return delegate().toArray(array);
-  }
+    public <T> T[] toArray(T[] array) {
+        return delegate().toArray(array);
+    }
 
-  public boolean add(E element) {
-    return delegate().add(element);
-  }
+    public boolean add(E element) {
+        return delegate().add(element);
+    }
 
-  public boolean remove(Object object) {
-    return delegate().remove(object);
-  }
+    public boolean remove(Object object) {
+        return delegate().remove(object);
+    }
 
-  public boolean containsAll(Collection<?> collection) {
-    return delegate().containsAll(collection);
-  }
+    public boolean containsAll(Collection<?> collection) {
+        return delegate().containsAll(collection);
+    }
 
-  public boolean addAll(Collection<? extends E> collection) {
-    return delegate().addAll(collection);
-  }
+    public boolean addAll(Collection<? extends E> collection) {
+        return delegate().addAll(collection);
+    }
 
-  public boolean retainAll(Collection<?> collection) {
-    return delegate().retainAll(collection);
-  }
+    public boolean retainAll(Collection<?> collection) {
+        return delegate().retainAll(collection);
+    }
 
-  public void clear() {
-    delegate().clear();
-  }
+    public void clear() {
+        delegate().clear();
+    }
 }

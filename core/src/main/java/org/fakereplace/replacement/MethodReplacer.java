@@ -1,15 +1,5 @@
 package org.fakereplace.replacement;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.ListIterator;
-import java.util.Set;
-
 import javassist.bytecode.AccessFlag;
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.AttributeInfo;
@@ -26,7 +16,6 @@ import javassist.bytecode.MethodInfo;
 import javassist.bytecode.Opcode;
 import javassist.bytecode.ParameterAnnotationsAttribute;
 import javassist.bytecode.SignatureAttribute;
-
 import org.fakereplace.BuiltinClassData;
 import org.fakereplace.Transformer;
 import org.fakereplace.boot.Constants;
@@ -46,745 +35,613 @@ import org.fakereplace.manip.util.ParameterRewriter;
 import org.fakereplace.util.AccessFlagUtils;
 import org.fakereplace.util.DescriptorUtils;
 
-public class MethodReplacer
-{
-   public static void handleMethodReplacement(ClassFile file, ClassLoader loader, Class<?> oldClass, ClassDataBuilder builder, Set<Class<?>> superclassesToHotswap)
-   {
-      // state for added static methods
-      CodeAttribute staticCodeAttribute = null, virtualCodeAttribute = null, constructorCodeAttribute = null;
-      try
-      {
-         // stick our added methods into the class file
-         // we can't finalise the code yet because we will probably need
-         // the add stuff to them
-         MethodInfo virtMethod = new MethodInfo(file.getConstPool(), Constants.ADDED_METHOD_NAME, Constants.ADDED_METHOD_DESCRIPTOR);
-         virtMethod.setAccessFlags(0 | AccessFlag.PUBLIC);
-         if (file.isInterface())
-         {
-            virtMethod.setAccessFlags(0 | AccessFlag.PUBLIC | AccessFlag.ABSTRACT | AccessFlag.SYNTHETIC);
-         }
-         else
-         {
-            virtMethod.setAccessFlags(0 | AccessFlag.PUBLIC | AccessFlag.SYNTHETIC);
-            Bytecode b = new Bytecode(file.getConstPool(), 0, 3);
-            if (BuiltinClassData.skipInstrumentation(file.getSuperclass()))
-            {
-               b.add(Bytecode.ACONST_NULL);
-               b.add(Bytecode.ARETURN);
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.ListIterator;
+import java.util.Set;
+
+public class MethodReplacer {
+    public static void handleMethodReplacement(ClassFile file, ClassLoader loader, Class<?> oldClass, ClassDataBuilder builder, Set<Class<?>> superclassesToHotswap) {
+        // state for added static methods
+        CodeAttribute staticCodeAttribute = null, virtualCodeAttribute = null, constructorCodeAttribute = null;
+        try {
+            // stick our added methods into the class file
+            // we can't finalise the code yet because we will probably need
+            // the add stuff to them
+            MethodInfo virtMethod = new MethodInfo(file.getConstPool(), Constants.ADDED_METHOD_NAME, Constants.ADDED_METHOD_DESCRIPTOR);
+            virtMethod.setAccessFlags(0 | AccessFlag.PUBLIC);
+            if (file.isInterface()) {
+                virtMethod.setAccessFlags(0 | AccessFlag.PUBLIC | AccessFlag.ABSTRACT | AccessFlag.SYNTHETIC);
+            } else {
+                virtMethod.setAccessFlags(0 | AccessFlag.PUBLIC | AccessFlag.SYNTHETIC);
+                Bytecode b = new Bytecode(file.getConstPool(), 0, 3);
+                if (BuiltinClassData.skipInstrumentation(file.getSuperclass())) {
+                    b.add(Bytecode.ACONST_NULL);
+                    b.add(Bytecode.ARETURN);
+                } else {
+                    b.add(Bytecode.ALOAD_0);
+                    b.add(Bytecode.ILOAD_1);
+                    b.add(Bytecode.ALOAD_2);
+                    b.addInvokespecial(file.getSuperclass(), Constants.ADDED_METHOD_NAME, Constants.ADDED_METHOD_DESCRIPTOR);
+                    b.add(Bytecode.ARETURN);
+                }
+                virtualCodeAttribute = b.toCodeAttribute();
+                virtMethod.setCodeAttribute(virtualCodeAttribute);
+
+                MethodInfo m = new MethodInfo(file.getConstPool(), Constants.ADDED_STATIC_METHOD_NAME, Constants.ADDED_STATIC_METHOD_DESCRIPTOR);
+                m.setAccessFlags(AccessFlag.PUBLIC | AccessFlag.STATIC | AccessFlag.SYNTHETIC);
+                b = new Bytecode(file.getConstPool(), 0, 3);
+                b.add(Bytecode.ACONST_NULL);
+                b.add(Bytecode.ARETURN);
+                staticCodeAttribute = b.toCodeAttribute();
+                m.setCodeAttribute(staticCodeAttribute);
+                file.addMethod(m);
+
+                m = new MethodInfo(file.getConstPool(), "<init>", Constants.ADDED_CONSTRUCTOR_DESCRIPTOR);
+                m.setAccessFlags(AccessFlag.PUBLIC | AccessFlag.SYNTHETIC);
+                b = new Bytecode(file.getConstPool(), 0, 4);
+                if (ManipulationUtils.addBogusConstructorCall(file, b)) {
+                    constructorCodeAttribute = b.toCodeAttribute();
+                    m.setCodeAttribute(constructorCodeAttribute);
+                    constructorCodeAttribute.setMaxLocals(6);
+                    file.addMethod(m);
+                }
             }
-            else
-            {
-               b.add(Bytecode.ALOAD_0);
-               b.add(Bytecode.ILOAD_1);
-               b.add(Bytecode.ALOAD_2);
-               b.addInvokespecial(file.getSuperclass(), Constants.ADDED_METHOD_NAME, Constants.ADDED_METHOD_DESCRIPTOR);
-               b.add(Bytecode.ARETURN);
-            }
-            virtualCodeAttribute = b.toCodeAttribute();
-            virtMethod.setCodeAttribute(virtualCodeAttribute);
-
-            MethodInfo m = new MethodInfo(file.getConstPool(), Constants.ADDED_STATIC_METHOD_NAME, Constants.ADDED_STATIC_METHOD_DESCRIPTOR);
-            m.setAccessFlags(AccessFlag.PUBLIC | AccessFlag.STATIC | AccessFlag.SYNTHETIC);
-            b = new Bytecode(file.getConstPool(), 0, 3);
-            b.add(Bytecode.ACONST_NULL);
-            b.add(Bytecode.ARETURN);
-            staticCodeAttribute = b.toCodeAttribute();
-            m.setCodeAttribute(staticCodeAttribute);
-            file.addMethod(m);
-
-            m = new MethodInfo(file.getConstPool(), "<init>", Constants.ADDED_CONSTRUCTOR_DESCRIPTOR);
-            m.setAccessFlags(AccessFlag.PUBLIC | AccessFlag.SYNTHETIC);
-            b = new Bytecode(file.getConstPool(), 0, 4);
-            if (ManipulationUtils.addBogusConstructorCall(file, b))
-            {
-               constructorCodeAttribute = b.toCodeAttribute();
-               m.setCodeAttribute(constructorCodeAttribute);
-               constructorCodeAttribute.setMaxLocals(6);
-               file.addMethod(m);
-            }
-         }
-         file.addMethod(virtMethod);
-      }
-      catch (DuplicateMemberException e)
-      {
-         e.printStackTrace();
-      }
-      BaseClassData data = builder.getBaseData();
-
-      Set<MethodData> methods = new HashSet<MethodData>();
-
-      methods.addAll(data.getMethods());
-
-      ListIterator<?> it = file.getMethods().listIterator();
-
-      // now we iterator through all methods and constructors and compare new
-      // and old. in the process we modify the new class so that is's signature
-      // is exactly compatible with the old class, otherwise an
-      // IncompatibleClassChange exception will be thrown
-      while (it.hasNext())
-      {
-         MethodInfo m = (MethodInfo) it.next();
-         MethodData md = null;
-         boolean upgradedVisibility = false;
-         for (MethodData i : methods)
-         {
-            if (i.getMethodName().equals(m.getName()) && i.getDescriptor().equals(m.getDescriptor()))
-            {
-
-               // if the access flags do not match then what we need to do
-               // depends on what has changed
-               if (i.getAccessFlags() != m.getAccessFlags())
-               {
-                  if (AccessFlagUtils.upgradeVisibility(m.getAccessFlags(), i.getAccessFlags()))
-                  {
-                     upgradedVisibility = true;
-                  }
-                  else if (AccessFlagUtils.downgradeVisibility(m.getAccessFlags(), i.getAccessFlags()))
-                  {
-                     // ignore this, we don't need to do anything
-                  }
-                  else
-                  {
-                     // we can't handle this yet
-                     continue;
-                  }
-               }
-               m.setAccessFlags(i.getAccessFlags());
-
-               // if it is the constructor
-               if (m.getName().equals("<init>"))
-               {
-                  try
-                  {
-                     Constructor<?> meth = i.getConstructor(oldClass);
-                     AnnotationDataStore.recordConstructorAnnotations(meth, (AnnotationsAttribute) m.getAttribute(AnnotationsAttribute.visibleTag));
-                     // now revert the annotations:
-                     m.addAttribute(AnnotationReplacer.duplicateAnnotationsAttribute(file.getConstPool(), meth));
-                     m.addAttribute(AnnotationReplacer.duplicateParameterAnnotationsAttribute(file.getConstPool(), meth));
-                  }
-                  catch (Exception e)
-                  {
-                     throw new RuntimeException(e);
-                  }
-               }
-               else if (!m.getName().equals("<clinit>"))
-               {
-                  // other methods
-                  // static constructors cannot have annotations so
-                  // we do not have to worry about them
-                  try
-                  {
-                     Method meth = i.getMethod(oldClass);
-                     AnnotationDataStore.recordMethodAnnotations(meth, (AnnotationsAttribute) m.getAttribute(AnnotationsAttribute.visibleTag));
-                     AnnotationDataStore.recordMethodParameterAnnotations(meth, (ParameterAnnotationsAttribute) m.getAttribute(ParameterAnnotationsAttribute.visibleTag));
-                     // now revert the annotations:
-                     m.addAttribute(AnnotationReplacer.duplicateAnnotationsAttribute(file.getConstPool(), meth));
-                     m.addAttribute(AnnotationReplacer.duplicateParameterAnnotationsAttribute(file.getConstPool(), meth));
-                  }
-                  catch (Exception e)
-                  {
-                     throw new RuntimeException(e);
-                  }
-               }
-
-               md = i;
-               break;
-            }
-         }
-         // we do not need to deal with these
-         if (m.getName().equals(Constants.ADDED_METHOD_NAME) || m.getName().equals(Constants.ADDED_STATIC_METHOD_NAME))
-         {
-            break;
-         }
-         // This is a newly added method.
-         // or the visilbility has been upgraded
-         // with the visiblity upgrade we just copy the method
-         // so it is still in the original
-         if (md == null || upgradedVisibility)
-         {
-            if ((m.getAccessFlags() & AccessFlag.STATIC) != 0)
-            {
-               Class<?> c = addMethod(file, loader, m, builder, staticCodeAttribute, true, oldClass);
-               if (c != null)
-               {
-                  superclassesToHotswap.add(c);
-               }
-            }
-            else if ((m.getName().equals("<init>")))
-            {
-               addConstructor(file, loader, m, builder, constructorCodeAttribute, oldClass);
-            }
-            else if (m.getName().equals("<clinit>"))
-            {
-               // nop, we can't change this, just ignore it
-            }
-            else
-            {
-               Class<?> c = addMethod(file, loader, m, builder, virtualCodeAttribute, false, oldClass);
-               if (c != null)
-               {
-                  superclassesToHotswap.add(c);
-               }
-            }
-            if (!upgradedVisibility)
-            {
-               it.remove();
-            }
-         }
-         else if (md != null)
-         {
-            methods.remove(md);
-         }
-         if (upgradedVisibility && md != null)
-         {
-            methods.remove(md);
-         }
-      }
-      // these methods have been removed, change them to throw a
-      // MethodNotFoundError
-
-      for (MethodData md : methods)
-      {
-         if (md.getType() == MemberType.NORMAL)
-         {
-            createRemovedMethod(file, md, oldClass, builder);
-         }
-      }
-
-      // if we did not return from a virtual method we need to call the parent
-      // method directly so to this end we append some stuff to the bottom of
-      // the method declaration to propagate the call to the parent
-      if (!file.isInterface())
-      {
-         try
-         {
-            Bytecode rcode = new Bytecode(staticCodeAttribute.getConstPool());
-            rcode.add(Opcode.ACONST_NULL);
-            rcode.add(Opcode.ARETURN);
-            CodeIterator cit = staticCodeAttribute.iterator();
-            cit.append(rcode.get());
-
-            staticCodeAttribute.computeMaxStack();
-            virtualCodeAttribute.computeMaxStack();
-            if (constructorCodeAttribute != null)
-            {
-               constructorCodeAttribute.computeMaxStack();
-            }
-         }
-         catch (BadBytecode e)
-         {
+            file.addMethod(virtMethod);
+        } catch (DuplicateMemberException e) {
             e.printStackTrace();
-         }
-      }
-   }
+        }
+        BaseClassData data = builder.getBaseData();
 
-   private static String generateProxyInvocationBytecode(MethodInfo mInfo, ConstPool constPool, int methodNumber, String className, ClassLoader loader, boolean staticMethod, boolean isInterface)
-         throws BadBytecode
-   {
-      String proxyName = ProxyDefinitionStore.getProxyName();
-      ClassFile proxy = new ClassFile(false, proxyName, "java.lang.Object");
-      proxy.setVersionToJava5();
-      proxy.setAccessFlags(AccessFlag.PUBLIC);
+        Set<MethodData> methods = new HashSet<MethodData>();
 
-      // now generate our proxy that is used to actually call the method
-      // we use a proxy because it makes the re-writing of loaded classes
-      // much simpler
+        methods.addAll(data.getMethods());
 
-      MethodInfo nInfo;
-      if (staticMethod)
-      {
-         nInfo = new MethodInfo(proxy.getConstPool(), mInfo.getName(), mInfo.getDescriptor());
-      }
-      else
-      {
-         // the descriptor is different as now there is an extra parameter for a
-         // static call
-         String nDesc = "(" + DescriptorUtils.extToInt(className) + mInfo.getDescriptor().substring(1);
-         nInfo = new MethodInfo(proxy.getConstPool(), mInfo.getName(), nDesc);
-      }
-      copyMethodAttributes(mInfo, nInfo);
+        ListIterator<?> it = file.getMethods().listIterator();
 
-      // set the sync bit on the proxy if it was set on the method
+        // now we iterator through all methods and constructors and compare new
+        // and old. in the process we modify the new class so that is's signature
+        // is exactly compatible with the old class, otherwise an
+        // IncompatibleClassChange exception will be thrown
+        while (it.hasNext()) {
+            MethodInfo m = (MethodInfo) it.next();
+            MethodData md = null;
+            boolean upgradedVisibility = false;
+            for (MethodData i : methods) {
+                if (i.getMethodName().equals(m.getName()) && i.getDescriptor().equals(m.getDescriptor())) {
 
-      nInfo.setAccessFlags(0 | AccessFlag.PUBLIC | AccessFlag.STATIC);
-      Bytecode proxyBytecode = new Bytecode(proxy.getConstPool());
+                    // if the access flags do not match then what we need to do
+                    // depends on what has changed
+                    if (i.getAccessFlags() != m.getAccessFlags()) {
+                        if (AccessFlagUtils.upgradeVisibility(m.getAccessFlags(), i.getAccessFlags())) {
+                            upgradedVisibility = true;
+                        } else if (AccessFlagUtils.downgradeVisibility(m.getAccessFlags(), i.getAccessFlags())) {
+                            // ignore this, we don't need to do anything
+                        } else {
+                            // we can't handle this yet
+                            continue;
+                        }
+                    }
+                    m.setAccessFlags(i.getAccessFlags());
 
-      int paramOffset = 0;
-      // if this is not a static method then we need to load the instance
-      // onto the stack
-      if (!staticMethod)
-      {
-         proxyBytecode.addAload(0);
-         paramOffset = 1;
-      }
+                    // if it is the constructor
+                    if (m.getName().equals("<init>")) {
+                        try {
+                            Constructor<?> meth = i.getConstructor(oldClass);
+                            AnnotationDataStore.recordConstructorAnnotations(meth, (AnnotationsAttribute) m.getAttribute(AnnotationsAttribute.visibleTag));
+                            // now revert the annotations:
+                            m.addAttribute(AnnotationReplacer.duplicateAnnotationsAttribute(file.getConstPool(), meth));
+                            m.addAttribute(AnnotationReplacer.duplicateParameterAnnotationsAttribute(file.getConstPool(), meth));
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                    } else if (!m.getName().equals("<clinit>")) {
+                        // other methods
+                        // static constructors cannot have annotations so
+                        // we do not have to worry about them
+                        try {
+                            Method meth = i.getMethod(oldClass);
+                            AnnotationDataStore.recordMethodAnnotations(meth, (AnnotationsAttribute) m.getAttribute(AnnotationsAttribute.visibleTag));
+                            AnnotationDataStore.recordMethodParameterAnnotations(meth, (ParameterAnnotationsAttribute) m.getAttribute(ParameterAnnotationsAttribute.visibleTag));
+                            // now revert the annotations:
+                            m.addAttribute(AnnotationReplacer.duplicateAnnotationsAttribute(file.getConstPool(), meth));
+                            m.addAttribute(AnnotationReplacer.duplicateParameterAnnotationsAttribute(file.getConstPool(), meth));
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
 
-      // stick the method number in the const pool then load it onto the
-      // stack
-      int scind = proxy.getConstPool().addIntegerInfo(methodNumber);
-      proxyBytecode.addLdc(scind);
-
-      String[] types = DescriptorUtils.descriptorStringToParameterArray(mInfo.getDescriptor());
-      // create a new array the same size as the parameter array
-      int index = proxyBytecode.getConstPool().addIntegerInfo(types.length);
-      proxyBytecode.addLdc(index);
-      // create new array to use to pass our parameters
-      proxyBytecode.addAnewarray("java.lang.Object");
-      int locals = types.length + paramOffset;
-      for (int i = 0; i < types.length; ++i)
-      {
-         // duplicate the array reference on the stack
-         proxyBytecode.add(Opcode.DUP);
-         // load the array index into the stack
-         index = proxyBytecode.getConstPool().addIntegerInfo(i);
-         proxyBytecode.addLdc(index);
-
-         char tp = types[i].charAt(0);
-         if (tp != 'L' && tp != '[')
-         {
-            // we have a primitive type
-            switch (tp)
-            {
-            case 'J':
-               proxyBytecode.addLload(i + paramOffset);
-               locals++;
-               break;
-            case 'D':
-               proxyBytecode.addDload(i + paramOffset);
-               locals++;
-               break;
-            case 'F':
-               proxyBytecode.addFload(i + paramOffset);
-               break;
-            default:
-               proxyBytecode.addIload(i + paramOffset);
+                    md = i;
+                    break;
+                }
             }
-            // lets box it
-            Boxing.box(proxyBytecode, tp);
-         }
-         else
-         {
-            proxyBytecode.addAload(i + paramOffset); // load parameter i onto
-            // the stack
-         }
-         proxyBytecode.add(Opcode.AASTORE);// store the value in the array
-
-      }
-
-      // invoke the added static method
-      if (staticMethod)
-      {
-         proxyBytecode.addInvokestatic(className, Constants.ADDED_STATIC_METHOD_NAME, "(I[Ljava/lang/Object;)Ljava/lang/Object;");
-      }
-      else if (isInterface)
-      {
-         proxyBytecode.addInvokeinterface(className, Constants.ADDED_METHOD_NAME, "(I[Ljava/lang/Object;)Ljava/lang/Object;", 3);
-      }
-      else
-      {
-         proxyBytecode.addInvokevirtual(className, Constants.ADDED_METHOD_NAME, "(I[Ljava/lang/Object;)Ljava/lang/Object;");
-      }
-      // cast it to the appropriate type and return it
-      ManipulationUtils.MethodReturnRewriter.addReturnProxyMethod(mInfo.getDescriptor(), proxyBytecode);
-      CodeAttribute ca = proxyBytecode.toCodeAttribute();
-      ca.setMaxLocals(locals);
-
-      ca.computeMaxStack();
-      nInfo.setCodeAttribute(ca);
-
-      // now we have the static method that actually does the we-writes.
-      // if this is a virtual method then we need to add another virtual method
-      // with the exact signature of the existing
-      // method.
-      // this is so that we do not need to instrument the reflection API to much
-      if (!staticMethod)
-      {
-         // as this method is never called the bytecode just returns
-         MethodInfo method = new MethodInfo(proxy.getConstPool(), mInfo.getName(), mInfo.getDescriptor());
-         method.setAccessFlags(mInfo.getAccessFlags());
-         if ((method.getAccessFlags() & AccessFlag.ABSTRACT) == 0)
-         {
-            Bytecode b = new Bytecode(proxy.getConstPool());
-            String ret = DescriptorUtils.getReturnType(mInfo.getDescriptor());
-            if (ret.length() == 1)
-            {
-               if (ret.equals("V"))
-               {
-                  b.add(Opcode.RETURN);
-               }
-               else if (ret.equals("D"))
-               {
-                  b.add(Opcode.DCONST_0);
-                  b.add(Opcode.DRETURN);
-               }
-               else if (ret.equals("F"))
-               {
-                  b.add(Opcode.FCONST_0);
-                  b.add(Opcode.FRETURN);
-               }
-               else if (ret.equals("J"))
-               {
-                  b.add(Opcode.LCONST_0);
-                  b.add(Opcode.LRETURN);
-               }
-               else
-               {
-                  b.add(Opcode.ICONST_0);
-                  b.add(Opcode.IRETURN);
-               }
+            // we do not need to deal with these
+            if (m.getName().equals(Constants.ADDED_METHOD_NAME) || m.getName().equals(Constants.ADDED_STATIC_METHOD_NAME)) {
+                break;
             }
-            else
-            {
-               b.add(Opcode.ACONST_NULL);
-               b.add(Opcode.ARETURN);
+            // This is a newly added method.
+            // or the visilbility has been upgraded
+            // with the visiblity upgrade we just copy the method
+            // so it is still in the original
+            if (md == null || upgradedVisibility) {
+                if ((m.getAccessFlags() & AccessFlag.STATIC) != 0) {
+                    Class<?> c = addMethod(file, loader, m, builder, staticCodeAttribute, true, oldClass);
+                    if (c != null) {
+                        superclassesToHotswap.add(c);
+                    }
+                } else if ((m.getName().equals("<init>"))) {
+                    addConstructor(file, loader, m, builder, constructorCodeAttribute, oldClass);
+                } else if (m.getName().equals("<clinit>")) {
+                    // nop, we can't change this, just ignore it
+                } else {
+                    Class<?> c = addMethod(file, loader, m, builder, virtualCodeAttribute, false, oldClass);
+                    if (c != null) {
+                        superclassesToHotswap.add(c);
+                    }
+                }
+                if (!upgradedVisibility) {
+                    it.remove();
+                }
+            } else if (md != null) {
+                methods.remove(md);
             }
-            method.setCodeAttribute(b.toCodeAttribute());
-            method.getCodeAttribute().computeMaxStack();
-            method.getCodeAttribute().setMaxLocals(locals);
-         }
+            if (upgradedVisibility && md != null) {
+                methods.remove(md);
+            }
+        }
+        // these methods have been removed, change them to throw a
+        // MethodNotFoundError
 
-         copyMethodAttributes(mInfo, method);
-         try
-         {
-            proxy.addMethod(method);
-         }
-         catch (DuplicateMemberException e)
-         {
+        for (MethodData md : methods) {
+            if (md.getType() == MemberType.NORMAL) {
+                createRemovedMethod(file, md, oldClass, builder);
+            }
+        }
+
+        // if we did not return from a virtual method we need to call the parent
+        // method directly so to this end we append some stuff to the bottom of
+        // the method declaration to propagate the call to the parent
+        if (!file.isInterface()) {
+            try {
+                Bytecode rcode = new Bytecode(staticCodeAttribute.getConstPool());
+                rcode.add(Opcode.ACONST_NULL);
+                rcode.add(Opcode.ARETURN);
+                CodeIterator cit = staticCodeAttribute.iterator();
+                cit.append(rcode.get());
+
+                staticCodeAttribute.computeMaxStack();
+                virtualCodeAttribute.computeMaxStack();
+                if (constructorCodeAttribute != null) {
+                    constructorCodeAttribute.computeMaxStack();
+                }
+            } catch (BadBytecode e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private static String generateProxyInvocationBytecode(MethodInfo mInfo, ConstPool constPool, int methodNumber, String className, ClassLoader loader, boolean staticMethod, boolean isInterface)
+            throws BadBytecode {
+        String proxyName = ProxyDefinitionStore.getProxyName();
+        ClassFile proxy = new ClassFile(false, proxyName, "java.lang.Object");
+        proxy.setVersionToJava5();
+        proxy.setAccessFlags(AccessFlag.PUBLIC);
+
+        // now generate our proxy that is used to actually call the method
+        // we use a proxy because it makes the re-writing of loaded classes
+        // much simpler
+
+        MethodInfo nInfo;
+        if (staticMethod) {
+            nInfo = new MethodInfo(proxy.getConstPool(), mInfo.getName(), mInfo.getDescriptor());
+        } else {
+            // the descriptor is different as now there is an extra parameter for a
+            // static call
+            String nDesc = "(" + DescriptorUtils.extToInt(className) + mInfo.getDescriptor().substring(1);
+            nInfo = new MethodInfo(proxy.getConstPool(), mInfo.getName(), nDesc);
+        }
+        copyMethodAttributes(mInfo, nInfo);
+
+        // set the sync bit on the proxy if it was set on the method
+
+        nInfo.setAccessFlags(0 | AccessFlag.PUBLIC | AccessFlag.STATIC);
+        Bytecode proxyBytecode = new Bytecode(proxy.getConstPool());
+
+        int paramOffset = 0;
+        // if this is not a static method then we need to load the instance
+        // onto the stack
+        if (!staticMethod) {
+            proxyBytecode.addAload(0);
+            paramOffset = 1;
+        }
+
+        // stick the method number in the const pool then load it onto the
+        // stack
+        int scind = proxy.getConstPool().addIntegerInfo(methodNumber);
+        proxyBytecode.addLdc(scind);
+
+        String[] types = DescriptorUtils.descriptorStringToParameterArray(mInfo.getDescriptor());
+        // create a new array the same size as the parameter array
+        int index = proxyBytecode.getConstPool().addIntegerInfo(types.length);
+        proxyBytecode.addLdc(index);
+        // create new array to use to pass our parameters
+        proxyBytecode.addAnewarray("java.lang.Object");
+        int locals = types.length + paramOffset;
+        for (int i = 0; i < types.length; ++i) {
+            // duplicate the array reference on the stack
+            proxyBytecode.add(Opcode.DUP);
+            // load the array index into the stack
+            index = proxyBytecode.getConstPool().addIntegerInfo(i);
+            proxyBytecode.addLdc(index);
+
+            char tp = types[i].charAt(0);
+            if (tp != 'L' && tp != '[') {
+                // we have a primitive type
+                switch (tp) {
+                    case 'J':
+                        proxyBytecode.addLload(i + paramOffset);
+                        locals++;
+                        break;
+                    case 'D':
+                        proxyBytecode.addDload(i + paramOffset);
+                        locals++;
+                        break;
+                    case 'F':
+                        proxyBytecode.addFload(i + paramOffset);
+                        break;
+                    default:
+                        proxyBytecode.addIload(i + paramOffset);
+                }
+                // lets box it
+                Boxing.box(proxyBytecode, tp);
+            } else {
+                proxyBytecode.addAload(i + paramOffset); // load parameter i onto
+                // the stack
+            }
+            proxyBytecode.add(Opcode.AASTORE);// store the value in the array
+
+        }
+
+        // invoke the added static method
+        if (staticMethod) {
+            proxyBytecode.addInvokestatic(className, Constants.ADDED_STATIC_METHOD_NAME, "(I[Ljava/lang/Object;)Ljava/lang/Object;");
+        } else if (isInterface) {
+            proxyBytecode.addInvokeinterface(className, Constants.ADDED_METHOD_NAME, "(I[Ljava/lang/Object;)Ljava/lang/Object;", 3);
+        } else {
+            proxyBytecode.addInvokevirtual(className, Constants.ADDED_METHOD_NAME, "(I[Ljava/lang/Object;)Ljava/lang/Object;");
+        }
+        // cast it to the appropriate type and return it
+        ManipulationUtils.MethodReturnRewriter.addReturnProxyMethod(mInfo.getDescriptor(), proxyBytecode);
+        CodeAttribute ca = proxyBytecode.toCodeAttribute();
+        ca.setMaxLocals(locals);
+
+        ca.computeMaxStack();
+        nInfo.setCodeAttribute(ca);
+
+        // now we have the static method that actually does the we-writes.
+        // if this is a virtual method then we need to add another virtual method
+        // with the exact signature of the existing
+        // method.
+        // this is so that we do not need to instrument the reflection API to much
+        if (!staticMethod) {
+            // as this method is never called the bytecode just returns
+            MethodInfo method = new MethodInfo(proxy.getConstPool(), mInfo.getName(), mInfo.getDescriptor());
+            method.setAccessFlags(mInfo.getAccessFlags());
+            if ((method.getAccessFlags() & AccessFlag.ABSTRACT) == 0) {
+                Bytecode b = new Bytecode(proxy.getConstPool());
+                String ret = DescriptorUtils.getReturnType(mInfo.getDescriptor());
+                if (ret.length() == 1) {
+                    if (ret.equals("V")) {
+                        b.add(Opcode.RETURN);
+                    } else if (ret.equals("D")) {
+                        b.add(Opcode.DCONST_0);
+                        b.add(Opcode.DRETURN);
+                    } else if (ret.equals("F")) {
+                        b.add(Opcode.FCONST_0);
+                        b.add(Opcode.FRETURN);
+                    } else if (ret.equals("J")) {
+                        b.add(Opcode.LCONST_0);
+                        b.add(Opcode.LRETURN);
+                    } else {
+                        b.add(Opcode.ICONST_0);
+                        b.add(Opcode.IRETURN);
+                    }
+                } else {
+                    b.add(Opcode.ACONST_NULL);
+                    b.add(Opcode.ARETURN);
+                }
+                method.setCodeAttribute(b.toCodeAttribute());
+                method.getCodeAttribute().computeMaxStack();
+                method.getCodeAttribute().setMaxLocals(locals);
+            }
+
+            copyMethodAttributes(mInfo, method);
+            try {
+                proxy.addMethod(method);
+            } catch (DuplicateMemberException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+
+        try {
+            proxy.addMethod(nInfo);
+        } catch (DuplicateMemberException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-         }
-      }
+        }
+        try {
+            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+            DataOutputStream dos = new DataOutputStream(bytes);
+            proxy.write(dos);
+            ProxyDefinitionStore.saveProxyDefinition(loader, proxyName, bytes.toByteArray());
+            return proxyName;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
-      try
-      {
-         proxy.addMethod(nInfo);
-      }
-      catch (DuplicateMemberException e)
-      {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
-      }
-      try
-      {
-         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-         DataOutputStream dos = new DataOutputStream(bytes);
-         proxy.write(dos);
-         ProxyDefinitionStore.saveProxyDefinition(loader, proxyName, bytes.toByteArray());
-         return proxyName;
-      }
-      catch (IOException e)
-      {
-         throw new RuntimeException(e);
-      }
+    }
 
-   }
-
-   /**
-    * Adds a method to a class
-    * 
-    */
-   private static Class<?> addMethod(ClassFile file, ClassLoader loader, MethodInfo mInfo, ClassDataBuilder builder, CodeAttribute bytecode, boolean staticMethod, Class oldClass)
-   {
-      int methodCount = MethodIdentifierStore.getMethodNumber(mInfo.getName(), mInfo.getDescriptor());
-      try
-      {
-         if ((AccessFlag.ABSTRACT & mInfo.getAccessFlags()) == 0)
-         {
-            // abstract methods don't get a body
-            generateBoxedConditionalCodeBlock(methodCount, mInfo, file.getConstPool(), bytecode, staticMethod, false);
-         }
-         String proxyName = generateProxyInvocationBytecode(mInfo, file.getConstPool(), methodCount, file.getName(), loader, staticMethod, file.isInterface());
-         ClassDataStore.registerProxyName(oldClass, proxyName);
-         String newMethodDesc = mInfo.getDescriptor();
-         if (!staticMethod)
-         {
-            newMethodDesc = "(L" + Descriptor.toJvmName(file.getName()) + ";" + newMethodDesc.substring(1);
-         }
-         Transformer.getManipulator().replaceVirtualMethodInvokationWithStatic(file.getName(), proxyName, mInfo.getName(), mInfo.getDescriptor(), newMethodDesc, loader);
-
-         MethodData md = builder.addFakeMethod(mInfo.getName(), mInfo.getDescriptor(), proxyName, mInfo.getAccessFlags());
-         ClassDataStore.registerReplacedMethod(proxyName, md);
-         if (!staticMethod)
-         {
-            Class<?> sup = oldClass.getSuperclass();
-            while (sup != null)
-            {
-               for (Method m : sup.getDeclaredMethods())
-               {
-                  if (m.getName().equals(mInfo.getName()))
-                  {
-                     if (DescriptorUtils.getDescriptor(m).equals(mInfo.getDescriptor()))
-                     {
-                        Transformer.getManipulator().rewriteSubclassCalls(sup.getName(), sup.getClassLoader(), mInfo.getName(), mInfo.getDescriptor());
-                        return sup;
-                     }
-                  }
-               }
-               sup = sup.getSuperclass();
+    /**
+     * Adds a method to a class
+     */
+    private static Class<?> addMethod(ClassFile file, ClassLoader loader, MethodInfo mInfo, ClassDataBuilder builder, CodeAttribute bytecode, boolean staticMethod, Class oldClass) {
+        int methodCount = MethodIdentifierStore.getMethodNumber(mInfo.getName(), mInfo.getDescriptor());
+        try {
+            if ((AccessFlag.ABSTRACT & mInfo.getAccessFlags()) == 0) {
+                // abstract methods don't get a body
+                generateBoxedConditionalCodeBlock(methodCount, mInfo, file.getConstPool(), bytecode, staticMethod, false);
             }
-         }
-      }
-      catch (Exception e)
-      {
-         e.printStackTrace();
-      }
-      return null;
-   }
+            String proxyName = generateProxyInvocationBytecode(mInfo, file.getConstPool(), methodCount, file.getName(), loader, staticMethod, file.isInterface());
+            ClassDataStore.registerProxyName(oldClass, proxyName);
+            String newMethodDesc = mInfo.getDescriptor();
+            if (!staticMethod) {
+                newMethodDesc = "(L" + Descriptor.toJvmName(file.getName()) + ";" + newMethodDesc.substring(1);
+            }
+            Transformer.getManipulator().replaceVirtualMethodInvokationWithStatic(file.getName(), proxyName, mInfo.getName(), mInfo.getDescriptor(), newMethodDesc, loader);
 
-   /**
-    * This method will take a method body and add it to an added method local
-    * the bytecode is inserted inside a conditional that will only run the code
-    * if the method number is correct variables are removed from the parameter
-    * array and unboxed if nessesary the return value is boxed if nessesary
-    * 
-    * Much of this work is handled by helper classes
-    * 
-    * @param methodNumber
-    * @param mInfo
-    * @param methodConstPool
-    * @param addedMethod
-    * @throws BadBytecode
-    */
-   private static void generateBoxedConditionalCodeBlock(int methodNumber, MethodInfo mInfo, ConstPool methodConstPool, CodeAttribute addedMethod, boolean staticMethod, boolean constructor)
-         throws BadBytecode
-   {
+            MethodData md = builder.addFakeMethod(mInfo.getName(), mInfo.getDescriptor(), proxyName, mInfo.getAccessFlags());
+            ClassDataStore.registerReplacedMethod(proxyName, md);
+            if (!staticMethod) {
+                Class<?> sup = oldClass.getSuperclass();
+                while (sup != null) {
+                    for (Method m : sup.getDeclaredMethods()) {
+                        if (m.getName().equals(mInfo.getName())) {
+                            if (DescriptorUtils.getDescriptor(m).equals(mInfo.getDescriptor())) {
+                                Transformer.getManipulator().rewriteSubclassCalls(sup.getName(), sup.getClassLoader(), mInfo.getName(), mInfo.getDescriptor());
+                                return sup;
+                            }
+                        }
+                    }
+                    sup = sup.getSuperclass();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
-      // we need to insert a conditional
-      Bytecode bc = new Bytecode(mInfo.getConstPool());
-      CodeAttribute ca = (CodeAttribute) mInfo.getCodeAttribute().copy(mInfo.getConstPool(), Collections.emptyMap());
-      if (staticMethod)
-      {
-         bc.addOpcode(Opcode.ILOAD_0);
-      }
-      else
-      {
-         bc.addOpcode(Opcode.ILOAD_1);
-      }
-      int methodCountIndex = methodConstPool.addIntegerInfo(methodNumber);
-      bc.addLdc(methodCountIndex);
-      bc.addOpcode(Opcode.IF_ICMPNE);
+    /**
+     * This method will take a method body and add it to an added method local
+     * the bytecode is inserted inside a conditional that will only run the code
+     * if the method number is correct variables are removed from the parameter
+     * array and unboxed if nessesary the return value is boxed if nessesary
+     * <p/>
+     * Much of this work is handled by helper classes
+     *
+     * @param methodNumber
+     * @param mInfo
+     * @param methodConstPool
+     * @param addedMethod
+     * @throws BadBytecode
+     */
+    private static void generateBoxedConditionalCodeBlock(int methodNumber, MethodInfo mInfo, ConstPool methodConstPool, CodeAttribute addedMethod, boolean staticMethod, boolean constructor)
+            throws BadBytecode {
 
-      // now we need to fix local variables and unbox parameters etc
-      int addedCodeLength = ParameterRewriter.mangleParameters(staticMethod, constructor, ca, mInfo.getDescriptor(), ca.getMaxLocals());
-      int newMax = ca.getMaxLocals() + 2;
-      if (constructor)
-      {
-         // for the extra
-         newMax++;
-      }
-      if (newMax > addedMethod.getMaxLocals())
-      {
-         addedMethod.setMaxLocals(newMax);
-      }
-      // later
-      int offset = ca.getCodeLength();
-      // offset is +3, 2 for the branch offset after the IF_ICMPNE and 1 to
-      // take it past the end of the code
-      ManipulationUtils.add16bit(bc, offset + 3); // add the branch offset
+        // we need to insert a conditional
+        Bytecode bc = new Bytecode(mInfo.getConstPool());
+        CodeAttribute ca = (CodeAttribute) mInfo.getCodeAttribute().copy(mInfo.getConstPool(), Collections.emptyMap());
+        if (staticMethod) {
+            bc.addOpcode(Opcode.ILOAD_0);
+        } else {
+            bc.addOpcode(Opcode.ILOAD_1);
+        }
+        int methodCountIndex = methodConstPool.addIntegerInfo(methodNumber);
+        bc.addLdc(methodCountIndex);
+        bc.addOpcode(Opcode.IF_ICMPNE);
 
-      // now we need to insert our generated conditional at the start of the
-      // new method
-      CodeIterator newInfo = ca.iterator();
-      newInfo.insert(bc.get());
-      // now insert the new method code at the beginning of the static method
-      // code attribute
-      addedMethod.iterator().insert(ca.getCode());
+        // now we need to fix local variables and unbox parameters etc
+        int addedCodeLength = ParameterRewriter.mangleParameters(staticMethod, constructor, ca, mInfo.getDescriptor(), ca.getMaxLocals());
+        int newMax = ca.getMaxLocals() + 2;
+        if (constructor) {
+            // for the extra
+            newMax++;
+        }
+        if (newMax > addedMethod.getMaxLocals()) {
+            addedMethod.setMaxLocals(newMax);
+        }
+        // later
+        int offset = ca.getCodeLength();
+        // offset is +3, 2 for the branch offset after the IF_ICMPNE and 1 to
+        // take it past the end of the code
+        ManipulationUtils.add16bit(bc, offset + 3); // add the branch offset
 
-      // update the exception table
+        // now we need to insert our generated conditional at the start of the
+        // new method
+        CodeIterator newInfo = ca.iterator();
+        newInfo.insert(bc.get());
+        // now insert the new method code at the beginning of the static method
+        // code attribute
+        addedMethod.iterator().insert(ca.getCode());
 
-      int exOffset = bc.length() + addedCodeLength;
-      for (int i = 0; i < mInfo.getCodeAttribute().getExceptionTable().size(); ++i)
-      {
-         int start = mInfo.getCodeAttribute().getExceptionTable().startPc(i) + exOffset;
-         int end = mInfo.getCodeAttribute().getExceptionTable().endPc(i) + exOffset;
-         int handler = mInfo.getCodeAttribute().getExceptionTable().handlerPc(i) + exOffset;
-         int type = mInfo.getCodeAttribute().getExceptionTable().catchType(i);
-         addedMethod.getExceptionTable().add(start, end, handler, type);
-      }
+        // update the exception table
 
-      // now we need to make sure the function is returning an object
-      // rewriteFakeMethod makes sure that the return type is properly boxed
-      if (!constructor)
-      {
-         MethodReturnRewriter.rewriteFakeMethod(addedMethod.iterator(), mInfo.getDescriptor());
-      }
+        int exOffset = bc.length() + addedCodeLength;
+        for (int i = 0; i < mInfo.getCodeAttribute().getExceptionTable().size(); ++i) {
+            int start = mInfo.getCodeAttribute().getExceptionTable().startPc(i) + exOffset;
+            int end = mInfo.getCodeAttribute().getExceptionTable().endPc(i) + exOffset;
+            int handler = mInfo.getCodeAttribute().getExceptionTable().handlerPc(i) + exOffset;
+            int type = mInfo.getCodeAttribute().getExceptionTable().catchType(i);
+            addedMethod.getExceptionTable().add(start, end, handler, type);
+        }
 
-   }
+        // now we need to make sure the function is returning an object
+        // rewriteFakeMethod makes sure that the return type is properly boxed
+        if (!constructor) {
+            MethodReturnRewriter.rewriteFakeMethod(addedMethod.iterator(), mInfo.getDescriptor());
+        }
 
-   private static void createRemovedMethod(ClassFile file, MethodData md, Class<?> oldClass, ClassDataBuilder builder)
-   {
-      if (md.getMethodName().equals("<clinit>"))
-      {
-         return; // if the static constructor is removed it gets added later on
-         // in the process
-      }
+    }
 
-      // load up the existing method object
+    private static void createRemovedMethod(ClassFile file, MethodData md, Class<?> oldClass, ClassDataBuilder builder) {
+        if (md.getMethodName().equals("<clinit>")) {
+            return; // if the static constructor is removed it gets added later on
+            // in the process
+        }
 
-      MethodInfo m = new MethodInfo(file.getConstPool(), md.getMethodName(), md.getDescriptor());
-      m.setAccessFlags(md.getAccessFlags());
+        // load up the existing method object
 
-      // put the old annotations on the class
-      if (md.getMethodName().equals("<init>"))
-      {
-         Constructor<?> meth;
-         try
-         {
-            meth = md.getConstructor(oldClass);
-         }
-         catch (Exception e)
-         {
-            throw new RuntimeException("Error accessing existing constructor via reflection in not found", e);
-         }
-         m.addAttribute(AnnotationReplacer.duplicateAnnotationsAttribute(file.getConstPool(), meth));
-      }
-      else
-      {
-         Method meth;
-         try
-         {
-            meth = md.getMethod(oldClass);
-         }
-         catch (Exception e)
-         {
-            throw new RuntimeException("Error accessing existing method via reflection in not found", e);
-         }
-         m.addAttribute(AnnotationReplacer.duplicateAnnotationsAttribute(file.getConstPool(), meth));
-      }
-      Bytecode b = new Bytecode(file.getConstPool(), 5, 3);
-      b.addNew("java.lang.NoSuchMethodError");
-      b.add(Opcode.DUP);
-      b.addInvokespecial("java.lang.NoSuchMethodError", "<init>", "()V");
-      b.add(Bytecode.ATHROW);
-      CodeAttribute ca = b.toCodeAttribute();
-      m.setCodeAttribute(ca);
+        MethodInfo m = new MethodInfo(file.getConstPool(), md.getMethodName(), md.getDescriptor());
+        m.setAccessFlags(md.getAccessFlags());
 
-      try
-      {
-         ca.computeMaxStack();
-         file.addMethod(m);
-      }
-      catch (DuplicateMemberException e)
-      {
-         Logger.log(ClassRedefiner.class, "Duplicate error");
-      }
-      catch (BadBytecode e)
-      {
-         e.printStackTrace();
-      }
-      builder.removeRethod(md);
-   }
+        // put the old annotations on the class
+        if (md.getMethodName().equals("<init>")) {
+            Constructor<?> meth;
+            try {
+                meth = md.getConstructor(oldClass);
+            } catch (Exception e) {
+                throw new RuntimeException("Error accessing existing constructor via reflection in not found", e);
+            }
+            m.addAttribute(AnnotationReplacer.duplicateAnnotationsAttribute(file.getConstPool(), meth));
+        } else {
+            Method meth;
+            try {
+                meth = md.getMethod(oldClass);
+            } catch (Exception e) {
+                throw new RuntimeException("Error accessing existing method via reflection in not found", e);
+            }
+            m.addAttribute(AnnotationReplacer.duplicateAnnotationsAttribute(file.getConstPool(), meth));
+        }
+        Bytecode b = new Bytecode(file.getConstPool(), 5, 3);
+        b.addNew("java.lang.NoSuchMethodError");
+        b.add(Opcode.DUP);
+        b.addInvokespecial("java.lang.NoSuchMethodError", "<init>", "()V");
+        b.add(Bytecode.ATHROW);
+        CodeAttribute ca = b.toCodeAttribute();
+        m.setCodeAttribute(ca);
 
-   private static void addConstructor(ClassFile file, ClassLoader loader, MethodInfo mInfo, ClassDataBuilder builder, CodeAttribute bytecode, Class<?> oldClass)
-   {
-      int methodCount = MethodIdentifierStore.getMethodNumber(mInfo.getName(), mInfo.getDescriptor());
+        try {
+            ca.computeMaxStack();
+            file.addMethod(m);
+        } catch (DuplicateMemberException e) {
+            Logger.log(ClassRedefiner.class, "Duplicate error");
+        } catch (BadBytecode e) {
+            e.printStackTrace();
+        }
+        builder.removeRethod(md);
+    }
 
-      try
-      {
-         generateBoxedConditionalCodeBlock(methodCount, mInfo, file.getConstPool(), bytecode, false, true);
-         String proxyName = generateFakeConstructorBytecode(mInfo, file.getConstPool(), methodCount, file.getName(), loader);
-         ClassDataStore.registerProxyName(oldClass, proxyName);
-         Transformer.getManipulator().rewriteConstructorAccess(file.getName(), mInfo.getDescriptor(), methodCount, loader);
-         MethodData md = builder.addFakeConstructor(mInfo.getName(), mInfo.getDescriptor(), proxyName, mInfo.getAccessFlags(), methodCount);
-         ClassDataStore.registerReplacedMethod(proxyName, md);
-      }
-      catch (Exception e)
-      {
-         e.printStackTrace();
-      }
-   }
+    private static void addConstructor(ClassFile file, ClassLoader loader, MethodInfo mInfo, ClassDataBuilder builder, CodeAttribute bytecode, Class<?> oldClass) {
+        int methodCount = MethodIdentifierStore.getMethodNumber(mInfo.getName(), mInfo.getDescriptor());
 
-   /**
-    * creates a class with a fake constructor that can be used by the reflection
-    * api
-    * 
-    * Constructors are not invoked through the proxy class, instead we have to
-    * do a lot more bytecode re-writing at the actual invocation sites
-    * 
-    * @param mInfo
-    * @param constPool
-    * @param methodNumber
-    * @param className
-    * @param loader
-    * @param staticMethod
-    * @return
-    * @throws BadBytecode
-    */
-   private static String generateFakeConstructorBytecode(MethodInfo mInfo, ConstPool constPool, int methodNumber, String className, ClassLoader loader) throws BadBytecode
-   {
-      String proxyName = ProxyDefinitionStore.getProxyName();
-      ClassFile proxy = new ClassFile(false, proxyName, "java.lang.Object");
-      proxy.setVersionToJava5();
-      proxy.setAccessFlags(AccessFlag.PUBLIC);
+        try {
+            generateBoxedConditionalCodeBlock(methodCount, mInfo, file.getConstPool(), bytecode, false, true);
+            String proxyName = generateFakeConstructorBytecode(mInfo, file.getConstPool(), methodCount, file.getName(), loader);
+            ClassDataStore.registerProxyName(oldClass, proxyName);
+            Transformer.getManipulator().rewriteConstructorAccess(file.getName(), mInfo.getDescriptor(), methodCount, loader);
+            MethodData md = builder.addFakeConstructor(mInfo.getName(), mInfo.getDescriptor(), proxyName, mInfo.getAccessFlags(), methodCount);
+            ClassDataStore.registerReplacedMethod(proxyName, md);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-      // add our new annotations directly onto the new proxy method. This way
-      // they will just work without registering them with the
-      // AnnotationDataStore
+    /**
+     * creates a class with a fake constructor that can be used by the reflection
+     * api
+     * <p/>
+     * Constructors are not invoked through the proxy class, instead we have to
+     * do a lot more bytecode re-writing at the actual invocation sites
+     *
+     * @param mInfo
+     * @param constPool
+     * @param methodNumber
+     * @param className
+     * @param loader
+     * @param staticMethod
+     * @return
+     * @throws BadBytecode
+     */
+    private static String generateFakeConstructorBytecode(MethodInfo mInfo, ConstPool constPool, int methodNumber, String className, ClassLoader loader) throws BadBytecode {
+        String proxyName = ProxyDefinitionStore.getProxyName();
+        ClassFile proxy = new ClassFile(false, proxyName, "java.lang.Object");
+        proxy.setVersionToJava5();
+        proxy.setAccessFlags(AccessFlag.PUBLIC);
 
-      String[] types = DescriptorUtils.descriptorStringToParameterArray(mInfo.getDescriptor());
-      // as this method is never called the bytecode just returns
-      Bytecode b = new Bytecode(proxy.getConstPool());
-      b.add(Opcode.ALOAD_0);
-      b.addInvokespecial("java.lang.Object", "<init>", "()V");
-      b.add(Opcode.RETURN);
-      MethodInfo method = new MethodInfo(proxy.getConstPool(), mInfo.getName(), mInfo.getDescriptor());
-      method.setAccessFlags(mInfo.getAccessFlags());
-      method.setCodeAttribute(b.toCodeAttribute());
-      method.getCodeAttribute().computeMaxStack();
-      method.getCodeAttribute().setMaxLocals(types.length + 1);
+        // add our new annotations directly onto the new proxy method. This way
+        // they will just work without registering them with the
+        // AnnotationDataStore
 
-      copyMethodAttributes(mInfo, method);
+        String[] types = DescriptorUtils.descriptorStringToParameterArray(mInfo.getDescriptor());
+        // as this method is never called the bytecode just returns
+        Bytecode b = new Bytecode(proxy.getConstPool());
+        b.add(Opcode.ALOAD_0);
+        b.addInvokespecial("java.lang.Object", "<init>", "()V");
+        b.add(Opcode.RETURN);
+        MethodInfo method = new MethodInfo(proxy.getConstPool(), mInfo.getName(), mInfo.getDescriptor());
+        method.setAccessFlags(mInfo.getAccessFlags());
+        method.setCodeAttribute(b.toCodeAttribute());
+        method.getCodeAttribute().computeMaxStack();
+        method.getCodeAttribute().setMaxLocals(types.length + 1);
 
-      try
-      {
-         proxy.addMethod(method);
-      }
-      catch (DuplicateMemberException e)
-      {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
-      }
+        copyMethodAttributes(mInfo, method);
 
-      try
-      {
-         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-         DataOutputStream dos = new DataOutputStream(bytes);
-         proxy.write(dos);
-         ProxyDefinitionStore.saveProxyDefinition(loader, proxyName, bytes.toByteArray());
-         return proxyName;
-      }
-      catch (IOException e)
-      {
-         throw new RuntimeException(e);
-      }
+        try {
+            proxy.addMethod(method);
+        } catch (DuplicateMemberException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
-   }
+        try {
+            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+            DataOutputStream dos = new DataOutputStream(bytes);
+            proxy.write(dos);
+            ProxyDefinitionStore.saveProxyDefinition(loader, proxyName, bytes.toByteArray());
+            return proxyName;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
-   public static void copyMethodAttributes(MethodInfo oldMethod, MethodInfo newMethod)
-   {
-      AnnotationsAttribute annotations = (AnnotationsAttribute) oldMethod.getAttribute(AnnotationsAttribute.visibleTag);
-      ParameterAnnotationsAttribute pannotations = (ParameterAnnotationsAttribute) oldMethod.getAttribute(ParameterAnnotationsAttribute.visibleTag);
-      ExceptionsAttribute exAt = (ExceptionsAttribute) oldMethod.getAttribute(ExceptionsAttribute.tag);
-      SignatureAttribute sigAt = (SignatureAttribute) oldMethod.getAttribute(SignatureAttribute.tag);
-      if (annotations != null)
-      {
-         AttributeInfo newAnnotations = annotations.copy(newMethod.getConstPool(), Collections.EMPTY_MAP);
-         newMethod.addAttribute(newAnnotations);
-      }
-      if (pannotations != null)
-      {
-         AttributeInfo newAnnotations = pannotations.copy(newMethod.getConstPool(), Collections.EMPTY_MAP);
-         newMethod.addAttribute(newAnnotations);
-      }
-      if (sigAt != null)
-      {
-         AttributeInfo newAnnotations = sigAt.copy(newMethod.getConstPool(), Collections.EMPTY_MAP);
-         newMethod.addAttribute(newAnnotations);
-      }
-      if (exAt != null)
-      {
-         AttributeInfo newAnnotations = exAt.copy(newMethod.getConstPool(), Collections.EMPTY_MAP);
-         newMethod.addAttribute(newAnnotations);
-      }
-   }
+    }
+
+    public static void copyMethodAttributes(MethodInfo oldMethod, MethodInfo newMethod) {
+        AnnotationsAttribute annotations = (AnnotationsAttribute) oldMethod.getAttribute(AnnotationsAttribute.visibleTag);
+        ParameterAnnotationsAttribute pannotations = (ParameterAnnotationsAttribute) oldMethod.getAttribute(ParameterAnnotationsAttribute.visibleTag);
+        ExceptionsAttribute exAt = (ExceptionsAttribute) oldMethod.getAttribute(ExceptionsAttribute.tag);
+        SignatureAttribute sigAt = (SignatureAttribute) oldMethod.getAttribute(SignatureAttribute.tag);
+        if (annotations != null) {
+            AttributeInfo newAnnotations = annotations.copy(newMethod.getConstPool(), Collections.EMPTY_MAP);
+            newMethod.addAttribute(newAnnotations);
+        }
+        if (pannotations != null) {
+            AttributeInfo newAnnotations = pannotations.copy(newMethod.getConstPool(), Collections.EMPTY_MAP);
+            newMethod.addAttribute(newAnnotations);
+        }
+        if (sigAt != null) {
+            AttributeInfo newAnnotations = sigAt.copy(newMethod.getConstPool(), Collections.EMPTY_MAP);
+            newMethod.addAttribute(newAnnotations);
+        }
+        if (exAt != null) {
+            AttributeInfo newAnnotations = exAt.copy(newMethod.getConstPool(), Collections.EMPTY_MAP);
+            newMethod.addAttribute(newAnnotations);
+        }
+    }
 
 }

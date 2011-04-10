@@ -17,23 +17,21 @@
 package org.fakereplace.com.google.common.collect;
 
 import org.fakereplace.com.google.common.annotations.GwtCompatible;
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
-
 
 
 @GwtCompatible
 interface MapConstraint<K, V> {
-  /**
-   * Throws a suitable {@code RuntimeException} if the specified key or value is
-   * illegal. Typically this is either a {@link NullPointerException}, an
-   * {@link IllegalArgumentException}, or a {@link ClassCastException}, though
-   * an application-specific exception class may be used if appropriate.
-   */
-  void checkKeyValue( K key,  V value);
+    /**
+     * Throws a suitable {@code RuntimeException} if the specified key or value is
+     * illegal. Typically this is either a {@link NullPointerException}, an
+     * {@link IllegalArgumentException}, or a {@link ClassCastException}, though
+     * an application-specific exception class may be used if appropriate.
+     */
+    void checkKeyValue(K key, V value);
 
-  /**
-   * Returns a brief human readable description of this constraint, such as
-   * "Not null".
-   */
-  String toString();
+    /**
+     * Returns a brief human readable description of this constraint, such as
+     * "Not null".
+     */
+    String toString();
 }

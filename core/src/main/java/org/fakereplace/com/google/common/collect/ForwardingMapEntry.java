@@ -17,10 +17,8 @@
 package org.fakereplace.com.google.common.collect;
 
 import org.fakereplace.com.google.common.annotations.GwtCompatible;
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
 
 import java.util.Map;
-
 
 
 /**
@@ -29,32 +27,35 @@ import java.util.Map;
  * backing map entry as desired per the <a
  * href="http://en.wikipedia.org/wiki/Decorator_pattern">decorator pattern</a>.
  *
- * @see ForwardingObject
  * @author Mike Bostock
+ * @see ForwardingObject
  */
 @GwtCompatible
 public abstract class ForwardingMapEntry<K, V>
-    extends ForwardingObject implements Map.Entry<K, V> {
+        extends ForwardingObject implements Map.Entry<K, V> {
 
-  @Override protected abstract Map.Entry<K, V> delegate();
+    @Override
+    protected abstract Map.Entry<K, V> delegate();
 
-  public K getKey() {
-    return delegate().getKey();
-  }
+    public K getKey() {
+        return delegate().getKey();
+    }
 
-  public V getValue() {
-    return delegate().getValue();
-  }
+    public V getValue() {
+        return delegate().getValue();
+    }
 
-  public V setValue(V value) {
-    return delegate().setValue(value);
-  }
+    public V setValue(V value) {
+        return delegate().setValue(value);
+    }
 
-  @Override public boolean equals( Object object) {
-    return delegate().equals(object);
-  }
+    @Override
+    public boolean equals(Object object) {
+        return delegate().equals(object);
+    }
 
-  @Override public int hashCode() {
-    return delegate().hashCode();
-  }
+    @Override
+    public int hashCode() {
+        return delegate().hashCode();
+    }
 }

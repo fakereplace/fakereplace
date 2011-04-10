@@ -1,120 +1,98 @@
 package org.fakereplace.test.util;
 
+import javassist.ClassPool;
+import javassist.CtClass;
+import org.fakereplace.Agent;
+import org.fakereplace.replacement.AddedClass;
+
 import java.lang.instrument.ClassDefinition;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javassist.ClassPool;
-import javassist.CtClass;
+public class ClassReplacer {
+    Map<String, String> nameReplacements = new HashMap<String, String>();
 
-import org.fakereplace.Agent;
-import org.fakereplace.replacement.AddedClass;
+    Map<Class<?>, Class<?>> queuedClassReplacements = new HashMap<Class<?>, Class<?>>();
 
-public class ClassReplacer
-{
-   Map<String, String> nameReplacements = new HashMap<String, String>();
+    Map<Class<?>, String> addedClasses = new HashMap<Class<?>, String>();
 
-   Map<Class<?>, Class<?>> queuedClassReplacements = new HashMap<Class<?>, Class<?>>();
+    ClassPool pool = new ClassPool();
 
-   Map<Class<?>, String> addedClasses = new HashMap<Class<?>, String>();
+    public ClassReplacer() {
+        pool.appendSystemPath();
+    }
 
-   ClassPool pool = new ClassPool();
+    public void queueClassForReplacement(Class<?> oldClass, Class<?> newClass) {
+        queuedClassReplacements.put(oldClass, newClass);
+    }
 
-   public ClassReplacer()
-   {
-      pool.appendSystemPath();
-   }
+    public void addNewClass(Class<?> definition, String name) {
+        addedClasses.put(definition, name);
+    }
 
-   public void queueClassForReplacement(Class<?> oldClass, Class<?> newClass)
-   {
-      queuedClassReplacements.put(oldClass, newClass);
-   }
+    public void replaceQueuedClasses() {
+        replaceQueuedClasses(true);
+    }
 
-   public void addNewClass(Class<?> definition, String name)
-   {
-      addedClasses.put(definition, name);
-   }
+    public void replaceQueuedClassesWithInstrumentation() {
+        replaceQueuedClasses(false);
+    }
 
-   public void replaceQueuedClasses()
-   {
-      replaceQueuedClasses(true);
-   }
-
-   public void replaceQueuedClassesWithInstrumentation()
-   {
-      replaceQueuedClasses(false);
-   }
-
-   public void replaceQueuedClasses(boolean useFakereplace)
-   {
-      try
-      {
-         ClassDefinition[] definitions = new ClassDefinition[queuedClassReplacements.size()];
-         AddedClass[] newClasses = new AddedClass[addedClasses.size()];
-         for (Class<?> o : queuedClassReplacements.keySet())
-         {
-            Class<?> n = queuedClassReplacements.get(o);
-            String newName = o.getName();
-            String oldName = n.getName();
-            nameReplacements.put(oldName, newName);
-         }
-
-         for (Entry<Class<?>, String> o : addedClasses.entrySet())
-         {
-            nameReplacements.put(o.getKey().getName(), o.getValue());
-         }
-         int count = 0;
-         for (Class<?> o : queuedClassReplacements.keySet())
-         {
-            Class<?> n = queuedClassReplacements.get(o);
-            CtClass nc = pool.get(n.getName());
-
-            if (nc.isFrozen())
-            {
-               nc.defrost();
+    public void replaceQueuedClasses(boolean useFakereplace) {
+        try {
+            ClassDefinition[] definitions = new ClassDefinition[queuedClassReplacements.size()];
+            AddedClass[] newClasses = new AddedClass[addedClasses.size()];
+            for (Class<?> o : queuedClassReplacements.keySet()) {
+                Class<?> n = queuedClassReplacements.get(o);
+                String newName = o.getName();
+                String oldName = n.getName();
+                nameReplacements.put(oldName, newName);
             }
 
-            for (String oldName : nameReplacements.keySet())
-            {
-               String newName = nameReplacements.get(oldName);
-               nc.replaceClassName(oldName, newName);
+            for (Entry<Class<?>, String> o : addedClasses.entrySet()) {
+                nameReplacements.put(o.getKey().getName(), o.getValue());
             }
-            nc.setName(o.getName());
-            ClassDefinition cd = new ClassDefinition(o, nc.toBytecode());
-            definitions[count++] = cd;
-         }
-         count = 0;
-         for (Entry<Class<?>, String> o : addedClasses.entrySet())
-         {
-            CtClass nc = pool.get(o.getKey().getName());
+            int count = 0;
+            for (Class<?> o : queuedClassReplacements.keySet()) {
+                Class<?> n = queuedClassReplacements.get(o);
+                CtClass nc = pool.get(n.getName());
 
-            if (nc.isFrozen())
-            {
-               nc.defrost();
+                if (nc.isFrozen()) {
+                    nc.defrost();
+                }
+
+                for (String oldName : nameReplacements.keySet()) {
+                    String newName = nameReplacements.get(oldName);
+                    nc.replaceClassName(oldName, newName);
+                }
+                nc.setName(o.getName());
+                ClassDefinition cd = new ClassDefinition(o, nc.toBytecode());
+                definitions[count++] = cd;
+            }
+            count = 0;
+            for (Entry<Class<?>, String> o : addedClasses.entrySet()) {
+                CtClass nc = pool.get(o.getKey().getName());
+
+                if (nc.isFrozen()) {
+                    nc.defrost();
+                }
+
+                for (String newName : nameReplacements.keySet()) {
+                    String oldName = nameReplacements.get(newName);
+                    nc.replaceClassName(newName, oldName);
+                }
+                AddedClass ncd = new AddedClass(o.getValue(), nc.toBytecode(), o.getKey().getClassLoader());
+                newClasses[count++] = ncd;
             }
 
-            for (String newName : nameReplacements.keySet())
-            {
-               String oldName = nameReplacements.get(newName);
-               nc.replaceClassName(newName, oldName);
+            if (useFakereplace) {
+                Agent.redefine(definitions, newClasses);
+            } else {
+                Agent.getInstrumentation().redefineClasses(definitions);
             }
-            AddedClass ncd = new AddedClass(o.getValue(), nc.toBytecode(), o.getKey().getClassLoader());
-            newClasses[count++] = ncd;
-         }
-
-         if (useFakereplace)
-         {
-            Agent.redefine(definitions, newClasses);
-         }
-         else
-         {
-            Agent.getInstrumentation().redefineClasses(definitions);
-         }
-      }
-      catch (Exception e)
-      {
-         throw new RuntimeException(e);
-      }
-   }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

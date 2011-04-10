@@ -17,12 +17,10 @@
 package org.fakereplace.com.google.common.collect;
 
 import org.fakereplace.com.google.common.annotations.GwtCompatible;
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-
 
 
 /**
@@ -35,53 +33,59 @@ import java.util.Map;
  */
 @GwtCompatible
 abstract class AbstractListMultimap<K, V>
-    extends AbstractMultimap<K, V> implements ListMultimap<K, V> {
-  /**
-   * Creates a new multimap that uses the provided map.
-   *
-   * @param map place to store the mapping from each key to its corresponding
-   *     values
-   */
-  protected AbstractListMultimap(Map<K, Collection<V>> map) {
-    super(map);
-  }
+        extends AbstractMultimap<K, V> implements ListMultimap<K, V> {
+    /**
+     * Creates a new multimap that uses the provided map.
+     *
+     * @param map place to store the mapping from each key to its corresponding
+     *            values
+     */
+    protected AbstractListMultimap(Map<K, Collection<V>> map) {
+        super(map);
+    }
 
-  @Override abstract List<V> createCollection();
+    @Override
+    abstract List<V> createCollection();
 
-  @Override public List<V> get( K key) {
-    return (List<V>) super.get(key);
-  }
+    @Override
+    public List<V> get(K key) {
+        return (List<V>) super.get(key);
+    }
 
-  @Override public List<V> removeAll( Object key) {
-    return (List<V>) super.removeAll(key);
-  }
+    @Override
+    public List<V> removeAll(Object key) {
+        return (List<V>) super.removeAll(key);
+    }
 
-  @Override public List<V> replaceValues(
-       K key, Iterable<? extends V> values) {
-    return (List<V>) super.replaceValues(key, values);
-  }
+    @Override
+    public List<V> replaceValues(
+            K key, Iterable<? extends V> values) {
+        return (List<V>) super.replaceValues(key, values);
+    }
 
-  /**
-   * Stores a key-value pair in the multimap.
-   *
-   * @param key key to store in the multimap
-   * @param value value to store in the multimap
-   * @return {@code true} always
-   */
-  @Override public boolean put( K key,  V value) {
-    return super.put(key, value);
-  }
+    /**
+     * Stores a key-value pair in the multimap.
+     *
+     * @param key   key to store in the multimap
+     * @param value value to store in the multimap
+     * @return {@code true} always
+     */
+    @Override
+    public boolean put(K key, V value) {
+        return super.put(key, value);
+    }
 
-  /**
-   * Compares the specified object to this multimap for equality.
-   *
-   * <p>Two {@code ListMultimap} instances are equal if, for each key, they
-   * contain the same values in the same order. If the value orderings disagree,
-   * the multimaps will not be considered equal.
-   */
-  @Override public boolean equals( Object object) {
-    return super.equals(object);
-  }
+    /**
+     * Compares the specified object to this multimap for equality.
+     * <p/>
+     * <p>Two {@code ListMultimap} instances are equal if, for each key, they
+     * contain the same values in the same order. If the value orderings disagree,
+     * the multimaps will not be considered equal.
+     */
+    @Override
+    public boolean equals(Object object) {
+        return super.equals(object);
+    }
 
-  private static final long serialVersionUID = 6588350623831699109L;
+    private static final long serialVersionUID = 6588350623831699109L;
 }

@@ -1,47 +1,39 @@
 package org.fakereplace.test.replacement.instancefield;
 
-public class InstanceFieldClass
-{
+public class InstanceFieldClass {
 
-   int afield;
-   int bfield;
+    int afield;
+    int bfield;
 
-   @SomeAnnotation
-   int cfield;
+    @SomeAnnotation
+    int cfield;
 
-   Object otherField;
+    Object otherField;
 
-   public void inc()
-   {
+    public void inc() {
 
-   }
+    }
 
-   public int get()
-   {
-      return 0;
-   }
+    public int get() {
+        return 0;
+    }
 
-   public void inclong()
-   {
+    public void inclong() {
 
-   }
+    }
 
-   public long getlong()
-   {
-      return 0;
-   }
+    public long getlong() {
+        return 0;
+    }
 
-   public String getSv()
-   {
-      return null;
-   }
+    public String getSv() {
+        return null;
+    }
 
-   public Object getFa2()
-   {
-      return null;
-   }
+    public Object getFa2() {
+        return null;
+    }
 
-   public void setFa2(Object fa2)
-   {
-   }
+    public void setFa2(Object fa2) {
+    }
 }

@@ -17,62 +17,68 @@
 package org.fakereplace.com.google.common.collect;
 
 import org.fakereplace.com.google.common.annotations.GwtCompatible;
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
-
-import static org.fakereplace.com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
-/** An ordering that uses the natural order of the values. */
+import static org.fakereplace.com.google.common.base.Preconditions.checkNotNull;
+
+/**
+ * An ordering that uses the natural order of the values.
+ */
 @GwtCompatible(serializable = true)
 @SuppressWarnings("unchecked") // TODO: the right way to explain this??
 final class NaturalOrdering
-    extends Ordering<Comparable> implements Serializable {
-  static final NaturalOrdering INSTANCE = new NaturalOrdering();
+        extends Ordering<Comparable> implements Serializable {
+    static final NaturalOrdering INSTANCE = new NaturalOrdering();
 
-  public int compare(Comparable left, Comparable right) {
-    checkNotNull(right); // left null is caught later
-    if (left == right) {
-      return 0;
+    public int compare(Comparable left, Comparable right) {
+        checkNotNull(right); // left null is caught later
+        if (left == right) {
+            return 0;
+        }
+
+        @SuppressWarnings("unchecked") // we're permitted to throw CCE
+                int result = left.compareTo(right);
+        return result;
     }
 
-    @SuppressWarnings("unchecked") // we're permitted to throw CCE
-    int result = left.compareTo(right);
-    return result;
-  }
+    @SuppressWarnings("unchecked") // TODO: the right way to explain this??
+    @Override
+    public <S extends Comparable> Ordering<S> reverse() {
+        return (Ordering) ReverseNaturalOrdering.INSTANCE;
+    }
 
-  @SuppressWarnings("unchecked") // TODO: the right way to explain this??
-  @Override public <S extends Comparable> Ordering<S> reverse() {
-    return (Ordering) ReverseNaturalOrdering.INSTANCE;
-  }
+    // Override to remove a level of indirection from inner loop
+    @SuppressWarnings("unchecked") // TODO: the right way to explain this??
+    @Override
+    public int binarySearch(
+            List<? extends Comparable> sortedList, Comparable key) {
+        return Collections.binarySearch((List) sortedList, key);
+    }
 
-  // Override to remove a level of indirection from inner loop
-  @SuppressWarnings("unchecked") // TODO: the right way to explain this??
-  @Override public int binarySearch(
-      List<? extends Comparable> sortedList, Comparable key) {
-    return Collections.binarySearch((List) sortedList, key);
-  }
+    // Override to remove a level of indirection from inner loop
+    @Override
+    public <E extends Comparable> List<E> sortedCopy(
+            Iterable<E> iterable) {
+        List<E> list = Lists.newArrayList(iterable);
+        Collections.sort(list);
+        return list;
+    }
 
-  // Override to remove a level of indirection from inner loop
-  @Override public <E extends Comparable> List<E> sortedCopy(
-      Iterable<E> iterable) {
-    List<E> list = Lists.newArrayList(iterable);
-    Collections.sort(list);
-    return list;
-  }
+    // preserving singleton-ness gives equals()/hashCode() for free
+    private Object readResolve() {
+        return INSTANCE;
+    }
 
-  // preserving singleton-ness gives equals()/hashCode() for free
-  private Object readResolve() {
-    return INSTANCE;
-  }
+    @Override
+    public String toString() {
+        return "Ordering.natural()";
+    }
 
-  @Override public String toString() {
-    return "Ordering.natural()";
-  }
+    private NaturalOrdering() {
+    }
 
-  private NaturalOrdering() {}
-
-  private static final long serialVersionUID = 0;
+    private static final long serialVersionUID = 0;
 }

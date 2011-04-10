@@ -26,17 +26,17 @@ import java.lang.ref.WeakReference;
  * @author Bob Lee
  */
 public abstract class FinalizableWeakReference<T> extends WeakReference<T>
-    implements FinalizableReference {
+        implements FinalizableReference {
 
-  /**
-   * Constructs a new finalizable weak reference.
-   *
-   * @param referent to weakly reference
-   * @param queue that should finalize the referent
-   */
-  protected FinalizableWeakReference(T referent,
-      FinalizableReferenceQueue queue) {
-    super(referent, queue.queue);
-    queue.cleanUp();
-  }
+    /**
+     * Constructs a new finalizable weak reference.
+     *
+     * @param referent to weakly reference
+     * @param queue    that should finalize the referent
+     */
+    protected FinalizableWeakReference(T referent,
+                                       FinalizableReferenceQueue queue) {
+        super(referent, queue.queue);
+        queue.cleanUp();
+    }
 }

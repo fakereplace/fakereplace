@@ -1,5 +1,5 @@
 package org.fakereplace.test.basic.replacement.method;
 
-public class MethodReplaceChild2 extends MethodReplace2{
+public class MethodReplaceChild2 extends MethodReplace2 {
 
 }

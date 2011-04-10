@@ -17,7 +17,6 @@
 package org.fakereplace.com.google.common.collect;
 
 import org.fakereplace.com.google.common.annotations.GwtCompatible;
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
 
 /**
  * An empty immutable multiset.
@@ -26,15 +25,15 @@ import org.fakereplace.com.google.common.annotations.GwtCompatible;
  */
 @GwtCompatible(serializable = true)
 final class EmptyImmutableMultiset extends ImmutableMultiset<Object> {
-  static final EmptyImmutableMultiset INSTANCE = new EmptyImmutableMultiset();
+    static final EmptyImmutableMultiset INSTANCE = new EmptyImmutableMultiset();
 
-  private EmptyImmutableMultiset() {
-    super(ImmutableMap.<Object, Integer>of(), 0);
-  }
+    private EmptyImmutableMultiset() {
+        super(ImmutableMap.<Object, Integer>of(), 0);
+    }
 
-  Object readResolve() {
-    return INSTANCE; // preserve singleton property
-  }
+    Object readResolve() {
+        return INSTANCE; // preserve singleton property
+    }
 
-  private static final long serialVersionUID = 0;
+    private static final long serialVersionUID = 0;
 }

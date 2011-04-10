@@ -29,61 +29,72 @@ import java.util.Map;
  */
 @GwtCompatible(serializable = true)
 final class EmptyImmutableMap extends ImmutableMap<Object, Object> {
-  static final EmptyImmutableMap INSTANCE = new EmptyImmutableMap();
+    static final EmptyImmutableMap INSTANCE = new EmptyImmutableMap();
 
-  private EmptyImmutableMap() {}
-
-  @Override public Object get(Object key) {
-    return null;
-  }
-
-  public int size() {
-    return 0;
-  }
-
-  @Override public boolean isEmpty() {
-    return true;
-  }
-
-  @Override public boolean containsKey(Object key) {
-    return false;
-  }
-
-  @Override public boolean containsValue(Object value) {
-    return false;
-  }
-
-  @Override public ImmutableSet<Entry<Object, Object>> entrySet() {
-    return ImmutableSet.of();
-  }
-
-  @Override public ImmutableSet<Object> keySet() {
-    return ImmutableSet.of();
-  }
-
-  @Override public ImmutableCollection<Object> values() {
-    return ImmutableCollection.EMPTY_IMMUTABLE_COLLECTION;
-  }
-
-  @Override public boolean equals( Object object) {
-    if (object instanceof Map) {
-      Map<?, ?> that = (Map<?, ?>) object;
-      return that.isEmpty();
+    private EmptyImmutableMap() {
     }
-    return false;
-  }
 
-  @Override public int hashCode() {
-    return 0;
-  }
+    @Override
+    public Object get(Object key) {
+        return null;
+    }
 
-  @Override public String toString() {
-    return "{}";
-  }
+    public int size() {
+        return 0;
+    }
 
-  Object readResolve() {
-    return INSTANCE; // preserve singleton property
-  }
+    @Override
+    public boolean isEmpty() {
+        return true;
+    }
 
-  private static final long serialVersionUID = 0;
+    @Override
+    public boolean containsKey(Object key) {
+        return false;
+    }
+
+    @Override
+    public boolean containsValue(Object value) {
+        return false;
+    }
+
+    @Override
+    public ImmutableSet<Entry<Object, Object>> entrySet() {
+        return ImmutableSet.of();
+    }
+
+    @Override
+    public ImmutableSet<Object> keySet() {
+        return ImmutableSet.of();
+    }
+
+    @Override
+    public ImmutableCollection<Object> values() {
+        return ImmutableCollection.EMPTY_IMMUTABLE_COLLECTION;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (object instanceof Map) {
+            Map<?, ?> that = (Map<?, ?>) object;
+            return that.isEmpty();
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return 0;
+    }
+
+    @Override
+    public String toString() {
+        return "{}";
+    }
+
+    Object readResolve() {
+        return INSTANCE; // preserve singleton property
+    }
+
+    private static final long serialVersionUID = 0;
 }

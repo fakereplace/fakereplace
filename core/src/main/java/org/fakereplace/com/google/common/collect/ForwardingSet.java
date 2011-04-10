@@ -17,10 +17,8 @@
 package org.fakereplace.com.google.common.collect;
 
 import org.fakereplace.com.google.common.annotations.GwtCompatible;
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
 
 import java.util.Set;
-
 
 
 /**
@@ -29,20 +27,23 @@ import java.util.Set;
  * desired per the <a
  * href="http://en.wikipedia.org/wiki/Decorator_pattern">decorator pattern</a>.
  *
- * @see ForwardingObject
  * @author Kevin Bourrillion
+ * @see ForwardingObject
  */
 @GwtCompatible
 public abstract class ForwardingSet<E> extends ForwardingCollection<E>
-    implements Set<E> {
+        implements Set<E> {
 
-  @Override protected abstract Set<E> delegate();
+    @Override
+    protected abstract Set<E> delegate();
 
-  @Override public boolean equals( Object object) {
-    return object == this || delegate().equals(object);
-  }
+    @Override
+    public boolean equals(Object object) {
+        return object == this || delegate().equals(object);
+    }
 
-  @Override public int hashCode() {
-    return delegate().hashCode();
-  }
+    @Override
+    public int hashCode() {
+        return delegate().hashCode();
+    }
 }

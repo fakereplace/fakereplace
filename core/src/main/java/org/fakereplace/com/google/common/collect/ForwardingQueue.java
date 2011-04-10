@@ -17,7 +17,6 @@
 package org.fakereplace.com.google.common.collect;
 
 import org.fakereplace.com.google.common.annotations.GwtCompatible;
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
 
 import java.util.Queue;
 
@@ -27,32 +26,33 @@ import java.util.Queue;
  * queue as desired per the <a
  * href="http://en.wikipedia.org/wiki/Decorator_pattern">decorator pattern</a>.
  *
- * @see ForwardingObject
  * @author Mike Bostock
+ * @see ForwardingObject
  */
 @GwtCompatible
 public abstract class ForwardingQueue<E> extends ForwardingCollection<E>
-    implements Queue<E> {
+        implements Queue<E> {
 
-  @Override protected abstract Queue<E> delegate();
+    @Override
+    protected abstract Queue<E> delegate();
 
-  public boolean offer(E o) {
-    return delegate().offer(o);
-  }
+    public boolean offer(E o) {
+        return delegate().offer(o);
+    }
 
-  public E poll() {
-    return delegate().poll();
-  }
+    public E poll() {
+        return delegate().poll();
+    }
 
-  public E remove() {
-    return delegate().remove();
-  }
+    public E remove() {
+        return delegate().remove();
+    }
 
-  public E peek() {
-    return delegate().peek();
-  }
+    public E peek() {
+        return delegate().peek();
+    }
 
-  public E element() {
-    return delegate().element();
-  }
+    public E element() {
+        return delegate().element();
+    }
 }

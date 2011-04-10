@@ -24,8 +24,9 @@ package org.fakereplace.com.google.common.collect;
  * @author Bob Lee
  */
 class NullOutputException extends NullPointerException {
-  public NullOutputException(String s) {
-    super(s);
-  }
-  private static final long serialVersionUID = 0;
+    public NullOutputException(String s) {
+        super(s);
+    }
+
+    private static final long serialVersionUID = 0;
 }

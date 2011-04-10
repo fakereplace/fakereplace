@@ -17,7 +17,6 @@
 package org.fakereplace.com.google.common.collect;
 
 import org.fakereplace.com.google.common.annotations.GwtCompatible;
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -40,64 +39,64 @@ import java.util.concurrent.atomic.AtomicInteger;
 @SuppressWarnings("serial") // we're overriding default serialization
 public final class LinkedHashMultiset<E> extends AbstractMapBasedMultiset<E> {
 
-  /**
-   * Creates a new, empty {@code LinkedHashMultiset} using the default initial
-   * capacity.
-   */
-  public static <E> LinkedHashMultiset<E> create() {
-    return new LinkedHashMultiset<E>();
-  }
+    /**
+     * Creates a new, empty {@code LinkedHashMultiset} using the default initial
+     * capacity.
+     */
+    public static <E> LinkedHashMultiset<E> create() {
+        return new LinkedHashMultiset<E>();
+    }
 
-  /**
-   * Creates a new, empty {@code LinkedHashMultiset} with the specified expected
-   * number of distinct elements.
-   *
-   * @param distinctElements the expected number of distinct elements
-   * @throws IllegalArgumentException if {@code distinctElements} is negative
-   */
-  public static <E> LinkedHashMultiset<E> create(int distinctElements) {
-    return new LinkedHashMultiset<E>(distinctElements);
-  }
+    /**
+     * Creates a new, empty {@code LinkedHashMultiset} with the specified expected
+     * number of distinct elements.
+     *
+     * @param distinctElements the expected number of distinct elements
+     * @throws IllegalArgumentException if {@code distinctElements} is negative
+     */
+    public static <E> LinkedHashMultiset<E> create(int distinctElements) {
+        return new LinkedHashMultiset<E>(distinctElements);
+    }
 
-  /**
-   * Creates a new {@code LinkedHashMultiset} containing the specified elements.
-   *
-   * @param elements the elements that the multiset should contain
-   */
-  public static <E> LinkedHashMultiset<E> create(
-      Iterable<? extends E> elements) {
-    LinkedHashMultiset<E> multiset =
-        create(Multisets.inferDistinctElements(elements));
-    Iterables.addAll(multiset, elements);
-    return multiset;
-  }
+    /**
+     * Creates a new {@code LinkedHashMultiset} containing the specified elements.
+     *
+     * @param elements the elements that the multiset should contain
+     */
+    public static <E> LinkedHashMultiset<E> create(
+            Iterable<? extends E> elements) {
+        LinkedHashMultiset<E> multiset =
+                create(Multisets.inferDistinctElements(elements));
+        Iterables.addAll(multiset, elements);
+        return multiset;
+    }
 
-  private LinkedHashMultiset() {
-    super(new LinkedHashMap<E, AtomicInteger>());
-  }
+    private LinkedHashMultiset() {
+        super(new LinkedHashMap<E, AtomicInteger>());
+    }
 
-  private LinkedHashMultiset(int distinctElements) {
-    // Could use newLinkedHashMapWithExpectedSize() if it existed
-    super(new LinkedHashMap<E, AtomicInteger>(Maps.capacity(distinctElements)));
-  }
+    private LinkedHashMultiset(int distinctElements) {
+        // Could use newLinkedHashMapWithExpectedSize() if it existed
+        super(new LinkedHashMap<E, AtomicInteger>(Maps.capacity(distinctElements)));
+    }
 
-  /**
-   * @serialData the number of distinct elements, the first element, its count,
-   *     the second element, its count, and so on
-   */
-  private void writeObject(ObjectOutputStream stream) throws IOException {
-    stream.defaultWriteObject();
-    Serialization.writeMultiset(this, stream);
-  }
+    /**
+     * @serialData the number of distinct elements, the first element, its count,
+     * the second element, its count, and so on
+     */
+    private void writeObject(ObjectOutputStream stream) throws IOException {
+        stream.defaultWriteObject();
+        Serialization.writeMultiset(this, stream);
+    }
 
-  private void readObject(ObjectInputStream stream)
-      throws IOException, ClassNotFoundException {
-    stream.defaultReadObject();
-    int distinctElements = Serialization.readCount(stream);
-    setBackingMap(new LinkedHashMap<E, AtomicInteger>(
-        Maps.capacity(distinctElements)));
-    Serialization.populateMultiset(this, stream, distinctElements);
-  }
+    private void readObject(ObjectInputStream stream)
+            throws IOException, ClassNotFoundException {
+        stream.defaultReadObject();
+        int distinctElements = Serialization.readCount(stream);
+        setBackingMap(new LinkedHashMap<E, AtomicInteger>(
+                Maps.capacity(distinctElements)));
+        Serialization.populateMultiset(this, stream, distinctElements);
+    }
 
-  private static final long serialVersionUID = 0;
+    private static final long serialVersionUID = 0;
 }

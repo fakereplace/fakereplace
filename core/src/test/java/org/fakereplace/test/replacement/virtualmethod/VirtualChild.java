@@ -1,6 +1,5 @@
 package org.fakereplace.test.replacement.virtualmethod;
 
-public class VirtualChild extends VirtualClass
-{
+public class VirtualChild extends VirtualClass {
 
 }

@@ -17,12 +17,10 @@
 package org.fakereplace.com.google.common.collect;
 
 import org.fakereplace.com.google.common.annotations.GwtCompatible;
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
 
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-
 
 
 /**
@@ -31,69 +29,72 @@ import java.util.Set;
  * desired per the <a
  * href="http://en.wikipedia.org/wiki/Decorator_pattern">decorator pattern</a>.
  *
- * @see ForwardingObject
  * @author Kevin Bourrillion
  * @author Jared Levy
+ * @see ForwardingObject
  */
 @GwtCompatible
 public abstract class ForwardingMap<K, V> extends ForwardingObject
-    implements Map<K, V> {
+        implements Map<K, V> {
 
-  @Override protected abstract Map<K, V> delegate();
+    @Override
+    protected abstract Map<K, V> delegate();
 
-  public int size() {
-    return delegate().size();
-  }
+    public int size() {
+        return delegate().size();
+    }
 
-  public boolean isEmpty() {
-    return delegate().isEmpty();
-  }
+    public boolean isEmpty() {
+        return delegate().isEmpty();
+    }
 
-  public V remove(Object object) {
-    return delegate().remove(object);
-  }
+    public V remove(Object object) {
+        return delegate().remove(object);
+    }
 
-  public void clear() {
-    delegate().clear();
-  }
+    public void clear() {
+        delegate().clear();
+    }
 
-  public boolean containsKey(Object key) {
-    return delegate().containsKey(key);
-  }
+    public boolean containsKey(Object key) {
+        return delegate().containsKey(key);
+    }
 
-  public boolean containsValue(Object value) {
-    return delegate().containsValue(value);
-  }
+    public boolean containsValue(Object value) {
+        return delegate().containsValue(value);
+    }
 
-  public V get(Object key) {
-    return delegate().get(key);
-  }
+    public V get(Object key) {
+        return delegate().get(key);
+    }
 
-  public V put(K key, V value) {
-    return delegate().put(key, value);
-  }
+    public V put(K key, V value) {
+        return delegate().put(key, value);
+    }
 
-  public void putAll(Map<? extends K, ? extends V> map) {
-    delegate().putAll(map);
-  }
+    public void putAll(Map<? extends K, ? extends V> map) {
+        delegate().putAll(map);
+    }
 
-  public Set<K> keySet() {
-    return delegate().keySet();
-  }
+    public Set<K> keySet() {
+        return delegate().keySet();
+    }
 
-  public Collection<V> values() {
-    return delegate().values();
-  }
+    public Collection<V> values() {
+        return delegate().values();
+    }
 
-  public Set<Entry<K, V>> entrySet() {
-    return delegate().entrySet();
-  }
+    public Set<Entry<K, V>> entrySet() {
+        return delegate().entrySet();
+    }
 
-  @Override public boolean equals( Object object) {
-    return object == this || delegate().equals(object);
-  }
+    @Override
+    public boolean equals(Object object) {
+        return object == this || delegate().equals(object);
+    }
 
-  @Override public int hashCode() {
-    return delegate().hashCode();
-  }
+    @Override
+    public int hashCode() {
+        return delegate().hashCode();
+    }
 }

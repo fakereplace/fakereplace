@@ -17,7 +17,6 @@
 package org.fakereplace.com.google.common.collect;
 
 import org.fakereplace.com.google.common.annotations.GwtCompatible;
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
 
 import java.util.Iterator;
 
@@ -27,24 +26,25 @@ import java.util.Iterator;
  * backing iterator as desired per the <a
  * href="http://en.wikipedia.org/wiki/Decorator_pattern">decorator pattern</a>.
  *
- * @see ForwardingObject
  * @author Kevin Bourrillion
+ * @see ForwardingObject
  */
 @GwtCompatible
 public abstract class ForwardingIterator<T>
-    extends ForwardingObject implements Iterator<T> {
+        extends ForwardingObject implements Iterator<T> {
 
-  @Override protected abstract Iterator<T> delegate();
+    @Override
+    protected abstract Iterator<T> delegate();
 
-  public boolean hasNext() {
-    return delegate().hasNext();
-  }
+    public boolean hasNext() {
+        return delegate().hasNext();
+    }
 
-  public T next() {
-    return delegate().next();
-  }
+    public T next() {
+        return delegate().next();
+    }
 
-  public void remove() {
-    delegate().remove();
-  }
+    public void remove() {
+        delegate().remove();
+    }
 }

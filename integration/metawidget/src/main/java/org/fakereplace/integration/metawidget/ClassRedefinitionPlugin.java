@@ -1,89 +1,71 @@
 package org.fakereplace.integration.metawidget;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.Map;
-import java.util.Set;
-
 import org.fakereplace.api.ClassChangeAware;
 import org.fakereplace.api.ClassChangeNotifier;
 import org.fakereplace.classloading.ClassIdentifier;
 import org.fakereplace.data.InstanceTracker;
 
-public class ClassRedefinitionPlugin implements ClassChangeAware
-{
-   public ClassRedefinitionPlugin()
-   {
-      ClassChangeNotifier.add(this);
-   }
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.Map;
+import java.util.Set;
 
-   static private Method remove;
+public class ClassRedefinitionPlugin implements ClassChangeAware {
+    public ClassRedefinitionPlugin() {
+        ClassChangeNotifier.add(this);
+    }
 
-   static
-   {
-      try
-      {
-         remove = Map.class.getMethod("remove", Object.class);
-      }
-      catch (Exception e)
-      {
-         e.printStackTrace();
-      }
-   }
+    static private Method remove;
 
-   static private Field getField(Class<?> clazz, String name) throws NoSuchFieldException
-   {
-      if (clazz == Object.class)
-         throw new NoSuchFieldException();
-      try
-      {
-         return clazz.getDeclaredField(name);
-      }
-      catch (Exception e)
-      {
-         // TODO: handle exception
-      }
-      return getField(clazz.getSuperclass(), name);
-   }
+    static {
+        try {
+            remove = Map.class.getMethod("remove", Object.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-   public void beforeChange(Class<?>[] changed, ClassIdentifier[] added)
-   {
+    static private Field getField(Class<?> clazz, String name) throws NoSuchFieldException {
+        if (clazz == Object.class)
+            throw new NoSuchFieldException();
+        try {
+            return clazz.getDeclaredField(name);
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
+        return getField(clazz.getSuperclass(), name);
+    }
 
-   }
-   /**
-    * clear the action and properties caches
-    */
-   public void notify(Class<?>[] changed, ClassIdentifier[] added)
-   {
-      Set<Object> data = InstanceTracker.get(MetawidgetIntegrationInfo.BASE_ACTION_STYLE);
-      for (Object i : data)
-      {
-         clearMap(changed, i, "mActionCache");
-      }
-      data = InstanceTracker.get(MetawidgetIntegrationInfo.BASE_PROPERTY_STYLE);
-      for (Object i : data)
-      {
-         clearMap(changed, i, "mPropertiesCache");
-      }
+    public void beforeChange(Class<?>[] changed, ClassIdentifier[] added) {
 
-   }
+    }
 
-   public static void clearMap(Class<?>[] changed, Object i, String cacheName)
-   {
-      try
-      {
-         Field f = getField(i.getClass(), cacheName);
-         f.setAccessible(true);
-         Object map = f.get(i);
-         for (Class<?> c : changed)
-         {
-            remove.invoke(map, c);
-         }
-      }
-      catch (Exception e)
-      {
-         e.printStackTrace();
-      }
-   }
+    /**
+     * clear the action and properties caches
+     */
+    public void notify(Class<?>[] changed, ClassIdentifier[] added) {
+        Set<Object> data = InstanceTracker.get(MetawidgetIntegrationInfo.BASE_ACTION_STYLE);
+        for (Object i : data) {
+            clearMap(changed, i, "mActionCache");
+        }
+        data = InstanceTracker.get(MetawidgetIntegrationInfo.BASE_PROPERTY_STYLE);
+        for (Object i : data) {
+            clearMap(changed, i, "mPropertiesCache");
+        }
+
+    }
+
+    public static void clearMap(Class<?>[] changed, Object i, String cacheName) {
+        try {
+            Field f = getField(i.getClass(), cacheName);
+            f.setAccessible(true);
+            Object map = f.get(i);
+            for (Class<?> c : changed) {
+                remove.invoke(map, c);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 }

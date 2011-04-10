@@ -17,14 +17,12 @@
 package org.fakereplace.com.google.common.collect;
 
 import org.fakereplace.com.google.common.annotations.GwtCompatible;
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Map;
-
 
 
 /**
@@ -37,73 +35,75 @@ import java.util.Map;
 @GwtCompatible
 public final class HashBiMap<K, V> extends AbstractBiMap<K, V> {
 
-  /**
-   * Returns a new, empty {@code HashBiMap} with the default initial capacity
-   * (16).
-   */
-  public static <K, V> HashBiMap<K, V> create() {
-    return new HashBiMap<K, V>();
-  }
+    /**
+     * Returns a new, empty {@code HashBiMap} with the default initial capacity
+     * (16).
+     */
+    public static <K, V> HashBiMap<K, V> create() {
+        return new HashBiMap<K, V>();
+    }
 
-  /**
-   * Constructs a new, empty bimap with the specified expected size.
-   *
-   * @param expectedSize the expected number of entries
-   * @throws IllegalArgumentException if the specified expected size is
-   *     negative
-   */
-  public static <K, V> HashBiMap<K, V> create(int expectedSize) {
-    return new HashBiMap<K, V>(expectedSize);
-  }
+    /**
+     * Constructs a new, empty bimap with the specified expected size.
+     *
+     * @param expectedSize the expected number of entries
+     * @throws IllegalArgumentException if the specified expected size is
+     *                                  negative
+     */
+    public static <K, V> HashBiMap<K, V> create(int expectedSize) {
+        return new HashBiMap<K, V>(expectedSize);
+    }
 
-  /**
-   * Constructs a new bimap containing initial values from {@code map}. The
-   * bimap is created with an initial capacity sufficient to hold the mappings
-   * in the specified map.
-   */
-  public static <K, V> HashBiMap<K, V> create(
-      Map<? extends K, ? extends V> map) {
-    HashBiMap<K, V> bimap = create(map.size());
-    bimap.putAll(map);
-    return bimap;
-  }
+    /**
+     * Constructs a new bimap containing initial values from {@code map}. The
+     * bimap is created with an initial capacity sufficient to hold the mappings
+     * in the specified map.
+     */
+    public static <K, V> HashBiMap<K, V> create(
+            Map<? extends K, ? extends V> map) {
+        HashBiMap<K, V> bimap = create(map.size());
+        bimap.putAll(map);
+        return bimap;
+    }
 
-  private HashBiMap() {
-    super(new HashMap<K, V>(), new HashMap<V, K>());
-  }
+    private HashBiMap() {
+        super(new HashMap<K, V>(), new HashMap<V, K>());
+    }
 
-  private HashBiMap(int expectedSize) {
-    super(new HashMap<K, V>(Maps.capacity(expectedSize)),
-        new HashMap<V, K>(Maps.capacity(expectedSize)));
-  }
+    private HashBiMap(int expectedSize) {
+        super(new HashMap<K, V>(Maps.capacity(expectedSize)),
+                new HashMap<V, K>(Maps.capacity(expectedSize)));
+    }
 
-  // Override these two methods to show that keys and values may be null
+    // Override these two methods to show that keys and values may be null
 
-  @Override public V put( K key,  V value) {
-    return super.put(key, value);
-  }
+    @Override
+    public V put(K key, V value) {
+        return super.put(key, value);
+    }
 
-  @Override public V forcePut( K key,  V value) {
-    return super.forcePut(key, value);
-  }
+    @Override
+    public V forcePut(K key, V value) {
+        return super.forcePut(key, value);
+    }
 
-  /**
-   * @serialData the number of entries, first key, first value, second key,
-   *     second value, and so on.
-   */
-  private void writeObject(ObjectOutputStream stream) throws IOException {
-    stream.defaultWriteObject();
-    Serialization.writeMap(this, stream);
-  }
+    /**
+     * @serialData the number of entries, first key, first value, second key,
+     * second value, and so on.
+     */
+    private void writeObject(ObjectOutputStream stream) throws IOException {
+        stream.defaultWriteObject();
+        Serialization.writeMap(this, stream);
+    }
 
-  private void readObject(ObjectInputStream stream)
-      throws IOException, ClassNotFoundException {
-    stream.defaultReadObject();
-    int size = Serialization.readCount(stream);
-    setDelegates(Maps.<K, V>newHashMapWithExpectedSize(size),
-        Maps.<V, K>newHashMapWithExpectedSize(size));
-    Serialization.populateMap(this, stream, size);
-  }
+    private void readObject(ObjectInputStream stream)
+            throws IOException, ClassNotFoundException {
+        stream.defaultReadObject();
+        int size = Serialization.readCount(stream);
+        setDelegates(Maps.<K, V>newHashMapWithExpectedSize(size),
+                Maps.<V, K>newHashMapWithExpectedSize(size));
+        Serialization.populateMap(this, stream, size);
+    }
 
-  private static final long serialVersionUID = 0;
+    private static final long serialVersionUID = 0;
 }

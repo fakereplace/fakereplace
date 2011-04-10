@@ -1,9 +1,7 @@
 package org.fakereplace.test.basic.reflection;
 
-public class ClassWithFinalMethods
-{
-   public final void method()
-   {
+public class ClassWithFinalMethods {
+    public final void method() {
 
-   }
+    }
 }

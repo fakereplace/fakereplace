@@ -17,7 +17,6 @@
 package org.fakereplace.com.google.common.collect;
 
 import org.fakereplace.com.google.common.annotations.GwtCompatible;
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
 
 import java.util.ListIterator;
 
@@ -27,36 +26,37 @@ import java.util.ListIterator;
  * behavior of the backing iterator as desired per the <a
  * href="http://en.wikipedia.org/wiki/Decorator_pattern">decorator pattern</a>.
  *
- * @see ForwardingObject
  * @author Mike Bostock
+ * @see ForwardingObject
  */
 @GwtCompatible
 public abstract class ForwardingListIterator<E> extends ForwardingIterator<E>
-    implements ListIterator<E> {
+        implements ListIterator<E> {
 
-  @Override protected abstract ListIterator<E> delegate();
+    @Override
+    protected abstract ListIterator<E> delegate();
 
-  public void add(E element) {
-    delegate().add(element);
-  }
+    public void add(E element) {
+        delegate().add(element);
+    }
 
-  public boolean hasPrevious() {
-    return delegate().hasPrevious();
-  }
+    public boolean hasPrevious() {
+        return delegate().hasPrevious();
+    }
 
-  public int nextIndex() {
-    return delegate().nextIndex();
-  }
+    public int nextIndex() {
+        return delegate().nextIndex();
+    }
 
-  public E previous() {
-    return delegate().previous();
-  }
+    public E previous() {
+        return delegate().previous();
+    }
 
-  public int previousIndex() {
-    return delegate().previousIndex();
-  }
+    public int previousIndex() {
+        return delegate().previousIndex();
+    }
 
-  public void set(E element) {
-    delegate().set(element);
-  }
+    public void set(E element) {
+        delegate().set(element);
+    }
 }

@@ -1,44 +1,44 @@
 <assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
-   <id>bin</id>
-   <formats>
-      <format>zip</format>
-   </formats>
-   <includeBaseDirectory>false</includeBaseDirectory>
-   
-   <fileSets>
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
+    <id>bin</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
 
-      <fileSet>
-        <directory>.</directory>
-        <outputDirectory>fakereplace</outputDirectory>
-        <includes>
-           <include>readme.txt</include>
-           <include>lgpl.txt</include>
-        </includes>
-      </fileSet>
+    <fileSets>
 
-      <fileSet>
-         <directory>core/src/main/java</directory>
-         <outputDirectory>fakereplace/source</outputDirectory>
-         <includes>
-            <include>**</include>
-         </includes>
-      </fileSet>
-      
-   </fileSets>
-
-   <moduleSets>
-      <moduleSet>
-         <includes>
-            <include>org.fakereplace:fakereplace-bundle:jar</include>
-         </includes>
-         <binaries>
-         	<outputFileNameMapping>fakereplace.${module.extension}</outputFileNameMapping>
+        <fileSet>
+            <directory>.</directory>
             <outputDirectory>fakereplace</outputDirectory>
-            <unpack>false</unpack>
-         </binaries>         
-      </moduleSet>
+            <includes>
+                <include>readme.txt</include>
+                <include>lgpl.txt</include>
+            </includes>
+        </fileSet>
 
-   </moduleSets>
+        <fileSet>
+            <directory>core/src/main/java</directory>
+            <outputDirectory>fakereplace/source</outputDirectory>
+            <includes>
+                <include>**</include>
+            </includes>
+        </fileSet>
+
+    </fileSets>
+
+    <moduleSets>
+        <moduleSet>
+            <includes>
+                <include>org.fakereplace:fakereplace-bundle:jar</include>
+            </includes>
+            <binaries>
+                <outputFileNameMapping>fakereplace.${module.extension}</outputFileNameMapping>
+                <outputDirectory>fakereplace</outputDirectory>
+                <unpack>false</unpack>
+            </binaries>
+        </moduleSet>
+
+    </moduleSets>
 </assembly>

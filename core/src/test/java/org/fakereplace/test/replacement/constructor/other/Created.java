@@ -1,11 +1,9 @@
 package org.fakereplace.test.replacement.constructor.other;
 
-class Created
-{
+class Created {
 
-   Created()
-   {
+    Created() {
 
-   }
+    }
 
 }

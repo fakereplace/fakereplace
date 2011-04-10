@@ -5,33 +5,28 @@ import org.testng.annotations.Test;
 
 /**
  * Test that tests simple and not-so simple aspects of method replacement
- * @author Stuart Douglas
  *
+ * @author Stuart Douglas
  */
-public class MethodReplacementTest
-{
+public class MethodReplacementTest {
 
-    @BeforeGroups(value = { "firstReplacement" })
-    public void setup()
-    {
+    @BeforeGroups(value = {"firstReplacement"})
+    public void setup() {
 
     }
 
-    @Test(groups = { "firstReplacement" })
-    public void test1()
-    {
+    @Test(groups = {"firstReplacement"})
+    public void test1() {
 
     }
 
-    @BeforeGroups(value = { "secondReplacement" }, dependsOnGroups = { "firstReplacement" })
-    public void setupSecondTest()
-    {
+    @BeforeGroups(value = {"secondReplacement"}, dependsOnGroups = {"firstReplacement"})
+    public void setupSecondTest() {
 
     }
 
-    @Test(groups = { "secondReplacement" })
-    public void test2()
-    {
+    @Test(groups = {"secondReplacement"})
+    public void test2() {
 
     }
 

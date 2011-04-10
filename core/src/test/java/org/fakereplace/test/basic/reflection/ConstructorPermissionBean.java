@@ -1,12 +1,10 @@
 package org.fakereplace.test.basic.reflection;
 
 
-public class ConstructorPermissionBean
-{
+public class ConstructorPermissionBean {
 
-   private ConstructorPermissionBean()
-   {
+    private ConstructorPermissionBean() {
 
-   }
+    }
 
 }

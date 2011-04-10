@@ -1,11 +1,9 @@
 package org.fakereplace.test.replacement.constructor;
 
-public class ConstructorClass
-{
-   String value = "a";
+public class ConstructorClass {
+    String value = "a";
 
-   public String getValue()
-   {
-      return value;
-   }
+    public String getValue() {
+        return value;
+    }
 }

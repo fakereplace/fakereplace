@@ -22,5 +22,5 @@ import java.util.Timer;
  * Timer used for entry expiration in MapMaker.
  */
 class ExpirationTimer {
-  static Timer instance = new Timer(true);
+    static Timer instance = new Timer(true);
 }

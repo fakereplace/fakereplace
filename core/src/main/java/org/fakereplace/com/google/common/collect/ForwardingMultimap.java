@@ -17,13 +17,11 @@
 package org.fakereplace.com.google.common.collect;
 
 import org.fakereplace.com.google.common.annotations.GwtCompatible;
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
 
 import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
 
 
 /**
@@ -32,92 +30,95 @@ import java.util.Set;
  * the backing multimap as desired per the <a
  * href="http://en.wikipedia.org/wiki/Decorator_pattern">decorator pattern</a>.
  *
- * @see ForwardingObject
  * @author Robert Konigsberg
+ * @see ForwardingObject
  */
 @GwtCompatible
 public abstract class ForwardingMultimap<K, V> extends ForwardingObject
-    implements Multimap<K, V> {
+        implements Multimap<K, V> {
 
-  @Override protected abstract Multimap<K, V> delegate();
+    @Override
+    protected abstract Multimap<K, V> delegate();
 
-  public Map<K, Collection<V>> asMap() {
-    return delegate().asMap();
-  }
+    public Map<K, Collection<V>> asMap() {
+        return delegate().asMap();
+    }
 
-  public void clear() {
-    delegate().clear();
-  }
+    public void clear() {
+        delegate().clear();
+    }
 
-  public boolean containsEntry( Object key,  Object value) {
-    return delegate().containsEntry(key, value);
-  }
+    public boolean containsEntry(Object key, Object value) {
+        return delegate().containsEntry(key, value);
+    }
 
-  public boolean containsKey( Object key) {
-    return delegate().containsKey(key);
-  }
+    public boolean containsKey(Object key) {
+        return delegate().containsKey(key);
+    }
 
-  public boolean containsValue( Object value) {
-    return delegate().containsValue(value);
-  }
+    public boolean containsValue(Object value) {
+        return delegate().containsValue(value);
+    }
 
-  public Collection<Entry<K, V>> entries() {
-    return delegate().entries();
-  }
+    public Collection<Entry<K, V>> entries() {
+        return delegate().entries();
+    }
 
-  public Collection<V> get( K key) {
-    return delegate().get(key);
-  }
+    public Collection<V> get(K key) {
+        return delegate().get(key);
+    }
 
-  public boolean isEmpty() {
-    return delegate().isEmpty();
-  }
+    public boolean isEmpty() {
+        return delegate().isEmpty();
+    }
 
-  public Multiset<K> keys() {
-    return delegate().keys();
-  }
+    public Multiset<K> keys() {
+        return delegate().keys();
+    }
 
-  public Set<K> keySet() {
-    return delegate().keySet();
-  }
+    public Set<K> keySet() {
+        return delegate().keySet();
+    }
 
-  public boolean put(K key, V value) {
-    return delegate().put(key, value);
-  }
+    public boolean put(K key, V value) {
+        return delegate().put(key, value);
+    }
 
-  public boolean putAll(K key, Iterable<? extends V> values) {
-    return delegate().putAll(key, values);
-  }
+    public boolean putAll(K key, Iterable<? extends V> values) {
+        return delegate().putAll(key, values);
+    }
 
-  public boolean putAll(Multimap<? extends K, ? extends V> multimap) {
-    return delegate().putAll(multimap);
-  }
+    public boolean putAll(Multimap<? extends K, ? extends V> multimap) {
+        return delegate().putAll(multimap);
+    }
 
-  public boolean remove( Object key,  Object value) {
-    return delegate().remove(key, value);
-  }
+    public boolean remove(Object key, Object value) {
+        return delegate().remove(key, value);
+    }
 
-  public Collection<V> removeAll( Object key) {
-    return delegate().removeAll(key);
-  }
+    public Collection<V> removeAll(Object key) {
+        return delegate().removeAll(key);
+    }
 
-  public Collection<V> replaceValues(K key, Iterable<? extends V> values) {
-    return delegate().replaceValues(key, values);
-  }
+    public Collection<V> replaceValues(K key, Iterable<? extends V> values) {
+        return delegate().replaceValues(key, values);
+    }
 
-  public int size() {
-    return delegate().size();
-  }
+    public int size() {
+        return delegate().size();
+    }
 
-  public Collection<V> values() {
-    return delegate().values();
-  }
+    public Collection<V> values() {
+        return delegate().values();
+    }
 
-  @Override public boolean equals( Object object) {
-    return object == this || delegate().equals(object);
-  }
+    @Override
+    public boolean equals(Object object) {
+        return object == this || delegate().equals(object);
+    }
 
-  @Override public int hashCode() {
-    return delegate().hashCode();
-  }
+    @Override
+    public int hashCode() {
+        return delegate().hashCode();
+    }
 }

@@ -3,63 +3,54 @@ package org.fakereplace.test.replacement.instancefield;
 import org.fakereplace.util.NoInstrument;
 
 @NoInstrument
-public class InstanceFieldClass1
-{
+public class InstanceFieldClass1 {
 
-   int afield;
-   int bfield;
+    int afield;
+    int bfield;
 
-   long otherField;
+    long otherField;
 
-   private int yaf;
-   Object fa2;
+    private int yaf;
+    Object fa2;
 
-   public InstanceFieldClass1()
-   {
-      sv = "aa";
-   }
+    public InstanceFieldClass1() {
+        sv = "aa";
+    }
 
-   public String sv;
+    public String sv;
 
-   int yy;
+    int yy;
 
-   private int value = 0;
+    private int value = 0;
 
-   private long lv = 1;
+    private long lv = 1;
 
-   public int get()
-   {
-      return value;
-   }
+    public int get() {
+        return value;
+    }
 
-   public void inc()
-   {
-      value++;
-   }
+    public void inc() {
+        value++;
+    }
 
-   public long getlong()
-   {
-      return lv;
-   }
+    public long getlong() {
+        return lv;
+    }
 
-   public void inclong()
-   {
-      lv++;
-   }
+    public void inclong() {
+        lv++;
+    }
 
-   public String getSv()
-   {
-      return sv;
-   }
+    public String getSv() {
+        return sv;
+    }
 
-   public Object getFa2()
-   {
-      return fa2;
-   }
+    public Object getFa2() {
+        return fa2;
+    }
 
-   public void setFa2(Object fa2)
-   {
-      this.fa2 = fa2;
-   }
+    public void setFa2(Object fa2) {
+        this.fa2 = fa2;
+    }
 
 }

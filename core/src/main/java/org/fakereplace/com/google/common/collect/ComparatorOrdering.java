@@ -17,60 +17,65 @@
 package org.fakereplace.com.google.common.collect;
 
 import org.fakereplace.com.google.common.annotations.GwtCompatible;
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
-
-import static org.fakereplace.com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import static org.fakereplace.com.google.common.base.Preconditions.checkNotNull;
 
 
-/** An ordering for a pre-existing {@code comparator}. */
+/**
+ * An ordering for a pre-existing {@code comparator}.
+ */
 @GwtCompatible(serializable = true)
 final class ComparatorOrdering<T> extends Ordering<T> implements Serializable {
-  final Comparator<T> comparator;
+    final Comparator<T> comparator;
 
-  ComparatorOrdering(Comparator<T> comparator) {
-    this.comparator = checkNotNull(comparator);
-  }
-
-  public int compare(T a, T b) {
-    return comparator.compare(a, b);
-  }
-
-  // Override just to remove a level of indirection from inner loops
-  @Override public int binarySearch(List<? extends T> sortedList, T key) {
-    return Collections.binarySearch(sortedList, key, comparator);
-  }
-
-  // Override just to remove a level of indirection from inner loops
-  @Override public <E extends T> List<E> sortedCopy(Iterable<E> iterable) {
-    List<E> list = Lists.newArrayList(iterable);
-    Collections.sort(list, comparator);
-    return list;
-  }
-
-  @Override public boolean equals( Object object) {
-    if (object == this) {
-      return true;
+    ComparatorOrdering(Comparator<T> comparator) {
+        this.comparator = checkNotNull(comparator);
     }
-    if (object instanceof ComparatorOrdering) {
-      ComparatorOrdering<?> that = (ComparatorOrdering<?>) object;
-      return this.comparator.equals(that.comparator);
+
+    public int compare(T a, T b) {
+        return comparator.compare(a, b);
     }
-    return false;
-  }
 
-  @Override public int hashCode() {
-    return comparator.hashCode();
-  }
+    // Override just to remove a level of indirection from inner loops
+    @Override
+    public int binarySearch(List<? extends T> sortedList, T key) {
+        return Collections.binarySearch(sortedList, key, comparator);
+    }
 
-  @Override public String toString() {
-    return comparator.toString();
-  }
+    // Override just to remove a level of indirection from inner loops
+    @Override
+    public <E extends T> List<E> sortedCopy(Iterable<E> iterable) {
+        List<E> list = Lists.newArrayList(iterable);
+        Collections.sort(list, comparator);
+        return list;
+    }
 
-  private static final long serialVersionUID = 0;
+    @Override
+    public boolean equals(Object object) {
+        if (object == this) {
+            return true;
+        }
+        if (object instanceof ComparatorOrdering) {
+            ComparatorOrdering<?> that = (ComparatorOrdering<?>) object;
+            return this.comparator.equals(that.comparator);
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return comparator.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return comparator.toString();
+    }
+
+    private static final long serialVersionUID = 0;
 }

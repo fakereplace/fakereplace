@@ -6,7 +6,6 @@ import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
-public @interface InheritedAnnotation
-{
-   int value();
+public @interface InheritedAnnotation {
+    int value();
 }

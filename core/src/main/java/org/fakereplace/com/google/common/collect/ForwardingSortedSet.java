@@ -17,7 +17,6 @@
 package org.fakereplace.com.google.common.collect;
 
 import org.fakereplace.com.google.common.annotations.GwtCompatible;
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
 
 import java.util.Comparator;
 import java.util.SortedSet;
@@ -28,36 +27,37 @@ import java.util.SortedSet;
  * backing sorted set as desired per the <a
  * href="http://en.wikipedia.org/wiki/Decorator_pattern">decorator pattern</a>.
  *
- * @see ForwardingObject
  * @author Mike Bostock
+ * @see ForwardingObject
  */
 @GwtCompatible
 public abstract class ForwardingSortedSet<E> extends ForwardingSet<E>
-    implements SortedSet<E> {
+        implements SortedSet<E> {
 
-  @Override protected abstract SortedSet<E> delegate();
+    @Override
+    protected abstract SortedSet<E> delegate();
 
-  public Comparator<? super E> comparator() {
-    return delegate().comparator();
-  }
+    public Comparator<? super E> comparator() {
+        return delegate().comparator();
+    }
 
-  public E first() {
-    return delegate().first();
-  }
+    public E first() {
+        return delegate().first();
+    }
 
-  public SortedSet<E> headSet(E toElement) {
-    return delegate().headSet(toElement);
-  }
+    public SortedSet<E> headSet(E toElement) {
+        return delegate().headSet(toElement);
+    }
 
-  public E last() {
-    return delegate().last();
-  }
+    public E last() {
+        return delegate().last();
+    }
 
-  public SortedSet<E> subSet(E fromElement, E toElement) {
-    return delegate().subSet(fromElement, toElement);
-  }
+    public SortedSet<E> subSet(E fromElement, E toElement) {
+        return delegate().subSet(fromElement, toElement);
+    }
 
-  public SortedSet<E> tailSet(E fromElement) {
-    return delegate().tailSet(fromElement);
-  }
+    public SortedSet<E> tailSet(E fromElement) {
+        return delegate().tailSet(fromElement);
+    }
 }

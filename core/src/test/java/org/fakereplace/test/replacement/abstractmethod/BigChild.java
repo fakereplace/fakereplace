@@ -1,6 +1,5 @@
 package org.fakereplace.test.replacement.abstractmethod;
 
-public class BigChild extends AbstractClass
-{
+public class BigChild extends AbstractClass {
 
 }

@@ -26,29 +26,30 @@ import java.util.concurrent.ConcurrentMap;
  * the backing map as desired per the <a
  * href="http://en.wikipedia.org/wiki/Decorator_pattern">decorator pattern</a>.
  *
- * @see ForwardingObject
  * @author Charles Fry
+ * @see ForwardingObject
  */
 @GwtCompatible
 public abstract class ForwardingConcurrentMap<K, V> extends ForwardingMap<K, V>
-    implements ConcurrentMap<K, V> {
+        implements ConcurrentMap<K, V> {
 
-  @Override protected abstract ConcurrentMap<K, V> delegate();
+    @Override
+    protected abstract ConcurrentMap<K, V> delegate();
 
-  public V putIfAbsent(K key, V value) {
-    return delegate().putIfAbsent(key, value);
-  }
+    public V putIfAbsent(K key, V value) {
+        return delegate().putIfAbsent(key, value);
+    }
 
-  public boolean remove(Object key, Object value) {
-    return delegate().remove(key, value);
-  }
+    public boolean remove(Object key, Object value) {
+        return delegate().remove(key, value);
+    }
 
-  public V replace(K key, V value) {
-    return delegate().replace(key, value);
-  }
+    public V replace(K key, V value) {
+        return delegate().replace(key, value);
+    }
 
-  public boolean replace(K key, V oldValue, V newValue) {
-    return delegate().replace(key, oldValue, newValue);
-  }
+    public boolean replace(K key, V oldValue, V newValue) {
+        return delegate().replace(key, oldValue, newValue);
+    }
 
 }

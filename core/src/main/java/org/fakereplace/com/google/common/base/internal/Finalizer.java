@@ -26,11 +26,11 @@ import java.lang.reflect.Method;
 /**
  * Thread that finalizes referents. All references should implement
  * {@code com.google.common.base.FinalizableReference}.
- *
+ * <p/>
  * <p>While this class is public, we consider it to be *internal* and not part
  * of our published API. It is public so we can access it reflectively across
  * class loaders in secure environments.
- *
+ * <p/>
  * <p>This class can't depend on other Google Collections code. If we were
  * to load this class in the same class loader as the rest of
  * Google Collections, this thread would keep an indirect strong reference
@@ -38,7 +38,7 @@ import java.lang.reflect.Method;
  * poses a problem for environments where you want to throw away the class
  * loader. For example, dynamically reloading a web application or unloading
  * an OSGi bundle.
- *
+ * <p/>
  * <p>{@code com.google.common.base.FinalizableReferenceQueue} loads this class
  * in its own class loader. That way, this class doesn't prevent the main
  * class loader from getting garbage collected, and this class can detect when
@@ -47,151 +47,158 @@ import java.lang.reflect.Method;
 public class Finalizer extends Thread {
 
 
-  /** Name of FinalizableReference.class. */
-  private static final String FINALIZABLE_REFERENCE
-      = "com.google.common.base.FinalizableReference";
-
-  /**
-   * Starts the Finalizer thread. FinalizableReferenceQueue calls this method
-   * reflectively.
-   *
-   * @param finalizableReferenceClass FinalizableReference.class
-   * @param frq reference to instance of FinalizableReferenceQueue that started
-   *  this thread
-   * @return ReferenceQueue which Finalizer will poll
-   */
-  public static ReferenceQueue<Object> startFinalizer(
-      Class<?> finalizableReferenceClass, Object frq) {
-    /*
-     * We use FinalizableReference.class for two things:
-     *
-     * 1) To invoke FinalizableReference.finalizeReferent()
-     *
-     * 2) To detect when FinalizableReference's class loader has to be garbage
-     * collected, at which point, Finalizer can stop running
+    /**
+     * Name of FinalizableReference.class.
      */
-    if (!finalizableReferenceClass.getName().equals(FINALIZABLE_REFERENCE)) {
-      throw new IllegalArgumentException(
-          "Expected " + FINALIZABLE_REFERENCE + ".");
-    }
+    private static final String FINALIZABLE_REFERENCE
+            = "com.google.common.base.FinalizableReference";
 
-    Finalizer finalizer = new Finalizer(finalizableReferenceClass, frq);
-    finalizer.start();
-    return finalizer.queue;
-  }
-
-  private final WeakReference<Class<?>> finalizableReferenceClassReference;
-  private final PhantomReference<Object> frqReference;
-  private final ReferenceQueue<Object> queue = new ReferenceQueue<Object>();
-
-  private static final Field inheritableThreadLocals
-      = getInheritableThreadLocalsField();
-
-  /** Constructs a new finalizer thread. */
-  private Finalizer(Class<?> finalizableReferenceClass, Object frq) {
-    super(Finalizer.class.getName());
-
-    this.finalizableReferenceClassReference
-        = new WeakReference<Class<?>>(finalizableReferenceClass);
-
-    // Keep track of the FRQ that started us so we know when to stop.
-    this.frqReference = new PhantomReference<Object>(frq, queue);
-
-    setDaemon(true);
-
-    try {
-      if (inheritableThreadLocals != null) {
-        inheritableThreadLocals.set(this, null);
-      }
-    } catch (Throwable t) {
-    }
-
-    // TODO: Priority?
-  }
-
-  /**
-   * Loops continuously, pulling references off the queue and cleaning them up.
-   */
-  @SuppressWarnings("InfiniteLoopStatement")
-  @Override
-  public void run() {
-    try {
-      while (true) {
-        try {
-          cleanUp(queue.remove());
-        } catch (InterruptedException e) { /* ignore */ }
-      }
-    } catch (ShutDown shutDown) { /* ignore */ }
-  }
-
-  /**
-   * Cleans up a single reference. Catches and logs all throwables.
-   */
-  private void cleanUp(Reference<?> reference) throws ShutDown {
-    Method finalizeReferentMethod = getFinalizeReferentMethod();
-    do {
-      /*
-       * This is for the benefit of phantom references. Weak and soft
-       * references will have already been cleared by this point.
-       */
-      reference.clear();
-
-      if (reference == frqReference) {
+    /**
+     * Starts the Finalizer thread. FinalizableReferenceQueue calls this method
+     * reflectively.
+     *
+     * @param finalizableReferenceClass FinalizableReference.class
+     * @param frq                       reference to instance of FinalizableReferenceQueue that started
+     *                                  this thread
+     * @return ReferenceQueue which Finalizer will poll
+     */
+    public static ReferenceQueue<Object> startFinalizer(
+            Class<?> finalizableReferenceClass, Object frq) {
         /*
-         * The client no longer has a reference to the
-         * FinalizableReferenceQueue. We can stop.
-         */
-        throw new ShutDown();
-      }
+        * We use FinalizableReference.class for two things:
+        *
+        * 1) To invoke FinalizableReference.finalizeReferent()
+        *
+        * 2) To detect when FinalizableReference's class loader has to be garbage
+        * collected, at which point, Finalizer can stop running
+        */
+        if (!finalizableReferenceClass.getName().equals(FINALIZABLE_REFERENCE)) {
+            throw new IllegalArgumentException(
+                    "Expected " + FINALIZABLE_REFERENCE + ".");
+        }
 
-      try {
-        finalizeReferentMethod.invoke(reference);
-      } catch (Throwable t) {
-      }
-
-      /*
-       * Loop as long as we have references available so as not to waste
-       * CPU looking up the Method over and over again.
-       */
-    } while ((reference = queue.poll()) != null);
-  }
-
-  /**
-   * Looks up FinalizableReference.finalizeReferent() method.
-   */
-  private Method getFinalizeReferentMethod() throws ShutDown {
-    Class<?> finalizableReferenceClass
-        = finalizableReferenceClassReference.get();
-    if (finalizableReferenceClass == null) {
-      /*
-       * FinalizableReference's class loader was reclaimed. While there's a
-       * chance that other finalizable references could be enqueued
-       * subsequently (at which point the class loader would be resurrected
-       * by virtue of us having a strong reference to it), we should pretty
-       * much just shut down and make sure we don't keep it alive any longer
-       * than necessary.
-       */
-      throw new ShutDown();
+        Finalizer finalizer = new Finalizer(finalizableReferenceClass, frq);
+        finalizer.start();
+        return finalizer.queue;
     }
-    try {
-      return finalizableReferenceClass.getMethod("finalizeReferent");
-    } catch (NoSuchMethodException e) {
-      throw new AssertionError(e);
-    }
-  }
 
-  public static Field getInheritableThreadLocalsField() {
-    try {
-      Field inheritableThreadLocals
-          = Thread.class.getDeclaredField("inheritableThreadLocals");
-      inheritableThreadLocals.setAccessible(true);
-      return inheritableThreadLocals;
-    } catch (Throwable t) {
-      return null;
-    }
-  }
+    private final WeakReference<Class<?>> finalizableReferenceClassReference;
+    private final PhantomReference<Object> frqReference;
+    private final ReferenceQueue<Object> queue = new ReferenceQueue<Object>();
 
-  /** Indicates that it's time to shut down the Finalizer. */
-  @SuppressWarnings("serial") // Never serialized or thrown out of this class.
-  private static class ShutDown extends Exception { }
+    private static final Field inheritableThreadLocals
+            = getInheritableThreadLocalsField();
+
+    /**
+     * Constructs a new finalizer thread.
+     */
+    private Finalizer(Class<?> finalizableReferenceClass, Object frq) {
+        super(Finalizer.class.getName());
+
+        this.finalizableReferenceClassReference
+                = new WeakReference<Class<?>>(finalizableReferenceClass);
+
+        // Keep track of the FRQ that started us so we know when to stop.
+        this.frqReference = new PhantomReference<Object>(frq, queue);
+
+        setDaemon(true);
+
+        try {
+            if (inheritableThreadLocals != null) {
+                inheritableThreadLocals.set(this, null);
+            }
+        } catch (Throwable t) {
+        }
+
+        // TODO: Priority?
+    }
+
+    /**
+     * Loops continuously, pulling references off the queue and cleaning them up.
+     */
+    @SuppressWarnings("InfiniteLoopStatement")
+    @Override
+    public void run() {
+        try {
+            while (true) {
+                try {
+                    cleanUp(queue.remove());
+                } catch (InterruptedException e) { /* ignore */ }
+            }
+        } catch (ShutDown shutDown) { /* ignore */ }
+    }
+
+    /**
+     * Cleans up a single reference. Catches and logs all throwables.
+     */
+    private void cleanUp(Reference<?> reference) throws ShutDown {
+        Method finalizeReferentMethod = getFinalizeReferentMethod();
+        do {
+            /*
+            * This is for the benefit of phantom references. Weak and soft
+            * references will have already been cleared by this point.
+            */
+            reference.clear();
+
+            if (reference == frqReference) {
+                /*
+                * The client no longer has a reference to the
+                * FinalizableReferenceQueue. We can stop.
+                */
+                throw new ShutDown();
+            }
+
+            try {
+                finalizeReferentMethod.invoke(reference);
+            } catch (Throwable t) {
+            }
+
+            /*
+            * Loop as long as we have references available so as not to waste
+            * CPU looking up the Method over and over again.
+            */
+        } while ((reference = queue.poll()) != null);
+    }
+
+    /**
+     * Looks up FinalizableReference.finalizeReferent() method.
+     */
+    private Method getFinalizeReferentMethod() throws ShutDown {
+        Class<?> finalizableReferenceClass
+                = finalizableReferenceClassReference.get();
+        if (finalizableReferenceClass == null) {
+            /*
+            * FinalizableReference's class loader was reclaimed. While there's a
+            * chance that other finalizable references could be enqueued
+            * subsequently (at which point the class loader would be resurrected
+            * by virtue of us having a strong reference to it), we should pretty
+            * much just shut down and make sure we don't keep it alive any longer
+            * than necessary.
+            */
+            throw new ShutDown();
+        }
+        try {
+            return finalizableReferenceClass.getMethod("finalizeReferent");
+        } catch (NoSuchMethodException e) {
+            throw new AssertionError(e);
+        }
+    }
+
+    public static Field getInheritableThreadLocalsField() {
+        try {
+            Field inheritableThreadLocals
+                    = Thread.class.getDeclaredField("inheritableThreadLocals");
+            inheritableThreadLocals.setAccessible(true);
+            return inheritableThreadLocals;
+        } catch (Throwable t) {
+            return null;
+        }
+    }
+
+    /**
+     * Indicates that it's time to shut down the Finalizer.
+     */
+    @SuppressWarnings("serial") // Never serialized or thrown out of this class.
+    private static class ShutDown extends Exception {
+    }
 }

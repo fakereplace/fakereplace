@@ -17,7 +17,6 @@
 package org.fakereplace.com.google.common.base;
 
 import org.fakereplace.com.google.common.annotations.GwtCompatible;
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
 
 /**
  * A class that can supply objects of a single type.  Semantically, this could
@@ -28,11 +27,11 @@ import org.fakereplace.com.google.common.annotations.GwtCompatible;
  */
 @GwtCompatible
 public interface Supplier<T> {
-  /**
-   * Retrieves an instance of the appropriate type. The returned object may or
-   * may not be a new instance, depending on the implementation.
-   *
-   * @return an instance of the appropriate type
-   */
-  public T get();
+    /**
+     * Retrieves an instance of the appropriate type. The returned object may or
+     * may not be a new instance, depending on the implementation.
+     *
+     * @return an instance of the appropriate type
+     */
+    public T get();
 }

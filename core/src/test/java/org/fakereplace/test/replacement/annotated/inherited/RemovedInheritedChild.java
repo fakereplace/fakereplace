@@ -1,6 +1,5 @@
 package org.fakereplace.test.replacement.annotated.inherited;
 
-public class RemovedInheritedChild extends RemovedInheritedSuperClass
-{
+public class RemovedInheritedChild extends RemovedInheritedSuperClass {
 
 }

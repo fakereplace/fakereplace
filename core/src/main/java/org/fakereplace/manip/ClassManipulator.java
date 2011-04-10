@@ -1,12 +1,10 @@
 package org.fakereplace.manip;
 
+import javassist.bytecode.ClassFile;
 import org.fakereplace.boot.Enviroment;
 
-import javassist.bytecode.ClassFile;
+public interface ClassManipulator {
+    public void clearRewrites(String className, ClassLoader classLoader);
 
-public interface ClassManipulator
-{
-   public void clearRewrites(String className, ClassLoader classLoader);
-
-   public void transformClass(ClassFile file, ClassLoader loader, Enviroment environment);
+    public void transformClass(ClassFile file, ClassLoader loader, Enviroment environment);
 }

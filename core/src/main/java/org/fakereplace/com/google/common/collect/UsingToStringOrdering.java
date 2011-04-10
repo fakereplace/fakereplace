@@ -17,30 +17,33 @@
 package org.fakereplace.com.google.common.collect;
 
 import org.fakereplace.com.google.common.annotations.GwtCompatible;
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
 
 import java.io.Serializable;
 
-/** An ordering that uses the reverse of the natural order of the values. */
+/**
+ * An ordering that uses the reverse of the natural order of the values.
+ */
 @GwtCompatible(serializable = true)
 final class UsingToStringOrdering
-    extends Ordering<Object> implements Serializable {
-  static final UsingToStringOrdering INSTANCE = new UsingToStringOrdering();
+        extends Ordering<Object> implements Serializable {
+    static final UsingToStringOrdering INSTANCE = new UsingToStringOrdering();
 
-  public int compare(Object left, Object right) {
-    return left.toString().compareTo(right.toString());
-  }
+    public int compare(Object left, Object right) {
+        return left.toString().compareTo(right.toString());
+    }
 
-  // preserve singleton-ness, so equals() and hashCode() work correctly
-  private Object readResolve() {
-    return INSTANCE;
-  }
+    // preserve singleton-ness, so equals() and hashCode() work correctly
+    private Object readResolve() {
+        return INSTANCE;
+    }
 
-  @Override public String toString() {
-    return "Ordering.usingToString()";
-  }
+    @Override
+    public String toString() {
+        return "Ordering.usingToString()";
+    }
 
-  private UsingToStringOrdering() {}
+    private UsingToStringOrdering() {
+    }
 
-  private static final long serialVersionUID = 0;
+    private static final long serialVersionUID = 0;
 }

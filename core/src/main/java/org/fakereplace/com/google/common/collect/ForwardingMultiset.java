@@ -17,10 +17,8 @@
 package org.fakereplace.com.google.common.collect;
 
 import org.fakereplace.com.google.common.annotations.GwtCompatible;
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
 
 import java.util.Set;
-
 
 
 /**
@@ -29,48 +27,51 @@ import java.util.Set;
  * backing multiset as desired per the <a
  * href="http://en.wikipedia.org/wiki/Decorator_pattern">decorator pattern</a>.
  *
- * @see ForwardingObject
  * @author Kevin Bourrillion
+ * @see ForwardingObject
  */
 @GwtCompatible
 public abstract class ForwardingMultiset<E> extends ForwardingCollection<E>
-    implements Multiset<E> {
+        implements Multiset<E> {
 
-  @Override protected abstract Multiset<E> delegate();
+    @Override
+    protected abstract Multiset<E> delegate();
 
-  public int count(Object element) {
-    return delegate().count(element);
-  }
+    public int count(Object element) {
+        return delegate().count(element);
+    }
 
-  public int add(E element, int occurrences) {
-    return delegate().add(element, occurrences);
-  }
+    public int add(E element, int occurrences) {
+        return delegate().add(element, occurrences);
+    }
 
-  public int remove(Object element, int occurrences) {
-    return delegate().remove(element, occurrences);
-  }
+    public int remove(Object element, int occurrences) {
+        return delegate().remove(element, occurrences);
+    }
 
-  public Set<E> elementSet() {
-    return delegate().elementSet();
-  }
+    public Set<E> elementSet() {
+        return delegate().elementSet();
+    }
 
-  public Set<Entry<E>> entrySet() {
-    return delegate().entrySet();
-  }
+    public Set<Entry<E>> entrySet() {
+        return delegate().entrySet();
+    }
 
-  @Override public boolean equals( Object object) {
-    return object == this || delegate().equals(object);
-  }
+    @Override
+    public boolean equals(Object object) {
+        return object == this || delegate().equals(object);
+    }
 
-  @Override public int hashCode() {
-    return delegate().hashCode();
-  }
+    @Override
+    public int hashCode() {
+        return delegate().hashCode();
+    }
 
-  public int setCount(E element, int count) {
-    return delegate().setCount(element, count);
-  }
+    public int setCount(E element, int count) {
+        return delegate().setCount(element, count);
+    }
 
-  public boolean setCount(E element, int oldCount, int newCount) {
-    return delegate().setCount(element, oldCount, newCount);
-  }
+    public boolean setCount(E element, int oldCount, int newCount) {
+        return delegate().setCount(element, oldCount, newCount);
+    }
 }

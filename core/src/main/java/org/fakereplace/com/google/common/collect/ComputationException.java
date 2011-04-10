@@ -17,18 +17,18 @@
 package org.fakereplace.com.google.common.collect;
 
 import org.fakereplace.com.google.common.annotations.GwtCompatible;
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
 
 /**
  * Wraps an exception that occured during a computation.
  */
 @GwtCompatible
 public class ComputationException extends RuntimeException {
-  /**
-   * Creates a new instance with the given cause.
-   */
-  public ComputationException(Throwable cause) {
-    super(cause);
-  }
-  private static final long serialVersionUID = 0;
+    /**
+     * Creates a new instance with the given cause.
+     */
+    public ComputationException(Throwable cause) {
+        super(cause);
+    }
+
+    private static final long serialVersionUID = 0;
 }

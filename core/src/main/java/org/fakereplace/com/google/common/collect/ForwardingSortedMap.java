@@ -17,7 +17,6 @@
 package org.fakereplace.com.google.common.collect;
 
 import org.fakereplace.com.google.common.annotations.GwtCompatible;
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
 
 import java.util.Comparator;
 import java.util.SortedMap;
@@ -28,36 +27,37 @@ import java.util.SortedMap;
  * the backing sorted map as desired per the <a
  * href="http://en.wikipedia.org/wiki/Decorator_pattern">decorator pattern</a>.
  *
- * @see ForwardingObject
  * @author Mike Bostock
+ * @see ForwardingObject
  */
 @GwtCompatible
 public abstract class ForwardingSortedMap<K, V> extends ForwardingMap<K, V>
-    implements SortedMap<K, V> {
+        implements SortedMap<K, V> {
 
-  @Override protected abstract SortedMap<K, V> delegate();
+    @Override
+    protected abstract SortedMap<K, V> delegate();
 
-  public Comparator<? super K> comparator() {
-    return delegate().comparator();
-  }
+    public Comparator<? super K> comparator() {
+        return delegate().comparator();
+    }
 
-  public K firstKey() {
-    return delegate().firstKey();
-  }
+    public K firstKey() {
+        return delegate().firstKey();
+    }
 
-  public SortedMap<K, V> headMap(K toKey) {
-    return delegate().headMap(toKey);
-  }
+    public SortedMap<K, V> headMap(K toKey) {
+        return delegate().headMap(toKey);
+    }
 
-  public K lastKey() {
-    return delegate().lastKey();
-  }
+    public K lastKey() {
+        return delegate().lastKey();
+    }
 
-  public SortedMap<K, V> subMap(K fromKey, K toKey) {
-    return delegate().subMap(fromKey, toKey);
-  }
+    public SortedMap<K, V> subMap(K fromKey, K toKey) {
+        return delegate().subMap(fromKey, toKey);
+    }
 
-  public SortedMap<K, V> tailMap(K fromKey) {
-    return delegate().tailMap(fromKey);
-  }
+    public SortedMap<K, V> tailMap(K fromKey) {
+        return delegate().tailMap(fromKey);
+    }
 }

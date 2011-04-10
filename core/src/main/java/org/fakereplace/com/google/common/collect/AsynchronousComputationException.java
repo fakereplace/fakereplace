@@ -22,11 +22,12 @@ package org.fakereplace.com.google.common.collect;
  * @author Bob Lee
  */
 public class AsynchronousComputationException extends ComputationException {
-  /**
-   * Creates a new instance with the given cause.
-   */
-  public AsynchronousComputationException(Throwable cause) {
-    super(cause);
-  }
-  private static final long serialVersionUID = 0;
+    /**
+     * Creates a new instance with the given cause.
+     */
+    public AsynchronousComputationException(Throwable cause) {
+        super(cause);
+    }
+
+    private static final long serialVersionUID = 0;
 }

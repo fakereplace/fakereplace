@@ -19,15 +19,9 @@ package org.fakereplace.com.google.common.collect;
 import org.fakereplace.com.google.common.annotations.GwtCompatible;
 import org.fakereplace.com.google.common.base.Function;
 import org.fakereplace.com.google.common.base.Objects;
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
-import org.fakereplace.com.google.common.base.Function;
-import org.fakereplace.com.google.common.base.Objects;
 import org.fakereplace.com.google.common.base.Preconditions;
 
-import static org.fakereplace.com.google.common.base.Preconditions.checkNotNull;
-
 import java.io.Serializable;
-
 
 
 /**
@@ -36,39 +30,42 @@ import java.io.Serializable;
  */
 @GwtCompatible(serializable = true)
 final class ByFunctionOrdering<F, T>
-    extends Ordering<F> implements Serializable {
-  final Function<F, ? extends T> function;
-  final Ordering<T> ordering;
+        extends Ordering<F> implements Serializable {
+    final Function<F, ? extends T> function;
+    final Ordering<T> ordering;
 
-  ByFunctionOrdering(
-      Function<F, ? extends T> function, Ordering<T> ordering) {
-    this.function = Preconditions.checkNotNull(function);
-    this.ordering = Preconditions.checkNotNull(ordering);
-  }
-
-  public int compare(F left, F right) {
-    return ordering.compare(function.apply(left), function.apply(right));
-  }
-
-  @Override public boolean equals( Object object) {
-    if (object == this) {
-      return true;
+    ByFunctionOrdering(
+            Function<F, ? extends T> function, Ordering<T> ordering) {
+        this.function = Preconditions.checkNotNull(function);
+        this.ordering = Preconditions.checkNotNull(ordering);
     }
-    if (object instanceof ByFunctionOrdering) {
-      ByFunctionOrdering<?, ?> that = (ByFunctionOrdering<?, ?>) object;
-      return this.function.equals(that.function)
-          && this.ordering.equals(that.ordering);
+
+    public int compare(F left, F right) {
+        return ordering.compare(function.apply(left), function.apply(right));
     }
-    return false;
-  }
 
-  @Override public int hashCode() {
-    return Objects.hashCode(function, ordering);
-  }
+    @Override
+    public boolean equals(Object object) {
+        if (object == this) {
+            return true;
+        }
+        if (object instanceof ByFunctionOrdering) {
+            ByFunctionOrdering<?, ?> that = (ByFunctionOrdering<?, ?>) object;
+            return this.function.equals(that.function)
+                    && this.ordering.equals(that.ordering);
+        }
+        return false;
+    }
 
-  @Override public String toString() {
-    return ordering + ".onResultOf(" + function + ")";
-  }
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(function, ordering);
+    }
 
-  private static final long serialVersionUID = 0;
+    @Override
+    public String toString() {
+        return ordering + ".onResultOf(" + function + ")";
+    }
+
+    private static final long serialVersionUID = 0;
 }

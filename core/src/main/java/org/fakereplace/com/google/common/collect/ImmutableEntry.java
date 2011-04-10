@@ -17,10 +17,8 @@
 package org.fakereplace.com.google.common.collect;
 
 import org.fakereplace.com.google.common.annotations.GwtCompatible;
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
 
 import java.io.Serializable;
-
 
 
 /**
@@ -28,21 +26,24 @@ import java.io.Serializable;
  */
 @GwtCompatible
 class ImmutableEntry<K, V> extends AbstractMapEntry<K, V>
-    implements Serializable {
-  private final K key;
-  private final V value;
+        implements Serializable {
+    private final K key;
+    private final V value;
 
-  ImmutableEntry( K key,  V value) {
-    this.key = key;
-    this.value = value;
-  }
+    ImmutableEntry(K key, V value) {
+        this.key = key;
+        this.value = value;
+    }
 
-  @Override public K getKey() {
-    return key;
-  }
+    @Override
+    public K getKey() {
+        return key;
+    }
 
-  @Override public V getValue() {
-    return value;
-  }
-  private static final long serialVersionUID = 0;
+    @Override
+    public V getValue() {
+        return value;
+    }
+
+    private static final long serialVersionUID = 0;
 }

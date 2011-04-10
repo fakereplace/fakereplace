@@ -18,11 +18,8 @@ package org.fakereplace.com.google.common.collect;
 
 import org.fakereplace.com.google.common.annotations.GwtCompatible;
 import org.fakereplace.com.google.common.base.Objects;
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
-import org.fakereplace.com.google.common.base.Objects;
 
 import java.util.Map.Entry;
-
 
 
 /**
@@ -34,33 +31,36 @@ import java.util.Map.Entry;
 @GwtCompatible
 abstract class AbstractMapEntry<K, V> implements Entry<K, V> {
 
-  public abstract K getKey();
+    public abstract K getKey();
 
-  public abstract V getValue();
+    public abstract V getValue();
 
-  public V setValue(V value) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override public boolean equals( Object object) {
-    if (object instanceof Entry) {
-      Entry<?, ?> that = (Entry<?, ?>) object;
-      return Objects.equal(this.getKey(), that.getKey())
-          && Objects.equal(this.getValue(), that.getValue());
+    public V setValue(V value) {
+        throw new UnsupportedOperationException();
     }
-    return false;
-  }
 
-  @Override public int hashCode() {
-    K k = getKey();
-    V v = getValue();
-    return ((k == null) ? 0 : k.hashCode()) ^ ((v == null) ? 0 : v.hashCode());
-  }
+    @Override
+    public boolean equals(Object object) {
+        if (object instanceof Entry) {
+            Entry<?, ?> that = (Entry<?, ?>) object;
+            return Objects.equal(this.getKey(), that.getKey())
+                    && Objects.equal(this.getValue(), that.getValue());
+        }
+        return false;
+    }
 
-  /**
-   * Returns a string representation of the form <code>{key}={value}</code>.
-   */
-  @Override public String toString() {
-    return getKey() + "=" + getValue();
-  }
+    @Override
+    public int hashCode() {
+        K k = getKey();
+        V v = getValue();
+        return ((k == null) ? 0 : k.hashCode()) ^ ((v == null) ? 0 : v.hashCode());
+    }
+
+    /**
+     * Returns a string representation of the form <code>{key}={value}</code>.
+     */
+    @Override
+    public String toString() {
+        return getKey() + "=" + getValue();
+    }
 }
