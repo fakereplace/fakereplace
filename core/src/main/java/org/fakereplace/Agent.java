@@ -40,6 +40,7 @@ import java.io.IOException;
 import java.lang.instrument.ClassDefinition;
 import java.lang.instrument.Instrumentation;
 import java.lang.instrument.UnmodifiableClassException;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -49,15 +50,38 @@ import java.util.Set;
  */
 public class Agent {
 
-    static Instrumentation inst;
+    private static Class[] EMPTY_CL_ARRAY = new Class[0];
 
-    static Enviroment environment;
+    private static Instrumentation inst;
+
+    private static Enviroment environment;
 
     public static void premain(java.lang.String s, java.lang.instrument.Instrumentation i) {
         Set<IntegrationInfo> integrationInfo = IntegrationLoader.getIntegrationInfo(ClassLoader.getSystemClassLoader());
         inst = i;
         environment = new Enviroment();
+
+
+        //first we need to instrument the class loaders
+        final Set<Class> cls = new HashSet<Class>();
+        for(Class c : inst.getAllLoadedClasses()) {
+            if(ClassLoader.class.isAssignableFrom(c)) {
+                cls.add(c);
+            }
+        }
+
+        final ClassLoaderTransformer classLoaderTransformer = new ClassLoaderTransformer();
+        inst.addTransformer(classLoaderTransformer,true);
+
+        try {
+            inst.retransformClasses(cls.toArray(EMPTY_CL_ARRAY));
+        } catch (UnmodifiableClassException e) {
+            e.printStackTrace();
+        }
+        inst.removeTransformer(classLoaderTransformer);
+
         inst.addTransformer(new Transformer(i, integrationInfo, environment), true);
+
 
 
         //Add jboss AS7 CL support

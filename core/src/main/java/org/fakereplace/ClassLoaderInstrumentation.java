@@ -19,145 +19,120 @@
 
 package org.fakereplace;
 
-import javassist.ClassPool;
-import javassist.CtClass;
-import javassist.CtMethod;
-import javassist.NotFoundException;
-import javassist.bytecode.AccessFlag;
-import org.fakereplace.boot.Logger;
+import javassist.bytecode.BadBytecode;
+import javassist.bytecode.Bytecode;
+import javassist.bytecode.ClassFile;
+import javassist.bytecode.CodeIterator;
+import javassist.bytecode.MethodInfo;
+import javassist.bytecode.Opcode;
 import org.fakereplace.classloading.ClassLookupManager;
-import org.fakereplace.data.BaseClassData;
-import org.fakereplace.data.ClassDataStore;
-import org.fakereplace.data.MethodData;
+import org.fakereplace.com.google.common.collect.MapMaker;
 import org.fakereplace.manip.FinalMethodManipulator;
+import org.fakereplace.util.JumpMarker;
+import org.fakereplace.util.JumpUtils;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.instrument.ClassDefinition;
-import java.lang.instrument.Instrumentation;
-import java.net.URL;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
+import java.lang.instrument.UnmodifiableClassException;
+import java.util.List;
+import java.util.concurrent.ConcurrentMap;
 
 public class ClassLoaderInstrumentation {
 
-    public ClassLoaderInstrumentation(Instrumentation instrumentation) {
-        this.instrumentation = instrumentation;
+    private static final ConcurrentMap<Class, Object> instrumentedLoaders = new MapMaker().weakKeys().makeMap();
+
+
+    public static synchronized void instrumentClassLoaderIfRequired(Class<?> classLoader){
+        if(!instrumentedLoaders.containsKey(classLoader)) {
+            instrumentedLoaders.put(classLoader, ClassLoaderInstrumentation.class);
+            try {
+                Agent.getInstrumentation().retransformClasses(classLoader);
+            } catch (UnmodifiableClassException e) {
+                e.printStackTrace();
+            }
+        }
     }
-
-    final Instrumentation instrumentation;
-
-    Set<Class<?>> trasformedClassLoaders = new CopyOnWriteArraySet<Class<?>>();
-
-    Set<Class<?>> failedTransforms = new CopyOnWriteArraySet<Class<?>>();
 
     /**
      * This method instruments class loaders so that they can load our helper
      * classes.
-     *
-     * @param cl
      */
-    public void redefineClassLoader(Class<?> cl) {
-        try {
-            if (trasformedClassLoaders.contains(cl) || failedTransforms.contains(cl)) {
-                return;
+    public static boolean redefineClassLoader(ClassFile classFile, boolean classLoader) throws BadBytecode {
+        if(!classLoader) {
+            if(classFile.getSuperclass() == null) {
+                return false;
             }
-            // we are using the high level javassist bytecode here because we
-            // have access to the class object
-            CtClass cls = null;
-            if (cl.getClassLoader() != null) {
-                URL resource = cl.getClassLoader().getResource(cl.getName().replace('.', '/') + ".class");
-                InputStream in = null;
-                try {
-                    in = resource.openStream();
-                    cls = ClassPool.getDefault().makeClass(in);
-                } catch (Exception e) {
-                } finally {
-                    try {
-                        in.close();
-                    } catch (IOException e) {
-                    }
-                }
-            }
-            if (cls == null) {
-                cls = ClassPool.getDefault().getCtClass(cl.getName());
-            }
-            cls.defrost();
-            CtClass str = ClassPool.getDefault().getCtClass("java.lang.String");
-            CtClass[] arg = new CtClass[2];
-            arg[0] = str;
-            arg[1] = CtClass.booleanType;
-            // now we instrument the loadClass
-            // if the system requests a class from the generated class package
-            // then
-            // we check to see if it is already loaded.
-            // if not we try and get the class definition from GlobalData
-            // we do not need to delegate as GlobalData will only
-            // return the data to the correct classloader.
-            // if the data is not null then we define the class, link
-            // it if requested and return it.
-
-            CtMethod method = cls.getDeclaredMethod("loadClass", arg);
-            method
-                    .insertBefore("byte[] bdata = "
-                            + ClassLookupManager.class.getName()
-                            + ".getClassData($1,this); if(bdata != null){ try{ Class find = findLoadedClass($1); if(find != null) return find; Class c = defineClass($1,bdata,0,bdata.length); if($2) resolveClass(c); return c;  }catch(Throwable e) {e.printStackTrace(); return null;}}");
-            BaseClassData data = ClassDataStore.getBaseClassData(cl.getClassLoader(), cl.getName());
-            for (Object i : cls.getDeclaredMethods()) {
-                CtMethod m = (CtMethod) i;
-                MethodData dta = null;
-                if (data != null) {
-                    for (MethodData md : data.getMethods()) {
-                        if (md.getDescriptor().equals(m.getMethodInfo().getDescriptor()) && md.getMethodName().equals(m.getName())) {
-                            dta = md;
-                            break;
-                        }
-                    }
-                    if (dta == null) {
-                        continue;
-                    }
-                    if (dta.isFinalMethod()) {
-                        m.setModifiers(m.getModifiers() & ~AccessFlag.FINAL);
-                    }
-                }
-            }
-            FinalMethodManipulator.addClassLoader(cl.getName());
-            // now reload the instrumented class loader
-            ClassDefinition cd = new ClassDefinition(cl, cls.toBytecode());
-            ClassDefinition[] ar = new ClassDefinition[1];
-            ar[0] = cd;
-
-            instrumentation.redefineClasses(ar);
-            // make a note of the fact that we have transformed this class
-            // loader
-            trasformedClassLoaders.add(cl);
-            System.out.println("INSTRUMENTED: " + cl);
-        } catch (NotFoundException e) {
-            if (cl.getSuperclass() != ClassLoader.class && !trasformedClassLoaders.contains(cl.getSuperclass()) && !failedTransforms.contains(cl)) {
-                redefineClassLoader(cl.getSuperclass());
-            }
-            trasformedClassLoaders.add(cl);
-        } catch (Exception e) {
-            e.printStackTrace();
-            failedTransforms.add(cl);
-        } finally {
-        }
-    }
-
-    /**
-     * Checks to see if a class loader has already been instrumented and if not
-     * instriments it
-     *
-     * @param loader
-     */
-    void instrumentClassLoaderIfNessesary(ClassLoader loader, String className) {
-        if (loader != null) {
-            if (!trasformedClassLoaders.contains(loader.getClass()) && !failedTransforms.contains(loader.getClass())) {
-                redefineClassLoader(loader.getClass());
-            }
-            if (failedTransforms.contains(loader.getClass())) {
-                Logger.log(this, "The class loader for " + className + " could not be instrumented");
+            if (!classFile.getSuperclass().equals("java.lang.ClassLoader") && !classFile.getName().endsWith("ClassLoader")) {
+                return false;
             }
         }
+
+        for (MethodInfo method : (List<MethodInfo>) classFile.getMethods()) {
+            if (method.getName().equals("loadClass") && (method.getDescriptor().equals("(Ljava/lang/String;)Ljava/lang/Class;") || method.getDescriptor().equals("(Ljava/lang/String;Z)Ljava/lang/Class;"))) {
+                if (method.getCodeAttribute().getMaxLocals() < 4) {
+                    method.getCodeAttribute().setMaxLocals(4);
+                }
+                classLoader = true;
+                // now we instrument the loadClass
+                // if the system requests a class from the generated class package
+                // then
+                // we check to see if it is already loaded.
+                // if not we try and get the class definition from GlobalData
+                // we do not need to delegate as GlobalData will only
+                // return the data to the correct classloader.
+                // if the data is not null then we define the class, link
+                // it if requested and return it.
+                final CodeIterator iterator = method.getCodeAttribute().iterator();
+                final Bytecode b = new Bytecode(classFile.getConstPool());
+                b.addAload(1);
+                b.addAload(0);
+                b.addInvokestatic(ClassLookupManager.class.getName(), "getClassData", "(Ljava/lang/String;Ljava/lang/Object;)[B");
+                b.add(Opcode.DUP);
+                b.add(Opcode.IFNULL);
+                JumpMarker jumpEnd = JumpUtils.addJumpInstruction(b);
+
+                //now we need to do the findLoadedClasses thing
+                b.addAload(0);
+                b.addAload(1);
+                b.addInvokevirtual("java.lang.ClassLoader", "findLoadedClass", "(Ljava/lang/String;)Ljava/lang/Class;");
+                b.add(Opcode.DUP);
+                b.add(Opcode.IFNULL);
+                JumpMarker notFound = JumpUtils.addJumpInstruction(b);
+                b.add(Opcode.ARETURN);
+                notFound.mark();
+                b.add(Opcode.POP);
+                b.addAstore(3);
+                b.addAload(0);
+                b.addAload(1);
+                b.addAload(3);
+                b.addIconst(0);
+                b.addAload(3);
+                b.add(Opcode.ARRAYLENGTH);
+                b.addInvokevirtual("java.lang.ClassLoader", "defineClass", "(Ljava/lang/String;[BII)Ljava/lang/Class;");
+                if (method.getDescriptor().equals("Ljava/lang/String;Z)Ljava/lang/Class;")) {
+                    b.addIload(2);
+                } else {
+                    b.addIconst(0);
+                }
+                b.add(Opcode.IFEQ);
+                final JumpMarker linkJumpEnd = JumpUtils.addJumpInstruction(b);
+                b.add(Opcode.DUP);
+                b.addAload(0);
+                b.add(Opcode.SWAP);
+                b.addInvokevirtual("java.lang.ClassLoader", "resolveClass", "(Ljava/lang/Class;)V");
+                linkJumpEnd.mark();
+                b.add(Opcode.ARETURN);
+                jumpEnd.mark();
+                b.add(Opcode.POP);
+                iterator.insert(b.get());
+                FinalMethodManipulator.addClassLoader(classFile.getName());
+                method.getCodeAttribute().computeMaxStack();
+            }
+        }
+        return classLoader;
     }
+
+
+    private ClassLoaderInstrumentation() {
+
+    }
+
 }

@@ -72,10 +72,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class Transformer implements ClassFileTransformer {
 
-    private final Instrumentation instrumentation;
-
-    private final ClassLoaderInstrumentation classLoaderInstrumenter;
-
     private final Enviroment enviroment;
 
     private static final Manipulator manipulator = new Manipulator();
@@ -91,9 +87,6 @@ public class Transformer implements ClassFileTransformer {
     private ClassChangeDetectorRunner detectorRunner = null;
 
     Transformer(Instrumentation inst, Set<IntegrationInfo> integrationInfo, Enviroment enviroment) {
-
-        instrumentation = inst;
-        classLoaderInstrumenter = new ClassLoaderInstrumentation(instrumentation);
         ReflectionInstrumentationSetup.setup(manipulator);
         this.enviroment = enviroment;
         for (IntegrationInfo i : integrationInfo) {
@@ -109,11 +102,14 @@ public class Transformer implements ClassFileTransformer {
     }
 
     public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
+
+        //instrument the class loader if necessary
+        ClassLoaderInstrumentation.instrumentClassLoaderIfRequired(loader.getClass());
+
         if (classBeingRedefined != null) {
             ClassDataStore.markClassReplaced(classBeingRedefined);
         }
         try {
-            classLoaderInstrumenter.instrumentClassLoaderIfNessesary(loader, className);
             byte[] data = classfileBuffer;
             for (ClassTransformer i : integrationTransformers) {
                 byte[] dt = i.transform(data, className);
