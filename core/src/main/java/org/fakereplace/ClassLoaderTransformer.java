@@ -42,18 +42,16 @@ public class ClassLoaderTransformer implements ClassFileTransformer {
     }
 
     public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classFileBuffer) throws IllegalClassFormatException {
-        if(classBeingRedefined == null || !ClassLoader.class.isAssignableFrom(classBeingRedefined)) {
+        if (classBeingRedefined == null || !ClassLoader.class.isAssignableFrom(classBeingRedefined)) {
             return null;
         }
         try {
             ClassFile file = new ClassFile(new DataInputStream(new ByteArrayInputStream(classFileBuffer)));
-            boolean classLoader = ClassLoaderInstrumentation.redefineClassLoader(file, true);
-            if (classLoader) {
-                ByteArrayOutputStream bs = new ByteArrayOutputStream();
-                file.write(new DataOutputStream(bs));
-                return bs.toByteArray();
-            }
-            return null;
+
+            ClassLoaderInstrumentation.redefineClassLoader(file);
+            ByteArrayOutputStream bs = new ByteArrayOutputStream();
+            file.write(new DataOutputStream(bs));
+            return bs.toByteArray();
 
         } catch (Throwable e) {
             e.printStackTrace();

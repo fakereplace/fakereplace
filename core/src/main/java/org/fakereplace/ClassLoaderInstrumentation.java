@@ -40,13 +40,16 @@ public class ClassLoaderInstrumentation {
     private static final ConcurrentMap<Class, Object> instrumentedLoaders = new MapMaker().weakKeys().makeMap();
 
 
-    public static synchronized void instrumentClassLoaderIfRequired(Class<?> classLoader){
-        if(!instrumentedLoaders.containsKey(classLoader)) {
-            instrumentedLoaders.put(classLoader, ClassLoaderInstrumentation.class);
-            try {
-                Agent.getInstrumentation().retransformClasses(classLoader);
-            } catch (UnmodifiableClassException e) {
-                e.printStackTrace();
+    public static synchronized void instrumentClassLoaderIfRequired(final Class<?> classLoader) {
+        if (ClassLoader.class.isAssignableFrom(classLoader)) {
+            if (!instrumentedLoaders.containsKey(classLoader)) {
+
+                try {
+                    Agent.getInstrumentation().retransformClasses(classLoader);
+                } catch (UnmodifiableClassException e) {
+                }
+                instrumentedLoaders.put(classLoader, ClassLoaderInstrumentation.class);
+
             }
         }
     }
@@ -55,22 +58,13 @@ public class ClassLoaderInstrumentation {
      * This method instruments class loaders so that they can load our helper
      * classes.
      */
-    public static boolean redefineClassLoader(ClassFile classFile, boolean classLoader) throws BadBytecode {
-        if(!classLoader) {
-            if(classFile.getSuperclass() == null) {
-                return false;
-            }
-            if (!classFile.getSuperclass().equals("java.lang.ClassLoader") && !classFile.getName().endsWith("ClassLoader")) {
-                return false;
-            }
-        }
 
+    public static void redefineClassLoader(ClassFile classFile) throws BadBytecode {
         for (MethodInfo method : (List<MethodInfo>) classFile.getMethods()) {
             if (method.getName().equals("loadClass") && (method.getDescriptor().equals("(Ljava/lang/String;)Ljava/lang/Class;") || method.getDescriptor().equals("(Ljava/lang/String;Z)Ljava/lang/Class;"))) {
                 if (method.getCodeAttribute().getMaxLocals() < 4) {
                     method.getCodeAttribute().setMaxLocals(4);
                 }
-                classLoader = true;
                 // now we instrument the loadClass
                 // if the system requests a class from the generated class package
                 // then
@@ -122,17 +116,35 @@ public class ClassLoaderInstrumentation {
                 b.add(Opcode.ARETURN);
                 jumpEnd.mark();
                 b.add(Opcode.POP);
+
+                if (!classFile.getName().startsWith("java.") && !classFile.getName().startsWith("com.sun") && !classFile.getName().startsWith("sun")) {
+                    //now we need to check if this is a fakereplace class
+                    //and if so always delegate to the appropriate loader
+                    b.addAload(1);
+                    b.addLdc("org.fakereplace");
+                    b.addInvokevirtual(String.class.getName(), "startsWith", "(Ljava/lang/String;)Z");
+                    b.add(Opcode.IFEQ);
+                    JumpMarker notFakereplace = JumpUtils.addJumpInstruction(b);
+                    //so this is a fakereplace class, delegate to the system loader
+                    b.addInvokestatic(ClassLoader.class.getName(), "getSystemClassLoader", "()Ljava/lang/ClassLoader;");
+                    b.addAload(1);
+                    b.addInvokevirtual(ClassLoader.class.getName(), "loadClass", "(Ljava/lang/String;)Ljava/lang/Class;");
+                    b.add(Opcode.ARETURN);
+                    notFakereplace.mark();
+                }
+
+
                 iterator.insert(b.get());
                 FinalMethodManipulator.addClassLoader(classFile.getName());
                 method.getCodeAttribute().computeMaxStack();
             }
         }
-        return classLoader;
     }
 
 
     private ClassLoaderInstrumentation() {
 
     }
+
 
 }

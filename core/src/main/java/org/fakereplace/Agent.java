@@ -78,19 +78,9 @@ public class Agent {
         } catch (UnmodifiableClassException e) {
             e.printStackTrace();
         }
-        inst.removeTransformer(classLoaderTransformer);
-
         inst.addTransformer(new Transformer(i, integrationInfo, environment), true);
 
 
-
-        //Add jboss AS7 CL support
-        String modules = System.getProperty("jboss.modules.system.pkgs");
-        if (modules == null || modules.isEmpty()) {
-            System.setProperty("jboss.modules.system.pkgs", "org.fakereplace");
-        } else {
-            System.setProperty("jboss.modules.system.pkgs", modules + ",org.fakereplace");
-        }
     }
 
     static public void redefine(ClassDefinition[] classes, AddedClass[] addedData) throws UnmodifiableClassException, ClassNotFoundException {
