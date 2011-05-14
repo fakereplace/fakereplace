@@ -19,6 +19,7 @@
 
 package org.fakereplace.util;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +38,10 @@ public class DescriptorUtils {
 
     public static String getDescriptor(Method method) {
         return "(" + classArrayToDescriptorString(method.getParameterTypes()) + ")" + classToStringRepresentation(method.getReturnType());
+    }
+
+    public static String getDescriptor(Constructor<?> method) {
+        return "(" + classArrayToDescriptorString(method.getParameterTypes()) + ")V";
     }
 
     /**
