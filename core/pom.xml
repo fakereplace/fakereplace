@@ -132,11 +132,11 @@
                             <properties>
                                 <property>
                                     <name>listener</name>
-                                    <value>org.fakereplace.test.coverage.report.CoverageReporter</value>
+                                    <value>a.org.fakereplace.test.coverage.report.CoverageReporter</value>
                                 </property>
                                 <property>
                                     <name>reporter</name>
-                                    <value>org.fakereplace.test.coverage.report.CoverageListener</value>
+                                    <value>a.org.fakereplace.test.coverage.report.CoverageListener</value>
                                 </property>
                             </properties>
                         </configuration>

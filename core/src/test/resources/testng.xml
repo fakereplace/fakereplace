@@ -23,20 +23,20 @@
 
     <test name="Util Tests">
         <packages>
-            <package name="org.fakereplace.test.util"></package>
-            <package name="org.fakereplace.test.basic.replacement"></package>
+            <package name="a.org.fakereplace.test.util"></package>
+            <package name="a.org.fakereplace.test.basic.replacement"></package>
         </packages>
     </test>
 
     <test name="Reflection Tests">
         <packages>
-            <package name="org.fakereplace.test.basic.reflection"></package>
+            <package name="a.org.fakereplace.test.basic.reflection"></package>
         </packages>
     </test>
 
     <test name="Static Method Tests">
         <packages>
-            <package name="org.fakereplace.test.replacement.staticmethod"></package>
+            <package name="a.org.fakereplace.test.replacement.staticmethod"></package>
         </packages>
     </test>
 
