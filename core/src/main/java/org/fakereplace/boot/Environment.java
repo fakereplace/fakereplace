@@ -27,13 +27,13 @@ import java.net.URL;
  *
  * @author stuart
  */
-public class Enviroment {
+public class Environment {
 
-    final String dumpDirectory;
+    private static final String dumpDirectory;
 
-    final String[] replacablePackages;
+    private static final String[] replacablePackages;
 
-    public Enviroment() {
+    static {
         String dump = System.getProperty(Constants.DUMP_DIRECTORY_KEY);
         if (dump != null) {
             File f = new File(dump);
@@ -55,7 +55,7 @@ public class Enviroment {
         }
     }
 
-    public boolean isClassReplacable(String className, ClassLoader loader) {
+    public static boolean isClassReplacable(String className, ClassLoader loader) {
         for (String i : replacablePackages) {
             if (className.startsWith(i)) {
                 return true;
@@ -75,11 +75,11 @@ public class Enviroment {
         return false;
     }
 
-    public String getDumpDirectory() {
+    public static String getDumpDirectory() {
         return dumpDirectory;
     }
 
-    public String[] getReplacablePackages() {
+    public static String[] getReplacablePackages() {
         return replacablePackages;
     }
 

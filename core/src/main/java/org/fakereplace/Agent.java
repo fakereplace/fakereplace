@@ -22,13 +22,14 @@ package org.fakereplace;
 import javassist.bytecode.ClassFile;
 import org.fakereplace.api.ClassChangeNotifier;
 import org.fakereplace.api.IntegrationInfo;
-import org.fakereplace.boot.Enviroment;
+import org.fakereplace.boot.Environment;
 import org.fakereplace.classloading.ClassIdentifier;
 import org.fakereplace.classloading.ClassLookupManager;
 import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.replacement.AddedClass;
 import org.fakereplace.replacement.ClassRedefiner;
 import org.fakereplace.replacement.ReplacementResult;
+import org.fakereplace.transformation.MainTransformer;
 
 import java.beans.Introspector;
 import java.io.ByteArrayInputStream;
@@ -50,17 +51,16 @@ import java.util.Set;
  */
 public class Agent {
 
-    private static Class[] EMPTY_CL_ARRAY = new Class[0];
+    private static final Class[] EMPTY_CL_ARRAY = new Class[0];
 
-    private static Instrumentation inst;
+    private static volatile Instrumentation inst;
 
-    private static Enviroment environment;
+    private static volatile MainTransformer mainTransformer;
 
     public static void premain(java.lang.String s, java.lang.instrument.Instrumentation i) {
-        Set<IntegrationInfo> integrationInfo = IntegrationLoader.getIntegrationInfo(ClassLoader.getSystemClassLoader());
-        inst = i;
-        environment = new Enviroment();
 
+        final Set<IntegrationInfo> integrationInfo = IntegrationLoader.getIntegrationInfo(ClassLoader.getSystemClassLoader());
+        inst = i;
 
         //first we need to instrument the class loaders
         final Set<Class> cls = new HashSet<Class>();
@@ -71,14 +71,18 @@ public class Agent {
         }
 
         final ClassLoaderTransformer classLoaderTransformer = new ClassLoaderTransformer();
-        inst.addTransformer(classLoaderTransformer,true);
+        final MainTransformer mainTransformer = new MainTransformer();
+        Agent.mainTransformer = mainTransformer;
+        inst.addTransformer(mainTransformer, true);
+
+        mainTransformer.addTransformer(classLoaderTransformer);
 
         try {
             inst.retransformClasses(cls.toArray(EMPTY_CL_ARRAY));
         } catch (UnmodifiableClassException e) {
             e.printStackTrace();
         }
-        inst.addTransformer(new Transformer(i, integrationInfo, environment), true);
+        mainTransformer.addTransformer(new Transformer(integrationInfo));
 
 
     }
@@ -120,13 +124,13 @@ public class Agent {
                         DataInputStream dis = new DataInputStream(bin);
                         ClassFile file = new ClassFile(dis);
 
-                        Transformer.getManipulator().transformClass(file, d.getDefinitionClass().getClassLoader(), environment);
+                        Transformer.getManipulator().transformClass(file, d.getDefinitionClass().getClassLoader());
                         ByteArrayOutputStream bos = new ByteArrayOutputStream();
                         DataOutputStream dos = new DataOutputStream(bos);
                         file.write(dos);
                         dos.close();
 
-                        String dumpDir = environment.getDumpDirectory();
+                        String dumpDir = Environment.getDumpDirectory();
                         if (dumpDir == null) {
                             dumpDir = "/tmp";
                         }

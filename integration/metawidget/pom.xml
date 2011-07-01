@@ -14,7 +14,6 @@
     <artifactId>fakereplace-metawidget</artifactId>
     <name>Fakereplace MetaWidget Integration</name>
     <version>0.10-SNAPSHOT</version>
-    <url>http://maven.apache.org</url>
 
     <dependencies>
         <dependency>
@@ -25,16 +24,4 @@
     <scm>
         <developerConnection>scm:git:git@github.com:fakereplace/fakereplace.git</developerConnection>
     </scm>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.5</source>
-                    <target>1.5</target>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>

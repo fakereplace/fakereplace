@@ -26,7 +26,6 @@ import javassist.bytecode.ClassFile;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.annotation.Annotation;
 import org.fakereplace.boot.Constants;
-import org.fakereplace.boot.Enviroment;
 import org.fakereplace.data.ModifiedMethod;
 
 import java.util.Set;
@@ -49,10 +48,12 @@ public class FinalMethodManipulator implements ClassManipulator {
         classLoaders.add(nm);
     }
 
-    public void transformClass(ClassFile file, ClassLoader loader, Enviroment environment) {
+    public boolean transformClass(ClassFile file, ClassLoader loader) {
         if (classLoaders.contains(file.getName())) {
-            return;
+            return false;
         }
+        boolean modified = true;
+
         for (Object i : file.getMethods()) {
             MethodInfo m = (MethodInfo) i;
             if ((m.getAccessFlags() & AccessFlag.FINAL) != 0) {
@@ -66,8 +67,10 @@ public class FinalMethodManipulator implements ClassManipulator {
                 }
                 at.addAnnotation(new Annotation(ModifiedMethod.class.getName(), file.getConstPool()));
                 m.addAttribute(new AttributeInfo(file.getConstPool(), Constants.FINAL_METHOD_ATTRIBUTE, new byte[0]));
+                modified = true;
             }
         }
+        return modified;
     }
 
 }

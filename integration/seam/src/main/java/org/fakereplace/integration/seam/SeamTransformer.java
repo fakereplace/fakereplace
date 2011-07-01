@@ -24,19 +24,16 @@ import javassist.bytecode.ClassFile;
 import javassist.bytecode.CodeIterator;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.Opcode;
-import org.fakereplace.api.ClassTransformer;
+import org.fakereplace.transformation.FakereplaceTransformer;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import java.lang.instrument.IllegalClassFormatException;
+import java.security.ProtectionDomain;
 
-public class SeamTransformer implements ClassTransformer {
+public class SeamTransformer implements FakereplaceTransformer {
 
-    public byte[] transform(byte[] data, String className) {
+    public boolean transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final ClassFile file) throws IllegalClassFormatException {
         try {
             if (className.equals("org/jboss/seam/servlet/SeamFilter")) {
-                ClassFile file = new ClassFile(new DataInputStream(new ByteArrayInputStream(data)));
 
                 MethodInfo method = file.getMethod("doFilter");
                 Bytecode b = new Bytecode(file.getConstPool());
@@ -51,15 +48,11 @@ public class SeamTransformer implements ClassTransformer {
                 CodeIterator it = method.getCodeAttribute().iterator();
                 it.skipConstructor();
                 it.insert(b.get());
-
-                ByteArrayOutputStream bs = new ByteArrayOutputStream();
-                file.write(new DataOutputStream(bs));
-                return bs.toByteArray();
+                return true;
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
+        return false;
     }
-
 }

@@ -23,7 +23,6 @@ import javassist.bytecode.ClassFile;
 import javassist.bytecode.CodeIterator;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.MethodInfo;
-import org.fakereplace.boot.Enviroment;
 import org.fakereplace.boot.Logger;
 import org.fakereplace.manip.data.VirtualToStaticData;
 import org.fakereplace.manip.util.ManipulationDataStore;
@@ -62,11 +61,11 @@ public class MethodInvokationManipulator implements ClassManipulator {
         data.add(oldClass, d);
     }
 
-    public void transformClass(ClassFile file, ClassLoader loader, Enviroment environment) {
-        Map<String, Set<VirtualToStaticData>> virtualToStaticMethod = data.getManipulationData(loader);
-        Map<Integer, VirtualToStaticData> methodCallLocations = new HashMap<Integer, VirtualToStaticData>();
-        Map<VirtualToStaticData, Integer> newClassPoolLocations = new HashMap<VirtualToStaticData, Integer>();
-        Map<VirtualToStaticData, Integer> newCallLocations = new HashMap<VirtualToStaticData, Integer>();
+    public boolean transformClass(ClassFile file, ClassLoader loader) {
+        final Map<String, Set<VirtualToStaticData>> virtualToStaticMethod = data.getManipulationData(loader);
+        final Map<Integer, VirtualToStaticData> methodCallLocations = new HashMap<Integer, VirtualToStaticData>();
+        final Map<VirtualToStaticData, Integer> newClassPoolLocations = new HashMap<VirtualToStaticData, Integer>();
+        final Map<VirtualToStaticData, Integer> newCallLocations = new HashMap<VirtualToStaticData, Integer>();
         // first we need to scan the constant pool looking for
         // CONSTANT_method_info_ref structures
         ConstPool pool = file.getConstPool();
@@ -158,6 +157,9 @@ public class MethodInvokationManipulator implements ClassManipulator {
                     e.printStackTrace();
                 }
             }
+            return true;
+        } else {
+            return false;
         }
     }
 

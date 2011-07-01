@@ -26,7 +26,6 @@ import javassist.bytecode.ConstPool;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.Opcode;
 import org.fakereplace.boot.Constants;
-import org.fakereplace.boot.Enviroment;
 import org.fakereplace.boot.Logger;
 import org.fakereplace.reflection.ConstructorReflection;
 import org.fakereplace.util.JumpMarker;
@@ -58,11 +57,9 @@ public class ConstructorAccessManipulator implements ClassManipulator {
 
     }
 
-    public void transformClass(ClassFile file, ClassLoader loader, Enviroment environment) {
+    public boolean transformClass(ClassFile file, ClassLoader loader) {
         Set<Integer> methodCallLocations = new HashSet<Integer>();
-        Integer newCallLocation = null;
         Integer constructorReflectionLocation = null;
-        Integer fakeCallRequiredLocation = null;
         // first we need to scan the constant pool looking for
         // CONSTANT_method_info_ref structures
         ConstPool pool = file.getConstPool();
@@ -80,11 +77,8 @@ public class ConstructorAccessManipulator implements ClassManipulator {
 
                         // if we have not already stored a reference to our new
                         // method in the const pool
-                        if (newCallLocation == null) {
+                        if (constructorReflectionLocation == null) {
                             constructorReflectionLocation = pool.addClassInfo(ConstructorReflection.class.getName());
-                            int nt = pool.addNameAndTypeInfo("fakeCallRequired", "(Ljava/lang/reflect/Constructor;)Z");
-                            fakeCallRequiredLocation = pool.addMethodrefInfo(constructorReflectionLocation, nt);
-                            newCallLocation = pool.addNameAndTypeInfo(METHOD_NAME, REPLACED_METHOD_DESCRIPTOR);
                         }
                     }
                 }
@@ -93,7 +87,7 @@ public class ConstructorAccessManipulator implements ClassManipulator {
 
         // this means we found an instance of the call, now we have to iterate
         // through the methods and replace instances of the call
-        if (newCallLocation != null) {
+        if (constructorReflectionLocation != null) {
             List<MethodInfo> methods = file.getMethods();
             for (MethodInfo m : methods) {
                 try {
@@ -141,6 +135,9 @@ public class ConstructorAccessManipulator implements ClassManipulator {
                     e.printStackTrace();
                 }
             }
+            return true;
+        } else {
+            return false;
         }
     }
 

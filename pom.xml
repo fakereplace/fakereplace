@@ -45,8 +45,8 @@
 
     <modules>
         <module>core</module>
-        <module>integration/seam</module>
         <module>bundle</module>
+        <module>integration/seam</module>
         <module>integration/jsf</module>
         <module>integration/metawidget</module>
     </modules>
@@ -148,7 +148,7 @@
         <plugins>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.2-beta-5</version>
+                <version>2.2</version>
                 <configuration>
                     <descriptors>
                         <descriptor>assembly.xml</descriptor>

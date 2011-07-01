@@ -26,7 +26,6 @@ import javassist.bytecode.ConstPool;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.Opcode;
 import org.fakereplace.boot.Constants;
-import org.fakereplace.boot.Enviroment;
 import org.fakereplace.boot.Logger;
 import org.fakereplace.util.JumpMarker;
 import org.fakereplace.util.JumpUtils;
@@ -40,7 +39,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * manipulator that replaces Field.set* / Field.get* with the following:
  * <p/>
  * <code>
- * if(FieldAcess.set*)
+ * if(FieldAcess.isFakeField)
  * FieldAccess.set*
  * else
  * field.set
@@ -85,7 +84,7 @@ public class FieldAccessManipulator implements ClassManipulator {
         manipulationData.put(methodName, data);
     }
 
-    public void transformClass(ClassFile file, ClassLoader loader, Enviroment environment) {
+    public boolean transformClass(ClassFile file, ClassLoader loader) {
         Map<Integer, RewriteData> methodCallLocations = new HashMap<Integer, RewriteData>();
         Map<RewriteData, Integer> newClassPoolLocations = new HashMap<RewriteData, Integer>();
         Integer fieldAccessLocation = null;
@@ -178,6 +177,9 @@ public class FieldAccessManipulator implements ClassManipulator {
                     e.printStackTrace();
                 }
             }
+            return true;
+        } else {
+            return false;
         }
     }
 

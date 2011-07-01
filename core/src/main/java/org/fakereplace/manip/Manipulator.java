@@ -20,7 +20,7 @@
 package org.fakereplace.manip;
 
 import javassist.bytecode.ClassFile;
-import org.fakereplace.boot.Enviroment;
+import org.fakereplace.boot.Environment;
 import org.fakereplace.manip.data.AddedFieldData;
 
 import java.util.Set;
@@ -104,11 +104,16 @@ public class Manipulator {
         methodInvokationManipulator.replaceVirtualMethodInvokationWithLocal(oldClass, methodName, newMethodName, methodDesc, newStaticMethodDesc, classLoader);
     }
 
-    public void transformClass(ClassFile file, ClassLoader classLoader, Enviroment e) {
+    public boolean transformClass(ClassFile file, ClassLoader classLoader) {
+        boolean modified = false;
+
         // first we are going to transform virtual method calls to static ones
         for (ClassManipulator m : manipulators) {
-            m.transformClass(file, classLoader, e);
+            if(m.transformClass(file, classLoader)) {
+                modified = true;
+            }
         }
+        return modified;
     }
 
 }

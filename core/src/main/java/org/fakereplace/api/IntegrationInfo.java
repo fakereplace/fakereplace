@@ -19,6 +19,8 @@
 
 package org.fakereplace.api;
 
+import org.fakereplace.transformation.FakereplaceTransformer;
+
 import java.util.Set;
 
 /**
@@ -38,7 +40,7 @@ public interface IntegrationInfo {
      *
      * @return
      */
-    public ClassTransformer getTransformer();
+    public FakereplaceTransformer getTransformer();
 
     /**
      * returns the name of the ClassChangeAware object

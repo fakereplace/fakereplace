@@ -39,7 +39,6 @@ public class ClassLoaderInstrumentation {
 
     private static final ConcurrentMap<Class, Object> instrumentedLoaders = new MapMaker().weakKeys().makeMap();
 
-
     public static synchronized void instrumentClassLoaderIfRequired(final Class<?> classLoader) {
         if (ClassLoader.class.isAssignableFrom(classLoader)) {
             if (!instrumentedLoaders.containsKey(classLoader)) {
@@ -59,9 +58,13 @@ public class ClassLoaderInstrumentation {
      * classes.
      */
 
-    public static void redefineClassLoader(ClassFile classFile) throws BadBytecode {
+    public static boolean redefineClassLoader(ClassFile classFile) throws BadBytecode {
+        boolean modified = false;
         for (MethodInfo method : (List<MethodInfo>) classFile.getMethods()) {
             if (method.getName().equals("loadClass") && (method.getDescriptor().equals("(Ljava/lang/String;)Ljava/lang/Class;") || method.getDescriptor().equals("(Ljava/lang/String;Z)Ljava/lang/Class;"))) {
+
+                modified = true;
+
                 if (method.getCodeAttribute().getMaxLocals() < 4) {
                     method.getCodeAttribute().setMaxLocals(4);
                 }
@@ -139,6 +142,7 @@ public class ClassLoaderInstrumentation {
                 method.getCodeAttribute().computeMaxStack();
             }
         }
+        return modified;
     }
 
 

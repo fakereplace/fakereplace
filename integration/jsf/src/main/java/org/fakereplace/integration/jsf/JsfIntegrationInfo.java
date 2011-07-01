@@ -19,8 +19,8 @@
 
 package org.fakereplace.integration.jsf;
 
-import org.fakereplace.api.ClassTransformer;
 import org.fakereplace.api.IntegrationInfo;
+import org.fakereplace.transformation.FakereplaceTransformer;
 
 import java.util.Collections;
 import java.util.Set;
@@ -39,7 +39,7 @@ public class JsfIntegrationInfo implements IntegrationInfo {
         return Collections.singleton("javax.el.BeanELResolver");
     }
 
-    public ClassTransformer getTransformer() {
+    public FakereplaceTransformer getTransformer() {
         return null;
     }
 

@@ -19,8 +19,8 @@
 
 package org.fakereplace.integration.metawidget;
 
-import org.fakereplace.api.ClassTransformer;
 import org.fakereplace.api.IntegrationInfo;
+import org.fakereplace.transformation.FakereplaceTransformer;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -53,7 +53,7 @@ public class MetawidgetIntegrationInfo implements IntegrationInfo {
         return classNames;
     }
 
-    public ClassTransformer getTransformer() {
+    public FakereplaceTransformer getTransformer() {
         return null;
     }
 

@@ -26,7 +26,6 @@ import javassist.bytecode.ConstPool;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.Opcode;
 import org.fakereplace.boot.Constants;
-import org.fakereplace.boot.Enviroment;
 import org.fakereplace.boot.Logger;
 import org.fakereplace.manip.data.ConstructorRewriteData;
 import org.fakereplace.manip.util.ManipulationDataStore;
@@ -49,22 +48,16 @@ public class ConstructorInvocationManipulator implements ClassManipulator {
      * This class re-writes constructor access. It is more complex than other
      * manipulators as the work can't be hidden away in a temporary class
      *
-     * @param oldClass
-     * @param newClass
-     * @param methodName
-     * @param methodDesc
-     * @param newStaticMethodDesc
      */
     public void rewriteConstructorCalls(String clazz, String descriptor, int methodNo, ClassLoader classLoader) {
         ConstructorRewriteData d = new ConstructorRewriteData(clazz, descriptor, methodNo, classLoader);
         data.add(clazz, d);
     }
 
-    public void transformClass(ClassFile file, ClassLoader loader, Enviroment environment) {
-
+    public boolean transformClass(ClassFile file, ClassLoader loader) {
         Map<String, Set<ConstructorRewriteData>> constructorRewrites = data.getManipulationData(loader);
         if (constructorRewrites.isEmpty()) {
-            return;
+            return false;
         }
         Map<Integer, ConstructorRewriteData> methodCallLocations = new HashMap<Integer, ConstructorRewriteData>();
         Integer newCallLocation = null;
@@ -154,6 +147,9 @@ public class ConstructorInvocationManipulator implements ClassManipulator {
                     e.printStackTrace();
                 }
             }
+            return true;
+        } else {
+            return false;
         }
     }
 

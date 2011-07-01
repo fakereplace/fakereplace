@@ -25,7 +25,6 @@ import javassist.bytecode.CodeIterator;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.Opcode;
-import org.fakereplace.boot.Enviroment;
 import org.fakereplace.boot.Logger;
 import org.fakereplace.manip.data.AddedFieldData;
 import org.fakereplace.manip.util.Boxing;
@@ -47,11 +46,11 @@ public class InstanceFieldManipulator implements ClassManipulator {
         data.add(dt.getClassName(), dt);
     }
 
-    public void transformClass(ClassFile file, ClassLoader loader, Enviroment environment) {
+    public boolean transformClass(ClassFile file, ClassLoader loader) {
 
         Map<String, Set<AddedFieldData>> addedFieldData = data.getManipulationData(loader);
         if (addedFieldData.isEmpty()) {
-            return;
+            return false;
         }
         Map<Integer, AddedFieldData> fieldAccessLocations = new HashMap<Integer, AddedFieldData>();
         // first we need to scan the constant pool looking for
@@ -130,6 +129,9 @@ public class InstanceFieldManipulator implements ClassManipulator {
                     e.printStackTrace();
                 }
             }
+            return true;
+        } else {
+            return false;
         }
     }
 

@@ -26,7 +26,6 @@ import javassist.bytecode.ConstPool;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.Opcode;
 import org.fakereplace.boot.Constants;
-import org.fakereplace.boot.Enviroment;
 import org.fakereplace.boot.Logger;
 import org.fakereplace.util.JumpMarker;
 import org.fakereplace.util.JumpUtils;
@@ -57,7 +56,7 @@ public class MethodAccessManipulator implements ClassManipulator {
 
     }
 
-    public void transformClass(ClassFile file, ClassLoader loader, Enviroment environment) {
+    public boolean transformClass(ClassFile file, ClassLoader loader) {
         Set<Integer> methodCallLocations = new HashSet<Integer>();
         Integer newCallLocation = null;
         Integer methodReflectionLocation = null;
@@ -143,6 +142,9 @@ public class MethodAccessManipulator implements ClassManipulator {
                     e.printStackTrace();
                 }
             }
+            return true;
+        } else {
+            return false;
         }
     }
 

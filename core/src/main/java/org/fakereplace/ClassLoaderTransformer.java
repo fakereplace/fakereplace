@@ -20,12 +20,8 @@
 package org.fakereplace;
 
 import javassist.bytecode.ClassFile;
+import org.fakereplace.transformation.FakereplaceTransformer;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
 
@@ -34,29 +30,23 @@ import java.security.ProtectionDomain;
  *
  * @author stuart
  */
-public class ClassLoaderTransformer implements ClassFileTransformer {
+public class ClassLoaderTransformer implements FakereplaceTransformer {
 
 
     ClassLoaderTransformer() {
 
     }
 
-    public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classFileBuffer) throws IllegalClassFormatException {
+    @Override
+    public boolean transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final ClassFile file) throws IllegalClassFormatException {
         if (classBeingRedefined == null || !ClassLoader.class.isAssignableFrom(classBeingRedefined)) {
-            return null;
+            return false;
         }
         try {
-            ClassFile file = new ClassFile(new DataInputStream(new ByteArrayInputStream(classFileBuffer)));
-
-            ClassLoaderInstrumentation.redefineClassLoader(file);
-            ByteArrayOutputStream bs = new ByteArrayOutputStream();
-            file.write(new DataOutputStream(bs));
-            return bs.toByteArray();
-
+            return ClassLoaderInstrumentation.redefineClassLoader(file);
         } catch (Throwable e) {
             e.printStackTrace();
             throw new IllegalClassFormatException();
         }
     }
-
 }

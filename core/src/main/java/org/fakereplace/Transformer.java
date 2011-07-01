@@ -29,10 +29,9 @@ import javassist.bytecode.CodeIterator;
 import javassist.bytecode.DuplicateMemberException;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.Opcode;
-import org.fakereplace.api.ClassTransformer;
 import org.fakereplace.api.IntegrationInfo;
 import org.fakereplace.boot.Constants;
-import org.fakereplace.boot.Enviroment;
+import org.fakereplace.boot.Environment;
 import org.fakereplace.com.google.common.collect.MapMaker;
 import org.fakereplace.data.BaseClassData;
 import org.fakereplace.data.ClassDataStore;
@@ -42,18 +41,14 @@ import org.fakereplace.detector.ClassChangeDetectorRunner;
 import org.fakereplace.manip.Manipulator;
 import org.fakereplace.manip.util.ManipulationUtils;
 import org.fakereplace.reflection.ReflectionInstrumentationSetup;
+import org.fakereplace.transformation.FakereplaceTransformer;
 import org.fakereplace.util.NoInstrument;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
-import java.lang.instrument.Instrumentation;
 import java.net.URL;
 import java.security.ProtectionDomain;
 import java.util.HashSet;
@@ -70,9 +65,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  *
  * @author stuart
  */
-public class Transformer implements ClassFileTransformer {
-
-    private final Enviroment enviroment;
+public class Transformer implements FakereplaceTransformer {
 
     private static final Manipulator manipulator = new Manipulator();
 
@@ -82,26 +75,27 @@ public class Transformer implements ClassFileTransformer {
 
     private final Set<String> trackedInstances = new HashSet<String>();
 
-    private final List<ClassTransformer> integrationTransformers = new CopyOnWriteArrayList<ClassTransformer>();
+    private final List<FakereplaceTransformer> integrationTransformers = new CopyOnWriteArrayList<FakereplaceTransformer>();
 
     private ClassChangeDetectorRunner detectorRunner = null;
 
-    Transformer(Instrumentation inst, Set<IntegrationInfo> integrationInfo, Enviroment enviroment) {
+    Transformer(Set<IntegrationInfo> integrationInfo) {
         ReflectionInstrumentationSetup.setup(manipulator);
-        this.enviroment = enviroment;
         for (IntegrationInfo i : integrationInfo) {
             trackedInstances.addAll(i.getTrackedInstanceClassNames());
             for (String j : i.getIntegrationTriggerClassNames()) {
                 integrationClassTriggers.put(j, i);
             }
-            ClassTransformer t = i.getTransformer();
+            FakereplaceTransformer t = i.getTransformer();
             if (t != null) {
                 integrationTransformers.add(t);
             }
         }
     }
 
-    public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
+    public boolean transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, ClassFile file) throws IllegalClassFormatException {
+
+        boolean modified = false;
 
         //instrument the class loader if necessary
         ClassLoaderInstrumentation.instrumentClassLoaderIfRequired(loader.getClass());
@@ -110,16 +104,11 @@ public class Transformer implements ClassFileTransformer {
             ClassDataStore.markClassReplaced(classBeingRedefined);
         }
         try {
-            byte[] data = classfileBuffer;
-            for (ClassTransformer i : integrationTransformers) {
-                byte[] dt = i.transform(data, className);
-                if (dt != null) {
-                    data = dt;
+            for (FakereplaceTransformer i : integrationTransformers) {
+                if(i.transform(loader, className, classBeingRedefined, protectionDomain, file)) {
+                    modified = true;
                 }
             }
-
-            ClassFile file = new ClassFile(new DataInputStream(new ByteArrayInputStream(data)));
-
             // we do not instrument any classes from fakereplace
             // if we did we get an endless loop
             // we also avoid instrumenting much of the java/lang and
@@ -129,9 +118,11 @@ public class Transformer implements ClassFileTransformer {
                     BaseClassData baseData = new BaseClassData(file, loader, false);
                     ClassDataStore.saveClassData(loader, baseData.getInternalName(), baseData);
                 } else {
-                    manipulator.transformClass(file, loader, enviroment);
+                    if(manipulator.transformClass(file, loader)) {
+                        modified = true;
+                    }
                 }
-                return null;
+                return modified;
             }
 
             if (classBeingRedefined == null) {
@@ -140,7 +131,7 @@ public class Transformer implements ClassFileTransformer {
                     // NoInstrument is used for testing or by integration modules
                     Object an = at.getAnnotation(NoInstrument.class.getName());
                     if (an != null) {
-                        return null;
+                        return modified;
                     }
                 }
             }
@@ -156,9 +147,11 @@ public class Transformer implements ClassFileTransformer {
                 makeTrackedInstance(file);
             }
 
-            manipulator.transformClass(file, loader, enviroment);
+            if(manipulator.transformClass(file, loader)) {
+                modified = true;
+            }
 
-            boolean replaceable = enviroment.isClassReplacable(file.getName(), loader);
+            final boolean replaceable = Environment.isClassReplacable(file.getName(), loader);
             if (replaceable && (AccessFlag.ENUM & file.getAccessFlags()) == 0 && (AccessFlag.ANNOTATION & file.getAccessFlags()) == 0) {
                 // Initialise the detector
                 // there is no point running it until replaceable classes have been
@@ -185,19 +178,16 @@ public class Transformer implements ClassFileTransformer {
                 ClassDataStore.saveClassData(loader, baseData.getInternalName(), baseData);
             }
 
-            ByteArrayOutputStream bs = new ByteArrayOutputStream();
-            file.write(new DataOutputStream(bs));
-
             // dump the class for debugging purposes
-            if (enviroment.getDumpDirectory() != null && classBeingRedefined != null) {
-                FileOutputStream s = new FileOutputStream(enviroment.getDumpDirectory() + '/' + file.getName() + ".class");
+            if (Environment.getDumpDirectory() != null && classBeingRedefined != null) {
+                FileOutputStream s = new FileOutputStream(Environment.getDumpDirectory() + '/' + file.getName() + ".class");
                 DataOutputStream dos = new DataOutputStream(s);
                 file.write(dos);
                 s.close();
             }
             // SerialVersionUIDChecker.testReflectionInfo(loader, file.getName(),
             // file.getSuperclass(), classfileBuffer);
-            return bs.toByteArray();
+            return modified;
         } catch (Throwable e) {
             e.printStackTrace();
 

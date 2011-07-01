@@ -24,7 +24,6 @@ import javassist.bytecode.Bytecode;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.Opcode;
-import org.fakereplace.boot.Enviroment;
 import org.fakereplace.manip.data.SubclassVirtualCallData;
 import org.fakereplace.manip.util.ManipulationDataStore;
 import org.fakereplace.manip.util.ManipulationUtils;
@@ -66,7 +65,8 @@ public class SubclassVirtualCallManipulator implements ClassManipulator {
         VirtualDelegator.clear(classLoader, className);
     }
 
-    public void transformClass(ClassFile file, ClassLoader loader, Enviroment environment) {
+    public boolean transformClass(ClassFile file, ClassLoader loader) {
+        boolean modified = false;
         Map<String, Set<SubclassVirtualCallData>> loaderData = data.getManipulationData(loader);
         if (loaderData.containsKey(file.getName())) {
             Set<SubclassVirtualCallData> d = loaderData.get(file.getName());
@@ -74,6 +74,8 @@ public class SubclassVirtualCallManipulator implements ClassManipulator {
                 for (Object m : file.getMethods()) {
                     MethodInfo method = (MethodInfo) m;
                     if (method.getName().equals(s.getMethodName()) && method.getDescriptor().equals(s.getMethodDesc())) {
+
+                        modified = true;
 
                         // we have the method
                         // lets append our code to the top
@@ -139,6 +141,7 @@ public class SubclassVirtualCallManipulator implements ClassManipulator {
                 }
             }
         }
+        return modified;
     }
 
 }
