@@ -25,7 +25,7 @@ package org.fakereplace;
  *
  * @author stuart
  */
-class ThreadLoader implements Runnable {
+public class ThreadLoader implements Runnable {
     final String className;
     final ClassLoader classLoader;
     final boolean createClass;

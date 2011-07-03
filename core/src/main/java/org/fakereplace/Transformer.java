@@ -32,7 +32,6 @@ import javassist.bytecode.Opcode;
 import org.fakereplace.api.IntegrationInfo;
 import org.fakereplace.boot.Constants;
 import org.fakereplace.boot.Environment;
-import org.fakereplace.com.google.common.collect.MapMaker;
 import org.fakereplace.data.BaseClassData;
 import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.data.InstanceTracker;
@@ -45,14 +44,10 @@ import org.fakereplace.util.NoInstrument;
 
 import java.io.DataOutputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.instrument.IllegalClassFormatException;
-import java.net.URL;
 import java.security.ProtectionDomain;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -68,9 +63,6 @@ public class Transformer implements FakereplaceTransformer {
 
     private static final Manipulator manipulator = new Manipulator();
 
-    private static final Map<ClassLoader, Object> integrationClassloader = new MapMaker().weakKeys().makeMap();
-
-    private static final Map<String, IntegrationInfo> integrationClassTriggers = new MapMaker().makeMap();
 
     private final Set<String> trackedInstances = new HashSet<String>();
 
@@ -80,9 +72,6 @@ public class Transformer implements FakereplaceTransformer {
         ReflectionInstrumentationSetup.setup(manipulator);
         for (IntegrationInfo i : integrationInfo) {
             trackedInstances.addAll(i.getTrackedInstanceClassNames());
-            for (String j : i.getIntegrationTriggerClassNames()) {
-                integrationClassTriggers.put(j, i);
-            }
             FakereplaceTransformer t = i.getTransformer();
             if (t != null) {
                 integrationTransformers.add(t);
@@ -128,13 +117,6 @@ public class Transformer implements FakereplaceTransformer {
                         return modified;
                     }
                 }
-            }
-
-            if (integrationClassTriggers.containsKey(file.getName())) {
-                integrationClassloader.put(loader, new Object());
-                // we need to load the class in another thread
-                // otherwise it will not go through the javaagent
-                ThreadLoader.loadAsync(integrationClassTriggers.get(file.getName()).getClassChangeAwareName(), loader, true);
             }
 
             if (trackedInstances.contains(file.getName())) {
@@ -282,27 +264,6 @@ public class Transformer implements FakereplaceTransformer {
 
     public static Manipulator getManipulator() {
         return manipulator;
-    }
-
-    public static byte[] getIntegrationClass(ClassLoader c, String name) {
-        if (!integrationClassloader.containsKey(c)) {
-            return null;
-        }
-        URL resource = ClassLoader.getSystemClassLoader().getResource(name.replace('.', '/') + ".class");
-        InputStream in = null;
-        try {
-            in = resource.openStream();
-            return org.fakereplace.util.FileReader.readFileBytes(resource.openStream());
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        } finally {
-            try {
-                if (in != null) {
-                    in.close();
-                }
-            } catch (IOException e) {
-            }
-        }
     }
 
     /**

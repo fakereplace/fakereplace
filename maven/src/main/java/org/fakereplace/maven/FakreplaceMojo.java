@@ -1,13 +1,15 @@
 package org.fakereplace.maven;
 
 import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.Mojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
-import java.io.*;
-import java.lang.instrument.ClassDefinition;
-import java.lang.instrument.UnmodifiableClassException;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -93,8 +95,6 @@ public class FakreplaceMojo extends AbstractMojo {
                 classNames.add(className);
             }
 
-
-
             output.flush();
             output.writeInt(classNames.size());
             for(String name : classNames) {
@@ -106,7 +106,6 @@ public class FakreplaceMojo extends AbstractMojo {
                 byte[] bytes = getBytesFromFile(data.file);
                 output.writeInt(bytes.length);
                 output.write(bytes);
-
             }
             output.flush();
 

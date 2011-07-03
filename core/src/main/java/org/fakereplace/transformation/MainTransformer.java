@@ -22,7 +22,10 @@
 package org.fakereplace.transformation;
 
 import javassist.bytecode.ClassFile;
+import org.fakereplace.ThreadLoader;
+import org.fakereplace.api.IntegrationInfo;
 import org.fakereplace.boot.Environment;
+import org.fakereplace.com.google.common.collect.MapMaker;
 import org.fakereplace.index.UnmodifiedFileIndex;
 
 import java.io.ByteArrayInputStream;
@@ -31,12 +34,14 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
+import java.net.URL;
 import java.security.ProtectionDomain;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Stuart Douglas
@@ -45,8 +50,29 @@ public class MainTransformer implements ClassFileTransformer {
 
     private volatile FakereplaceTransformer[] transformers = {};
 
+    private final Map<String, IntegrationInfo> integrationClassTriggers;
+
+    private static final Map<ClassLoader, Object> integrationClassloader = new MapMaker().weakKeys().makeMap();
+
+    public MainTransformer(Set<IntegrationInfo> integrationInfo) {
+        Map<String, IntegrationInfo> integrationClassTriggers = new HashMap<String, IntegrationInfo>();
+        for (IntegrationInfo i : integrationInfo) {
+            for (String j : i.getIntegrationTriggerClassNames()) {
+                integrationClassTriggers.put(j.replace(".", "/"), i);
+            }
+        }
+        this.integrationClassTriggers = integrationClassTriggers;
+    }
+
     @Override
     public byte[] transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final byte[] classfileBuffer) throws IllegalClassFormatException {
+
+        if (integrationClassTriggers.containsKey(className)) {
+            integrationClassloader.put(loader, new Object());
+            // we need to load the class in another thread
+            // otherwise it will not go through the javaagent
+            ThreadLoader.loadAsync(integrationClassTriggers.get(className).getClassChangeAwareName(), loader, true);
+        }
 
         boolean changed = false;
         if (UnmodifiedFileIndex.isClassUnmodified(className)) {
@@ -106,5 +132,27 @@ public class MainTransformer implements ClassFileTransformer {
             }
         }
         this.transformers = transformers;
+    }
+
+
+    public static byte[] getIntegrationClass(ClassLoader c, String name) {
+        if (!integrationClassloader.containsKey(c)) {
+            return null;
+        }
+        URL resource = ClassLoader.getSystemClassLoader().getResource(name.replace('.', '/') + ".class");
+        InputStream in = null;
+        try {
+            in = resource.openStream();
+            return org.fakereplace.util.FileReader.readFileBytes(resource.openStream());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                if (in != null) {
+                    in.close();
+                }
+            } catch (IOException e) {
+            }
+        }
     }
 }

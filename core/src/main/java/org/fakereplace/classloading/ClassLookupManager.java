@@ -19,10 +19,10 @@
 
 package org.fakereplace.classloading;
 
-import org.fakereplace.Transformer;
 import org.fakereplace.boot.Constants;
 import org.fakereplace.boot.ProxyDefinitionStore;
 import org.fakereplace.com.google.common.collect.MapMaker;
+import org.fakereplace.transformation.MainTransformer;
 
 import java.util.Map;
 
@@ -45,7 +45,7 @@ public class ClassLookupManager {
             return ProxyDefinitionStore.getProxyDefinition(loader, className);
         }
         if (className.startsWith("org.fakereplace.integration")) {
-            return Transformer.getIntegrationClass(loader, className);
+            return MainTransformer.getIntegrationClass(loader, className);
         }
         return classData.get(new ClassIdentifier(className, loader));
     }

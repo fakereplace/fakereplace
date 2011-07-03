@@ -77,7 +77,7 @@ public class Agent {
         }
 
         final ClassLoaderTransformer classLoaderTransformer = new ClassLoaderTransformer();
-        final MainTransformer mainTransformer = new MainTransformer();
+        final MainTransformer mainTransformer = new MainTransformer(integrationInfo);
         Agent.mainTransformer = mainTransformer;
         inst.addTransformer(mainTransformer, true);
 
