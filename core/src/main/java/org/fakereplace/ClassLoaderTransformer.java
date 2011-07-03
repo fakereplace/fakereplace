@@ -39,14 +39,17 @@ public class ClassLoaderTransformer implements FakereplaceTransformer {
 
     @Override
     public boolean transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final ClassFile file) throws IllegalClassFormatException {
-        if (classBeingRedefined == null || !ClassLoader.class.isAssignableFrom(classBeingRedefined)) {
-            return false;
-        }
+
         try {
-            return ClassLoaderInstrumentation.redefineClassLoader(file);
+            if (classBeingRedefined != null && ClassLoader.class.isAssignableFrom(classBeingRedefined)) {
+                return ClassLoaderInstrumentation.redefineClassLoader(file);
+            } else if (classBeingRedefined == null && className.endsWith("ClassLoader")) {
+                return ClassLoaderInstrumentation.redefineClassLoader(file);
+            }
         } catch (Throwable e) {
             e.printStackTrace();
             throw new IllegalClassFormatException();
         }
+        return false;
     }
 }

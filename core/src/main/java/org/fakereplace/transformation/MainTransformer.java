@@ -43,13 +43,14 @@ import java.util.List;
  */
 public class MainTransformer implements ClassFileTransformer {
 
-    private volatile List<FakereplaceTransformer> transformers = Collections.emptyList();
+    private volatile FakereplaceTransformer[] transformers = {};
 
     @Override
     public byte[] transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final byte[] classfileBuffer) throws IllegalClassFormatException {
-        boolean changed = false;
 
+        boolean changed = false;
         if (UnmodifiedFileIndex.isClassUnmodified(className)) {
+            //TODO: enable this
             return null;
         }
 
@@ -78,20 +79,32 @@ public class MainTransformer implements ClassFileTransformer {
                 return bs.toByteArray();
             }
         } catch (IOException e) {
+            e.printStackTrace();
             throw new IllegalClassFormatException(e.getMessage());
+        } catch (Throwable e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
     public synchronized void addTransformer(FakereplaceTransformer transformer) {
-        final List<FakereplaceTransformer> transformers = new ArrayList<FakereplaceTransformer>(this.transformers.size() + 1);
-        transformers.addAll(this.transformers);
-        transformers.add(transformer);
+        final FakereplaceTransformer[] transformers = new FakereplaceTransformer[this.transformers.length + 1];
+        for (int i = 0; i < this.transformers.length; ++i) {
+            transformers[i] = this.transformers[i];
+        }
+        transformers[this.transformers.length] = transformer;
         this.transformers = transformers;
     }
 
     public synchronized void removeTransformer(FakereplaceTransformer transformer) {
-        final List<FakereplaceTransformer> transformers = new ArrayList<FakereplaceTransformer>(this.transformers);
-        transformers.remove(transformer);
+        final FakereplaceTransformer[] transformers = new FakereplaceTransformer[this.transformers.length - 1];
+        int j = 0;
+        for (int i = 0; i < this.transformers.length; ++i) {
+            FakereplaceTransformer value = this.transformers[i];
+            if (value != transformer) {
+                transformers[++j] = this.transformers[i];
+            }
+        }
         this.transformers = transformers;
     }
 }

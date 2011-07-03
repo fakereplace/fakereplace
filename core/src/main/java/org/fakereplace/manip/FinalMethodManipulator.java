@@ -52,7 +52,7 @@ public class FinalMethodManipulator implements ClassManipulator {
         if (classLoaders.contains(file.getName())) {
             return false;
         }
-        boolean modified = true;
+        boolean modified = false;
 
         for (Object i : file.getMethods()) {
             MethodInfo m = (MethodInfo) i;

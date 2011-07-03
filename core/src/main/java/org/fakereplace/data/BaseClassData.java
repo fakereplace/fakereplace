@@ -26,6 +26,7 @@ import javassist.bytecode.MethodInfo;
 import org.fakereplace.boot.Constants;
 import org.fakereplace.util.DescriptorUtils;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -89,16 +90,31 @@ public class BaseClassData {
         this.loader = cls.getClassLoader();
         replaceable = false;
         if (cls.getSuperclass() != null) {
-            superClassName = Descriptor.toJvmName(cls.getSuperclass().getName());
+            superClassName = cls.getSuperclass().getName();
         } else {
             superClassName = null;
         }
         Set<MethodData> meths = new HashSet<MethodData>();
-        for (Method m : cls.getMethods()) {
+        for (Method m : cls.getDeclaredMethods()) {
             MemberType type = MemberType.NORMAL;
-            MethodData md = new MethodData(m.getName(), DescriptorUtils.getDescriptor(m), cls.getName(), type, m.getModifiers(), false);
+            final String descriptor = DescriptorUtils.getDescriptor(m);
+            if ((descriptor.equals(Constants.ADDED_METHOD_DESCRIPTOR) && m.getName().equals(Constants.ADDED_METHOD_NAME))
+                    || (descriptor.equals(Constants.ADDED_STATIC_METHOD_DESCRIPTOR) && m.getName().equals(Constants.ADDED_STATIC_METHOD_NAME))) {
+                type = MemberType.ADDED_SYSTEM;
+            }
+            MethodData md = new MethodData(m.getName(), descriptor, cls.getName(), type, m.getModifiers(), false);
             meths.add(md);
         }
+        for (Constructor<?> c : cls.getDeclaredConstructors()) {
+            MemberType type = MemberType.NORMAL;
+            final String descriptor = DescriptorUtils.getDescriptor(c);
+            if (descriptor.equals(Constants.ADDED_CONSTRUCTOR_DESCRIPTOR)) {
+                type = MemberType.ADDED_SYSTEM;
+            }
+            MethodData md = new MethodData("<init>", descriptor, cls.getName(), type, c.getModifiers(), false);
+            meths.add(md);
+        }
+
         this.methods = Collections.unmodifiableSet(meths);
         Set<FieldData> fieldData = new HashSet<FieldData>();
         for (Field m : cls.getFields()) {

@@ -32,6 +32,7 @@ import org.fakereplace.util.JumpMarker;
 import org.fakereplace.util.JumpUtils;
 
 import java.lang.instrument.UnmodifiableClassException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 
@@ -45,7 +46,8 @@ public class ClassLoaderInstrumentation {
 
                 try {
                     Agent.getInstrumentation().retransformClasses(classLoader);
-                } catch (UnmodifiableClassException e) {
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
                 instrumentedLoaders.put(classLoader, ClassLoaderInstrumentation.class);
 

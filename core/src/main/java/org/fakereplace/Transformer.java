@@ -97,9 +97,6 @@ public class Transformer implements FakereplaceTransformer {
 
         boolean modified = false;
 
-        //instrument the class loader if necessary
-        ClassLoaderInstrumentation.instrumentClassLoaderIfRequired(loader.getClass());
-
         if (classBeingRedefined != null) {
             ClassDataStore.markClassReplaced(classBeingRedefined);
         }
@@ -153,6 +150,8 @@ public class Transformer implements FakereplaceTransformer {
 
             final boolean replaceable = Environment.isClassReplacable(file.getName(), loader);
             if (replaceable && (AccessFlag.ENUM & file.getAccessFlags()) == 0 && (AccessFlag.ANNOTATION & file.getAccessFlags()) == 0) {
+                modified = true;
+                
                 // Initialise the detector
                 // there is no point running it until replaceable classes have been
                 // loaded

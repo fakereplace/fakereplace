@@ -66,16 +66,16 @@ public class ClassRedefiner {
 
     public static void modifyReloadedClass(ClassFile file, ClassLoader loader, Class<?> oldClass, Set<Class<?>> classToReload) {
         BaseClassData b = ClassDataStore.getBaseClassData(loader, Descriptor.toJvmName(file.getName()));
-        if (b == null) {
-            throw new RuntimeException("BaseData is null for " + file.getName());
+        if(b == null) {
+            b = new BaseClassData(oldClass);
         }
+
         if (!file.getSuperclass().equals(b.getSuperClassName())) {
             System.out.println("Superclass changed from " + b.getSuperClassName() + " to " + file.getSuperclass() + " in class " + file.getName());
         }
 
         ClassDataBuilder builder = new ClassDataBuilder(b);
         AnnotationReplacer.processAnnotations(file, oldClass, builder);
-
         FieldReplacer.handleFieldReplacement(file, loader, oldClass, builder);
         MethodReplacer.handleMethodReplacement(file, loader, oldClass, builder, classToReload);
         ClassDataStore.saveClassData(loader, file.getName(), builder);
