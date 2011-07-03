@@ -128,7 +128,7 @@ public class Agent {
                         DataInputStream dis = new DataInputStream(bin);
                         ClassFile file = new ClassFile(dis);
 
-                        Transformer.getManipulator().transformClass(file, d.getDefinitionClass().getClassLoader());
+                        Transformer.getManipulator().transformClass(file, d.getDefinitionClass().getClassLoader(), true);
                         ByteArrayOutputStream bos = new ByteArrayOutputStream();
                         DataOutputStream dos = new DataOutputStream(bos);
                         file.write(dos);

@@ -54,8 +54,8 @@ public class SubclassVirtualCallManipulator implements ClassManipulator {
 
     final private ManipulationDataStore<SubclassVirtualCallData> data = new ManipulationDataStore<SubclassVirtualCallData>();
 
-    public void addClassData(String className, ClassLoader classLoader, String methodName, String methodDesc) {
-        data.add(className, new SubclassVirtualCallData(classLoader, className, methodName, methodDesc));
+    public void addClassData(String className, ClassLoader classLoader, String parentClassName, ClassLoader parentClassLoader, String methodName, String methodDesc) {
+        data.add(parentClassName, new SubclassVirtualCallData(parentClassLoader, parentClassName, methodName, methodDesc));
         VirtualDelegator.add(classLoader, className, methodName, methodDesc);
     }
 
@@ -65,7 +65,7 @@ public class SubclassVirtualCallManipulator implements ClassManipulator {
         VirtualDelegator.clear(classLoader, className);
     }
 
-    public boolean transformClass(ClassFile file, ClassLoader loader) {
+    public boolean transformClass(ClassFile file, ClassLoader loader, boolean modifiableClass) {
         boolean modified = false;
         Map<String, Set<SubclassVirtualCallData>> loaderData = data.getManipulationData(loader);
         if (loaderData.containsKey(file.getName())) {

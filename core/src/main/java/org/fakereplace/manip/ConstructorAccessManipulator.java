@@ -57,7 +57,7 @@ public class ConstructorAccessManipulator implements ClassManipulator {
 
     }
 
-    public boolean transformClass(ClassFile file, ClassLoader loader) {
+    public boolean transformClass(ClassFile file, ClassLoader loader, boolean modifiableClass) {
         Set<Integer> methodCallLocations = new HashSet<Integer>();
         Integer constructorReflectionLocation = null;
         // first we need to scan the constant pool looking for

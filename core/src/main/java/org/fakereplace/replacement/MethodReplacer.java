@@ -432,7 +432,7 @@ public class MethodReplacer {
                     for (Method m : sup.getDeclaredMethods()) {
                         if (m.getName().equals(mInfo.getName())) {
                             if (DescriptorUtils.getDescriptor(m).equals(mInfo.getDescriptor())) {
-                                Transformer.getManipulator().rewriteSubclassCalls(sup.getName(), sup.getClassLoader(), mInfo.getName(), mInfo.getDescriptor());
+                                Transformer.getManipulator().rewriteSubclassCalls(file.getName(), loader, sup.getName(), sup.getClassLoader(), mInfo.getName(), mInfo.getDescriptor());
                                 return sup;
                             }
                         }

@@ -117,7 +117,7 @@ public class BaseClassData {
 
         this.methods = Collections.unmodifiableSet(meths);
         Set<FieldData> fieldData = new HashSet<FieldData>();
-        for (Field m : cls.getFields()) {
+        for (Field m : cls.getDeclaredFields()) {
             fieldData.add(new FieldData(m));
         }
         this.fields = Collections.unmodifiableSet(fieldData);

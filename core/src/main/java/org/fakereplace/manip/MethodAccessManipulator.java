@@ -56,7 +56,7 @@ public class MethodAccessManipulator implements ClassManipulator {
 
     }
 
-    public boolean transformClass(ClassFile file, ClassLoader loader) {
+    public boolean transformClass(ClassFile file, ClassLoader loader, boolean modifiableClass) {
         Set<Integer> methodCallLocations = new HashSet<Integer>();
         Integer newCallLocation = null;
         Integer methodReflectionLocation = null;

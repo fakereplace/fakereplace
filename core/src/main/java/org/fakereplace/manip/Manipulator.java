@@ -20,7 +20,6 @@
 package org.fakereplace.manip;
 
 import javassist.bytecode.ClassFile;
-import org.fakereplace.boot.Environment;
 import org.fakereplace.manip.data.AddedFieldData;
 
 import java.util.Set;
@@ -82,8 +81,9 @@ public class Manipulator {
         instanceFieldManapulator.addField(data);
     }
 
-    public void rewriteSubclassCalls(String className, ClassLoader classLoader, String methodName, String methodDesc) {
-        subclassVirtualCallManilulator.addClassData(className, classLoader, methodName, methodDesc);
+    public void rewriteSubclassCalls(String className, ClassLoader classLoader, String parentName, ClassLoader parentClassLoader, String methodName, String methodDesc) {
+        System.out.println("CLS: " + className + " m " + methodName);
+        subclassVirtualCallManilulator.addClassData(className, classLoader, parentName, parentClassLoader, methodName, methodDesc);
     }
 
     /**
@@ -104,12 +104,12 @@ public class Manipulator {
         methodInvokationManipulator.replaceVirtualMethodInvokationWithLocal(oldClass, methodName, newMethodName, methodDesc, newStaticMethodDesc, classLoader);
     }
 
-    public boolean transformClass(ClassFile file, ClassLoader classLoader) {
+    public boolean transformClass(ClassFile file, ClassLoader classLoader, boolean modifiable) {
         boolean modified = false;
 
         // first we are going to transform virtual method calls to static ones
         for (ClassManipulator m : manipulators) {
-            if(m.transformClass(file, classLoader)) {
+            if (m.transformClass(file, classLoader, modifiable)) {
                 modified = true;
             }
         }

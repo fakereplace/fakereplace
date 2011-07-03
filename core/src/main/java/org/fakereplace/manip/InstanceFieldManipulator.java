@@ -46,7 +46,7 @@ public class InstanceFieldManipulator implements ClassManipulator {
         data.add(dt.getClassName(), dt);
     }
 
-    public boolean transformClass(ClassFile file, ClassLoader loader) {
+    public boolean transformClass(ClassFile file, ClassLoader loader, boolean modifiableClass) {
 
         Map<String, Set<AddedFieldData>> addedFieldData = data.getManipulationData(loader);
         if (addedFieldData.isEmpty()) {

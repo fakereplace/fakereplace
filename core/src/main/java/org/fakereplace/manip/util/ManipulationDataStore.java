@@ -100,6 +100,13 @@ public class ManipulationDataStore<T extends ClassloaderFiltered<T>> {
         return false;
     }
 
+    @Override
+    public String toString() {
+        return "ManipulationDataStore{" +
+                "cldata=" + cldata +
+                '}';
+    }
+
     public void remove(String className, ClassLoader classLoader) {
         if (classLoader == null) {
             classLoader = NULL_CLASS_LOADER;
@@ -120,4 +127,6 @@ public class ManipulationDataStore<T extends ClassloaderFiltered<T>> {
     public Map<ClassLoader, Map<String, Set<T>>> getRawData() {
         return cldata;
     }
+
+
 }

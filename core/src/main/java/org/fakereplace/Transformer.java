@@ -94,7 +94,7 @@ public class Transformer implements FakereplaceTransformer {
     }
 
     public boolean transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, ClassFile file) throws IllegalClassFormatException {
-
+        
         boolean modified = false;
 
         if (classBeingRedefined != null) {
@@ -115,7 +115,7 @@ public class Transformer implements FakereplaceTransformer {
                     BaseClassData baseData = new BaseClassData(file, loader, false);
                     ClassDataStore.saveClassData(loader, baseData.getInternalName(), baseData);
                 } else {
-                    if(manipulator.transformClass(file, loader)) {
+                    if(manipulator.transformClass(file, loader, false)) {
                         modified = true;
                     }
                 }
@@ -144,11 +144,11 @@ public class Transformer implements FakereplaceTransformer {
                 makeTrackedInstance(file);
             }
 
-            if(manipulator.transformClass(file, loader)) {
+            final boolean replaceable = Environment.isClassReplacable(file.getName(), loader);
+            if(manipulator.transformClass(file, loader, replaceable)) {
                 modified = true;
             }
 
-            final boolean replaceable = Environment.isClassReplacable(file.getName(), loader);
             if (replaceable && (AccessFlag.ENUM & file.getAccessFlags()) == 0 && (AccessFlag.ANNOTATION & file.getAccessFlags()) == 0) {
                 modified = true;
                 

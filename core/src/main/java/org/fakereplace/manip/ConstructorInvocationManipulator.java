@@ -54,7 +54,7 @@ public class ConstructorInvocationManipulator implements ClassManipulator {
         data.add(clazz, d);
     }
 
-    public boolean transformClass(ClassFile file, ClassLoader loader) {
+    public boolean transformClass(ClassFile file, ClassLoader loader, boolean modifiableClass) {
         Map<String, Set<ConstructorRewriteData>> constructorRewrites = data.getManipulationData(loader);
         if (constructorRewrites.isEmpty()) {
             return false;

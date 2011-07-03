@@ -24,5 +24,5 @@ import javassist.bytecode.ClassFile;
 public interface ClassManipulator {
     public void clearRewrites(String className, ClassLoader classLoader);
 
-    public boolean transformClass(ClassFile file, ClassLoader loader);
+    public boolean transformClass(ClassFile file, ClassLoader loader, boolean modifiableClass);
 }

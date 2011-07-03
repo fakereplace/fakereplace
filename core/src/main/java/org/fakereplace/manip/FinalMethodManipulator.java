@@ -48,7 +48,10 @@ public class FinalMethodManipulator implements ClassManipulator {
         classLoaders.add(nm);
     }
 
-    public boolean transformClass(ClassFile file, ClassLoader loader) {
+    public boolean transformClass(ClassFile file, ClassLoader loader, boolean modifiableClass) {
+        if(!modifiableClass) {
+            return false;
+        }
         if (classLoaders.contains(file.getName())) {
             return false;
         }

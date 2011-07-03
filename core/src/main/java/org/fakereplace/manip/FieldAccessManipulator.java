@@ -84,7 +84,7 @@ public class FieldAccessManipulator implements ClassManipulator {
         manipulationData.put(methodName, data);
     }
 
-    public boolean transformClass(ClassFile file, ClassLoader loader) {
+    public boolean transformClass(ClassFile file, ClassLoader loader, boolean modifiableClass) {
         Map<Integer, RewriteData> methodCallLocations = new HashMap<Integer, RewriteData>();
         Map<RewriteData, Integer> newClassPoolLocations = new HashMap<RewriteData, Integer>();
         Integer fieldAccessLocation = null;

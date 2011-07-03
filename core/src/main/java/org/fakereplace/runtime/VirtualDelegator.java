@@ -20,6 +20,7 @@
 package org.fakereplace.runtime;
 
 import org.fakereplace.boot.Constants;
+import org.fakereplace.boot.Environment;
 import org.fakereplace.data.MethodIdentifierStore;
 
 import java.lang.reflect.Method;
@@ -51,20 +52,22 @@ public class VirtualDelegator {
     }
 
     public static boolean contains(Object val, String callingClassName, String methodName, String methodDesc) {
+        if(!Environment.isClassReplacable(val.getClass().getName(), val.getClass().getClassLoader())) {
+            return false;
+        }
         Class<?> c = val.getClass();
-        boolean breakNext = false;
-        while (!breakNext) {
+        while (true) {
+            if (c.getName().equals(callingClassName)) {
+                System.out.println("NOT " + val.getClass().getName());
+                return false;
+            }
             VirtualDelegatorData i = new VirtualDelegatorData(c.getClassLoader(), c.getName(), methodName, methodDesc);
             if (delegatingMethods.contains(i)) {
+                System.out.println("CONT " + val.getClass().getName());
                 return true;
-            }
-
-            if (c.getName().equals(callingClassName)) {
-                breakNext = true;
             }
             c = c.getSuperclass();
         }
-        return false;
     }
 
     public static Object run(Object val, String methodName, String methodDesc, Object[] params) {

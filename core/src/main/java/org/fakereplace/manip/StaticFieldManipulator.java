@@ -50,7 +50,7 @@ public class StaticFieldManipulator implements ClassManipulator {
         data.add(oldClass, new StaticFieldAccessRewriteData(oldClass, newClass, fieldName, classLoader));
     }
 
-    public boolean transformClass(ClassFile file, ClassLoader loader) {
+    public boolean transformClass(ClassFile file, ClassLoader loader, boolean modifiableClass) {
         Map<String, Set<StaticFieldAccessRewriteData>> staticMethodData = data.getManipulationData(loader);
         if (staticMethodData.isEmpty()) {
             return false;
