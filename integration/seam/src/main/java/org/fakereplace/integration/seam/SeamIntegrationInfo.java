@@ -43,7 +43,7 @@ public class SeamIntegrationInfo implements IntegrationInfo {
     }
 
     public FakereplaceTransformer getTransformer() {
-        return new SeamTransformer();
+        return null;
     }
 
     public byte[] loadClass(String className) {

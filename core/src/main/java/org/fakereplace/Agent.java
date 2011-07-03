@@ -30,6 +30,7 @@ import org.fakereplace.index.UnmodifiedFileIndex;
 import org.fakereplace.replacement.AddedClass;
 import org.fakereplace.replacement.ClassRedefiner;
 import org.fakereplace.replacement.ReplacementResult;
+import org.fakereplace.server.FakereplaceServer;
 import org.fakereplace.transformation.MainTransformer;
 
 import java.beans.Introspector;
@@ -88,7 +89,10 @@ public class Agent {
         }
         mainTransformer.addTransformer(new Transformer(integrationInfo));
 
-
+        //start the server
+        Thread thread = new Thread(new FakereplaceServer(6555));
+        thread.setDaemon(true);
+        thread.start();
     }
 
     static public void redefine(ClassDefinition[] classes, AddedClass[] addedData) throws UnmodifiableClassException, ClassNotFoundException {

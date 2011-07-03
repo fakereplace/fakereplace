@@ -36,8 +36,7 @@ import org.fakereplace.com.google.common.collect.MapMaker;
 import org.fakereplace.data.BaseClassData;
 import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.data.InstanceTracker;
-import org.fakereplace.detector.ClassChangeDetector;
-import org.fakereplace.detector.ClassChangeDetectorRunner;
+import org.fakereplace.detector.ClassTimestampStore;
 import org.fakereplace.manip.Manipulator;
 import org.fakereplace.manip.util.ManipulationUtils;
 import org.fakereplace.reflection.ReflectionInstrumentationSetup;
@@ -76,8 +75,6 @@ public class Transformer implements FakereplaceTransformer {
     private final Set<String> trackedInstances = new HashSet<String>();
 
     private final List<FakereplaceTransformer> integrationTransformers = new CopyOnWriteArrayList<FakereplaceTransformer>();
-
-    private ClassChangeDetectorRunner detectorRunner = null;
 
     Transformer(Set<IntegrationInfo> integrationInfo) {
         ReflectionInstrumentationSetup.setup(manipulator);
@@ -151,17 +148,9 @@ public class Transformer implements FakereplaceTransformer {
 
             if (replaceable && (AccessFlag.ENUM & file.getAccessFlags()) == 0 && (AccessFlag.ANNOTATION & file.getAccessFlags()) == 0) {
                 modified = true;
-                
-                // Initialise the detector
-                // there is no point running it until replaceable classes have been
-                // loaded
-                if (detectorRunner == null) {
-                    detectorRunner = new ClassChangeDetectorRunner();
-                    Thread t = new Thread(detectorRunner);
-                    t.start();
-                }
+
                 if (classBeingRedefined == null) {
-                    ClassChangeDetector.addClassLoader(loader, file.getName());
+                    ClassTimestampStore.recordTimestamp(className, loader);
                 }
                 if (file.isInterface()) {
                     addAbstractMethodForInstrumentation(file);
