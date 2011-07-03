@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>fakereplace-parent</artifactId>
+        <groupId>org.fakereplace</groupId>
+        <version>0.10-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.fakereplace</groupId>
+    <artifactId>fakereplace-plugin</artifactId>
+    <packaging>maven-plugin</packaging>
+    <version>0.10-SNAPSHOT</version>
+    <name>Fakereplace Maven Plugin</name>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-plugin-api</artifactId>
+            <version>2.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <classifier>jdk15</classifier>
+        </dependency>
+    </dependencies>
+
+
+    <scm>
+        <developerConnection>scm:git:git@github.com:fakereplace/fakereplace.git</developerConnection>
+    </scm>
+
+</project>
+

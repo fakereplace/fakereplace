@@ -49,6 +49,7 @@
         <module>integration/seam</module>
         <module>integration/jsf</module>
         <module>integration/metawidget</module>
+	<module>maven</module>
     </modules>
 
     <dependencyManagement>
