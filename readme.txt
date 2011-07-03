@@ -61,4 +61,8 @@ If you run into a bug report it at:
 https://github.com/fakereplace/fakereplace/issues
 
 
+For details on how if works see
+
+https://github.com/fakereplace/fakereplace/wiki/How-It-Works
+
 
