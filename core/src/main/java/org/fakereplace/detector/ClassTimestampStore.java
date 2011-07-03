@@ -16,17 +16,20 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ClassTimestampStore {
 
     private static final Map<String, Long> timestamps = new ConcurrentHashMap<String, Long>();
+    private static final Map<String, ClassLoader> loaders = new ConcurrentHashMap<String, ClassLoader>();
 
     public static void recordTimestamp(String className, ClassLoader loader) {
         if(loader == null) {
             return;
         }
         final URL file = loader.getResource(className.replace(".", "/") + ".class");
+        className = className.replace("/", ".");
         if (file != null) {
             URLConnection connection = null;
             try {
                 connection = file.openConnection();
                 timestamps.put(className, connection.getLastModified());
+                loaders.put(className, loader);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -34,13 +37,16 @@ public class ClassTimestampStore {
     }
 
 
-    public static Set<String> getUpdatedClasses(Map<String, Long> updatedClasses) {
-        final Set<String> ret = new HashSet<String>();
+    public static Set<Class> getUpdatedClasses(Map<String, Long> updatedClasses) {
+        final Set<Class> ret = new HashSet<Class>();
         for(Map.Entry<String, Long> entry : updatedClasses.entrySet()) {
-            if(!timestamps.containsKey(entry.getKey())) {
-                ret.add(entry.getKey());
-            } else if(timestamps.get(entry.getKey()) < entry.getValue()) {
-                ret.add(entry.getKey());
+            if(timestamps.containsKey(entry.getKey()) && timestamps.get(entry.getKey()) < entry.getValue()) {
+                ClassLoader loader = loaders.get(entry.getKey());
+                try {
+                    ret.add(loader.loadClass(entry.getKey()));
+                } catch (ClassNotFoundException e) {
+                    System.err.println("Could not load class " + entry);
+                }
             }
         }
         return ret;

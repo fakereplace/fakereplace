@@ -56,6 +56,9 @@ public class Environment {
     }
 
     public static boolean isClassReplacable(String className, ClassLoader loader) {
+        if(className.contains("quickstarts")) {
+            return true;
+        }
         for (String i : replacablePackages) {
             if (className.startsWith(i)) {
                 return true;

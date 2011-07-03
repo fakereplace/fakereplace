@@ -66,14 +66,16 @@ public class FakereplaceProtocol {
                 long ts = input.readLong();
                 classes.put(className, ts);
             }
-            final Set<String> classesToReplace = ClassTimestampStore.getUpdatedClasses(classes);
-
+            final Set<Class> classesToReplace = ClassTimestampStore.getUpdatedClasses(classes);
+            final Map<String, Class> classMap = new HashMap<String, Class>();
             output.writeInt(classesToReplace.size());
-            for (String cname : classesToReplace) {
+            for (Class clazz : classesToReplace) {
+                final String cname = clazz.getName();
                 output.writeInt(cname.length());
                 for (int i = 0; i < cname.length(); ++i) {
                     output.writeChar(cname.charAt(i));
                 }
+                classMap.put(cname, clazz);
             }
             output.flush();
 
@@ -91,6 +93,7 @@ public class FakereplaceProtocol {
                 for (int j = 0; j < length; ++j) {
                     buffer[j] = (byte) input.read();
                 }
+                classDefinitions.add(new ClassDefinition(classMap.get(className), buffer));
             }
 
             Agent.redefine(classDefinitions.toArray(new ClassDefinition[classDefinitions.size()]), new AddedClass[0]);
