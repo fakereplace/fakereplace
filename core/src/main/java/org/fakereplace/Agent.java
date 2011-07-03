@@ -26,6 +26,7 @@ import org.fakereplace.boot.Environment;
 import org.fakereplace.classloading.ClassIdentifier;
 import org.fakereplace.classloading.ClassLookupManager;
 import org.fakereplace.data.ClassDataStore;
+import org.fakereplace.index.UnmodifiedFileIndex;
 import org.fakereplace.replacement.AddedClass;
 import org.fakereplace.replacement.ClassRedefiner;
 import org.fakereplace.replacement.ReplacementResult;
@@ -58,6 +59,9 @@ public class Agent {
     private static volatile MainTransformer mainTransformer;
 
     public static void premain(java.lang.String s, java.lang.instrument.Instrumentation i) {
+
+        //initialise the unmodified file index
+        UnmodifiedFileIndex.loadIndex();
 
         final Set<IntegrationInfo> integrationInfo = IntegrationLoader.getIntegrationInfo(ClassLoader.getSystemClassLoader());
         inst = i;

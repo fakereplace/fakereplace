@@ -23,6 +23,7 @@ package org.fakereplace.transformation;
 
 import javassist.bytecode.ClassFile;
 import org.fakereplace.boot.Environment;
+import org.fakereplace.index.UnmodifiedFileIndex;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -48,31 +49,35 @@ public class MainTransformer implements ClassFileTransformer {
     public byte[] transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final byte[] classfileBuffer) throws IllegalClassFormatException {
         boolean changed = false;
 
+        if (UnmodifiedFileIndex.isClassUnmodified(className)) {
+            return null;
+        }
 
         final ClassFile file;
         try {
             file = new ClassFile(new DataInputStream(new ByteArrayInputStream(classfileBuffer)));
-            for(final FakereplaceTransformer transformer : transformers) {
-                if(transformer.transform(loader, className, classBeingRedefined, protectionDomain, file)) {
+            for (final FakereplaceTransformer transformer : transformers) {
+                if (transformer.transform(loader, className, classBeingRedefined, protectionDomain, file)) {
                     changed = true;
                 }
             }
 
-        if(!changed) {
-            return null;
-        } else {
-             ByteArrayOutputStream bs = new ByteArrayOutputStream();
-            file.write(new DataOutputStream(bs));
-            // dump the class for debugging purposes
-            if (Environment.getDumpDirectory() != null && classBeingRedefined != null) {
-                FileOutputStream s = new FileOutputStream(Environment.getDumpDirectory() + '/' + file.getName() + ".class");
-                DataOutputStream dos = new DataOutputStream(s);
-                file.write(dos);
-                s.close();
+            if (!changed) {
+                UnmodifiedFileIndex.markClassUnmodified(className);
+                return null;
+            } else {
+                ByteArrayOutputStream bs = new ByteArrayOutputStream();
+                file.write(new DataOutputStream(bs));
+                // dump the class for debugging purposes
+                if (Environment.getDumpDirectory() != null && classBeingRedefined != null) {
+                    FileOutputStream s = new FileOutputStream(Environment.getDumpDirectory() + '/' + file.getName() + ".class");
+                    DataOutputStream dos = new DataOutputStream(s);
+                    file.write(dos);
+                    s.close();
+                }
+                return bs.toByteArray();
             }
-            return bs.toByteArray();
-        }
-            } catch (IOException e) {
+        } catch (IOException e) {
             throw new IllegalClassFormatException(e.getMessage());
         }
     }
