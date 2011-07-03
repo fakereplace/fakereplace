@@ -17,26 +17,34 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.fakereplace;
+package org.fakereplace.integration.jbossas;
 
-public class BuiltinClassData {
+import org.fakereplace.api.IntegrationInfo;
+import org.fakereplace.transformation.FakereplaceTransformer;
 
-    static final String[] doNotInstrument = {"org/fakereplace", "java/math", "java/lang", "java/util/concurrent", "java/util/Currency", "java/util/Random", "java/util",};
+import java.util.Collections;
+import java.util.Set;
 
-    static final String[] exceptions = {"java/lang/reflect/Proxy",};
+public class JbossasIntegrationInfo implements IntegrationInfo {
 
-    public static boolean skipInstrumentation(String className) {
-        className = className.replace('.', '/');
-        for (String s : exceptions) {
-            if (className.startsWith(s)) {
-                return false;
-            }
-        }
-        for (String s : doNotInstrument) {
-            if (className.startsWith(s)) {
-                return true;
-            }
-        }
-        return false;
+    public String getClassChangeAwareName() {
+        return "org.fakereplace.integration.jbossas.ClassChangeNotifier";
     }
+
+    public Set<String> getIntegrationTriggerClassNames() {
+        return Collections.singleton("org.jboss.as.server.ApplicationServerService");
+    }
+
+    public Set<String> getTrackedInstanceClassNames() {
+        return Collections.emptySet();
+    }
+
+    public FakereplaceTransformer getTransformer() {
+        return null;
+    }
+
+    public byte[] loadClass(String className) {
+        return null;
+    }
+
 }

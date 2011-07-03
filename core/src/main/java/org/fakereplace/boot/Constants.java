@@ -32,7 +32,7 @@ public class Constants {
 
     public static final String ADDED_CONSTRUCTOR_DESCRIPTOR = "(I[Ljava/lang/Object;Lorg/fakereplace/ConstructorArgument;)V";
 
-    public static final String REPLACABLE_PACKAGES_KEY = "org.fakereplace.packages";
+    public static final String REPLACEABLE_PACKAGES_KEY = "org.fakereplace.packages";
 
     public static final String DUMP_DIRECTORY_KEY = "org.fakereplace.dump";
 

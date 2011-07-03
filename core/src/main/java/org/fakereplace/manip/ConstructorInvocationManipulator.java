@@ -47,7 +47,6 @@ public class ConstructorInvocationManipulator implements ClassManipulator {
     /**
      * This class re-writes constructor access. It is more complex than other
      * manipulators as the work can't be hidden away in a temporary class
-     *
      */
     public void rewriteConstructorCalls(String clazz, String descriptor, int methodNo, ClassLoader classLoader) {
         ConstructorRewriteData d = new ConstructorRewriteData(clazz, descriptor, methodNo, classLoader);

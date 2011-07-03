@@ -91,7 +91,7 @@ public class Transformer implements FakereplaceTransformer {
     }
 
     public boolean transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, ClassFile file) throws IllegalClassFormatException {
-        
+
         boolean modified = false;
 
         if (classBeingRedefined != null) {
@@ -99,7 +99,7 @@ public class Transformer implements FakereplaceTransformer {
         }
         try {
             for (FakereplaceTransformer i : integrationTransformers) {
-                if(i.transform(loader, className, classBeingRedefined, protectionDomain, file)) {
+                if (i.transform(loader, className, classBeingRedefined, protectionDomain, file)) {
                     modified = true;
                 }
             }
@@ -141,7 +141,7 @@ public class Transformer implements FakereplaceTransformer {
                 makeTrackedInstance(file);
             }
 
-            final boolean replaceable = Environment.isClassReplacable(file.getName(), loader);
+            final boolean replaceable = Environment.getEnvironment().isClassReplacable(file.getName(), loader);
             if(manipulator.transformClass(file, loader, replaceable)) {
                 modified = true;
             }
@@ -167,8 +167,8 @@ public class Transformer implements FakereplaceTransformer {
             }
 
             // dump the class for debugging purposes
-            if (Environment.getDumpDirectory() != null && classBeingRedefined != null) {
-                FileOutputStream s = new FileOutputStream(Environment.getDumpDirectory() + '/' + file.getName() + ".class");
+            if (Environment.getEnvironment().getDumpDirectory() != null && classBeingRedefined != null) {
+                FileOutputStream s = new FileOutputStream(Environment.getEnvironment().getDumpDirectory() + '/' + file.getName() + ".class");
                 DataOutputStream dos = new DataOutputStream(s);
                 file.write(dos);
                 s.close();

@@ -24,15 +24,17 @@
 
 
     <properties>
-        <fakereplace.version>0.10-SNAPSHOT</fakereplace.version>
         <arquillian.version>1.0.0.Alpha2</arquillian.version>
-        <weld.version>1.0.1-Final</weld.version>
-        <seam.version>2.1.2</seam.version>
-        <javassist.version>3.12.0.GA</javassist.version>
+        <fakereplace.version>0.10-SNAPSHOT</fakereplace.version>
         <google-collections.version>1.0</google-collections.version>
+        <javassist.version>3.12.0.GA</javassist.version>
+        <jbossas.version>7.0.0.CR1</jbossas.version>
         <jsf-api.version>1.2_13</jsf-api.version>
+        <seam.version>2.1.2</seam.version>
         <servlet-api.version>2.4</servlet-api.version>
         <testng.version>5.11</testng.version>
+        <weld.version>1.0.1-Final</weld.version>
+        <jboss.modules.version>1.0.0.CR4</jboss.modules.version>
     </properties>
 
 
@@ -49,7 +51,8 @@
         <module>integration/seam</module>
         <module>integration/jsf</module>
         <module>integration/metawidget</module>
-	<module>maven</module>
+        <module>integration/jbossas</module>
+        <module>maven</module>
     </modules>
 
     <dependencyManagement>
@@ -76,6 +79,12 @@
             <dependency>
                 <groupId>org.fakereplace</groupId>
                 <artifactId>fakereplace-metawidget</artifactId>
+                <version>${fakereplace.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.fakereplace</groupId>
+                <artifactId>fakereplace-jbossas</artifactId>
                 <version>${fakereplace.version}</version>
             </dependency>
 
@@ -107,6 +116,19 @@
                 <groupId>javax.faces</groupId>
                 <artifactId>jsf-api</artifactId>
                 <version>${jsf-api.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.as</groupId>
+                <artifactId>jboss-as-build</artifactId>
+                <version>${jbossas.version}</version>
+                <type>pom</type>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.modules</groupId>
+                <artifactId>jboss-modules</artifactId>
+                <version>${jboss.modules.version}</version>
             </dependency>
 
             <dependency>

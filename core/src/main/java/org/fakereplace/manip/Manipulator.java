@@ -82,7 +82,6 @@ public class Manipulator {
     }
 
     public void rewriteSubclassCalls(String className, ClassLoader classLoader, String parentName, ClassLoader parentClassLoader, String methodName, String methodDesc) {
-        System.out.println("CLS: " + className + " m " + methodName);
         subclassVirtualCallManilulator.addClassData(className, classLoader, parentName, parentClassLoader, methodName, methodDesc);
     }
 

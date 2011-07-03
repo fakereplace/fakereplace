@@ -20,7 +20,8 @@ JVM option:
 
 Where ${com.mycompany.myclasses} is the top level package of the classes that
 you want to hot replace. All classes in this package or sub packages are
-instrumented to allow them to be replaced.
+instrumented to allow them to be replaced. If you are using JBoss AS7 this
+step is not nessesary.
 
 To set the JVM options you will probably need to modify your app servers 
 startup script, or if you are using the eclipse server plugin set the 
@@ -28,9 +29,36 @@ VM arguments in the launch configuration. The JVM parameter is:
 
 -javaagent:/path/to/fakereplace.jar -Dorg.fakereplace.packages=${com.mycompany.myclasses}
 
+To actually perform a hot deployment add the following to your projects
+pom.xml:
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.fakereplace</groupId>
+        <artifactId>fakereplace-plugin</artifactId>
+        <version>${fakereplace.version}</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>fakereplace</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+And then run 
+
+mvn package
+
+to perform the hot replacement.
+
 If you run into a bug report it at:
 
-http://code.google.com/p/fakereplace/
+https://github.com/fakereplace/fakereplace/issues
 
 
 

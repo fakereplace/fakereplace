@@ -37,10 +37,10 @@ public class ClassLookupManager {
     public static byte[] getClassData(String className, Object cl) {
         //if is possible for this to be called by an object that is not a CL
         //do nothing in this case
-        if(!(cl instanceof ClassLoader)) {
+        if (!(cl instanceof ClassLoader)) {
             return null;
         }
-        ClassLoader loader = (ClassLoader)cl;
+        ClassLoader loader = (ClassLoader) cl;
         if (className.startsWith(Constants.GENERATED_CLASS_PACKAGE)) {
             return ProxyDefinitionStore.getProxyDefinition(loader, className);
         }

@@ -260,7 +260,7 @@ public final class LinkedListMultimap<K, V>
      * Removes all nodes for the specified key.
      */
     private void removeAllNodes(Object key) {
-        for (Iterator<V> i = new ValueForKeyIterator(key); i.hasNext();) {
+        for (Iterator<V> i = new ValueForKeyIterator(key); i.hasNext(); ) {
             i.next();
             i.remove();
         }
@@ -447,7 +447,7 @@ public final class LinkedListMultimap<K, V>
     }
 
     public boolean containsValue(Object value) {
-        for (Iterator<Node<K, V>> i = new NodeIterator(); i.hasNext();) {
+        for (Iterator<Node<K, V>> i = new NodeIterator(); i.hasNext(); ) {
             if (Objects.equal(i.next().value, value)) {
                 return true;
             }
@@ -456,7 +456,7 @@ public final class LinkedListMultimap<K, V>
     }
 
     public boolean containsEntry(Object key, Object value) {
-        for (Iterator<V> i = new ValueForKeyIterator(key); i.hasNext();) {
+        for (Iterator<V> i = new ValueForKeyIterator(key); i.hasNext(); ) {
             if (Objects.equal(i.next(), value)) {
                 return true;
             }

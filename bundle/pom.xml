@@ -35,6 +35,12 @@
             <groupId>org.fakereplace</groupId>
             <artifactId>fakereplace-metawidget</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>org.fakereplace</groupId>
+            <artifactId>fakereplace-jbossas</artifactId>
+        </dependency>
+
     </dependencies>
 
 

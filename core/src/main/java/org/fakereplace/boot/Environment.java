@@ -29,9 +29,11 @@ import java.net.URL;
  */
 public class Environment {
 
-    private static final String dumpDirectory;
+    protected static volatile Environment environment = new Environment();
 
-    private static final String[] replacablePackages;
+    protected static final String dumpDirectory;
+
+    protected static final String[] replaceablePackages;
 
     static {
         String dump = System.getProperty(Constants.DUMP_DIRECTORY_KEY);
@@ -47,16 +49,16 @@ public class Environment {
         } else {
             dumpDirectory = null;
         }
-        String plist = System.getProperty(Constants.REPLACABLE_PACKAGES_KEY);
+        String plist = System.getProperty(Constants.REPLACEABLE_PACKAGES_KEY);
         if (plist == null || plist.length() == 0) {
-            replacablePackages = new String[0];
+            replaceablePackages = new String[0];
         } else {
-            replacablePackages = plist.split(",");
+            replaceablePackages = plist.split(",");
         }
     }
 
-    public static boolean isClassReplacable(String className, ClassLoader loader) {
-        for (String i : replacablePackages) {
+    public boolean isClassReplacable(String className, ClassLoader loader) {
+        for (String i : replaceablePackages) {
             if (className.startsWith(i)) {
                 return true;
             }
@@ -64,7 +66,7 @@ public class Environment {
         if (className.contains("$Proxy")) {
             return true;
         }
-        if (loader != null) {
+         if (loader != null) {
             URL u = loader.getResource(className.replace('.', '/') + ".class");
             if (u != null) {
                 if (u.getProtocol().equals("file") || u.getProtocol().equals("vfsfile")) {
@@ -75,12 +77,15 @@ public class Environment {
         return false;
     }
 
-    public static String getDumpDirectory() {
+    public String getDumpDirectory() {
         return dumpDirectory;
     }
 
-    public static String[] getReplacablePackages() {
-        return replacablePackages;
+    public static Environment getEnvironment() {
+        return environment;
     }
 
+    public static void setEnvironment(final Environment environment) {
+        Environment.environment = environment;
+    }
 }

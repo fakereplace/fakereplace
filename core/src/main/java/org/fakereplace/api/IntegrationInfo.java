@@ -24,7 +24,7 @@ import org.fakereplace.transformation.FakereplaceTransformer;
 import java.util.Set;
 
 /**
- * Integrations need to implementent this service to tell the transformer
+ * Integrations need to implement this service to tell the transformer
  * about what they need.
  * <p/>
  * Note: all class names should be returned in java (not JVM) format
@@ -32,6 +32,7 @@ import java.util.Set;
  * @author stuart
  */
 public interface IntegrationInfo {
+
     /**
      * Integrations have a change to transform classes
      * They get to see the class before any manipulation is

@@ -17,9 +17,10 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.fakereplace;
+package org.fakereplace.transformation;
 
 import javassist.bytecode.ClassFile;
+import org.fakereplace.ClassLoaderInstrumentation;
 import org.fakereplace.transformation.FakereplaceTransformer;
 
 import java.lang.instrument.IllegalClassFormatException;
@@ -33,7 +34,7 @@ import java.security.ProtectionDomain;
 public class ClassLoaderTransformer implements FakereplaceTransformer {
 
 
-    ClassLoaderTransformer() {
+    public ClassLoaderTransformer() {
 
     }
 

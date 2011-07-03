@@ -52,18 +52,16 @@ public class VirtualDelegator {
     }
 
     public static boolean contains(Object val, String callingClassName, String methodName, String methodDesc) {
-        if(!Environment.isClassReplacable(val.getClass().getName(), val.getClass().getClassLoader())) {
+        if(!Environment.getEnvironment().isClassReplacable(val.getClass().getName(), val.getClass().getClassLoader())) {
             return false;
         }
         Class<?> c = val.getClass();
         while (true) {
             if (c.getName().equals(callingClassName)) {
-                System.out.println("NOT " + val.getClass().getName());
                 return false;
             }
             VirtualDelegatorData i = new VirtualDelegatorData(c.getClassLoader(), c.getName(), methodName, methodDesc);
             if (delegatingMethods.contains(i)) {
-                System.out.println("CONT " + val.getClass().getName());
                 return true;
             }
             c = c.getSuperclass();

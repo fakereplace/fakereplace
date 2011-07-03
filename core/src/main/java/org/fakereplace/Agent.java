@@ -31,6 +31,7 @@ import org.fakereplace.replacement.AddedClass;
 import org.fakereplace.replacement.ClassRedefiner;
 import org.fakereplace.replacement.ReplacementResult;
 import org.fakereplace.server.FakereplaceServer;
+import org.fakereplace.transformation.ClassLoaderTransformer;
 import org.fakereplace.transformation.MainTransformer;
 
 import java.beans.Introspector;
@@ -69,8 +70,8 @@ public class Agent {
 
         //first we need to instrument the class loaders
         final Set<Class> cls = new HashSet<Class>();
-        for(Class c : inst.getAllLoadedClasses()) {
-            if(ClassLoader.class.isAssignableFrom(c)) {
+        for (Class c : inst.getAllLoadedClasses()) {
+            if (ClassLoader.class.isAssignableFrom(c)) {
                 cls.add(c);
             }
         }
@@ -139,7 +140,7 @@ public class Agent {
                         file.write(dos);
                         dos.close();
 
-                        String dumpDir = Environment.getDumpDirectory();
+                        String dumpDir = Environment.getEnvironment().getDumpDirectory();
                         if (dumpDir == null) {
                             dumpDir = "/tmp";
                         }
