@@ -44,6 +44,7 @@ public class ClassTimestampStore {
                 ClassLoader loader = loaders.get(entry.getKey());
                 try {
                     ret.add(loader.loadClass(entry.getKey()));
+                    timestamps.put(entry.getKey(), entry.getValue());
                 } catch (ClassNotFoundException e) {
                     System.err.println("Could not load class " + entry);
                 }

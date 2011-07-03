@@ -105,6 +105,7 @@ public class Agent {
         final Class<?>[] changedClasses = new Class<?>[classes.length];
         count = 0;
         for (ClassDefinition i : classes) {
+            System.out.println("Fakereplace is replacing class " + i.getDefinitionClass());
             changedClasses[count++] = i.getDefinitionClass();
             ClassDataStore.markClassReplaced(i.getClass());
         }
