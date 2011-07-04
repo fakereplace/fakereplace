@@ -132,7 +132,7 @@ public class MethodInvokationManipulator implements ClassManipulator {
                         int index = it.next();
                         int op = it.byteAt(index);
                         // if the bytecode is a method invocation
-                        if (op == CodeIterator.INVOKEVIRTUAL || op == CodeIterator.INVOKESTATIC || op == CodeIterator.INVOKEINTERFACE) {
+                        if (op == CodeIterator.INVOKEVIRTUAL || op == CodeIterator.INVOKESTATIC || op == CodeIterator.INVOKEINTERFACE || op == CodeIterator.INVOKESPECIAL) {
                             int val = it.s16bitAt(index + 1);
                             // if the method call is one of the methods we are
                             // replacing
