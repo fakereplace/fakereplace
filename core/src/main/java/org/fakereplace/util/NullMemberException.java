@@ -28,8 +28,8 @@ import java.lang.reflect.Method;
  * @author Stuart Douglas
  */
 public class NullMemberException extends RuntimeException {
-    Class annotationType;
-    Method method;
+    private final Class annotationType;
+    private final Method method;
 
     public NullMemberException(Class annotationType, Method method, String message) {
         super(message);
