@@ -22,7 +22,7 @@
 package org.fakereplace.integration.jbossas;
 
 import org.fakereplace.api.ClassChangeAware;
-import org.fakereplace.boot.Environment;
+import org.fakereplace.boot.DefaultEnvironment;
 import org.fakereplace.classloading.ClassIdentifier;
 
 /**
@@ -32,7 +32,7 @@ public class ClassChangeNotifier implements ClassChangeAware{
 
 
     public ClassChangeNotifier() {
-        Environment.setEnvironment(new JBossAsEnvironment());
+        DefaultEnvironment.setEnvironment(new JBossAsEnvironment());
     }
 
     public void beforeChange(final Class<?>[] changed, final ClassIdentifier[] added) {

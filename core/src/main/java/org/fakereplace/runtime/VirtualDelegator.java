@@ -20,7 +20,7 @@
 package org.fakereplace.runtime;
 
 import org.fakereplace.boot.Constants;
-import org.fakereplace.boot.Environment;
+import org.fakereplace.boot.DefaultEnvironment;
 import org.fakereplace.data.MethodIdentifierStore;
 
 import java.lang.reflect.Method;
@@ -52,7 +52,7 @@ public class VirtualDelegator {
     }
 
     public static boolean contains(Object val, String callingClassName, String methodName, String methodDesc) {
-        if(!Environment.getEnvironment().isClassReplacable(val.getClass().getName(), val.getClass().getClassLoader())) {
+        if(!DefaultEnvironment.getEnvironment().isClassReplaceable(val.getClass().getName(), val.getClass().getClassLoader())) {
             return false;
         }
         Class<?> c = val.getClass();

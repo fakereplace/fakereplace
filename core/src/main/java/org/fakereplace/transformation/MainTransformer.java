@@ -24,7 +24,7 @@ package org.fakereplace.transformation;
 import javassist.bytecode.ClassFile;
 import org.fakereplace.ThreadLoader;
 import org.fakereplace.api.IntegrationInfo;
-import org.fakereplace.boot.Environment;
+import org.fakereplace.boot.DefaultEnvironment;
 import org.fakereplace.com.google.common.collect.MapMaker;
 import org.fakereplace.index.UnmodifiedFileIndex;
 
@@ -96,8 +96,8 @@ public class MainTransformer implements ClassFileTransformer {
                 ByteArrayOutputStream bs = new ByteArrayOutputStream();
                 file.write(new DataOutputStream(bs));
                 // dump the class for debugging purposes
-                if (Environment.getEnvironment().getDumpDirectory() != null && classBeingRedefined != null) {
-                    FileOutputStream s = new FileOutputStream(Environment.getEnvironment().getDumpDirectory() + '/' + file.getName() + ".class");
+                if (DefaultEnvironment.getEnvironment().getDumpDirectory() != null && classBeingRedefined != null) {
+                    FileOutputStream s = new FileOutputStream(DefaultEnvironment.getEnvironment().getDumpDirectory() + '/' + file.getName() + ".class");
                     DataOutputStream dos = new DataOutputStream(s);
                     file.write(dos);
                     s.close();

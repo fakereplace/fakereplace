@@ -1,11 +1,12 @@
 package org.fakereplace.server;
 
-import com.sun.corba.se.spi.orbutil.fsm.Input;
 import org.fakereplace.Agent;
-import org.fakereplace.detector.ClassTimestampStore;
+import org.fakereplace.boot.DefaultEnvironment;
 import org.fakereplace.replacement.AddedClass;
 
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.lang.instrument.ClassDefinition;
 import java.lang.instrument.UnmodifiableClassException;
 import java.net.Socket;
@@ -50,15 +51,23 @@ public class FakereplaceProtocol {
             final DataInputStream input = new DataInputStream(socket.getInputStream());
             final DataOutputStream output = new DataOutputStream(socket.getOutputStream());
             final Map<String, Long> classes = new HashMap<String, Long>();
+            final Map<String, Long> resources = new HashMap<String, Long>();
             int magic = input.readInt();
             if (magic != 0xCAFEDEAF) {
                 System.err.println("Fakereplace server error, wrong magic number");
                 return;
             }
+            int nameLength = input.readInt();
+            char[] nameBuffer = new char[nameLength];
+            for (int pos = 0; pos < nameLength; ++pos) {
+                nameBuffer[pos] = input.readChar();
+            }
+            final String archiveName = new String(nameBuffer);
+            
             int noClasses = input.readInt();
             for (int i = 0; i < noClasses; ++i) {
                 int length = input.readInt();
-                char[] nameBuffer = new char[length];
+                nameBuffer = new char[length];
                 for (int pos = 0; pos < length; ++pos) {
                     nameBuffer[pos] = input.readChar();
                 }
@@ -66,7 +75,20 @@ public class FakereplaceProtocol {
                 long ts = input.readLong();
                 classes.put(className, ts);
             }
-            final Set<Class> classesToReplace = ClassTimestampStore.getUpdatedClasses(classes);
+            int noResources = input.readInt();
+            for (int i = 0; i < noResources; ++i) {
+                int length = input.readInt();
+                nameBuffer = new char[length];
+                for (int pos = 0; pos < length; ++pos) {
+                    nameBuffer[pos] = input.readChar();
+                }
+                final String resourceName = new String(nameBuffer);
+                long ts = input.readLong();
+                resources.put(resourceName, ts);
+            }
+
+
+            final Set<Class> classesToReplace = DefaultEnvironment.getEnvironment().getUpdatedClasses(archiveName, classes);
             final Map<String, Class> classMap = new HashMap<String, Class>();
             output.writeInt(classesToReplace.size());
             for (Class clazz : classesToReplace) {
@@ -83,7 +105,7 @@ public class FakereplaceProtocol {
             noClasses = input.readInt();
             for (int i = 0; i < noClasses; ++i) {
                 int length = input.readInt();
-                char[] nameBuffer = new char[length];
+                nameBuffer = new char[length];
                 for (int pos = 0; pos < length; ++pos) {
                     nameBuffer[pos] = input.readChar();
                 }

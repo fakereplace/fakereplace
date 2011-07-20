@@ -22,7 +22,7 @@ package org.fakereplace;
 import javassist.bytecode.ClassFile;
 import org.fakereplace.api.ClassChangeNotifier;
 import org.fakereplace.api.IntegrationInfo;
-import org.fakereplace.boot.Environment;
+import org.fakereplace.boot.DefaultEnvironment;
 import org.fakereplace.classloading.ClassIdentifier;
 import org.fakereplace.classloading.ClassLookupManager;
 import org.fakereplace.data.ClassDataStore;
@@ -140,7 +140,7 @@ public class Agent {
                         file.write(dos);
                         dos.close();
 
-                        String dumpDir = Environment.getEnvironment().getDumpDirectory();
+                        String dumpDir = DefaultEnvironment.getEnvironment().getDumpDirectory();
                         if (dumpDir == null) {
                             dumpDir = "/tmp";
                         }
