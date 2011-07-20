@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -139,5 +140,10 @@ public class DefaultEnvironment implements Environment {
             }
         }
         return ret;
+    }
+
+    @Override
+    public Set<String> getUpdatedResources(final String deploymentName, final Map<String, Long> updatedResources) {
+        return Collections.emptySet();
     }
 }

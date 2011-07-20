@@ -9,6 +9,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
@@ -18,6 +19,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 /**
  * @author Stuart Douglas
@@ -39,13 +42,11 @@ public class FakreplaceMojo extends AbstractMojo {
 
     private final class ResourceData {
         private final long timestamp;
-        private final File file;
         private final String relativePath;
 
-        public ResourceData(File file, final String relativePath) {
+        public ResourceData(final String relativePath, long time) {
             this.relativePath = relativePath;
-            this.timestamp = file.lastModified();
-            this.file = file;
+            this.timestamp = time;
         }
     }
 
@@ -82,7 +83,31 @@ public class FakreplaceMojo extends AbstractMojo {
     }
 
     private void handleArtifact(final File file, final List<ResourceData> resources) {
+        try {
+            final FileInputStream fileInputStream = new FileInputStream(file);
+            try {
+                final ZipInputStream zip = new ZipInputStream(fileInputStream);
+                ZipEntry entry = zip.getNextEntry();
+                while (entry != null) {
+                    if (!entry.isDirectory()) {
+                        resources.add(new ResourceData(entry.getName(), entry.getTime()));
+                    }
+                    entry = zip.getNextEntry();
+                }
+            } finally {
+                try {
+                    fileInputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
 
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void handleClassesDirectory(File base, File dir, Map<String, ClassData> classes) {
@@ -105,8 +130,8 @@ public class FakreplaceMojo extends AbstractMojo {
             output.writeInt(0xCAFEDEAF);
             output.writeInt(fileName.length());
             for (int i = 0; i < fileName.length(); ++i) {
-                    output.writeChar(fileName.charAt(i));
-                }
+                output.writeChar(fileName.charAt(i));
+            }
             output.writeInt(classes.size());
             for (Map.Entry<String, ClassData> entry : classes.entrySet()) {
                 output.writeInt(entry.getKey().length());
@@ -125,17 +150,9 @@ public class FakreplaceMojo extends AbstractMojo {
             }
             output.flush();
             final Set<String> classNames = new HashSet<String>();
-
-            int noClasses = input.readInt();
-            for (int i = 0; i < noClasses; ++i) {
-                int length = input.readInt();
-                char[] nameBuffer = new char[length];
-                for (int pos = 0; pos < length; ++pos) {
-                    nameBuffer[pos] = input.readChar();
-                }
-                final String className = new String(nameBuffer);
-                classNames.add(className);
-            }
+            final Set<String> resourceNames = new HashSet<String>();
+            readReplacable(input, classNames);
+            readReplacable(input, resourceNames);
 
             output.flush();
             output.writeInt(classNames.size());
@@ -159,6 +176,19 @@ public class FakreplaceMojo extends AbstractMojo {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    private static void readReplacable(final DataInputStream input, final Set<String> resourceNames) throws IOException {
+        int noResources = input.readInt();
+        for (int i = 0; i < noResources; ++i) {
+            int length = input.readInt();
+            char[] nameBuffer = new char[length];
+            for (int pos = 0; pos < length; ++pos) {
+                nameBuffer[pos] = input.readChar();
+            }
+            final String className = new String(nameBuffer);
+            resourceNames.add(className);
         }
     }
 

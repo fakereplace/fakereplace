@@ -37,4 +37,6 @@ public interface Environment {
 
     Set<Class> getUpdatedClasses(final String deploymentName, final Map<String, Long> updatedClasses);
 
+    Set<String> getUpdatedResources(final String deploymentName, final Map<String, Long> updatedResources);
+
 }

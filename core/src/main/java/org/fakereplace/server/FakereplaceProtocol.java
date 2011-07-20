@@ -63,29 +63,9 @@ public class FakereplaceProtocol {
                 nameBuffer[pos] = input.readChar();
             }
             final String archiveName = new String(nameBuffer);
-            
-            int noClasses = input.readInt();
-            for (int i = 0; i < noClasses; ++i) {
-                int length = input.readInt();
-                nameBuffer = new char[length];
-                for (int pos = 0; pos < length; ++pos) {
-                    nameBuffer[pos] = input.readChar();
-                }
-                final String className = new String(nameBuffer);
-                long ts = input.readLong();
-                classes.put(className, ts);
-            }
-            int noResources = input.readInt();
-            for (int i = 0; i < noResources; ++i) {
-                int length = input.readInt();
-                nameBuffer = new char[length];
-                for (int pos = 0; pos < length; ++pos) {
-                    nameBuffer[pos] = input.readChar();
-                }
-                final String resourceName = new String(nameBuffer);
-                long ts = input.readLong();
-                resources.put(resourceName, ts);
-            }
+
+            readAvailable(input, classes);
+            readAvailable(input, resources);
 
 
             final Set<Class> classesToReplace = DefaultEnvironment.getEnvironment().getUpdatedClasses(archiveName, classes);
@@ -99,10 +79,19 @@ public class FakereplaceProtocol {
                 }
                 classMap.put(cname, clazz);
             }
+            final Set<String> resourcesToReplace = DefaultEnvironment.getEnvironment().getUpdatedResources(archiveName, resources);
+            output.writeInt(resourcesToReplace.size());
+            for (String cname : resourcesToReplace) {
+                output.writeInt(cname.length());
+                for (int i = 0; i < cname.length(); ++i) {
+                    output.writeChar(cname.charAt(i));
+                }
+            }
+
             output.flush();
 
             final Set<ClassDefinition> classDefinitions = new HashSet<ClassDefinition>();
-            noClasses = input.readInt();
+            int noClasses = input.readInt();
             for (int i = 0; i < noClasses; ++i) {
                 int length = input.readInt();
                 nameBuffer = new char[length];
@@ -132,6 +121,21 @@ public class FakereplaceProtocol {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    private static void readAvailable(final DataInputStream input, final Map<String, Long> resources) throws IOException {
+        char[] nameBuffer;
+        int noResources = input.readInt();
+        for (int i = 0; i < noResources; ++i) {
+            int length = input.readInt();
+            nameBuffer = new char[length];
+            for (int pos = 0; pos < length; ++pos) {
+                nameBuffer[pos] = input.readChar();
+            }
+            final String resourceName = new String(nameBuffer);
+            long ts = input.readLong();
+            resources.put(resourceName, ts);
         }
     }
 

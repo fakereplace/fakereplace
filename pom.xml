@@ -127,6 +127,12 @@
             </dependency>
 
             <dependency>
+                <groupId>org.jboss.as</groupId>
+                <artifactId>jboss-as-server</artifactId>
+                <version>${jbossas.version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>org.jboss.modules</groupId>
                 <artifactId>jboss-modules</artifactId>
                 <version>${jboss.modules.version}</version>

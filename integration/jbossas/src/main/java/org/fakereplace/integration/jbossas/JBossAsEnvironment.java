@@ -22,8 +22,14 @@
 package org.fakereplace.integration.jbossas;
 
 import org.fakereplace.boot.Environment;
+import org.jboss.as.server.CurrentServiceRegistry;
+import org.jboss.as.server.deployment.Attachments;
+import org.jboss.as.server.deployment.DeploymentUnit;
+import org.jboss.as.server.deployment.Services;
+import org.jboss.as.server.deployment.module.ResourceRoot;
 import org.jboss.modules.ModuleClassLoader;
 import org.jboss.modules.ModuleIdentifier;
+import org.jboss.vfs.VirtualFile;
 
 import java.io.IOException;
 import java.net.URL;
@@ -71,7 +77,7 @@ public class JBossAsEnvironment implements Environment {
             final ModuleClassLoader oldLoader = loadersByModuleIdentifier.get(moduleIdentifier);
             if (oldLoader != moduleClassLoader) {
                 loadersByModuleIdentifier.put(moduleIdentifier, moduleClassLoader);
-                timestamps.put(moduleClassLoader,  stamps = new ConcurrentHashMap<String, Long>());
+                timestamps.put(moduleClassLoader, stamps = new ConcurrentHashMap<String, Long>());
             } else {
                 stamps = timestamps.get(moduleClassLoader);
             }
@@ -98,7 +104,7 @@ public class JBossAsEnvironment implements Environment {
 
         final ModuleIdentifier moduleId = getModuleIdentifier(deploymentName);
         final ModuleClassLoader loader = loadersByModuleIdentifier.get(moduleId);
-         if (loader == null) {
+        if (loader == null) {
             return Collections.emptySet();
         }
         final Map<String, Long> timestamps = this.timestamps.get(loader);
@@ -115,6 +121,31 @@ public class JBossAsEnvironment implements Environment {
             }
         }
         return ret;
+    }
+
+    @Override
+    public Set<String> getUpdatedResources(final String deploymentName, final Map<String, Long> updatedResources) {
+        final ModuleIdentifier moduleId = getModuleIdentifier(deploymentName);
+        final ModuleClassLoader loader = loadersByModuleIdentifier.get(moduleId);
+        if (loader == null) {
+            return Collections.emptySet();
+        }
+
+
+        final DeploymentUnit deploymentUnit = (DeploymentUnit) CurrentServiceRegistry.getServiceRegistry().getRequiredService(Services.deploymentUnitName(deploymentName)).getValue();
+        final ResourceRoot root = deploymentUnit.getAttachment(Attachments.DEPLOYMENT_ROOT);
+
+        final Set<String> resources = new HashSet<String>();
+        for (final Map.Entry<String, Long> entry : updatedResources.entrySet()) {
+            final VirtualFile file = root.getRoot().getChild(entry.getKey());
+            if (file.exists()) {
+                long last = file.getLastModified();
+                if (entry.getValue() > last) {
+                    resources.add(entry.getKey());
+                }
+            }
+        }
+        return resources;
     }
 
     private ModuleIdentifier getModuleIdentifier(final String deploymentArchive) {
