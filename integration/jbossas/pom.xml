@@ -47,11 +47,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.jboss.as</groupId>
-            <artifactId>jboss-as-weld</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>javassist</groupId>
             <artifactId>javassist</artifactId>
             <scope>compile</scope>
