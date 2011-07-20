@@ -107,7 +107,25 @@ public class FakereplaceProtocol {
                 classDefinitions.add(new ClassDefinition(classMap.get(className), buffer));
             }
 
+            final Map<String, byte[]> replacedResources = new HashMap<String, byte[]>();
+            int noResources = input.readInt();
+            for (int i = 0; i < noResources; ++i) {
+                int length = input.readInt();
+                nameBuffer = new char[length];
+                for (int pos = 0; pos < length; ++pos) {
+                    nameBuffer[pos] = input.readChar();
+                }
+                final String resourceName = new String(nameBuffer);
+                length = input.readInt();
+                byte[] buffer = new byte[length];
+                for (int j = 0; j < length; ++j) {
+                    buffer[j] = (byte) input.read();
+                }
+                replacedResources.put(resourceName, buffer);
+            }
+
             Agent.redefine(classDefinitions.toArray(new ClassDefinition[classDefinitions.size()]), new AddedClass[0]);
+            DefaultEnvironment.getEnvironment().updateResource(archiveName, replacedResources);
 
         } catch (IOException e) {
             e.printStackTrace();

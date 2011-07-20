@@ -146,4 +146,9 @@ public class DefaultEnvironment implements Environment {
     public Set<String> getUpdatedResources(final String deploymentName, final Map<String, Long> updatedResources) {
         return Collections.emptySet();
     }
+
+    @Override
+    public void updateResource(final String archiveName, final Map<String, byte[]> replacedResources) {
+
+    }
 }

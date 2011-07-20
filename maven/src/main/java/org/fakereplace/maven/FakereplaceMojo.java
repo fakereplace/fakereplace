@@ -5,6 +5,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -26,7 +27,7 @@ import java.util.zip.ZipInputStream;
  * @author Stuart Douglas
  * @goal fakereplace
  */
-public class FakreplaceMojo extends AbstractMojo {
+public class FakereplaceMojo extends AbstractMojo {
 
     private final class ClassData {
         private final String className;
@@ -75,7 +76,7 @@ public class FakreplaceMojo extends AbstractMojo {
             handleArtifact(project.getArtifact().getFile(), resources);
             final Socket socket = new Socket("localhost", 6555);
 
-            run(socket, fileName, classes, resources);
+            run(socket, fileName, classes, resources, project.getArtifact().getFile());
 
         } catch (Throwable t) {
             getLog().error("Error running fakereplace: ", t);
@@ -123,7 +124,7 @@ public class FakreplaceMojo extends AbstractMojo {
     }
 
 
-    public static void run(Socket socket, final String fileName, Map<String, ClassData> classes, final List<ResourceData> resources) {
+    public static void run(Socket socket, final String fileName, Map<String, ClassData> classes, final List<ResourceData> resources, final File artifactFile) {
         try {
             final DataInputStream input = new DataInputStream(socket.getInputStream());
             final DataOutputStream output = new DataOutputStream(socket.getOutputStream());
@@ -166,6 +167,41 @@ public class FakreplaceMojo extends AbstractMojo {
                 output.writeInt(bytes.length);
                 output.write(bytes);
             }
+
+            output.writeInt(resourceNames.size());
+            try {
+                final FileInputStream fileInputStream = new FileInputStream(artifactFile);
+                try {
+                    final ZipInputStream zip = new ZipInputStream(fileInputStream);
+                    ZipEntry entry = zip.getNextEntry();
+                    while (entry != null) {
+                        final String name = entry.getName();
+                        if (resourceNames.contains(name)) {
+                            output.writeInt(name.length());
+                            for (int i = 0; i < name.length(); ++i) {
+                                output.writeChar(name.charAt(i));
+                            }
+                            byte[] bytes = getBytesFromZip(zip);
+                            output.writeInt(bytes.length);
+                            output.write(bytes);
+                        }
+                        entry = zip.getNextEntry();
+                    }
+                } finally {
+                    try {
+                        fileInputStream.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             output.flush();
 
         } catch (IOException e) {
@@ -221,6 +257,21 @@ public class FakreplaceMojo extends AbstractMojo {
         // Close the input stream and return bytes
         is.close();
         return bytes;
+    }
+
+    private static byte[] getBytesFromZip(ZipInputStream zip) throws IOException {
+        // Get the size of the file
+        final ByteArrayOutputStream stream = new ByteArrayOutputStream();
+
+
+        // Read in the bytes
+        int numRead = 0;
+        byte[] bytes = new byte[1024];
+        while ((numRead = zip.read(bytes)) >= 0) {
+            stream.write(bytes, 0, numRead);
+        }
+
+        return stream.toByteArray();
     }
 
 

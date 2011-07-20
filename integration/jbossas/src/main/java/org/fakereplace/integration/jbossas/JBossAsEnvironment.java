@@ -31,6 +31,7 @@ import org.jboss.modules.ModuleClassLoader;
 import org.jboss.modules.ModuleIdentifier;
 import org.jboss.vfs.VirtualFile;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -146,6 +147,33 @@ public class JBossAsEnvironment implements Environment {
             }
         }
         return resources;
+    }
+
+    @Override
+    public void updateResource(final String archiveName, final Map<String, byte[]> replacedResources) {
+        final ModuleIdentifier moduleId = getModuleIdentifier(archiveName);
+        final ModuleClassLoader loader = loadersByModuleIdentifier.get(moduleId);
+        if (loader == null) {
+            return;
+        }
+
+        final DeploymentUnit deploymentUnit = (DeploymentUnit) CurrentServiceRegistry.getServiceRegistry().getRequiredService(Services.deploymentUnitName(archiveName)).getValue();
+        final ResourceRoot root = deploymentUnit.getAttachment(Attachments.DEPLOYMENT_ROOT);
+
+        final Set<String> resources = new HashSet<String>();
+        for (final Map.Entry<String, byte[]> entry : replacedResources.entrySet()) {
+            final VirtualFile file = root.getRoot().getChild(entry.getKey());
+            try {
+                final FileOutputStream stream = new FileOutputStream(file.getPhysicalFile(), false );
+                try {
+                    stream.write(entry.getValue());
+                } finally {
+                    stream.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private ModuleIdentifier getModuleIdentifier(final String deploymentArchive) {
