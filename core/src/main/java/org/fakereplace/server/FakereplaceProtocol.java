@@ -91,6 +91,7 @@ public class FakereplaceProtocol {
             output.flush();
 
             final Set<ClassDefinition> classDefinitions = new HashSet<ClassDefinition>();
+            final Set<Class<?>> replacedClasses = new HashSet<Class<?>>();
             int noClasses = input.readInt();
             for (int i = 0; i < noClasses; ++i) {
                 int length = input.readInt();
@@ -105,9 +106,11 @@ public class FakereplaceProtocol {
                     buffer[j] = (byte) input.read();
                 }
                 classDefinitions.add(new ClassDefinition(classMap.get(className), buffer));
+                replacedClasses.add(classMap.get(className));
             }
 
             final Map<String, byte[]> replacedResources = new HashMap<String, byte[]>();
+
             int noResources = input.readInt();
             for (int i = 0; i < noResources; ++i) {
                 int length = input.readInt();
@@ -126,6 +129,9 @@ public class FakereplaceProtocol {
 
             Agent.redefine(classDefinitions.toArray(new ClassDefinition[classDefinitions.size()]), new AddedClass[0]);
             DefaultEnvironment.getEnvironment().updateResource(archiveName, replacedResources);
+
+            
+            DefaultEnvironment.getEnvironment().afterReplacement(replacedClasses, archiveName);
 
         } catch (IOException e) {
             e.printStackTrace();

@@ -40,4 +40,6 @@ public interface Environment {
     Set<String> getUpdatedResources(final String deploymentName, final Map<String, Long> updatedResources);
 
     void updateResource(final String archiveName, Map<String, byte[]> replacedResources);
+
+    void afterReplacement(final Set<Class<?>> classes, final String archiveName);
 }

@@ -29,10 +29,12 @@ import org.jboss.as.server.deployment.Services;
 import org.jboss.as.server.deployment.module.ResourceRoot;
 import org.jboss.modules.ModuleClassLoader;
 import org.jboss.modules.ModuleIdentifier;
+import org.jboss.msc.service.ServiceController;
 import org.jboss.vfs.VirtualFile;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Collections;
@@ -160,7 +162,6 @@ public class JBossAsEnvironment implements Environment {
         final DeploymentUnit deploymentUnit = (DeploymentUnit) CurrentServiceRegistry.getServiceRegistry().getRequiredService(Services.deploymentUnitName(archiveName)).getValue();
         final ResourceRoot root = deploymentUnit.getAttachment(Attachments.DEPLOYMENT_ROOT);
 
-        final Set<String> resources = new HashSet<String>();
         for (final Map.Entry<String, byte[]> entry : replacedResources.entrySet()) {
             final VirtualFile file = root.getRoot().getChild(entry.getKey());
             try {
@@ -175,6 +176,28 @@ public class JBossAsEnvironment implements Environment {
             }
         }
     }
+
+    @Override
+    public void afterReplacement(final Set<Class<?>> classes, final String archiveName) {
+        if(!classes.isEmpty()) {
+            ServiceController controller = CurrentServiceRegistry.getServiceRegistry().getService(Services.deploymentUnitName(archiveName).append("WeldService"));
+            if(controller != null) {
+                final Object value = controller.getValue();
+                try {
+                    value.getClass().getDeclaredMethod("stop").invoke(value);
+                    value.getClass().getDeclaredMethod("start").invoke(value);
+                } catch (NoSuchMethodException e) {
+                    e.printStackTrace();
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
+    }
+
 
     private ModuleIdentifier getModuleIdentifier(final String deploymentArchive) {
         return ModuleIdentifier.create("deployment." + deploymentArchive);

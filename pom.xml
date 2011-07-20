@@ -28,12 +28,12 @@
         <fakereplace.version>0.10-SNAPSHOT</fakereplace.version>
         <google-collections.version>1.0</google-collections.version>
         <javassist.version>3.12.0.GA</javassist.version>
-        <jbossas.version>7.0.0.CR1</jbossas.version>
+        <jbossas.version>7.0.0.Final</jbossas.version>
         <jsf-api.version>1.2_13</jsf-api.version>
         <seam.version>2.1.2</seam.version>
         <servlet-api.version>2.4</servlet-api.version>
         <testng.version>5.11</testng.version>
-        <weld.version>1.0.1-Final</weld.version>
+        <weld.version>1.1.2.AS7</weld.version>
         <jboss.modules.version>1.0.0.CR4</jboss.modules.version>
         <maven-plugin-api.version>2.0</maven-plugin-api.version>
     </properties>
@@ -53,6 +53,7 @@
         <module>integration/jsf</module>
         <module>integration/metawidget</module>
         <module>integration/jbossas</module>
+        <module>integration/weld</module>
         <module>maven</module>
     </modules>
 
@@ -86,6 +87,12 @@
             <dependency>
                 <groupId>org.fakereplace</groupId>
                 <artifactId>fakereplace-jbossas</artifactId>
+                <version>${fakereplace.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.fakereplace</groupId>
+                <artifactId>fakereplace-weld</artifactId>
                 <version>${fakereplace.version}</version>
             </dependency>
 
@@ -129,6 +136,12 @@
             <dependency>
                 <groupId>org.jboss.as</groupId>
                 <artifactId>jboss-as-server</artifactId>
+                <version>${jbossas.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.as</groupId>
+                <artifactId>jboss-as-weld</artifactId>
                 <version>${jbossas.version}</version>
             </dependency>
 

@@ -151,4 +151,9 @@ public class DefaultEnvironment implements Environment {
     public void updateResource(final String archiveName, final Map<String, byte[]> replacedResources) {
 
     }
+
+    @Override
+    public void afterReplacement(final Set<Class<?>> classes, final String archiveName) {
+
+    }
 }

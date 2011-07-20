@@ -19,8 +19,9 @@
 
 package org.fakereplace.integration.weld;
 
-import org.fakereplace.api.ClassTransformer;
+
 import org.fakereplace.api.IntegrationInfo;
+import org.fakereplace.transformation.FakereplaceTransformer;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -29,21 +30,21 @@ import java.util.Set;
 public class WeldIntegrationInfo implements IntegrationInfo {
 
     public String getClassChangeAwareName() {
-        return "org.fakereplace.integration.seam.ClassRedefinitionPlugin";
+        return "org.fakereplace.integration.weld.ClassRedefinitionPlugin";
     }
 
     public Set<String> getIntegrationTriggerClassNames() {
-        return Collections.singleton("org.jboss.seam.servlet.SeamFilter");
+        return Collections.singleton("org.jboss.weld.bootstrap.WeldBootstrap");
     }
 
     public Set<String> getTrackedInstanceClassNames() {
         Set<String> ret = new HashSet<String>();
-        ret.add("org.jboss.seam.servlet.SeamFilter");
+        ret.add("org.jboss.weld.bean.proxy.ClientProxyProvider");
         return ret;
     }
 
-    public ClassTransformer getTransformer() {
-        return new SeamTransformer();
+    public FakereplaceTransformer getTransformer() {
+        return null;
     }
 
     public byte[] loadClass(String className) {
