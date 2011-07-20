@@ -133,8 +133,7 @@
                                 <include>**/*.java</include>
                             </includes>
                             <forkMode>once</forkMode>
-                            <argLine>-javaagent:${project.build.directory}/${project.build.finalName}.jar
-                                -Dorg.fakereplace.packages=org.fakereplace.test
+                            <argLine>-javaagent:${project.build.directory}/${project.build.finalName}.jar -Dorg.fakereplace.packages=org.fakereplace.test
                             </argLine>
                         </configuration>
                     </execution>
