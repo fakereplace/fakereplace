@@ -42,7 +42,7 @@ public class InstanceTracker {
         set.put(object, TEMP);
     }
 
-    public static Set<Object> get(String type) {
+    public static Set<?> get(String type) {
         return data.get(type).keySet();
     }
 }

@@ -162,7 +162,7 @@ public class ClassRedefinitionPlugin implements ClassChangeAware {
      */
     public void disableHotDeployFilter() {
         try {
-            Set<Object> data = InstanceTracker.get(SeamFilter.class.getName());
+            Set<?> data = InstanceTracker.get(SeamFilter.class.getName());
             for (Object i : data) {
                 Field filters = i.getClass().getDeclaredField("filters");
                 filters.setAccessible(true);

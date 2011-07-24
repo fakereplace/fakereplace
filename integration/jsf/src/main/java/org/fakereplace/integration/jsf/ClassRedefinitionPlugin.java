@@ -56,7 +56,7 @@ public class ClassRedefinitionPlugin implements ClassChangeAware {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        Set<Object> data = InstanceTracker.get("javax.el.BeanELResolver");
+        Set<?> data = InstanceTracker.get("javax.el.BeanELResolver");
         for (Object i : data) {
             clearBeanElResolver(i);
         }

@@ -44,7 +44,7 @@ public class WeldIntegrationInfo implements IntegrationInfo {
     }
 
     public FakereplaceTransformer getTransformer() {
-        return null;
+        return new WeldClassTransformer();
     }
 
     public byte[] loadClass(String className) {
