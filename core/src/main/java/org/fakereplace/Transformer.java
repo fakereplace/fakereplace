@@ -120,6 +120,7 @@ public class Transformer implements FakereplaceTransformer {
 
             if (trackedInstances.contains(file.getName())) {
                 makeTrackedInstance(file);
+                modified = true;
             }
 
             final boolean replaceable = DefaultEnvironment.getEnvironment().isClassReplaceable(file.getName(), loader);

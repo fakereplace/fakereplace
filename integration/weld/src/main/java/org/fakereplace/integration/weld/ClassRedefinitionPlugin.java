@@ -22,6 +22,7 @@ package org.fakereplace.integration.weld;
 import javassist.bytecode.ClassFile;
 import org.fakereplace.Agent;
 import org.fakereplace.api.ClassChangeAware;
+import org.fakereplace.api.ClassChangeNotifier;
 import org.fakereplace.classloading.ClassIdentifier;
 import org.fakereplace.data.InstanceTracker;
 import org.fakereplace.replacement.AddedClass;
@@ -50,9 +51,10 @@ public class ClassRedefinitionPlugin implements ClassChangeAware {
 
     public ClassRedefinitionPlugin() {
         try {
-            proxyPoolField = ClientProxyProvider.class.getField("pool");
+            ClassChangeNotifier.add(this);
+            proxyPoolField = ClientProxyProvider.class.getDeclaredField("pool");
             proxyPoolField.setAccessible(true);
-            addedClassFileField = javassist.util.proxy.ProxyFactory.class.getDeclaredField(WeldClassTransformer.CLASS_FILE_FIELD);
+            addedClassFileField = ProxyFactory.class.getDeclaredField(WeldClassTransformer.CLASS_FILE_FIELD);
             addedClassFileField.setAccessible(true);
             createProxy = ProxyFactory.class.getDeclaredMethod("createProxyClass", String.class);
             createProxy.setAccessible(true);
@@ -71,46 +73,55 @@ public class ClassRedefinitionPlugin implements ClassChangeAware {
 
     @Override
     public void notify(final Class<?>[] changed, final ClassIdentifier[] added) {
-        final Set<Class<?>> changedClasses = new HashSet<Class<?>>(Arrays.asList(changed));
+        ClassLoader oldCl = null;
+        try {
+            final Set<Class<?>> changedClasses = new HashSet<Class<?>>(Arrays.asList(changed));
 
-        Set<ClientProxyProvider> instances = (Set<ClientProxyProvider>)InstanceTracker.get("org.jboss.weld.bean.proxy.ClientProxyProvider");
-        final Map<Bean<?>, Class<?>> beans = new HashMap<Bean<?>, Class<?>>();
-        //Hack to re-generate the weld client proxies
-        for(ClientProxyProvider instance : instances) {
-            try {
-                final ConcurrentMap<Bean<Object>,Object> pool = (ConcurrentMap<Bean<Object>, Object>) proxyPoolField.get(instance);
-                Iterator<Map.Entry<Bean<Object>, Object>> itr = pool.entrySet().iterator();
-                while(itr.hasNext()) {
-                    final Map.Entry<Bean<Object>, Object> entry = itr.next();
-                    if(changedClasses.contains(entry.getKey().getBeanClass())) {
-                        beans.put(entry.getKey(), entry.getValue().getClass());
+            final Set<ClientProxyProvider> instances = (Set<ClientProxyProvider>) InstanceTracker.get("org.jboss.weld.bean.proxy.ClientProxyProvider");
+            final Map<Bean<?>, Class<?>> beans = new HashMap<Bean<?>, Class<?>>();
+            //Hack to re-generate the weld client proxies
+            for (ClientProxyProvider instance : instances) {
+                try {
+                    final ConcurrentMap<Bean<Object>, Object> pool = (ConcurrentMap<Bean<Object>, Object>) proxyPoolField.get(instance);
+                    Iterator<Map.Entry<Bean<Object>, Object>> itr = pool.entrySet().iterator();
+                    while (itr.hasNext()) {
+                        final Map.Entry<Bean<Object>, Object> entry = itr.next();
+                        if (changedClasses.contains(entry.getKey().getBeanClass())) {
+                            beans.put(entry.getKey(), entry.getValue().getClass());
+                            if (oldCl == null) {
+                                oldCl = Thread.currentThread().getContextClassLoader();
+                                Thread.currentThread().setContextClassLoader(entry.getValue().getClass().getClassLoader());
+                            }
+                        }
                     }
-                }
 
-                final Set<ClassDefinition> proxies = new HashSet<ClassDefinition>();
+                    final Set<ClassDefinition> proxies = new HashSet<ClassDefinition>();
 
-                for(final Map.Entry<Bean<?>, Class<?>> entry : beans.entrySet()) {
-                    final Bean<?> bean = entry.getKey();
-                    Proxies.TypeInfo typeInfo = Proxies.TypeInfo.of(bean.getTypes());
-                    final ClientProxyFactory factory = new ClientProxyFactory(typeInfo.getSuperClass(), bean.getTypes(), bean);
-                    createProxy.invoke(factory, entry.getValue().getName());
-                    final ClassFile file = (ClassFile)addedClassFileField.get(factory);
-                    final ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-                    file.write(new DataOutputStream(bytes));
-                    proxies.add(new ClassDefinition(entry.getValue(), bytes.toByteArray()));
+                    for (final Map.Entry<Bean<?>, Class<?>> entry : beans.entrySet()) {
+                        final Bean<?> bean = entry.getKey();
+                        Proxies.TypeInfo typeInfo = Proxies.TypeInfo.of(bean.getTypes());
+                        final ClientProxyFactory factory = new ClientProxyFactory(typeInfo.getSuperClass(), bean.getTypes(), bean);
+                        createProxy.invoke(factory, entry.getValue().getName());
+                        final ClassFile file = (ClassFile) addedClassFileField.get(factory);
+                        final ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+                        file.write(new DataOutputStream(bytes));
+                        proxies.add(new ClassDefinition(entry.getValue(), bytes.toByteArray()));
+                    }
+                    Agent.redefine(proxies.toArray(new ClassDefinition[proxies.size()]), new AddedClass[0]);
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                } catch (UnmodifiableClassException e) {
+                    e.printStackTrace();
                 }
-                Agent.redefine(proxies.toArray(new ClassDefinition[proxies.size()]), new AddedClass[0]);
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            } catch (UnmodifiableClassException e) {
-                e.printStackTrace();
             }
+        } finally {
+            Thread.currentThread().setContextClassLoader(oldCl);
         }
     }
 }

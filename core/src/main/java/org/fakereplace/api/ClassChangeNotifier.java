@@ -28,6 +28,15 @@ import java.util.Map;
 import java.util.Set;
 
 public class ClassChangeNotifier {
+
+    private static final ThreadLocal<Boolean> notificationInProgress = new ThreadLocal<Boolean>() {
+        @Override
+        protected Boolean initialValue() {
+            return false;
+        }
+    };
+
+
     static Map<ClassLoader, Set<ClassChangeAware>> classChangeAwares = new MapMaker().weakKeys().makeMap();
 
     /**
@@ -52,21 +61,32 @@ public class ClassChangeNotifier {
     }
 
     public static void notify(Class<?>[] changed, ClassIdentifier[] newClasses) {
-        Class<?>[] a = new Class[0];
-        for (Set<ClassChangeAware> c : classChangeAwares.values()) {
-            for (ClassChangeAware i : c) {
-                i.notify(changed, newClasses);
-            }
-        }
-
-        for (Set<Object> c : unlinkedAwares.values()) {
-            for (Object i : c) {
-                try {
-                    Method m = i.getClass().getMethod("notify", a.getClass(), a.getClass());
-                    m.invoke(i, changed, newClasses);
-                } catch (Exception e) {
-                    e.printStackTrace();
+        if (!notificationInProgress.get()) {
+            notificationInProgress.set(true);
+            try {
+                Class<?>[] a = new Class[0];
+                for (Set<ClassChangeAware> c : classChangeAwares.values()) {
+                    for (ClassChangeAware i : c) {
+                        try {
+                            i.notify(changed, newClasses);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
+
+                for (Set<Object> c : unlinkedAwares.values()) {
+                    for (Object i : c) {
+                        try {
+                            Method m = i.getClass().getMethod("notify", a.getClass(), a.getClass());
+                            m.invoke(i, changed, newClasses);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            } finally {
+                notificationInProgress.set(false);
             }
         }
     }

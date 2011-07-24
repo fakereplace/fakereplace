@@ -179,23 +179,7 @@ public class JBossAsEnvironment implements Environment {
 
     @Override
     public void afterReplacement(final Set<Class<?>> classes, final String archiveName) {
-        if(!classes.isEmpty()) {
-            ServiceController controller = CurrentServiceRegistry.getServiceRegistry().getService(Services.deploymentUnitName(archiveName).append("WeldService"));
-            if(controller != null) {
-                final Object value = controller.getValue();
-                try {
-                    value.getClass().getDeclaredMethod("stop").invoke(value);
-                    value.getClass().getDeclaredMethod("start").invoke(value);
-                } catch (NoSuchMethodException e) {
-                    e.printStackTrace();
-                } catch (InvocationTargetException e) {
-                    e.printStackTrace();
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                }
-            }
 
-        }
     }
 
 
