@@ -20,6 +20,7 @@
 package a.org.fakereplace.test.replacement.constructor;
 
 import java.util.List;
+import java.util.Set;
 
 import org.fakereplace.util.NoInstrument;
 
@@ -32,6 +33,10 @@ public class ConstructorClass1 {
 
     private ConstructorClass1(List<String> a) {
         value = "h";
+    }
+
+    private ConstructorClass1(Set<String> a) {
+        value = "e";
     }
 
     public ConstructorClass1(int i1, int i2, int i3, int i4, int i5, int i6) {

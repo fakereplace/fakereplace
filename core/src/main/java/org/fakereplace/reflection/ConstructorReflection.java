@@ -21,6 +21,7 @@ package org.fakereplace.reflection;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,18 +34,23 @@ import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.data.MemberType;
 import org.fakereplace.data.MethodData;
 import org.fakereplace.util.DescriptorUtils;
+import sun.reflect.Reflection;
 
 public class ConstructorReflection {
 
     @SuppressWarnings("restriction")
     public static Object newInstance(Constructor<?> method, Object... args) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        MethodData data = ClassDataStore.getMethodInformation(method.getDeclaringClass().getName());
-        Class<?> info = ClassDataStore.getRealClassFromProxyName(method.getDeclaringClass().getName());
+        final MethodData data = ClassDataStore.getMethodInformation(method.getDeclaringClass().getName());
+        final Class<?> info = ClassDataStore.getRealClassFromProxyName(method.getDeclaringClass().getName());
         try {
-            Constructor<?> invoke = info.getConstructor(int.class, Object[].class, ConstructorArgument.class);
+            final Constructor<?> invoke = info.getConstructor(int.class, Object[].class, ConstructorArgument.class);
             Object ar = args;
             if (ar == null) {
                 ar = new Object[0];
+            }
+            if (!Modifier.isPublic(method.getModifiers()) && !method.isAccessible()) {
+                Class<?> caller = sun.reflect.Reflection.getCallerClass(2);
+                Reflection.ensureMemberAccess(caller, method.getDeclaringClass(), null, method.getModifiers());
             }
             return invoke.newInstance(data.getMethodNo(), ar, null);
         } catch (NoSuchMethodException e) {

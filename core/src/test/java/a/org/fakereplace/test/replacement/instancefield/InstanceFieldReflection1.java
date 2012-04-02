@@ -29,6 +29,8 @@ public class InstanceFieldReflection1 {
 
     public int vis;
 
+    private int privateField;
+
     @SomeAnnotation
     private int hid;
 
@@ -44,4 +46,7 @@ public class InstanceFieldReflection1 {
         return intValue;
     }
 
+    public int getPrivateField() {
+        return privateField;
+    }
 }

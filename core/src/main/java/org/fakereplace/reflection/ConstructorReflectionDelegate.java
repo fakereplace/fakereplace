@@ -33,7 +33,6 @@ import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.data.MemberType;
 import org.fakereplace.data.MethodData;
 import org.fakereplace.util.DescriptorUtils;
-import sun.reflect.Reflection;
 
 public class ConstructorReflectionDelegate {
 
@@ -57,11 +56,6 @@ public class ConstructorReflectionDelegate {
 
         }
 
-        if (!AccessibleObjectReflectionDelegate.isAccessible(method)) {
-            // todo: cache these checks
-            Class<?> caller = sun.reflect.Reflection.getCallerClass(2);
-            Reflection.ensureMemberAccess(caller, method.getDeclaringClass(), null, method.getModifiers());
-        }
         method.setAccessible(true);
         return method.newInstance(args);
 

@@ -48,4 +48,11 @@ public class PrivateMethodTest {
         PrivateMethodClass cls = new PrivateMethodClass();
         Assert.assertEquals(1, method.invoke(cls));
     }
+
+    @Test(groups = "privatemethod", expectedExceptions = IllegalAccessException.class)
+    public void testExceptionIfNotSetAccessible() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+        Method method = PrivateMethodClass.class.getDeclaredMethod("realResult");
+        PrivateMethodClass cls = new PrivateMethodClass();
+        Assert.assertEquals(1, method.invoke(cls));
+    }
 }

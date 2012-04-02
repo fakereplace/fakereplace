@@ -56,7 +56,7 @@ public class MethodReflection {
             try {
                 Method invoke = info.getMethodToInvoke(method.getDeclaringClass());
                 Object[] newAgrs = prependInstanceToParams(instance, args);
-                return invoke.invoke(null, newAgrs);
+                return invokeWithPermissionCheck(method, invoke, null, newAgrs);
             } catch (NoSuchMethodException e) {
                 throw new RuntimeException(e);
             } catch (SecurityException e) {
@@ -66,13 +66,25 @@ public class MethodReflection {
             }
         }
 
-        if (!AccessibleObjectReflectionDelegate.isAccessible(method)) {
-            // todo: cache these checks
+        return invokeWithPermissionCheck(method, method, instance, args);
+    }
+
+    private static Object invokeWithPermissionCheck(final Method permissionCheckMethod, final Method method, final Object instance, final Object[] params) throws IllegalAccessException, InvocationTargetException {
+        if (!Modifier.isPublic(permissionCheckMethod.getModifiers()) && !permissionCheckMethod.isAccessible()) {
             Class<?> caller = sun.reflect.Reflection.getCallerClass(2);
-            Reflection.ensureMemberAccess(caller, method.getDeclaringClass(), instance, method.getModifiers());
+            Reflection.ensureMemberAccess(caller, permissionCheckMethod.getDeclaringClass(), null, permissionCheckMethod.getModifiers());
+            try {
+                //we need to lookup a new method
+                //which is very yuck
+                final Method lookedUpMethod = method.getDeclaringClass().getDeclaredMethod(method.getName(), method.getParameterTypes());
+                lookedUpMethod.setAccessible(true);
+                return lookedUpMethod.invoke(instance, params);
+            } catch (NoSuchMethodException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            return method.invoke(instance, params);
         }
-        method.setAccessible(true);
-        return method.invoke(instance, args);
     }
 
     public static Method[] getDeclaredMethods(Class<?> clazz) {

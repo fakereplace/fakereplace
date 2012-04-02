@@ -89,7 +89,7 @@ public class ClassRedefinitionPlugin implements ClassChangeAware {
             for (ClientProxyProvider instance : instances) {
                 try {
                     final ConcurrentMap<Bean<Object>, Object> pool = (ConcurrentMap<Bean<Object>, Object>) proxyPoolField.get(instance);
-                    Iterator<Map.Entry<Bean<Object>, Object>> itr = pool.entrySet().iterator();
+                    final Iterator<Map.Entry<Bean<Object>, Object>> itr = pool.entrySet().iterator();
                     while (itr.hasNext()) {
                         final Map.Entry<Bean<Object>, Object> entry = itr.next();
                         if (changedClasses.contains(entry.getKey().getBeanClass())) {
@@ -105,7 +105,7 @@ public class ClassRedefinitionPlugin implements ClassChangeAware {
 
                     for (final Map.Entry<Bean<?>, Class<?>> entry : beans.entrySet()) {
                         final Bean<?> bean = entry.getKey();
-                        Proxies.TypeInfo typeInfo = Proxies.TypeInfo.of(bean.getTypes());
+                        final Proxies.TypeInfo typeInfo = Proxies.TypeInfo.of(bean.getTypes());
                         final ClientProxyFactory factory = new ClientProxyFactory(typeInfo.getSuperClass(), bean.getTypes(), bean);
                         createProxy.invoke(factory, entry.getValue().getName());
                         final ClassFile file = (ClassFile) addedClassFileField.get(factory);

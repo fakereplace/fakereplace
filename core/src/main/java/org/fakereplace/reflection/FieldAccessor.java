@@ -29,20 +29,23 @@ import org.fakereplace.data.FieldDataStore;
  */
 public class FieldAccessor {
 
-    final Class<?> clazz;
-    final Integer mapKey;
+    private final Class<?> declaringClass;
+    private final Integer mapKey;
 
-    public FieldAccessor(Class<?> clazz, int mapKey) {
-        this.clazz = clazz;
+    public FieldAccessor(Class<?> declaringClass, int mapKey) {
+        this.declaringClass = declaringClass;
         this.mapKey = mapKey;
     }
 
-    public void set(Object object, Object value) {
+    public void set(Object object, Object value) throws IllegalAccessException {
         FieldDataStore.setValue(object, value, mapKey);
     }
 
-    public Object get(Object object) {
+    public Object get(Object object) throws IllegalAccessException {
         return FieldDataStore.getValue(object, mapKey);
     }
 
+    public Class<?> getDeclaringClass() {
+        return declaringClass;
+    }
 }

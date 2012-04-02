@@ -23,6 +23,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
+import java.util.Set;
 
 import a.org.fakereplace.test.coverage.ChangeTestType;
 import a.org.fakereplace.test.coverage.CodeChangeType;
@@ -91,8 +92,17 @@ public class ConstructorTest {
 
         Class<?> c = ConstructorClass.class;
         Constructor<?> con = c.getDeclaredConstructor(List.class);
+        con.setAccessible(true);
         ConstructorClass inst = (ConstructorClass) con.newInstance(null, null);
         assert inst.getValue().equals("h");
+    }
+
+    @Test(groups = "constructor", expectedExceptions = IllegalAccessException.class)
+    public void testConstructorByReflectionWithException() throws SecurityException, NoSuchMethodException, IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException {
+
+        Class<?> c = ConstructorClass.class;
+        Constructor<?> con = c.getDeclaredConstructor(Set.class);
+        ConstructorClass inst = (ConstructorClass) con.newInstance(null, null);
     }
 
     @Test(groups = "constructor")

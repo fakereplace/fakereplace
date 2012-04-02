@@ -34,5 +34,7 @@ public class InstanceFieldReflection {
         return 0;
     }
 
-
+    public int getPrivateField() {
+        return 0;
+    }
 }
