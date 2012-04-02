@@ -27,6 +27,8 @@ package org.fakereplace;
  *
  * @author stuart
  */
-public class ConstructorArgument {
+public final class ConstructorArgument {
+    private ConstructorArgument() {
 
+    }
 }

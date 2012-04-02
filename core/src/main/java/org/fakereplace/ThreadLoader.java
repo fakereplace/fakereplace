@@ -26,10 +26,9 @@ package org.fakereplace;
  * @author stuart
  */
 public class ThreadLoader implements Runnable {
-    final String className;
-    final ClassLoader classLoader;
-    final boolean createClass;
-    volatile boolean finished = false;
+    private final String className;
+    private final ClassLoader classLoader;
+    private final boolean createClass;
 
     private ThreadLoader(String className, ClassLoader classLoader, boolean createClass) {
         this.className = className;
@@ -43,21 +42,9 @@ public class ThreadLoader implements Runnable {
             if (createClass) {
                 c.newInstance();
             }
-        } catch (ClassNotFoundException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-        } catch (InstantiationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } finally {
-            finished = true;
         }
-    }
-
-    public boolean isFinished() {
-        return finished;
     }
 
     static public void loadAsync(String className, ClassLoader classLoader, boolean create) {

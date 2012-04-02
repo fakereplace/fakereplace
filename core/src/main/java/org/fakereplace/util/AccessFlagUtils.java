@@ -52,11 +52,4 @@ public class AccessFlagUtils {
     }
 
     static final int INVERSE_ACCESS_FLAGS = ~(AccessFlag.PRIVATE | AccessFlag.PUBLIC | AccessFlag.PROTECTED);
-
-    public static boolean accessFlagsDifferent(int n, int o) {
-        if ((n & INVERSE_ACCESS_FLAGS) != (o & INVERSE_ACCESS_FLAGS)) {
-            return true;
-        }
-        return false;
-    }
 }

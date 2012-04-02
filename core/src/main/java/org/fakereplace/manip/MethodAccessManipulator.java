@@ -19,6 +19,10 @@
 
 package org.fakereplace.manip;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import javassist.bytecode.Bytecode;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.CodeIterator;
@@ -29,10 +33,6 @@ import org.fakereplace.boot.Constants;
 import org.fakereplace.boot.Logger;
 import org.fakereplace.util.JumpMarker;
 import org.fakereplace.util.JumpUtils;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 /**
  * manipulator that replaces Method.invokewith the following:
@@ -60,7 +60,6 @@ public class MethodAccessManipulator implements ClassManipulator {
         Set<Integer> methodCallLocations = new HashSet<Integer>();
         Integer newCallLocation = null;
         Integer methodReflectionLocation = null;
-        Integer fakeCallRequiredLocation = null;
         // first we need to scan the constant pool looking for
         // CONSTANT_method_info_ref structures
         ConstPool pool = file.getConstPool();
@@ -80,8 +79,6 @@ public class MethodAccessManipulator implements ClassManipulator {
                         // method in the const pool
                         if (newCallLocation == null) {
                             methodReflectionLocation = pool.addClassInfo("org.fakereplace.reflection.MethodReflection");
-                            int nt = pool.addNameAndTypeInfo("fakeCallRequired", "(Ljava/lang/reflect/Method;)Z");
-                            fakeCallRequiredLocation = pool.addMethodrefInfo(methodReflectionLocation, nt);
                             newCallLocation = pool.addNameAndTypeInfo(METHOD_NAME, REPLACED_METHOD_DESCRIPTOR);
                         }
                     }

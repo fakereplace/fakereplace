@@ -19,6 +19,12 @@
 
 package org.fakereplace.reflection;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
+
 import javassist.bytecode.AccessFlag;
 import javassist.bytecode.Descriptor;
 import org.fakereplace.boot.Constants;
@@ -28,14 +34,7 @@ import org.fakereplace.data.MemberType;
 import org.fakereplace.data.MethodData;
 import org.fakereplace.data.ModifiedMethod;
 import org.fakereplace.util.DescriptorUtils;
-import org.fakereplace.util.InvocationUtil;
 import sun.reflect.Reflection;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * This class has some method related reflection calls delegated to it at
@@ -56,7 +55,7 @@ public class MethodReflection {
             MethodData info = ClassDataStore.getMethodInformation(method.getDeclaringClass().getName());
             try {
                 Method invoke = info.getMethodToInvoke(method.getDeclaringClass());
-                Object[] newAgrs = InvocationUtil.prepare(instance, args);
+                Object[] newAgrs = prependInstanceToParams(instance, args);
                 return invoke.invoke(null, newAgrs);
             } catch (NoSuchMethodException e) {
                 throw new RuntimeException(e);
@@ -245,5 +244,21 @@ public class MethodReflection {
 
     public static boolean fakeCallRequired(Method method) {
         return method.getDeclaringClass().getName().startsWith(Constants.GENERATED_CLASS_PACKAGE);
+    }
+
+    /**
+     * appends object to the start of the array
+     */
+    static public Object[] prependInstanceToParams(Object object, Object[] array) {
+        int length = 0;
+        if (array != null) {
+            length = array.length;
+        }
+        Object[] ret = new Object[length + 1];
+        ret[0] = object;
+        for (int i = 0; i < length; ++i) {
+            ret[i + 1] = array[i];
+        }
+        return ret;
     }
 }

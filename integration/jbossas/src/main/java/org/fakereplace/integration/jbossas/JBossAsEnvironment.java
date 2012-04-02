@@ -21,6 +21,16 @@
  */
 package org.fakereplace.integration.jbossas;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.fakereplace.boot.Environment;
 import org.jboss.as.server.CurrentServiceRegistry;
 import org.jboss.as.server.deployment.Attachments;
@@ -29,20 +39,7 @@ import org.jboss.as.server.deployment.Services;
 import org.jboss.as.server.deployment.module.ResourceRoot;
 import org.jboss.modules.ModuleClassLoader;
 import org.jboss.modules.ModuleIdentifier;
-import org.jboss.msc.service.ServiceController;
 import org.jboss.vfs.VirtualFile;
-
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Stuart Douglas
@@ -64,7 +61,7 @@ public class JBossAsEnvironment implements Environment {
         return null;
     }
 
-    private final Map<ModuleIdentifier, ModuleClassLoader> loadersByModuleIdentifier = new HashMap<ModuleIdentifier, ModuleClassLoader>();
+    private final Map<ModuleIdentifier, ModuleClassLoader> loadersByModuleIdentifier = new ConcurrentHashMap<ModuleIdentifier, ModuleClassLoader>();
 
 
     private final Map<ModuleClassLoader, Map<String, Long>> timestamps = new ConcurrentHashMap<ModuleClassLoader, Map<String, Long>>();
