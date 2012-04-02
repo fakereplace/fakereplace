@@ -19,12 +19,12 @@
 
 package org.fakereplace.classloading;
 
+import java.util.Map;
+
 import org.fakereplace.boot.Constants;
 import org.fakereplace.boot.ProxyDefinitionStore;
 import org.fakereplace.com.google.common.collect.MapMaker;
 import org.fakereplace.transformation.MainTransformer;
-
-import java.util.Map;
 
 /**
  * this class is resposible for serving up classes to instrumented ClassLoaders
@@ -40,7 +40,7 @@ public class ClassLookupManager {
         if (!(cl instanceof ClassLoader)) {
             return null;
         }
-        ClassLoader loader = (ClassLoader) cl;
+        final ClassLoader loader = (ClassLoader) cl;
         if (className.startsWith(Constants.GENERATED_CLASS_PACKAGE)) {
             return ProxyDefinitionStore.getProxyDefinition(loader, className);
         }

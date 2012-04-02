@@ -35,7 +35,7 @@ public class SubclassVirtualCallData implements ClassloaderFiltered<SubclassVirt
         this.methodDesc = methodDesc;
     }
 
-    public SubclassVirtualCallData getInstane() {
+    public SubclassVirtualCallData getInstance() {
         return this;
     }
 

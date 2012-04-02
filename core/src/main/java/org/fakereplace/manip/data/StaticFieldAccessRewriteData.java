@@ -73,7 +73,7 @@ public class StaticFieldAccessRewriteData implements ClassloaderFiltered<StaticF
         return classLoader;
     }
 
-    public StaticFieldAccessRewriteData getInstane() {
+    public StaticFieldAccessRewriteData getInstance() {
         return this;
     }
 }

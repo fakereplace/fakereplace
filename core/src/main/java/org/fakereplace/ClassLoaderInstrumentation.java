@@ -19,6 +19,10 @@
 
 package org.fakereplace;
 
+import java.lang.reflect.Modifier;
+import java.util.List;
+import java.util.concurrent.ConcurrentMap;
+
 import javassist.bytecode.BadBytecode;
 import javassist.bytecode.Bytecode;
 import javassist.bytecode.ClassFile;
@@ -30,11 +34,6 @@ import org.fakereplace.com.google.common.collect.MapMaker;
 import org.fakereplace.manip.FinalMethodManipulator;
 import org.fakereplace.util.JumpMarker;
 import org.fakereplace.util.JumpUtils;
-
-import java.lang.instrument.UnmodifiableClassException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.ConcurrentMap;
 
 public class ClassLoaderInstrumentation {
 
@@ -63,6 +62,9 @@ public class ClassLoaderInstrumentation {
     public static boolean redefineClassLoader(ClassFile classFile) throws BadBytecode {
         boolean modified = false;
         for (MethodInfo method : (List<MethodInfo>) classFile.getMethods()) {
+            if(Modifier.isStatic(method.getAccessFlags())) {
+                continue;
+            }
             if (method.getName().equals("loadClass") && (method.getDescriptor().equals("(Ljava/lang/String;)Ljava/lang/Class;") || method.getDescriptor().equals("(Ljava/lang/String;Z)Ljava/lang/Class;"))) {
 
                 modified = true;

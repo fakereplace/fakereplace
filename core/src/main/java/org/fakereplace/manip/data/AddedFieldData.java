@@ -62,7 +62,7 @@ public class AddedFieldData implements ClassloaderFiltered<AddedFieldData> {
         return classLoader;
     }
 
-    public AddedFieldData getInstane() {
+    public AddedFieldData getInstance() {
         return this;
     }
 

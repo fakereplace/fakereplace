@@ -28,5 +28,5 @@ package org.fakereplace.manip.util;
 public interface ClassloaderFiltered<T> {
     public ClassLoader getClassLoader();
 
-    public T getInstane();
+    public T getInstance();
 }

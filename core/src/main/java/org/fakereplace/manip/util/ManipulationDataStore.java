@@ -19,8 +19,6 @@
 
 package org.fakereplace.manip.util;
 
-import org.fakereplace.com.google.common.collect.MapMaker;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -28,6 +26,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+
+import org.fakereplace.com.google.common.collect.MapMaker;
 
 /**
  * class that figures out which maniluation should be applied based on the
@@ -53,7 +53,7 @@ public class ManipulationDataStore<T extends ClassloaderFiltered<T>> {
                 ret.put(e.getKey(), set);
                 for (ClassloaderFiltered<T> f : e.getValue()) {
                     if (includeClassLoader(loader, f.getClassLoader())) {
-                        set.add(f.getInstane());
+                        set.add(f.getInstance());
                     }
                 }
             }

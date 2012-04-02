@@ -75,7 +75,7 @@ public class ConstructorRewriteData implements ClassloaderFiltered<ConstructorRe
         return classLoader;
     }
 
-    public ConstructorRewriteData getInstane() {
+    public ConstructorRewriteData getInstance() {
         return this;
     }
 }

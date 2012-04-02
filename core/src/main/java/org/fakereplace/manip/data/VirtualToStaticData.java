@@ -102,7 +102,7 @@ public class VirtualToStaticData implements ClassloaderFiltered<VirtualToStaticD
         return classLoader;
     }
 
-    public VirtualToStaticData getInstane() {
+    public VirtualToStaticData getInstance() {
         return this;
     }
 }
