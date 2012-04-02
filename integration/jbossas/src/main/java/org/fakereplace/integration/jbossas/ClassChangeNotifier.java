@@ -28,7 +28,7 @@ import org.fakereplace.classloading.ClassIdentifier;
 /**
  * @author Stuart Douglas
  */
-public class ClassChangeNotifier implements ClassChangeAware{
+public class ClassChangeNotifier implements ClassChangeAware {
 
 
     public ClassChangeNotifier() {

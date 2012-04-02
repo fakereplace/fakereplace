@@ -24,17 +24,16 @@
 
 
     <properties>
-        <arquillian.version>1.0.0.Alpha2</arquillian.version>
+        <arquillian.version>1.0.0.CR7</arquillian.version>
         <fakereplace.version>0.10-SNAPSHOT</fakereplace.version>
-        <google-collections.version>1.0</google-collections.version>
-        <javassist.version>3.12.0.GA</javassist.version>
-        <jbossas.version>7.0.0.Final</jbossas.version>
+        <javassist.version>3.15.0-GA</javassist.version>
+        <jbossas.version>7.1.1.Final</jbossas.version>
         <jsf-api.version>1.2_13</jsf-api.version>
         <seam.version>2.1.2</seam.version>
         <servlet-api.version>2.4</servlet-api.version>
         <testng.version>5.11</testng.version>
-        <weld.version>1.1.2.AS7</weld.version>
-        <jboss.modules.version>1.0.0.CR4</jboss.modules.version>
+        <weld.version>1.1.6.Final</weld.version>
+        <jboss.modules.version>1.1.1.GA</jboss.modules.version>
         <maven-plugin-api.version>2.0</maven-plugin-api.version>
     </properties>
 
@@ -97,7 +96,7 @@
             </dependency>
 
             <dependency>
-                <groupId>javassist</groupId>
+                <groupId>org.javassist</groupId>
                 <artifactId>javassist</artifactId>
                 <version>${javassist.version}</version>
             </dependency>
@@ -160,25 +159,12 @@
             </dependency>
 
             <dependency>
-                <groupId>org.jboss.arquillian</groupId>
-                <artifactId>arquillian-testng</artifactId>
+                <groupId>org.jboss.arquillian.testng</groupId>
+                <artifactId>arquillian-testng-container</artifactId>
                 <version>${arquillian.version}</version>
                 <scope>test</scope>
             </dependency>
 
-            <dependency>
-                <groupId>org.jboss.arquillian.container</groupId>
-                <artifactId>arquillian-jbossas-remote-51</artifactId>
-                <version>${arquillian.version}</version>
-                <scope>test</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>org.jboss.arquillian.container</groupId>
-                <artifactId>arquillian-weld-embedded</artifactId>
-                <version>${arquillian.version}</version>
-                <scope>test</scope>
-            </dependency>
             <dependency>
                 <groupId>org.apache.maven</groupId>
                 <artifactId>maven-plugin-api</artifactId>

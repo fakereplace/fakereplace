@@ -32,7 +32,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.fakereplace.boot.Environment;
-import org.jboss.as.server.CurrentServiceRegistry;
+import org.jboss.as.server.CurrentServiceContainer;
 import org.jboss.as.server.deployment.Attachments;
 import org.jboss.as.server.deployment.DeploymentUnit;
 import org.jboss.as.server.deployment.Services;
@@ -132,7 +132,7 @@ public class JBossAsEnvironment implements Environment {
         }
 
 
-        final DeploymentUnit deploymentUnit = (DeploymentUnit) CurrentServiceRegistry.getServiceRegistry().getRequiredService(Services.deploymentUnitName(deploymentName)).getValue();
+        final DeploymentUnit deploymentUnit = (DeploymentUnit) CurrentServiceContainer.getServiceContainer().getRequiredService(Services.deploymentUnitName(deploymentName)).getValue();
         final ResourceRoot root = deploymentUnit.getAttachment(Attachments.DEPLOYMENT_ROOT);
 
         final Set<String> resources = new HashSet<String>();
@@ -156,7 +156,7 @@ public class JBossAsEnvironment implements Environment {
             return;
         }
 
-        final DeploymentUnit deploymentUnit = (DeploymentUnit) CurrentServiceRegistry.getServiceRegistry().getRequiredService(Services.deploymentUnitName(archiveName)).getValue();
+        final DeploymentUnit deploymentUnit = (DeploymentUnit) CurrentServiceContainer.getServiceContainer().getRequiredService(Services.deploymentUnitName(archiveName)).getValue();
         final ResourceRoot root = deploymentUnit.getAttachment(Attachments.DEPLOYMENT_ROOT);
 
         for (final Map.Entry<String, byte[]> entry : replacedResources.entrySet()) {

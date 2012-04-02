@@ -42,7 +42,7 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>javassist</groupId>
+            <groupId>org.javassist</groupId>
             <artifactId>javassist</artifactId>
             <scope>compile</scope>
         </dependency>
@@ -66,13 +66,8 @@
             <classifier>jdk15</classifier>
         </dependency>
         <dependency>
-            <groupId>org.jboss.arquillian</groupId>
-            <artifactId>arquillian-testng</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.arquillian.container</groupId>
-            <artifactId>arquillian-weld-embedded</artifactId>
+            <groupId>org.jboss.arquillian.testng</groupId>
+            <artifactId>arquillian-testng-container</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
