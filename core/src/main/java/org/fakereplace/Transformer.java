@@ -96,74 +96,75 @@ public class Transformer implements FakereplaceTransformer {
             // we also avoid instrumenting much of the java/lang and
             // java/io namespace except for java/lang/reflect/Proxy
             if (BuiltinClassData.skipInstrumentation(className)) {
-                if (classBeingRedefined == null) {
-                    BaseClassData baseData = new BaseClassData(file, loader, false);
-                    ClassDataStore.saveClassData(loader, baseData.getInternalName(), baseData);
-                } else {
-                    if (manipulator.transformClass(file, loader, false)) {
-                        modified = true;
-                    }
+                if (classBeingRedefined != null && manipulator.transformClass(file, loader, false)) {
+                    modified = true;
                 }
                 return modified;
             }
 
-            if (classBeingRedefined == null) {
-                AnnotationsAttribute at = (AnnotationsAttribute) file.getAttribute(AnnotationsAttribute.invisibleTag);
-                if (at != null) {
-                    // NoInstrument is used for testing or by integration modules
-                    Object an = at.getAnnotation(NoInstrument.class.getName());
-                    if (an != null) {
-                        return modified;
-                    }
+
+        if (classBeingRedefined == null) {
+            AnnotationsAttribute at = (AnnotationsAttribute) file.getAttribute(AnnotationsAttribute.invisibleTag);
+            if (at != null) {
+                // NoInstrument is used for testing or by integration modules
+                Object an = at.getAnnotation(NoInstrument.class.getName());
+                if (an != null) {
+                    return modified;
                 }
             }
-
-            if (trackedInstances.contains(file.getName())) {
-                makeTrackedInstance(file);
-                modified = true;
-            }
-
-            final boolean replaceable = DefaultEnvironment.getEnvironment().isClassReplaceable(file.getName(), loader);
-            if (manipulator.transformClass(file, loader, replaceable)) {
-                modified = true;
-            }
-
-            if (replaceable && (AccessFlag.ENUM & file.getAccessFlags()) == 0 && (AccessFlag.ANNOTATION & file.getAccessFlags()) == 0) {
-                modified = true;
-
-                if (classBeingRedefined == null) {
-                    DefaultEnvironment.getEnvironment().recordTimestamp(className, loader);
-                }
-                if (file.isInterface()) {
-                    addAbstractMethodForInstrumentation(file);
-                } else {
-                    addMethodForInstrumentation(file);
-                    addConstructorForInstrumentation(file);
-                    addStaticConstructorForInstrumentation(file);
-                }
-            }
-
-            if (classBeingRedefined == null) {
-                BaseClassData baseData = new BaseClassData(file, loader, replaceable);
-                ClassDataStore.saveClassData(loader, baseData.getInternalName(), baseData);
-            }
-
-            // dump the class for debugging purposes
-            if (DefaultEnvironment.getEnvironment().getDumpDirectory() != null && classBeingRedefined != null) {
-                FileOutputStream s = new FileOutputStream(DefaultEnvironment.getEnvironment().getDumpDirectory() + '/' + file.getName() + ".class");
-                DataOutputStream dos = new DataOutputStream(s);
-                file.write(dos);
-                s.close();
-            }
-            // SerialVersionUIDChecker.testReflectionInfo(loader, file.getName(),
-            // file.getSuperclass(), classfileBuffer);
-            return modified;
-        } catch (Throwable e) {
-            e.printStackTrace();
-
-            throw new IllegalClassFormatException();
         }
+
+        if (trackedInstances.contains(file.getName())) {
+            makeTrackedInstance(file);
+            modified = true;
+        }
+
+        final boolean replaceable = DefaultEnvironment.getEnvironment().isClassReplaceable(file.getName(), loader);
+        if (manipulator.transformClass(file, loader, replaceable)) {
+            modified = true;
+        }
+
+        if (replaceable && (AccessFlag.ENUM & file.getAccessFlags()) == 0 && (AccessFlag.ANNOTATION & file.getAccessFlags()) == 0) {
+            modified = true;
+
+            DefaultEnvironment.getEnvironment().recordTimestamp(className, loader);
+            if (file.isInterface()) {
+                addAbstractMethodForInstrumentation(file);
+            } else {
+                addMethodForInstrumentation(file);
+                addConstructorForInstrumentation(file);
+                addStaticConstructorForInstrumentation(file);
+            }
+        }
+
+        if (DefaultEnvironment.getEnvironment().isClassReplaceable(className, loader)) {
+            BaseClassData baseData = new BaseClassData(file, loader, replaceable);
+            ClassDataStore.saveClassData(loader, baseData.getInternalName(), baseData);
+        }
+
+        // dump the class for debugging purposes
+        if (DefaultEnvironment.getEnvironment().getDumpDirectory() != null) {
+            FileOutputStream s = new FileOutputStream(DefaultEnvironment.getEnvironment().getDumpDirectory() + '/' + file.getName() + ".class");
+            DataOutputStream dos = new DataOutputStream(s);
+            file.write(dos);
+            s.close();
+        }
+        // SerialVersionUIDChecker.testReflectionInfo(loader, file.getName(),
+        // file.getSuperclass(), classfileBuffer);
+        return modified;
     }
+
+    catch(
+    Throwable e
+    )
+
+    {
+        e.printStackTrace();
+
+        throw new IllegalClassFormatException();
+    }
+
+}
 
     /**
      * Adds a method to a class that re can redefine when the class is reloaded
