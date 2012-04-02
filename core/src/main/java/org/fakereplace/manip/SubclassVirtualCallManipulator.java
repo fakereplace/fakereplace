@@ -19,6 +19,9 @@
 
 package org.fakereplace.manip;
 
+import java.util.Map;
+import java.util.Set;
+
 import javassist.bytecode.BadBytecode;
 import javassist.bytecode.Bytecode;
 import javassist.bytecode.ClassFile;
@@ -29,9 +32,6 @@ import org.fakereplace.manip.util.ManipulationDataStore;
 import org.fakereplace.manip.util.ManipulationUtils;
 import org.fakereplace.runtime.VirtualDelegator;
 import org.fakereplace.util.DescriptorUtils;
-
-import java.util.Map;
-import java.util.Set;
 
 /**
  * this manipulator adds code that looks like:

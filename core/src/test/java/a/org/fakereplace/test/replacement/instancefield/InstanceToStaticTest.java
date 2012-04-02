@@ -19,11 +19,11 @@
 
 package a.org.fakereplace.test.replacement.instancefield;
 
+import java.lang.reflect.Field;
+
 import a.org.fakereplace.test.util.ClassReplacer;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-
-import java.lang.reflect.Field;
 
 /**
  * when changing instance fields to static existing reference will still

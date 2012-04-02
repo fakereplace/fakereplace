@@ -162,7 +162,7 @@ public class JBossAsEnvironment implements Environment {
         for (final Map.Entry<String, byte[]> entry : replacedResources.entrySet()) {
             final VirtualFile file = root.getRoot().getChild(entry.getKey());
             try {
-                final FileOutputStream stream = new FileOutputStream(file.getPhysicalFile(), false );
+                final FileOutputStream stream = new FileOutputStream(file.getPhysicalFile(), false);
                 try {
                     stream.write(entry.getValue());
                 } finally {

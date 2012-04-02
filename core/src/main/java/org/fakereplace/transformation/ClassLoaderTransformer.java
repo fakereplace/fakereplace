@@ -19,12 +19,11 @@
 
 package org.fakereplace.transformation;
 
-import javassist.bytecode.ClassFile;
-import org.fakereplace.ClassLoaderInstrumentation;
-import org.fakereplace.transformation.FakereplaceTransformer;
-
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
+
+import javassist.bytecode.ClassFile;
+import org.fakereplace.ClassLoaderInstrumentation;
 
 /**
  * transformer that instruments class loaders to load FakeReplace classes

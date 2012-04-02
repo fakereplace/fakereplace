@@ -19,6 +19,11 @@
 
 package org.fakereplace.manip.staticfield;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.util.Map;
+
 import javassist.bytecode.AccessFlag;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.DuplicateMemberException;
@@ -28,11 +33,6 @@ import org.fakereplace.boot.ProxyDefinitionStore;
 import org.fakereplace.com.google.common.base.Function;
 import org.fakereplace.com.google.common.collect.MapMaker;
 import org.fakereplace.data.ClassDataStore;
-
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.util.Map;
 
 /**
  * Factory that generated classes to hold added static field instances. If a

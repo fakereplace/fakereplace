@@ -19,14 +19,16 @@
 
 package org.fakereplace.com.google.common.collect;
 
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 
-import static org.fakereplace.com.google.common.base.Preconditions.*;
+import org.fakereplace.com.google.common.annotations.GwtCompatible;
+
+import static org.fakereplace.com.google.common.base.Preconditions.checkElementIndex;
+import static org.fakereplace.com.google.common.base.Preconditions.checkPositionIndex;
+import static org.fakereplace.com.google.common.base.Preconditions.checkPositionIndexes;
 
 
 /**

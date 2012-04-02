@@ -19,10 +19,6 @@
 
 package org.fakereplace.com.google.common.collect;
 
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
-import org.fakereplace.com.google.common.base.Objects;
-import org.fakereplace.com.google.common.base.Preconditions;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -40,6 +36,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Set;
+
+import org.fakereplace.com.google.common.annotations.GwtCompatible;
+import org.fakereplace.com.google.common.base.Objects;
+import org.fakereplace.com.google.common.base.Preconditions;
 
 import static java.util.Collections.unmodifiableList;
 import static org.fakereplace.com.google.common.base.Preconditions.checkArgument;

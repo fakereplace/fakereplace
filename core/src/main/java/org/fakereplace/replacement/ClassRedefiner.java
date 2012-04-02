@@ -19,13 +19,6 @@
 
 package org.fakereplace.replacement;
 
-import javassist.bytecode.ClassFile;
-import javassist.bytecode.Descriptor;
-import org.fakereplace.boot.Logger;
-import org.fakereplace.data.BaseClassData;
-import org.fakereplace.data.ClassDataBuilder;
-import org.fakereplace.data.ClassDataStore;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -34,6 +27,13 @@ import java.io.IOException;
 import java.lang.instrument.ClassDefinition;
 import java.util.HashSet;
 import java.util.Set;
+
+import javassist.bytecode.ClassFile;
+import javassist.bytecode.Descriptor;
+import org.fakereplace.boot.Logger;
+import org.fakereplace.data.BaseClassData;
+import org.fakereplace.data.ClassDataBuilder;
+import org.fakereplace.data.ClassDataStore;
 
 public class ClassRedefiner {
     static public ReplacementResult rewriteLoadedClasses(ClassDefinition... classDefinitions) {
@@ -66,7 +66,7 @@ public class ClassRedefiner {
 
     public static void modifyReloadedClass(ClassFile file, ClassLoader loader, Class<?> oldClass, Set<Class<?>> classToReload) {
         BaseClassData b = ClassDataStore.getBaseClassData(loader, Descriptor.toJvmName(file.getName()));
-        if(b == null) {
+        if (b == null) {
             throw new RuntimeException("Could not find BaseClassData for " + file.getName());
         }
 

@@ -16,10 +16,10 @@
 
 package org.fakereplace.com.google.common.collect;
 
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
-
 import java.util.Collection;
 import java.util.Iterator;
+
+import org.fakereplace.com.google.common.annotations.GwtCompatible;
 
 /**
  * A collection which forwards all its method calls to another collection.

@@ -19,15 +19,15 @@
 
 package org.fakereplace.com.google.common.base;
 
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
-import org.fakereplace.com.google.common.annotations.GwtIncompatible;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+
+import org.fakereplace.com.google.common.annotations.GwtCompatible;
+import org.fakereplace.com.google.common.annotations.GwtIncompatible;
 
 import static org.fakereplace.com.google.common.base.Preconditions.checkNotNull;
 

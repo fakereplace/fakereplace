@@ -19,12 +19,12 @@
 
 package org.fakereplace.com.google.common.collect;
 
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
-
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+
+import org.fakereplace.com.google.common.annotations.GwtCompatible;
 
 import static org.fakereplace.com.google.common.base.Preconditions.checkNotNull;
 

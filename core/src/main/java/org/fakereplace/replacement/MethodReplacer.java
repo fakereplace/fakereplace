@@ -19,6 +19,16 @@
 
 package org.fakereplace.replacement;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.ListIterator;
+import java.util.Set;
+
 import javassist.bytecode.AccessFlag;
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.AttributeInfo;
@@ -53,16 +63,6 @@ import org.fakereplace.manip.util.ManipulationUtils.MethodReturnRewriter;
 import org.fakereplace.manip.util.ParameterRewriter;
 import org.fakereplace.util.AccessFlagUtils;
 import org.fakereplace.util.DescriptorUtils;
-
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.ListIterator;
-import java.util.Set;
 
 public class MethodReplacer {
     public static void handleMethodReplacement(ClassFile file, ClassLoader loader, Class<?> oldClass, ClassDataBuilder builder, Set<Class<?>> superclassesToHotswap) {

@@ -19,11 +19,11 @@
 
 package a.org.fakereplace.test.replacement.abstractmethod;
 
+import java.lang.reflect.InvocationTargetException;
+
 import a.org.fakereplace.test.util.ClassReplacer;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-
-import java.lang.reflect.InvocationTargetException;
 
 public class AbstractMethodTest {
     @BeforeClass(groups = "abstractmethod")

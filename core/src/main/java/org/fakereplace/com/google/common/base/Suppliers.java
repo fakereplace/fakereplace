@@ -19,9 +19,9 @@
 
 package org.fakereplace.com.google.common.base;
 
-import org.fakereplace.com.google.common.annotations.VisibleForTesting;
-
 import java.io.Serializable;
+
+import org.fakereplace.com.google.common.annotations.VisibleForTesting;
 
 
 /**

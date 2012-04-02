@@ -19,12 +19,6 @@
 
 package org.fakereplace.com.google.common.collect;
 
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
-import org.fakereplace.com.google.common.base.Function;
-import org.fakereplace.com.google.common.base.Joiner;
-import org.fakereplace.com.google.common.base.Preconditions;
-import org.fakereplace.com.google.common.base.Supplier;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -41,6 +35,12 @@ import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.SortedSet;
+
+import org.fakereplace.com.google.common.annotations.GwtCompatible;
+import org.fakereplace.com.google.common.base.Function;
+import org.fakereplace.com.google.common.base.Joiner;
+import org.fakereplace.com.google.common.base.Preconditions;
+import org.fakereplace.com.google.common.base.Supplier;
 
 import static org.fakereplace.com.google.common.base.Preconditions.checkNotNull;
 import static org.fakereplace.com.google.common.base.Preconditions.checkState;

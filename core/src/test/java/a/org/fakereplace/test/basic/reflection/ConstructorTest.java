@@ -19,10 +19,10 @@
 
 package a.org.fakereplace.test.basic.reflection;
 
+import java.lang.reflect.Constructor;
+
 import org.fakereplace.ConstructorArgument;
 import org.testng.annotations.Test;
-
-import java.lang.reflect.Constructor;
 
 public class ConstructorTest {
     @Test

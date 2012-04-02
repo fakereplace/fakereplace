@@ -19,15 +19,6 @@
 
 package a.org.fakereplace.test.replacement.virtualmethod;
 
-import a.org.fakereplace.test.coverage.ChangeTestType;
-import a.org.fakereplace.test.coverage.CodeChangeType;
-import a.org.fakereplace.test.coverage.Coverage;
-import a.org.fakereplace.test.coverage.MultipleCoverage;
-import a.org.fakereplace.test.util.ClassReplacer;
-import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -37,6 +28,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import a.org.fakereplace.test.coverage.ChangeTestType;
+import a.org.fakereplace.test.coverage.CodeChangeType;
+import a.org.fakereplace.test.coverage.Coverage;
+import a.org.fakereplace.test.coverage.MultipleCoverage;
+import a.org.fakereplace.test.util.ClassReplacer;
+import org.testng.Assert;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
 public class VirtualMethodTest {
     @BeforeClass(groups = "virtualmethod")

@@ -19,9 +19,9 @@
 
 package org.fakereplace.com.google.common.collect;
 
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
-
 import java.util.concurrent.ConcurrentMap;
+
+import org.fakereplace.com.google.common.annotations.GwtCompatible;
 
 /**
  * A concurrent map which forwards all its method calls to another concurrent

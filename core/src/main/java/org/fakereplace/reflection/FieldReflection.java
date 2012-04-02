@@ -19,6 +19,12 @@
 
 package org.fakereplace.reflection;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import javassist.bytecode.AccessFlag;
 import javassist.bytecode.Descriptor;
 import org.fakereplace.boot.Constants;
@@ -26,12 +32,6 @@ import org.fakereplace.data.ClassData;
 import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.data.FieldData;
 import org.fakereplace.data.MemberType;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 /**
  * Class that handles access to re-written fields.

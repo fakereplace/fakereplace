@@ -19,6 +19,9 @@
 
 package org.fakereplace.manip;
 
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
+
 import javassist.bytecode.AccessFlag;
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.AttributeInfo;
@@ -27,9 +30,6 @@ import javassist.bytecode.MethodInfo;
 import javassist.bytecode.annotation.Annotation;
 import org.fakereplace.boot.Constants;
 import org.fakereplace.data.ModifiedMethod;
-
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * manipulator that removes the final attribute from methods
@@ -49,7 +49,7 @@ public class FinalMethodManipulator implements ClassManipulator {
     }
 
     public boolean transformClass(ClassFile file, ClassLoader loader, boolean modifiableClass) {
-        if(!modifiableClass) {
+        if (!modifiableClass) {
             return false;
         }
         if (classLoaders.contains(file.getName())) {

@@ -19,12 +19,12 @@
 
 package org.fakereplace.com.google.common.collect;
 
+import java.io.Serializable;
+
 import org.fakereplace.com.google.common.annotations.GwtCompatible;
 import org.fakereplace.com.google.common.base.Function;
 import org.fakereplace.com.google.common.base.Objects;
 import org.fakereplace.com.google.common.base.Preconditions;
-
-import java.io.Serializable;
 
 
 /**

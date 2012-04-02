@@ -19,13 +19,13 @@
 
 package org.fakereplace.com.google.common.collect;
 
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import org.fakereplace.com.google.common.annotations.GwtCompatible;
 
 /**
  * Multiset implementation backed by a {@link HashMap}.

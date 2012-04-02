@@ -16,10 +16,10 @@
 
 package org.fakereplace.com.google.common.base;
 
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
-
 import java.io.Serializable;
 import java.util.Map;
+
+import org.fakereplace.com.google.common.annotations.GwtCompatible;
 
 import static org.fakereplace.com.google.common.base.Preconditions.checkArgument;
 import static org.fakereplace.com.google.common.base.Preconditions.checkNotNull;

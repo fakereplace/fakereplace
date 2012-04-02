@@ -19,10 +19,10 @@
 
 package org.fakereplace.com.google.common.collect;
 
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
-
 import java.util.Comparator;
 import java.util.SortedSet;
+
+import org.fakereplace.com.google.common.annotations.GwtCompatible;
 
 /**
  * A sorted set which forwards all its method calls to another sorted set.

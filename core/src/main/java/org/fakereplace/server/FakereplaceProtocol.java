@@ -1,9 +1,5 @@
 package org.fakereplace.server;
 
-import org.fakereplace.Agent;
-import org.fakereplace.boot.DefaultEnvironment;
-import org.fakereplace.replacement.AddedClass;
-
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -14,6 +10,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import org.fakereplace.Agent;
+import org.fakereplace.boot.DefaultEnvironment;
+import org.fakereplace.replacement.AddedClass;
 
 /**
  * An implementation of the fakereplace client server protocol.
@@ -130,7 +130,7 @@ public class FakereplaceProtocol {
             Agent.redefine(classDefinitions.toArray(new ClassDefinition[classDefinitions.size()]), new AddedClass[0]);
             DefaultEnvironment.getEnvironment().updateResource(archiveName, replacedResources);
 
-            
+
             DefaultEnvironment.getEnvironment().afterReplacement(replacedClasses, archiveName);
 
         } catch (IOException e) {

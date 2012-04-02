@@ -19,13 +19,13 @@
 
 package org.fakereplace.api;
 
-import org.fakereplace.classloading.ClassIdentifier;
-import org.fakereplace.com.google.common.collect.MapMaker;
-
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import org.fakereplace.classloading.ClassIdentifier;
+import org.fakereplace.com.google.common.collect.MapMaker;
 
 public class ClassChangeNotifier {
 

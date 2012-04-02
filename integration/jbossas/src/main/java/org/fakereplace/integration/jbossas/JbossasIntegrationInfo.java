@@ -19,11 +19,11 @@
 
 package org.fakereplace.integration.jbossas;
 
-import org.fakereplace.api.IntegrationInfo;
-import org.fakereplace.transformation.FakereplaceTransformer;
-
 import java.util.Collections;
 import java.util.Set;
+
+import org.fakereplace.api.IntegrationInfo;
+import org.fakereplace.transformation.FakereplaceTransformer;
 
 public class JbossasIntegrationInfo implements IntegrationInfo {
 

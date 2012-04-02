@@ -19,16 +19,16 @@
 
 package org.fakereplace.data;
 
-import org.fakereplace.com.google.common.base.Function;
-import org.fakereplace.com.google.common.collect.MapMaker;
-import org.fakereplace.util.DescriptorUtils;
-
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import org.fakereplace.com.google.common.base.Function;
+import org.fakereplace.com.google.common.collect.MapMaker;
+import org.fakereplace.util.DescriptorUtils;
 
 /**
  * This class holds everything there is to know about a class that has been seen

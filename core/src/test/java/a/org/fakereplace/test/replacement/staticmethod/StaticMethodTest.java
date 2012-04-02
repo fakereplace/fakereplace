@@ -19,6 +19,9 @@
 
 package a.org.fakereplace.test.replacement.staticmethod;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 import a.org.fakereplace.test.coverage.ChangeTestType;
 import a.org.fakereplace.test.coverage.CodeChangeType;
 import a.org.fakereplace.test.coverage.Coverage;
@@ -26,9 +29,6 @@ import a.org.fakereplace.test.coverage.MultipleCoverage;
 import a.org.fakereplace.test.util.ClassReplacer;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
 public class StaticMethodTest {
     @BeforeClass(groups = "staticmethod")

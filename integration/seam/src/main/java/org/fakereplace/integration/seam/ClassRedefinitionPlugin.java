@@ -19,6 +19,18 @@
 
 package org.fakereplace.integration.seam;
 
+import java.beans.Introspector;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.Set;
+
 import org.fakereplace.api.ClassChangeAware;
 import org.fakereplace.api.ClassChangeNotifier;
 import org.fakereplace.classloading.ClassIdentifier;
@@ -36,18 +48,6 @@ import org.jboss.seam.servlet.SeamFilter;
 import org.jboss.seam.util.ProxyFactory;
 import org.jboss.seam.web.AbstractFilter;
 import org.jboss.seam.web.HotDeployFilter;
-
-import java.beans.Introspector;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.Set;
 
 public class ClassRedefinitionPlugin implements ClassChangeAware {
     public ClassRedefinitionPlugin() {

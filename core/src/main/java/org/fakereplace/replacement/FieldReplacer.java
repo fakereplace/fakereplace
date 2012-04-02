@@ -19,6 +19,17 @@
 
 package org.fakereplace.replacement;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Set;
+
 import javassist.bytecode.AccessFlag;
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.AttributeInfo;
@@ -38,17 +49,6 @@ import org.fakereplace.data.MemberType;
 import org.fakereplace.manip.data.AddedFieldData;
 import org.fakereplace.manip.staticfield.StaticFieldClassFactory;
 import org.fakereplace.reflection.FieldAccessor;
-
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Set;
 
 public class FieldReplacer {
 

@@ -19,9 +19,6 @@
 
 package org.fakereplace.reflection;
 
-import org.fakereplace.data.AnnotationDataStore;
-import org.fakereplace.data.ModifiedMethod;
-
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Inherited;
 import java.lang.reflect.AnnotatedElement;
@@ -30,6 +27,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.fakereplace.data.AnnotationDataStore;
+import org.fakereplace.data.ModifiedMethod;
 
 public class AnnotationDelegate {
 

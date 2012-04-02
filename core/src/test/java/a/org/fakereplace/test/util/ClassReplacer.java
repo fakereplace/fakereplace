@@ -19,15 +19,15 @@
 
 package a.org.fakereplace.test.util;
 
-import javassist.ClassPool;
-import javassist.CtClass;
-import org.fakereplace.Agent;
-import org.fakereplace.replacement.AddedClass;
-
 import java.lang.instrument.ClassDefinition;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import javassist.ClassPool;
+import javassist.CtClass;
+import org.fakereplace.Agent;
+import org.fakereplace.replacement.AddedClass;
 
 public class ClassReplacer {
     Map<String, String> nameReplacements = new HashMap<String, String>();

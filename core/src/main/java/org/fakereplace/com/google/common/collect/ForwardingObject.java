@@ -19,9 +19,9 @@
 
 package org.fakereplace.com.google.common.collect;
 
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
-
 import java.io.Serializable;
+
+import org.fakereplace.com.google.common.annotations.GwtCompatible;
 
 /**
  * An abstract base class for implementing the <a

@@ -19,8 +19,6 @@
 
 package org.fakereplace;
 
-import org.fakereplace.api.IntegrationInfo;
-
 import java.io.IOException;
 import java.net.JarURLConnection;
 import java.net.URL;
@@ -30,6 +28,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+
+import org.fakereplace.api.IntegrationInfo;
 
 /**
  * class that is responsible for loading any bundled integrations from

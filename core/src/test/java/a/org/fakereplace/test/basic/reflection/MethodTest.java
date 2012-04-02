@@ -19,12 +19,12 @@
 
 package a.org.fakereplace.test.basic.reflection;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 import org.fakereplace.boot.Constants;
 import org.fakereplace.util.NoInstrument;
 import org.testng.annotations.Test;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
 public class MethodTest {
     @Test

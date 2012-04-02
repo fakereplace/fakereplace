@@ -19,16 +19,16 @@
 
 package org.fakereplace.com.google.common.collect;
 
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
-import org.fakereplace.com.google.common.annotations.VisibleForTesting;
-import org.fakereplace.com.google.common.base.Function;
-
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
+
+import org.fakereplace.com.google.common.annotations.GwtCompatible;
+import org.fakereplace.com.google.common.annotations.VisibleForTesting;
+import org.fakereplace.com.google.common.base.Function;
 
 import static org.fakereplace.com.google.common.base.Preconditions.checkNotNull;
 

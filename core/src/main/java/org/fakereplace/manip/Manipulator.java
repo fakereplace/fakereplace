@@ -19,11 +19,11 @@
 
 package org.fakereplace.manip;
 
-import javassist.bytecode.ClassFile;
-import org.fakereplace.manip.data.AddedFieldData;
-
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+
+import javassist.bytecode.ClassFile;
+import org.fakereplace.manip.data.AddedFieldData;
 
 /**
  * Class that maintains a set of manipulations to apply to classes

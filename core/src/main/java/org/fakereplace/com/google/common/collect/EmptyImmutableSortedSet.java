@@ -19,12 +19,12 @@
 
 package org.fakereplace.com.google.common.collect;
 
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
-
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.NoSuchElementException;
 import java.util.Set;
+
+import org.fakereplace.com.google.common.annotations.GwtCompatible;
 
 
 /**

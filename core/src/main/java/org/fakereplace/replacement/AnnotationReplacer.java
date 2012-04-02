@@ -19,6 +19,11 @@
 
 package org.fakereplace.replacement;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.ConstPool;
@@ -26,11 +31,6 @@ import javassist.bytecode.ParameterAnnotationsAttribute;
 import org.fakereplace.data.AnnotationBuilder;
 import org.fakereplace.data.AnnotationDataStore;
 import org.fakereplace.data.ClassDataBuilder;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 
 public class AnnotationReplacer {
 

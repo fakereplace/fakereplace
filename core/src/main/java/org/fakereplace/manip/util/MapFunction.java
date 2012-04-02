@@ -19,10 +19,10 @@
 
 package org.fakereplace.manip.util;
 
+import java.util.Map;
+
 import org.fakereplace.com.google.common.base.Function;
 import org.fakereplace.com.google.common.collect.MapMaker;
-
-import java.util.Map;
 
 public class MapFunction<F, K, V> implements Function<F, Map<K, V>> {
     final boolean weakKeys;

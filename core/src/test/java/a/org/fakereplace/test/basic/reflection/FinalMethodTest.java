@@ -19,10 +19,10 @@
 
 package a.org.fakereplace.test.basic.reflection;
 
-import org.testng.annotations.Test;
-
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+
+import org.testng.annotations.Test;
 
 public class FinalMethodTest {
     @Test

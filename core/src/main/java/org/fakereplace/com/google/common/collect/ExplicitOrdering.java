@@ -16,10 +16,10 @@
 
 package org.fakereplace.com.google.common.collect;
 
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
-
 import java.io.Serializable;
 import java.util.List;
+
+import org.fakereplace.com.google.common.annotations.GwtCompatible;
 
 
 /**

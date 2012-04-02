@@ -19,11 +19,11 @@
 
 package a.org.fakereplace.test.replacement.virtualmethod;
 
-import org.fakereplace.util.NoInstrument;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.fakereplace.util.NoInstrument;
 
 @NoInstrument
 public class VirtualClass1 {

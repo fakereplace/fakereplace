@@ -19,11 +19,11 @@
 
 package org.fakereplace.com.google.common.collect;
 
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
-import org.fakereplace.com.google.common.annotations.GwtIncompatible;
-
 import java.lang.reflect.Array;
 import java.util.List;
+
+import org.fakereplace.com.google.common.annotations.GwtCompatible;
+import org.fakereplace.com.google.common.annotations.GwtIncompatible;
 
 /**
  * Methods factored out so that they can be emulated differently in GWT.

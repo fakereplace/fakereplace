@@ -19,9 +19,9 @@
 
 package a.org.fakereplace.test.basic.synchronizedtests;
 
-import org.testng.annotations.Test;
-
 import java.lang.reflect.Modifier;
+
+import org.testng.annotations.Test;
 
 /**
  * This class tests that syncronisation still works as it should

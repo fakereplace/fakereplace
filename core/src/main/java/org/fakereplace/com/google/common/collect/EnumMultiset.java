@@ -16,15 +16,15 @@
 
 package org.fakereplace.com.google.common.collect;
 
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
-import org.fakereplace.com.google.common.base.Preconditions;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import org.fakereplace.com.google.common.annotations.GwtCompatible;
+import org.fakereplace.com.google.common.base.Preconditions;
 
 /**
  * Multiset implementation backed by an {@link EnumMap}.

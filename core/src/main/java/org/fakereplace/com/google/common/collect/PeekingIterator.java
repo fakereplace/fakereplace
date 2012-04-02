@@ -19,10 +19,10 @@
 
 package org.fakereplace.com.google.common.collect;
 
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
-
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+
+import org.fakereplace.com.google.common.annotations.GwtCompatible;
 
 /**
  * An iterator that supports a one-element lookahead while iterating.

@@ -19,13 +19,13 @@
 
 package org.fakereplace.data;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.fakereplace.BuiltinClassData;
 import org.fakereplace.com.google.common.collect.MapMaker;
 import org.fakereplace.manip.util.MapFunction;
 import org.fakereplace.reflection.FieldAccessor;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class ClassDataStore {
 

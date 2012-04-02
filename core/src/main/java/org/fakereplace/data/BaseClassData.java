@@ -19,13 +19,6 @@
 
 package org.fakereplace.data;
 
-import javassist.bytecode.ClassFile;
-import javassist.bytecode.Descriptor;
-import javassist.bytecode.FieldInfo;
-import javassist.bytecode.MethodInfo;
-import org.fakereplace.boot.Constants;
-import org.fakereplace.util.DescriptorUtils;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -33,6 +26,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+
+import javassist.bytecode.ClassFile;
+import javassist.bytecode.Descriptor;
+import javassist.bytecode.FieldInfo;
+import javassist.bytecode.MethodInfo;
+import org.fakereplace.boot.Constants;
+import org.fakereplace.util.DescriptorUtils;
 
 /**
  * This class holds everything there is to know about a class that has been seen

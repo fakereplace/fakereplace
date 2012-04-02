@@ -19,9 +19,9 @@
 
 package a.org.fakereplace.test.replacement.constructor;
 
-import org.fakereplace.util.NoInstrument;
-
 import java.util.List;
+
+import org.fakereplace.util.NoInstrument;
 
 @NoInstrument
 public class ConstructorClass1 {

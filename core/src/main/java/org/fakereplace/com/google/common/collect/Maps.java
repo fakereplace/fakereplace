@@ -19,13 +19,6 @@
 
 package org.fakereplace.com.google.common.collect;
 
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
-import org.fakereplace.com.google.common.base.Function;
-import org.fakereplace.com.google.common.base.Joiner.MapJoiner;
-import org.fakereplace.com.google.common.base.Objects;
-import org.fakereplace.com.google.common.base.Predicate;
-import org.fakereplace.com.google.common.base.Predicates;
-
 import java.io.Serializable;
 import java.util.AbstractCollection;
 import java.util.AbstractMap;
@@ -45,6 +38,13 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+
+import org.fakereplace.com.google.common.annotations.GwtCompatible;
+import org.fakereplace.com.google.common.base.Function;
+import org.fakereplace.com.google.common.base.Joiner.MapJoiner;
+import org.fakereplace.com.google.common.base.Objects;
+import org.fakereplace.com.google.common.base.Predicate;
+import org.fakereplace.com.google.common.base.Predicates;
 
 import static org.fakereplace.com.google.common.base.Preconditions.checkArgument;
 import static org.fakereplace.com.google.common.base.Preconditions.checkNotNull;

@@ -19,8 +19,6 @@
 
 package org.fakereplace.com.google.common.collect;
 
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
-
 import java.io.InvalidObjectException;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
@@ -32,7 +30,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.fakereplace.com.google.common.base.Preconditions.*;
+import org.fakereplace.com.google.common.annotations.GwtCompatible;
+
+import static org.fakereplace.com.google.common.base.Preconditions.checkArgument;
+import static org.fakereplace.com.google.common.base.Preconditions.checkNotNull;
+import static org.fakereplace.com.google.common.base.Preconditions.checkState;
 
 
 /**

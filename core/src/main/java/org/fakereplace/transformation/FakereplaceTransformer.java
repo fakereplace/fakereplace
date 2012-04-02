@@ -21,10 +21,10 @@
  */
 package org.fakereplace.transformation;
 
-import javassist.bytecode.ClassFile;
-
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
+
+import javassist.bytecode.ClassFile;
 
 /**
  * @author Stuart Douglas

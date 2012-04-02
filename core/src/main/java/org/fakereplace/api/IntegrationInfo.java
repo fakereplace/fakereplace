@@ -19,9 +19,9 @@
 
 package org.fakereplace.api;
 
-import org.fakereplace.transformation.FakereplaceTransformer;
-
 import java.util.Set;
+
+import org.fakereplace.transformation.FakereplaceTransformer;
 
 /**
  * Integrations need to implement this service to tell the transformer

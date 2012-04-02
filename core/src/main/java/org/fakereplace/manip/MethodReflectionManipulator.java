@@ -19,6 +19,10 @@
 
 package org.fakereplace.manip;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import javassist.bytecode.Bytecode;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.CodeIterator;
@@ -29,10 +33,6 @@ import org.fakereplace.boot.Constants;
 import org.fakereplace.boot.Logger;
 import org.fakereplace.util.JumpMarker;
 import org.fakereplace.util.JumpUtils;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 /**
  * manipulator that replaces Method.invokewith the following:

@@ -19,6 +19,15 @@
 
 package org.fakereplace;
 
+import java.io.DataOutputStream;
+import java.io.FileOutputStream;
+import java.lang.instrument.IllegalClassFormatException;
+import java.security.ProtectionDomain;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import javassist.bytecode.AccessFlag;
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.BadBytecode;
@@ -40,15 +49,6 @@ import org.fakereplace.manip.util.ManipulationUtils;
 import org.fakereplace.reflection.ReflectionInstrumentationSetup;
 import org.fakereplace.transformation.FakereplaceTransformer;
 import org.fakereplace.util.NoInstrument;
-
-import java.io.DataOutputStream;
-import java.io.FileOutputStream;
-import java.lang.instrument.IllegalClassFormatException;
-import java.security.ProtectionDomain;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * This file is the transformer that instruments classes as they are added to
@@ -100,7 +100,7 @@ public class Transformer implements FakereplaceTransformer {
                     BaseClassData baseData = new BaseClassData(file, loader, false);
                     ClassDataStore.saveClassData(loader, baseData.getInternalName(), baseData);
                 } else {
-                    if(manipulator.transformClass(file, loader, false)) {
+                    if (manipulator.transformClass(file, loader, false)) {
                         modified = true;
                     }
                 }
@@ -124,7 +124,7 @@ public class Transformer implements FakereplaceTransformer {
             }
 
             final boolean replaceable = DefaultEnvironment.getEnvironment().isClassReplaceable(file.getName(), loader);
-            if(manipulator.transformClass(file, loader, replaceable)) {
+            if (manipulator.transformClass(file, loader, replaceable)) {
                 modified = true;
             }
 

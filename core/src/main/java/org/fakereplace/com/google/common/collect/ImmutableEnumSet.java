@@ -19,12 +19,12 @@
 
 package org.fakereplace.com.google.common.collect;
 
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
-
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Set;
+
+import org.fakereplace.com.google.common.annotations.GwtCompatible;
 
 /**
  * Implementation of {@link ImmutableSet} backed by a non-empty {@link

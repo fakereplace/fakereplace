@@ -19,11 +19,11 @@
 
 package org.fakereplace.boot;
 
-import org.fakereplace.com.google.common.collect.MapMaker;
-import org.fakereplace.manip.util.MapFunction;
-
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
+
+import org.fakereplace.com.google.common.collect.MapMaker;
+import org.fakereplace.manip.util.MapFunction;
 
 /**
  * This class holds proxy definitions, that are later loaded by the relevant ClassLoaders

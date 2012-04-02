@@ -62,7 +62,7 @@ public class ClassLoaderInstrumentation {
     public static boolean redefineClassLoader(ClassFile classFile) throws BadBytecode {
         boolean modified = false;
         for (MethodInfo method : (List<MethodInfo>) classFile.getMethods()) {
-            if(Modifier.isStatic(method.getAccessFlags())) {
+            if (Modifier.isStatic(method.getAccessFlags())) {
                 continue;
             }
             if (method.getName().equals("loadClass") && (method.getDescriptor().equals("(Ljava/lang/String;)Ljava/lang/Class;") || method.getDescriptor().equals("(Ljava/lang/String;Z)Ljava/lang/Class;"))) {

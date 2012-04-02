@@ -19,6 +19,19 @@
 
 package org.fakereplace;
 
+import java.beans.Introspector;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.lang.instrument.ClassDefinition;
+import java.lang.instrument.Instrumentation;
+import java.lang.instrument.UnmodifiableClassException;
+import java.util.HashSet;
+import java.util.Set;
+
 import javassist.bytecode.ClassFile;
 import org.fakereplace.api.ClassChangeNotifier;
 import org.fakereplace.api.IntegrationInfo;
@@ -33,19 +46,6 @@ import org.fakereplace.replacement.ReplacementResult;
 import org.fakereplace.server.FakereplaceServer;
 import org.fakereplace.transformation.ClassLoaderTransformer;
 import org.fakereplace.transformation.MainTransformer;
-
-import java.beans.Introspector;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.lang.instrument.ClassDefinition;
-import java.lang.instrument.Instrumentation;
-import java.lang.instrument.UnmodifiableClassException;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * The agent entry point.

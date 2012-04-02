@@ -19,6 +19,11 @@
 
 package a.org.fakereplace.test.replacement.constructor;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.ParameterizedType;
+import java.util.List;
+
 import a.org.fakereplace.test.coverage.ChangeTestType;
 import a.org.fakereplace.test.coverage.CodeChangeType;
 import a.org.fakereplace.test.coverage.Coverage;
@@ -27,11 +32,6 @@ import a.org.fakereplace.test.replacement.constructor.other.Creator;
 import a.org.fakereplace.test.util.ClassReplacer;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.ParameterizedType;
-import java.util.List;
 
 public class ConstructorTest {
     @BeforeClass(groups = "constructor")

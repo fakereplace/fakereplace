@@ -19,11 +19,11 @@
 
 package org.fakereplace.integration.jsf;
 
-import org.fakereplace.api.IntegrationInfo;
-import org.fakereplace.transformation.FakereplaceTransformer;
-
 import java.util.Collections;
 import java.util.Set;
+
+import org.fakereplace.api.IntegrationInfo;
+import org.fakereplace.transformation.FakereplaceTransformer;
 
 public class JsfIntegrationInfo implements IntegrationInfo {
 

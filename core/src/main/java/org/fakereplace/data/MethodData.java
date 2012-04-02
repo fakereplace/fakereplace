@@ -19,11 +19,11 @@
 
 package org.fakereplace.data;
 
-import javassist.bytecode.AccessFlag;
-import org.fakereplace.util.DescriptorUtils;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+
+import javassist.bytecode.AccessFlag;
+import org.fakereplace.util.DescriptorUtils;
 
 /**
  * Class that holds information about a method.

@@ -19,10 +19,10 @@
 
 package org.fakereplace.data;
 
+import java.lang.reflect.Field;
+
 import javassist.bytecode.AccessFlag;
 import javassist.bytecode.FieldInfo;
-
-import java.lang.reflect.Field;
 
 public class FieldData {
     final private int accessFlags;

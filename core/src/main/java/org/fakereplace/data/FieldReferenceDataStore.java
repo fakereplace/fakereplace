@@ -19,11 +19,11 @@
 
 package org.fakereplace.data;
 
-import org.fakereplace.com.google.common.base.Function;
-import org.fakereplace.com.google.common.collect.MapMaker;
-
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import org.fakereplace.com.google.common.base.Function;
+import org.fakereplace.com.google.common.collect.MapMaker;
 
 /**
  * Maps a unique field signiture to an arbitary number.

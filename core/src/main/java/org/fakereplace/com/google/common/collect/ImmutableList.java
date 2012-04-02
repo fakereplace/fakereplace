@@ -19,8 +19,6 @@
 
 package org.fakereplace.com.google.common.collect;
 
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
-
 import java.io.InvalidObjectException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
@@ -30,6 +28,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.RandomAccess;
+
+import org.fakereplace.com.google.common.annotations.GwtCompatible;
 
 import static org.fakereplace.com.google.common.base.Preconditions.checkNotNull;
 

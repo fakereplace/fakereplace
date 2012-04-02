@@ -16,13 +16,13 @@
 
 package org.fakereplace.com.google.common.collect;
 
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.LinkedHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import org.fakereplace.com.google.common.annotations.GwtCompatible;
 
 /**
  * A {@code Multiset} implementation with predictable iteration order. Its

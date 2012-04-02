@@ -19,9 +19,9 @@
 
 package org.fakereplace.com.google.common.collect;
 
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
-
 import java.util.Iterator;
+
+import org.fakereplace.com.google.common.annotations.GwtCompatible;
 
 /**
  * An iterator which forwards all its method calls to another iterator.

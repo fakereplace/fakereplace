@@ -16,9 +16,6 @@
 
 package org.fakereplace.com.google.common.collect;
 
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
-import org.fakereplace.com.google.common.annotations.GwtIncompatible;
-
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
@@ -31,6 +28,9 @@ import java.util.Map;
 import java.util.RandomAccess;
 import java.util.Set;
 import java.util.SortedSet;
+
+import org.fakereplace.com.google.common.annotations.GwtCompatible;
+import org.fakereplace.com.google.common.annotations.GwtIncompatible;
 
 import static org.fakereplace.com.google.common.base.Preconditions.checkNotNull;
 

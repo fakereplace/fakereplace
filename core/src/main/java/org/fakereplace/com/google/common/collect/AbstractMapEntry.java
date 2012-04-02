@@ -16,10 +16,10 @@
 
 package org.fakereplace.com.google.common.collect;
 
+import java.util.Map.Entry;
+
 import org.fakereplace.com.google.common.annotations.GwtCompatible;
 import org.fakereplace.com.google.common.base.Objects;
-
-import java.util.Map.Entry;
 
 
 /**

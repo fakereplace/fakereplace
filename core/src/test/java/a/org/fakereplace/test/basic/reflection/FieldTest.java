@@ -19,9 +19,9 @@
 
 package a.org.fakereplace.test.basic.reflection;
 
-import org.testng.annotations.Test;
-
 import java.lang.reflect.Field;
+
+import org.testng.annotations.Test;
 
 public class FieldTest {
     @Test()

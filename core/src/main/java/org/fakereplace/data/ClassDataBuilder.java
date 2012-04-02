@@ -19,10 +19,10 @@
 
 package org.fakereplace.data;
 
-import javassist.bytecode.FieldInfo;
-
 import java.util.HashSet;
 import java.util.Set;
+
+import javassist.bytecode.FieldInfo;
 
 public class ClassDataBuilder {
 

@@ -19,9 +19,6 @@
 
 package org.fakereplace.com.google.common.collect;
 
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
-import org.fakereplace.com.google.common.annotations.GwtIncompatible;
-
 import java.io.Serializable;
 import java.util.AbstractCollection;
 import java.util.AbstractMap;
@@ -39,7 +36,12 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
 
-import static org.fakereplace.com.google.common.base.Preconditions.*;
+import org.fakereplace.com.google.common.annotations.GwtCompatible;
+import org.fakereplace.com.google.common.annotations.GwtIncompatible;
+
+import static org.fakereplace.com.google.common.base.Preconditions.checkArgument;
+import static org.fakereplace.com.google.common.base.Preconditions.checkNotNull;
+import static org.fakereplace.com.google.common.base.Preconditions.checkState;
 
 
 /**

@@ -19,10 +19,6 @@
 
 package org.fakereplace.com.google.common.collect;
 
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
-import org.fakereplace.com.google.common.base.Predicate;
-import org.fakereplace.com.google.common.base.Predicates;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
@@ -41,6 +37,10 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
+
+import org.fakereplace.com.google.common.annotations.GwtCompatible;
+import org.fakereplace.com.google.common.base.Predicate;
+import org.fakereplace.com.google.common.base.Predicates;
 
 import static org.fakereplace.com.google.common.base.Preconditions.checkArgument;
 import static org.fakereplace.com.google.common.base.Preconditions.checkNotNull;

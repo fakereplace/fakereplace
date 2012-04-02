@@ -19,6 +19,24 @@
 
 package org.fakereplace.integration.weld;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.lang.instrument.ClassDefinition;
+import java.lang.instrument.UnmodifiableClassException;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentMap;
+
+import javax.enterprise.inject.spi.Bean;
+
 import javassist.bytecode.ClassFile;
 import org.fakereplace.Agent;
 import org.fakereplace.api.ClassChangeAware;
@@ -30,18 +48,6 @@ import org.jboss.weld.bean.proxy.ClientProxyFactory;
 import org.jboss.weld.bean.proxy.ClientProxyProvider;
 import org.jboss.weld.bean.proxy.ProxyFactory;
 import org.jboss.weld.util.Proxies;
-
-import javax.enterprise.inject.spi.Bean;
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.lang.instrument.ClassDefinition;
-import java.lang.instrument.UnmodifiableClassException;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.*;
-import java.util.concurrent.ConcurrentMap;
 
 public class ClassRedefinitionPlugin implements ClassChangeAware {
 

@@ -19,6 +19,11 @@
 
 package org.fakereplace.manip;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import javassist.bytecode.Bytecode;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.CodeIterator;
@@ -30,11 +35,6 @@ import org.fakereplace.manip.data.AddedFieldData;
 import org.fakereplace.manip.util.Boxing;
 import org.fakereplace.manip.util.ManipulationDataStore;
 import org.fakereplace.util.DescriptorUtils;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public class InstanceFieldManipulator implements ClassManipulator {
     /**

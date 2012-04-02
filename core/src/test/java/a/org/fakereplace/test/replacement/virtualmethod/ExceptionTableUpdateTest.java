@@ -19,11 +19,11 @@
 
 package a.org.fakereplace.test.replacement.virtualmethod;
 
-import a.org.fakereplace.test.util.ClassReplacer;
-import org.testng.annotations.Test;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+
+import a.org.fakereplace.test.util.ClassReplacer;
+import org.testng.annotations.Test;
 
 public class ExceptionTableUpdateTest {
     @Test

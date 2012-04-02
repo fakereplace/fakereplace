@@ -19,10 +19,10 @@
 
 package org.fakereplace.com.google.common.collect;
 
+import java.util.Set;
+
 import org.fakereplace.com.google.common.annotations.GwtCompatible;
 import org.fakereplace.com.google.common.base.Preconditions;
-
-import java.util.Set;
 
 
 /**

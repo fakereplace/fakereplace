@@ -19,11 +19,11 @@
 
 package a.org.fakereplace.test.replacement.annotated.method;
 
+import java.lang.reflect.Method;
+
 import a.org.fakereplace.test.util.ClassReplacer;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-
-import java.lang.reflect.Method;
 
 public class AnnotatedMethodParametersTest {
 

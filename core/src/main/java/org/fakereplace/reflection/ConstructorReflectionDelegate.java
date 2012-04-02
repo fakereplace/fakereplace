@@ -19,6 +19,11 @@
 
 package org.fakereplace.reflection;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
+
 import javassist.bytecode.AccessFlag;
 import javassist.bytecode.Descriptor;
 import org.fakereplace.ConstructorArgument;
@@ -29,11 +34,6 @@ import org.fakereplace.data.MemberType;
 import org.fakereplace.data.MethodData;
 import org.fakereplace.util.DescriptorUtils;
 import sun.reflect.Reflection;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ConstructorReflectionDelegate {
 

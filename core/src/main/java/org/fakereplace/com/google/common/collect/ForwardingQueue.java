@@ -19,9 +19,9 @@
 
 package org.fakereplace.com.google.common.collect;
 
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
-
 import java.util.Queue;
+
+import org.fakereplace.com.google.common.annotations.GwtCompatible;
 
 /**
  * A queue which forwards all its method calls to another queue. Subclasses

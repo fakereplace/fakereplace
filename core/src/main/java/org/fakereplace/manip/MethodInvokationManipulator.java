@@ -19,6 +19,11 @@
 
 package org.fakereplace.manip;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.CodeIterator;
 import javassist.bytecode.ConstPool;
@@ -26,11 +31,6 @@ import javassist.bytecode.MethodInfo;
 import org.fakereplace.boot.Logger;
 import org.fakereplace.manip.data.VirtualToStaticData;
 import org.fakereplace.manip.util.ManipulationDataStore;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public class MethodInvokationManipulator implements ClassManipulator {
     ManipulationDataStore<VirtualToStaticData> data = new ManipulationDataStore<VirtualToStaticData>();

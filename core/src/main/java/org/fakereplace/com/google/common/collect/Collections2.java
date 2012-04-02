@@ -19,16 +19,16 @@
 
 package org.fakereplace.com.google.common.collect;
 
+import java.util.AbstractCollection;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Set;
+
 import org.fakereplace.com.google.common.annotations.GwtCompatible;
 import org.fakereplace.com.google.common.base.Function;
 import org.fakereplace.com.google.common.base.Joiner;
 import org.fakereplace.com.google.common.base.Predicate;
 import org.fakereplace.com.google.common.base.Predicates;
-
-import java.util.AbstractCollection;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Set;
 
 import static org.fakereplace.com.google.common.base.Preconditions.checkArgument;
 import static org.fakereplace.com.google.common.base.Preconditions.checkNotNull;

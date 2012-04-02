@@ -19,11 +19,11 @@
 
 package org.fakereplace.data;
 
-import org.fakereplace.com.google.common.collect.MapMaker;
-import org.fakereplace.manip.util.MapFunction;
-
 import java.util.Map;
 import java.util.Set;
+
+import org.fakereplace.com.google.common.collect.MapMaker;
+import org.fakereplace.manip.util.MapFunction;
 
 /**
  * This class is responsible for tracking instances of certain classes as they

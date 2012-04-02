@@ -19,10 +19,10 @@
 
 package a.org.fakereplace.test.basic.reflection;
 
-import org.testng.annotations.Test;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+
+import org.testng.annotations.Test;
 
 public class MethodPermissionTest {
 

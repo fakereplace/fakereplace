@@ -16,14 +16,14 @@
 
 package org.fakereplace.com.google.common.base;
 
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
-
 import java.io.IOException;
 import java.util.AbstractList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import org.fakereplace.com.google.common.annotations.GwtCompatible;
 
 import static org.fakereplace.com.google.common.base.Preconditions.checkNotNull;
 

@@ -19,13 +19,6 @@
 
 package org.fakereplace.com.google.common.collect;
 
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
-import org.fakereplace.com.google.common.annotations.GwtIncompatible;
-import org.fakereplace.com.google.common.base.FinalizableReferenceQueue;
-import org.fakereplace.com.google.common.base.FinalizableSoftReference;
-import org.fakereplace.com.google.common.base.FinalizableWeakReference;
-import org.fakereplace.com.google.common.base.Function;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -38,6 +31,13 @@ import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
+
+import org.fakereplace.com.google.common.annotations.GwtCompatible;
+import org.fakereplace.com.google.common.annotations.GwtIncompatible;
+import org.fakereplace.com.google.common.base.FinalizableReferenceQueue;
+import org.fakereplace.com.google.common.base.FinalizableSoftReference;
+import org.fakereplace.com.google.common.base.FinalizableWeakReference;
+import org.fakereplace.com.google.common.base.Function;
 
 /**
  * A {@link ConcurrentMap} builder, providing any combination of these

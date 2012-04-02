@@ -19,14 +19,14 @@
 
 package a.org.fakereplace.test.basic.reflection;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+
 import a.org.fakereplace.test.coverage.ChangeTestType;
 import a.org.fakereplace.test.coverage.CodeChangeType;
 import a.org.fakereplace.test.coverage.Coverage;
 import a.org.fakereplace.test.coverage.MultipleCoverage;
 import org.testng.annotations.Test;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 
 public class ConstructorPermissionTest {
 

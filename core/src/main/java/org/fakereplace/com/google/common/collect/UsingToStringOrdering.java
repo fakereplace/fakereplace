@@ -16,9 +16,9 @@
 
 package org.fakereplace.com.google.common.collect;
 
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
-
 import java.io.Serializable;
+
+import org.fakereplace.com.google.common.annotations.GwtCompatible;
 
 /**
  * An ordering that uses the reverse of the natural order of the values.

@@ -20,12 +20,12 @@
 package org.fakereplace.integration.weld;
 
 
-import org.fakereplace.api.IntegrationInfo;
-import org.fakereplace.transformation.FakereplaceTransformer;
-
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.fakereplace.api.IntegrationInfo;
+import org.fakereplace.transformation.FakereplaceTransformer;
 
 public class WeldIntegrationInfo implements IntegrationInfo {
 

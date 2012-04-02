@@ -19,10 +19,10 @@
 
 package org.fakereplace.com.google.common.base;
 
+import java.util.NoSuchElementException;
+
 import org.fakereplace.com.google.common.annotations.GwtCompatible;
 import org.fakereplace.com.google.common.annotations.VisibleForTesting;
-
-import java.util.NoSuchElementException;
 
 /**
  * Simple static methods to be called at the start of your own methods to verify

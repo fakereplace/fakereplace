@@ -19,10 +19,10 @@
 
 package a.org.fakereplace.test.replacement.annotated.field;
 
+import java.lang.reflect.Field;
+
 import a.org.fakereplace.test.util.ClassReplacer;
 import org.testng.annotations.Test;
-
-import java.lang.reflect.Field;
 
 public class AnnotatedFieldTest {
 

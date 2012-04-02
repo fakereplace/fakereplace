@@ -19,10 +19,10 @@
 
 package org.fakereplace.com.google.common.collect;
 
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
-
 import java.util.Comparator;
 import java.util.SortedMap;
+
+import org.fakereplace.com.google.common.annotations.GwtCompatible;
 
 /**
  * A sorted map which forwards all its method calls to another sorted map.

@@ -19,9 +19,9 @@
 
 package org.fakereplace.com.google.common.base;
 
-import org.fakereplace.com.google.common.annotations.GwtCompatible;
-
 import java.util.Arrays;
+
+import org.fakereplace.com.google.common.annotations.GwtCompatible;
 
 
 /**

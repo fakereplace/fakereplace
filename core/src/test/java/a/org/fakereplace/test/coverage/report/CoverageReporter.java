@@ -19,13 +19,6 @@
 
 package a.org.fakereplace.test.coverage.report;
 
-import a.org.fakereplace.test.coverage.ChangeTestType;
-import a.org.fakereplace.test.coverage.CodeChangeType;
-import org.testng.IReporter;
-import org.testng.ISuite;
-import org.testng.log4testng.Logger;
-import org.testng.xml.XmlSuite;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -34,6 +27,13 @@ import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import a.org.fakereplace.test.coverage.ChangeTestType;
+import a.org.fakereplace.test.coverage.CodeChangeType;
+import org.testng.IReporter;
+import org.testng.ISuite;
+import org.testng.log4testng.Logger;
+import org.testng.xml.XmlSuite;
 
 public class CoverageReporter implements IReporter {
 

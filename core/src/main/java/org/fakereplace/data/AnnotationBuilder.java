@@ -19,6 +19,9 @@
 
 package org.fakereplace.data;
 
+import java.lang.reflect.Array;
+import java.lang.reflect.Method;
+
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.annotation.Annotation;
 import javassist.bytecode.annotation.AnnotationMemberValue;
@@ -35,9 +38,6 @@ import javassist.bytecode.annotation.LongMemberValue;
 import javassist.bytecode.annotation.MemberValue;
 import javassist.bytecode.annotation.ShortMemberValue;
 import javassist.bytecode.annotation.StringMemberValue;
-
-import java.lang.reflect.Array;
-import java.lang.reflect.Method;
 
 /**
  * Created a Javassist Annotation from a java one

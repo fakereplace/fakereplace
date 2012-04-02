@@ -19,6 +19,13 @@
 
 package a.org.fakereplace.test.coverage.report;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import a.org.fakereplace.test.coverage.ChangeTestType;
 import a.org.fakereplace.test.coverage.CodeChangeType;
 import a.org.fakereplace.test.coverage.Coverage;
@@ -26,13 +33,6 @@ import a.org.fakereplace.test.coverage.MultipleCoverage;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 public class CoverageListener implements ITestListener {
 

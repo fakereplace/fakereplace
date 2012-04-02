@@ -19,11 +19,11 @@
 
 package org.fakereplace.reflection;
 
-import org.fakereplace.com.google.common.collect.MapMaker;
-import sun.reflect.Reflection;
-
 import java.lang.reflect.AccessibleObject;
 import java.util.Map;
+
+import org.fakereplace.com.google.common.collect.MapMaker;
+import sun.reflect.Reflection;
 
 /**
  * tracks the accessible state of reflection items
