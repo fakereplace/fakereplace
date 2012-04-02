@@ -32,7 +32,7 @@ import org.fakereplace.data.InstanceTracker;
 
 public class ClassRedefinitionPlugin implements ClassChangeAware {
     public ClassRedefinitionPlugin() {
-        ClassChangeNotifier.add(this);
+        ClassChangeNotifier.instance().add(this);
     }
 
     Field getField(Class<?> clazz, String name) throws NoSuchFieldException {

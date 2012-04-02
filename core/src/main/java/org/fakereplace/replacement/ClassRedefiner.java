@@ -65,7 +65,7 @@ public class ClassRedefiner {
     }
 
     public static void modifyReloadedClass(ClassFile file, ClassLoader loader, Class<?> oldClass, Set<Class<?>> classToReload) {
-        BaseClassData b = ClassDataStore.getBaseClassData(loader, Descriptor.toJvmName(file.getName()));
+        BaseClassData b = ClassDataStore.instance().getBaseClassData(loader, Descriptor.toJvmName(file.getName()));
         if (b == null) {
             throw new RuntimeException("Could not find BaseClassData for " + file.getName());
         }
@@ -75,10 +75,10 @@ public class ClassRedefiner {
         }
 
         ClassDataBuilder builder = new ClassDataBuilder(b);
-        AnnotationReplacer.processAnnotations(file, oldClass, builder);
+        AnnotationReplacer.processAnnotations(file, oldClass);
         FieldReplacer.handleFieldReplacement(file, loader, oldClass, builder);
         MethodReplacer.handleMethodReplacement(file, loader, oldClass, builder, classToReload);
-        ClassDataStore.saveClassData(loader, file.getName(), builder);
+        ClassDataStore.instance().saveClassData(loader, file.getName(), builder);
     }
 
 }

@@ -29,53 +29,51 @@ import org.fakereplace.reflection.FieldAccessor;
 
 public class ClassDataStore {
 
-    static final Map<String, Class<?>> proxyNameToReplacedClass = new ConcurrentHashMap<String, Class<?>>();
-    private static final Map<String, FieldAccessor> proxyNameToFieldAccessor = new ConcurrentHashMap<String, FieldAccessor>();
+    private static final ClassDataStore INSTANCE = new ClassDataStore();
 
-    private static final Map<ClassLoader, Map<String, ClassData>> classData = new MapMaker().weakKeys().makeComputingMap(new MapFunction<ClassLoader, String, ClassData>(false));
-
-    private static final Map<ClassLoader, Map<String, BaseClassData>> baseClassData = new MapMaker().weakKeys().makeComputingMap(new MapFunction<ClassLoader, String, BaseClassData>(false));
-
-    private static final Map<String, MethodData> proxyNameToMethodData = new ConcurrentHashMap<String, MethodData>();
-
-    private static final Map<Class<?>, Object> replacedClasses = new MapMaker().weakKeys().makeMap();
+    private final Map<String, Class<?>> proxyNameToReplacedClass = new ConcurrentHashMap<String, Class<?>>();
+    private final Map<String, FieldAccessor> proxyNameToFieldAccessor = new ConcurrentHashMap<String, FieldAccessor>();
+    private final Map<ClassLoader, Map<String, ClassData>> classData = new MapMaker().weakKeys().makeComputingMap(new MapFunction<ClassLoader, String, ClassData>(false));
+    private final Map<ClassLoader, Map<String, BaseClassData>> baseClassData = new MapMaker().weakKeys().makeComputingMap(new MapFunction<ClassLoader, String, BaseClassData>(false));
+    private final Map<String, MethodData> proxyNameToMethodData = new ConcurrentHashMap<String, MethodData>();
+    private final Map<Class<?>, Object> replacedClasses = new MapMaker().weakKeys().makeMap();
 
     /**
      * takes the place of the null key on ConcurrentHashMap
      */
-    private static ClassLoader nullLoader = new ClassLoader() {
+    private static final ClassLoader NULL_LOADER = new ClassLoader() {
     };
 
-    public static void markClassReplaced(Class<?> clazz) {
-        replacedClasses.put(clazz, nullLoader);
+    public void markClassReplaced(Class<?> clazz) {
+        replacedClasses.put(clazz, NULL_LOADER);
     }
 
-    public static boolean isClassReplaced(Class<?> clazz) {
+    public boolean isClassReplaced(Class<?> clazz) {
         return replacedClasses.containsKey(clazz);
     }
 
-    public static void saveClassData(ClassLoader loader, String className, ClassDataBuilder data) {
+    public void saveClassData(ClassLoader loader, String className, ClassDataBuilder data) {
         className = className.replace('/', '.');
         if (loader == null) {
-            loader = nullLoader;
+            loader = NULL_LOADER;
         }
         Map<String, ClassData> map = classData.get(loader);
         map.put(className, data.buildClassData());
     }
 
-    public static void saveClassData(ClassLoader loader, String className, BaseClassData data) {
+    public void saveClassData(ClassLoader loader, String className, BaseClassData data) {
         className = className.replace('/', '.');
         if (loader == null) {
-            loader = nullLoader;
+            loader = NULL_LOADER;
         }
         Map<String, BaseClassData> map = baseClassData.get(loader);
         map.put(className, data);
     }
 
-    public static ClassData getModifiedClassData(ClassLoader loader, String className) {
+    public ClassData getModifiedClassData(ClassLoader loader, String className) {
         className = className.replace('/', '.');
         if (loader == null) {
-            loader = nullLoader;
+            loader = NULL_LOADER;
         }
         Map<String, ClassData> map = classData.get(loader);
         ClassData cd = map.get(className);
@@ -93,10 +91,10 @@ public class ClassDataStore {
         return cd;
     }
 
-    public static BaseClassData getBaseClassData(ClassLoader loader, String className) {
+    public BaseClassData getBaseClassData(ClassLoader loader, String className) {
         className = className.replace('/', '.');
         if (loader == null) {
-            loader = nullLoader;
+            loader = NULL_LOADER;
         }
         Map<String, BaseClassData> map = baseClassData.get(loader);
         if (!map.containsKey(className)) {
@@ -104,7 +102,7 @@ public class ClassDataStore {
             // load the class and get the data
             if (BuiltinClassData.skipInstrumentation(className)) {
                 try {
-                    if (loader != nullLoader) {
+                    if (loader != NULL_LOADER) {
                         Class<?> cls = loader.loadClass(className);
                         saveClassData(loader, className, new BaseClassData(cls));
                     } else {
@@ -123,28 +121,32 @@ public class ClassDataStore {
         return cd;
     }
 
-    public static Class<?> getRealClassFromProxyName(String proxyName) {
+    public Class<?> getRealClassFromProxyName(String proxyName) {
         return proxyNameToReplacedClass.get(proxyName);
     }
 
-    public static void registerProxyName(Class<?> c, String proxyName) {
+    public void registerProxyName(Class<?> c, String proxyName) {
         proxyNameToReplacedClass.put(proxyName, c);
     }
 
-    public static void registerFieldAccessor(String proxyName, FieldAccessor accessor) {
+    public void registerFieldAccessor(String proxyName, FieldAccessor accessor) {
         proxyNameToFieldAccessor.put(proxyName, accessor);
     }
 
-    public static void registerReplacedMethod(String proxyName, MethodData methodData) {
+    public void registerReplacedMethod(String proxyName, MethodData methodData) {
         proxyNameToMethodData.put(proxyName, methodData);
     }
 
-    public static MethodData getMethodInformation(String proxyName) {
+    public MethodData getMethodInformation(String proxyName) {
         return proxyNameToMethodData.get(proxyName);
     }
 
-    public static FieldAccessor getFieldAccessor(String proxyName) {
+    public FieldAccessor getFieldAccessor(String proxyName) {
         return proxyNameToFieldAccessor.get(proxyName);
+    }
+
+    public static ClassDataStore instance() {
+        return INSTANCE;
     }
 
 }

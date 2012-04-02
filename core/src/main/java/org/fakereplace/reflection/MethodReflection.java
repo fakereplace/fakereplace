@@ -52,7 +52,7 @@ public class MethodReflection {
 
     public static Object invoke(Method method, Object instance, Object[] args) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
         if (!Modifier.isStatic(method.getModifiers())) {
-            MethodData info = ClassDataStore.getMethodInformation(method.getDeclaringClass().getName());
+            MethodData info = ClassDataStore.instance().getMethodInformation(method.getDeclaringClass().getName());
             try {
                 Method invoke = info.getMethodToInvoke(method.getDeclaringClass());
                 Object[] newAgrs = prependInstanceToParams(instance, args);
@@ -89,7 +89,7 @@ public class MethodReflection {
 
     public static Method[] getDeclaredMethods(Class<?> clazz) {
         try {
-            ClassData cd = ClassDataStore.getModifiedClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
+            ClassData cd = ClassDataStore.instance().getModifiedClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
 
             if (cd == null || !cd.isReplaceable()) {
                 return clazz.getDeclaredMethods();
@@ -123,7 +123,7 @@ public class MethodReflection {
 
     public static Method[] getMethods(Class<?> clazz) {
         try {
-            ClassData cd = ClassDataStore.getModifiedClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
+            ClassData cd = ClassDataStore.instance().getModifiedClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
 
             if (cd == null) {
                 return clazz.getMethods();
@@ -166,7 +166,7 @@ public class MethodReflection {
 
     public static Method getMethod(Class<?> clazz, String name, Class<?>... parameters) throws NoSuchMethodException {
 
-        ClassData cd = ClassDataStore.getModifiedClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
+        ClassData cd = ClassDataStore.instance().getModifiedClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
 
         if (cd == null) {
             Method meth = clazz.getMethod(name, parameters);
@@ -177,7 +177,7 @@ public class MethodReflection {
         Class<?> superClass = clazz;
         while (superClass.getSuperclass() != null && md == null && superClass != Object.class) {
             superClass = superClass.getSuperclass();
-            cd = ClassDataStore.getModifiedClassData(superClass.getClassLoader(), Descriptor.toJvmName(superClass.getName()));
+            cd = ClassDataStore.instance().getModifiedClassData(superClass.getClassLoader(), Descriptor.toJvmName(superClass.getName()));
             if (cd != null) {
                 md = cd.getMethodData(name, args);
             }
@@ -210,7 +210,7 @@ public class MethodReflection {
     }
 
     public static Method getDeclaredMethod(Class<?> clazz, String name, Class<?>... parameters) throws NoSuchMethodException {
-        ClassData cd = ClassDataStore.getModifiedClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
+        ClassData cd = ClassDataStore.instance().getModifiedClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
         if (cd == null || !cd.isReplaceable()) {
             Method meth = clazz.getDeclaredMethod(name, parameters);
             return meth;
@@ -249,7 +249,7 @@ public class MethodReflection {
     public static Class<?> getDeclaringClass(Method m) {
         Class<?> c = m.getDeclaringClass();
         if (c.getName().startsWith(Constants.GENERATED_CLASS_PACKAGE)) {
-            return ClassDataStore.getRealClassFromProxyName(c.getName());
+            return ClassDataStore.instance().getRealClassFromProxyName(c.getName());
         }
         return c;
     }

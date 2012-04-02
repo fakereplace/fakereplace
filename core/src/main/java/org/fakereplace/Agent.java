@@ -108,10 +108,10 @@ public class Agent {
         for (ClassDefinition i : classes) {
             System.out.println("Fakereplace is replacing class " + i.getDefinitionClass());
             changedClasses[count++] = i.getDefinitionClass();
-            ClassDataStore.markClassReplaced(i.getClass());
+            ClassDataStore.instance().markClassReplaced(i.getClass());
         }
         // notify the integration classes that stuff is about to change
-        ClassChangeNotifier.beforeChange(changedClasses, addedClass);
+        ClassChangeNotifier.instance().beforeChange(changedClasses, addedClass);
         // re-write the classes so their field
         ReplacementResult result = ClassRedefiner.rewriteLoadedClasses(classes);
         try {
@@ -124,7 +124,7 @@ public class Agent {
             }
             Introspector.flushCaches();
 
-            ClassChangeNotifier.notify(changedClasses, addedClass);
+            ClassChangeNotifier.instance().notify(changedClasses, addedClass);
         } catch (Throwable e) {
             try {
                 // dump the classes to /tmp so we can look at them

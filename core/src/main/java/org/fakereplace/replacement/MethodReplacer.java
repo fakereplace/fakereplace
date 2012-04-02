@@ -49,7 +49,7 @@ import org.fakereplace.BuiltinClassData;
 import org.fakereplace.Transformer;
 import org.fakereplace.boot.Constants;
 import org.fakereplace.boot.Logger;
-import org.fakereplace.boot.ProxyDefinitionStore;
+import org.fakereplace.classloading.ProxyDefinitionStore;
 import org.fakereplace.data.AnnotationDataStore;
 import org.fakereplace.data.BaseClassData;
 import org.fakereplace.data.ClassDataBuilder;
@@ -417,7 +417,7 @@ public class MethodReplacer {
                 generateBoxedConditionalCodeBlock(methodCount, mInfo, file.getConstPool(), bytecode, staticMethod, false);
             }
             String proxyName = generateProxyInvocationBytecode(mInfo, file.getConstPool(), methodCount, file.getName(), loader, staticMethod, file.isInterface());
-            ClassDataStore.registerProxyName(oldClass, proxyName);
+            ClassDataStore.instance().registerProxyName(oldClass, proxyName);
             String newMethodDesc = mInfo.getDescriptor();
             if (!staticMethod) {
                 newMethodDesc = "(L" + Descriptor.toJvmName(file.getName()) + ";" + newMethodDesc.substring(1);
@@ -425,7 +425,7 @@ public class MethodReplacer {
             Transformer.getManipulator().replaceVirtualMethodInvokationWithStatic(file.getName(), proxyName, mInfo.getName(), mInfo.getDescriptor(), newMethodDesc, loader);
 
             MethodData md = builder.addFakeMethod(mInfo.getName(), mInfo.getDescriptor(), proxyName, mInfo.getAccessFlags());
-            ClassDataStore.registerReplacedMethod(proxyName, md);
+            ClassDataStore.instance().registerReplacedMethod(proxyName, md);
             if (!staticMethod) {
                 Class<?> sup = oldClass.getSuperclass();
                 while (sup != null) {
@@ -572,10 +572,10 @@ public class MethodReplacer {
         try {
             generateBoxedConditionalCodeBlock(methodCount, mInfo, file.getConstPool(), bytecode, false, true);
             String proxyName = generateFakeConstructorBytecode(mInfo, file.getConstPool(), methodCount, file.getName(), loader);
-            ClassDataStore.registerProxyName(oldClass, proxyName);
+            ClassDataStore.instance().registerProxyName(oldClass, proxyName);
             Transformer.getManipulator().rewriteConstructorAccess(file.getName(), mInfo.getDescriptor(), methodCount, loader);
             MethodData md = builder.addFakeConstructor(mInfo.getName(), mInfo.getDescriptor(), proxyName, mInfo.getAccessFlags(), methodCount);
-            ClassDataStore.registerReplacedMethod(proxyName, md);
+            ClassDataStore.instance().registerReplacedMethod(proxyName, md);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -593,7 +593,6 @@ public class MethodReplacer {
      * @param methodNumber
      * @param className
      * @param loader
-     * @param staticMethod
      * @return
      * @throws BadBytecode
      */

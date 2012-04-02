@@ -129,11 +129,11 @@ public class ClassData {
         if (superClassName == null) {
             return null;
         }
-        ClassData superClassInformation = ClassDataStore.getModifiedClassData(loader, superClassName);
+        ClassData superClassInformation = ClassDataStore.instance().getModifiedClassData(loader, superClassName);
         ClassLoader l = loader;
         while (superClassInformation == null && l != null) {
             l = l.getParent();
-            superClassInformation = ClassDataStore.getModifiedClassData(l, superClassName);
+            superClassInformation = ClassDataStore.instance().getModifiedClassData(l, superClassName);
         }
         return superClassInformation;
     }
@@ -225,7 +225,7 @@ public class ClassData {
     private static class MethodResolver implements Function<Method, MethodData> {
 
         public MethodData apply(Method from) {
-            ClassData dta = ClassDataStore.getModifiedClassData(from.getDeclaringClass().getClassLoader(), from.getDeclaringClass().getName());
+            ClassData dta = ClassDataStore.instance().getModifiedClassData(from.getDeclaringClass().getClassLoader(), from.getDeclaringClass().getName());
             if (dta == null) {
                 return NULL_METHOD_DATA;
             }

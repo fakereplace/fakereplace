@@ -13,7 +13,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Class that tracks unmodified files that can be ignored on future boots
+ * Class that tracks unmodified files that can be ignored on future boots. This provides a big speed improvement,
+ * as it means that only classes that actually have to be modified are parsed by javassist.
  *
  * @author Stuart Douglas
  */

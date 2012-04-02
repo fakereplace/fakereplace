@@ -39,8 +39,8 @@ public class ConstructorReflectionDelegate {
     @SuppressWarnings("restriction")
     public static Object newInstance(Constructor<?> method, Object... args) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException, InstantiationException {
         if (fakeCallRequired(method)) {
-            MethodData data = ClassDataStore.getMethodInformation(method.getDeclaringClass().getName());
-            Class<?> info = ClassDataStore.getRealClassFromProxyName(method.getDeclaringClass().getName());
+            MethodData data = ClassDataStore.instance().getMethodInformation(method.getDeclaringClass().getName());
+            Class<?> info = ClassDataStore.instance().getRealClassFromProxyName(method.getDeclaringClass().getName());
             try {
                 Constructor<?> invoke = info.getConstructor(int.class, Object[].class, ConstructorArgument.class);
                 Object ar = args;
@@ -63,7 +63,7 @@ public class ConstructorReflectionDelegate {
 
     public static Constructor<?>[] getDeclaredConstructors(Class<?> clazz) {
         try {
-            ClassData cd = ClassDataStore.getModifiedClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
+            ClassData cd = ClassDataStore.instance().getModifiedClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
 
             if (cd == null || !cd.isReplaceable()) {
                 return clazz.getDeclaredConstructors();
@@ -99,7 +99,7 @@ public class ConstructorReflectionDelegate {
 
     public static Constructor<?>[] getConstructors(Class<?> clazz) {
         try {
-            ClassData cd = ClassDataStore.getModifiedClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
+            ClassData cd = ClassDataStore.instance().getModifiedClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
 
             if (cd == null || !cd.isReplaceable()) {
                 return clazz.getConstructors();
@@ -139,7 +139,7 @@ public class ConstructorReflectionDelegate {
 
     public static Constructor<?> getConstructor(Class<?> clazz, Class<?>... parameters) throws NoSuchMethodException {
 
-        ClassData cd = ClassDataStore.getModifiedClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
+        ClassData cd = ClassDataStore.instance().getModifiedClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
 
         if (cd == null || !cd.isReplaceable()) {
             Constructor<?> meth = clazz.getConstructor(parameters);
@@ -172,7 +172,7 @@ public class ConstructorReflectionDelegate {
 
     public static Constructor<?> getDeclaredConstructor(Class<?> clazz, Class<?>... parameters) throws NoSuchMethodException {
 
-        ClassData cd = ClassDataStore.getModifiedClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
+        ClassData cd = ClassDataStore.instance().getModifiedClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
 
         if (cd == null || !cd.isReplaceable()) {
             Constructor<?> meth = clazz.getDeclaredConstructor(parameters);
@@ -206,7 +206,7 @@ public class ConstructorReflectionDelegate {
     public static Class<?> getDeclaringClass(Constructor<?> f) {
         Class<?> c = f.getDeclaringClass();
         if (c.getName().startsWith(Constants.GENERATED_CLASS_PACKAGE)) {
-            return ClassDataStore.getRealClassFromProxyName(c.getName());
+            return ClassDataStore.instance().getRealClassFromProxyName(c.getName());
         }
         return c;
     }

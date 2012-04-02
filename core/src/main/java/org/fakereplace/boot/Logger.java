@@ -20,7 +20,8 @@
 package org.fakereplace.boot;
 
 /**
- * Logging class, at the moment just writes to stdout
+ * Logging class, at the moment just writes to stdout. Using java.util.logging is problematic from a javaagent,
+ * and as fakereplace should never be used in production this is all that is required.
  *
  * @author stuart
  */

@@ -30,7 +30,6 @@ import javassist.bytecode.ConstPool;
 import javassist.bytecode.ParameterAnnotationsAttribute;
 import org.fakereplace.data.AnnotationBuilder;
 import org.fakereplace.data.AnnotationDataStore;
-import org.fakereplace.data.ClassDataBuilder;
 
 public class AnnotationReplacer {
 
@@ -40,9 +39,8 @@ public class AnnotationReplacer {
      *
      * @param file
      * @param old
-     * @param builder
      */
-    public static void processAnnotations(ClassFile file, Class old, ClassDataBuilder builder) {
+    public static void processAnnotations(ClassFile file, Class old) {
 
         AnnotationsAttribute newAns = (AnnotationsAttribute) file.getAttribute(AnnotationsAttribute.visibleTag);
         AnnotationDataStore.recordClassAnnotations(old, newAns);

@@ -39,7 +39,7 @@ import javassist.bytecode.ClassFile;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.Opcode;
 import javassist.bytecode.ParameterAnnotationsAttribute;
-import org.fakereplace.boot.ProxyDefinitionStore;
+import org.fakereplace.classloading.ProxyDefinitionStore;
 
 /**
  * Stores information about the annotations on reloaded classes

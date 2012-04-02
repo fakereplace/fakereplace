@@ -38,7 +38,7 @@ import javassist.bytecode.DuplicateMemberException;
 import javassist.bytecode.FieldInfo;
 import javassist.bytecode.SignatureAttribute;
 import org.fakereplace.Transformer;
-import org.fakereplace.boot.ProxyDefinitionStore;
+import org.fakereplace.classloading.ProxyDefinitionStore;
 import org.fakereplace.data.AnnotationDataStore;
 import org.fakereplace.data.BaseClassData;
 import org.fakereplace.data.ClassDataBuilder;
@@ -141,7 +141,6 @@ public class FieldReplacer {
      * @param file
      * @param loader
      * @param m
-     * @param data
      */
     private static void addStaticField(ClassFile file, ClassLoader loader, FieldInfo m, ClassDataBuilder builder, Class<?> oldClass) {
         // this will generate the class holding the satic field if is does not
@@ -176,7 +175,6 @@ public class FieldReplacer {
      * @param file
      * @param loader
      * @param m
-     * @param data
      */
     private static int addInstanceField(ClassFile file, ClassLoader loader, FieldInfo m, ClassDataBuilder builder, Class<?> oldClass) {
         String sig = null;
@@ -187,9 +185,9 @@ public class FieldReplacer {
         int fieldNo = FieldReferenceDataStore.getFieldNo(m.getName(), m.getDescriptor(), sig);
         String proxyName = ProxyDefinitionStore.getProxyName();
         ClassFile proxy = new ClassFile(false, proxyName, "java.lang.Object");
-        ClassDataStore.registerProxyName(oldClass, proxyName);
+        ClassDataStore.instance().registerProxyName(oldClass, proxyName);
         FieldAccessor accessor = new FieldAccessor(oldClass, fieldNo);
-        ClassDataStore.registerFieldAccessor(proxyName, accessor);
+        ClassDataStore.instance().registerFieldAccessor(proxyName, accessor);
         proxy.setAccessFlags(AccessFlag.PUBLIC);
         FieldInfo newField = new FieldInfo(proxy.getConstPool(), m.getName(), m.getDescriptor());
         newField.setAccessFlags(m.getAccessFlags());

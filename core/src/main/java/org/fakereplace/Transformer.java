@@ -83,7 +83,7 @@ public class Transformer implements FakereplaceTransformer {
         boolean modified = false;
 
         if (classBeingRedefined != null) {
-            ClassDataStore.markClassReplaced(classBeingRedefined);
+            ClassDataStore.instance().markClassReplaced(classBeingRedefined);
         }
         try {
             for (FakereplaceTransformer i : integrationTransformers) {
@@ -139,7 +139,7 @@ public class Transformer implements FakereplaceTransformer {
 
         if (DefaultEnvironment.getEnvironment().isClassReplaceable(className, loader)) {
             BaseClassData baseData = new BaseClassData(file, loader, replaceable);
-            ClassDataStore.saveClassData(loader, baseData.getInternalName(), baseData);
+            ClassDataStore.instance().saveClassData(loader, baseData.getInternalName(), baseData);
         }
 
         // dump the class for debugging purposes

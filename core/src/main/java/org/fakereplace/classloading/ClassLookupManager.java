@@ -22,7 +22,6 @@ package org.fakereplace.classloading;
 import java.util.Map;
 
 import org.fakereplace.boot.Constants;
-import org.fakereplace.boot.ProxyDefinitionStore;
 import org.fakereplace.com.google.common.collect.MapMaker;
 import org.fakereplace.transformation.MainTransformer;
 

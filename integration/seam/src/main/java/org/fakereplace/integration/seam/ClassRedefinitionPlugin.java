@@ -59,7 +59,7 @@ public class ClassRedefinitionPlugin implements ClassChangeAware {
         } catch (Throwable t) {
             System.out.println("Could not set org.jboss.seam.util.ProxyFactory.useCache to false: " + t.getMessage());
         }
-        ClassChangeNotifier.add(this);
+        ClassChangeNotifier.instance().add(this);
     }
 
     byte[] readFile(File file) throws IOException {

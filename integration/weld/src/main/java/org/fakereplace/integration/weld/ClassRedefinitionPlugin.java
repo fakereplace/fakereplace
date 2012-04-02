@@ -57,7 +57,7 @@ public class ClassRedefinitionPlugin implements ClassChangeAware {
 
     public ClassRedefinitionPlugin() {
         try {
-            ClassChangeNotifier.add(this);
+            ClassChangeNotifier.instance().add(this);
             proxyPoolField = ClientProxyProvider.class.getDeclaredField("pool");
             proxyPoolField.setAccessible(true);
             addedClassFileField = ProxyFactory.class.getDeclaredField(WeldClassTransformer.CLASS_FILE_FIELD);

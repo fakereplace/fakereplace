@@ -46,6 +46,9 @@ import org.jboss.vfs.VirtualFile;
  */
 public class JBossAsEnvironment implements Environment {
 
+    private final Map<ModuleIdentifier, ModuleClassLoader> loadersByModuleIdentifier = new ConcurrentHashMap<ModuleIdentifier, ModuleClassLoader>();
+    private final Map<ModuleClassLoader, Map<String, Long>> timestamps = new ConcurrentHashMap<ModuleClassLoader, Map<String, Long>>();
+
     @Override
     public boolean isClassReplaceable(final String className, final ClassLoader loader) {
         if (loader instanceof ModuleClassLoader) {
@@ -61,10 +64,6 @@ public class JBossAsEnvironment implements Environment {
         return null;
     }
 
-    private final Map<ModuleIdentifier, ModuleClassLoader> loadersByModuleIdentifier = new ConcurrentHashMap<ModuleIdentifier, ModuleClassLoader>();
-
-
-    private final Map<ModuleClassLoader, Map<String, Long>> timestamps = new ConcurrentHashMap<ModuleClassLoader, Map<String, Long>>();
 
     public void recordTimestamp(String className, ClassLoader loader) {
         if (!(loader instanceof ModuleClassLoader)) {
@@ -131,7 +130,6 @@ public class JBossAsEnvironment implements Environment {
             return Collections.emptySet();
         }
 
-
         final DeploymentUnit deploymentUnit = (DeploymentUnit) CurrentServiceContainer.getServiceContainer().getRequiredService(Services.deploymentUnitName(deploymentName)).getValue();
         final ResourceRoot root = deploymentUnit.getAttachment(Attachments.DEPLOYMENT_ROOT);
 
@@ -173,12 +171,6 @@ public class JBossAsEnvironment implements Environment {
             }
         }
     }
-
-    @Override
-    public void afterReplacement(final Set<Class<?>> classes, final String archiveName) {
-
-    }
-
 
     private ModuleIdentifier getModuleIdentifier(final String deploymentArchive) {
         return ModuleIdentifier.create("deployment." + deploymentArchive);

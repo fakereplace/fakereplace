@@ -23,7 +23,7 @@ import java.util.Map;
 
 import org.fakereplace.com.google.common.base.Function;
 import org.fakereplace.com.google.common.collect.MapMaker;
-import org.fakereplace.runtime.NullSafeConcurrentHashMap;
+import org.fakereplace.util.NullSafeConcurrentHashMap;
 
 /**
  * This class holds field data for added fields. It maintains a weakly

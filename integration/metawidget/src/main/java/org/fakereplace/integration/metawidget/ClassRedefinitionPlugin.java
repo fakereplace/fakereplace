@@ -31,7 +31,7 @@ import org.fakereplace.data.InstanceTracker;
 
 public class ClassRedefinitionPlugin implements ClassChangeAware {
     public ClassRedefinitionPlugin() {
-        ClassChangeNotifier.add(this);
+        ClassChangeNotifier.instance().add(this);
     }
 
     static private Method remove;

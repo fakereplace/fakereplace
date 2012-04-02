@@ -42,8 +42,8 @@ public class DefaultEnvironment implements Environment {
 
     protected static volatile Environment environment = new DefaultEnvironment();
 
-    private static final Map<String, Long> timestamps = new ConcurrentHashMap<String, Long>();
-    private static final Map<String, ClassLoader> loaders = new ConcurrentHashMap<String, ClassLoader>();
+    private final Map<String, Long> timestamps = new ConcurrentHashMap<String, Long>();
+    private final Map<String, ClassLoader> loaders = new ConcurrentHashMap<String, ClassLoader>();
 
     static {
         String dump = System.getProperty(Constants.DUMP_DIRECTORY_KEY);
@@ -149,11 +149,6 @@ public class DefaultEnvironment implements Environment {
 
     @Override
     public void updateResource(final String archiveName, final Map<String, byte[]> replacedResources) {
-
-    }
-
-    @Override
-    public void afterReplacement(final Set<Class<?>> classes, final String archiveName) {
 
     }
 }

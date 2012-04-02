@@ -17,11 +17,12 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.fakereplace.boot;
+package org.fakereplace.classloading;
 
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.fakereplace.boot.Constants;
 import org.fakereplace.com.google.common.collect.MapMaker;
 import org.fakereplace.manip.util.MapFunction;
 
@@ -31,9 +32,9 @@ import org.fakereplace.manip.util.MapFunction;
  * @author stuart
  */
 public class ProxyDefinitionStore {
-    static Map<ClassLoader, Map<String, byte[]>> proxyDefinitions = new MapMaker().weakKeys().makeComputingMap(new MapFunction(false));
+    private static Map<ClassLoader, Map<String, byte[]>> proxyDefinitions = new MapMaker().weakKeys().makeComputingMap(new MapFunction(false));
 
-    static AtomicLong proxyNo = new AtomicLong();
+    private static AtomicLong proxyNo = new AtomicLong();
 
     public static byte[] getProxyDefinition(ClassLoader classLoader, String name) {
         Map<String, byte[]> def = proxyDefinitions.get(classLoader);

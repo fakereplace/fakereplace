@@ -31,32 +31,32 @@ import org.fakereplace.util.DescriptorUtils;
  * @author stuart
  */
 public class MethodData {
-    final private String methodName;
-    final private String descriptor;
+    private final String methodName;
+    private final String descriptor;
 
     /**
      * contains the argument portion of the descriptor minus the return type
      */
-    final private String argumentDescriptor;
+    private final String argumentDescriptor;
     /**
      * the return type of the method
      * final
      */
-    final private String returnTypeDescriptor;
+    private final String returnTypeDescriptor;
 
-    final private MemberType type;
-    final private int accessFlags;
+    private final MemberType type;
+    private final int accessFlags;
     /**
      * stores the method no for a fake method. This is only used for constructors
      */
-    final private int methodNo;
+    private final int methodNo;
 
     /**
      * The actual class that the method resides in java not internal format
      */
-    final private String className;
+    private final String className;
 
-    final private boolean finalMethod;
+    private final boolean finalMethod;
 
     public MethodData(String name, String descriptor, String className, MemberType type, int accessFlags, boolean finalMethod) {
         this.methodName = name;
@@ -148,7 +148,7 @@ public class MethodData {
         if (type == MemberType.FAKE && !isStatic()) {
             methodDesc = DescriptorUtils.argumentStringToClassArray(descriptor, actualClass);
             Class<?>[] ret = new Class<?>[methodDesc.length + 1];
-            ret[0] = ClassDataStore.getRealClassFromProxyName(actualClass.getName());
+            ret[0] = ClassDataStore.instance().getRealClassFromProxyName(actualClass.getName());
             for (int i = 0; i < methodDesc.length; ++i) {
                 ret[i + 1] = methodDesc[i];
             }

@@ -29,7 +29,7 @@ import javassist.bytecode.ClassFile;
 import javassist.bytecode.DuplicateMemberException;
 import javassist.bytecode.FieldInfo;
 import javassist.bytecode.SignatureAttribute;
-import org.fakereplace.boot.ProxyDefinitionStore;
+import org.fakereplace.classloading.ProxyDefinitionStore;
 import org.fakereplace.com.google.common.base.Function;
 import org.fakereplace.com.google.common.collect.MapMaker;
 import org.fakereplace.data.ClassDataStore;
@@ -52,7 +52,7 @@ public class StaticFieldClassFactory {
             // this is quite simple. First we create a proxy
             String proxyName = ProxyDefinitionStore.getProxyName();
             ClassFile proxy = new ClassFile(false, proxyName, "java.lang.Object");
-            ClassDataStore.registerProxyName(from.getClazz(), proxyName);
+            ClassDataStore.instance().registerProxyName(from.getClazz(), proxyName);
             proxy.setAccessFlags(AccessFlag.PUBLIC);
             FieldInfo newField = new FieldInfo(proxy.getConstPool(), from.getName(), from.getDescriptor());
             newField.setAccessFlags(AccessFlag.PUBLIC | AccessFlag.STATIC);

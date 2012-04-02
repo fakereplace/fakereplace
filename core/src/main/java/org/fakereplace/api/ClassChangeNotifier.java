@@ -29,7 +29,9 @@ import org.fakereplace.com.google.common.collect.MapMaker;
 
 public class ClassChangeNotifier {
 
-    private static final ThreadLocal<Boolean> notificationInProgress = new ThreadLocal<Boolean>() {
+    private static final ClassChangeNotifier INSTANCE = new ClassChangeNotifier();
+
+    private static final ThreadLocal<Boolean> NOTIFICATION_IN_PROGRESS = new ThreadLocal<Boolean>() {
         @Override
         protected Boolean initialValue() {
             return false;
@@ -37,22 +39,22 @@ public class ClassChangeNotifier {
     };
 
 
-    static Map<ClassLoader, Set<ClassChangeAware>> classChangeAwares = new MapMaker().weakKeys().makeMap();
+    private final Map<ClassLoader, Set<ClassChangeAware>> classChangeAwares = new MapMaker().weakKeys().makeMap();
 
     /**
      * These are objects that want to be notified but that do not have a
      * dependency on fakereplace.
      */
-    static Map<ClassLoader, Set<Object>> unlinkedAwares = new MapMaker().weakKeys().makeMap();
+    private final Map<ClassLoader, Set<Object>> unlinkedAwares = new MapMaker().weakKeys().makeMap();
 
-    static public void add(ClassChangeAware aware) {
+    public void add(ClassChangeAware aware) {
         if (!classChangeAwares.containsKey(aware.getClass().getClassLoader())) {
             classChangeAwares.put(aware.getClass().getClassLoader(), new HashSet<ClassChangeAware>());
         }
         classChangeAwares.get(aware.getClass().getClassLoader()).add(aware);
     }
 
-    static public void add(Object aware) throws SecurityException, NoSuchMethodException {
+    public void add(Object aware) throws SecurityException, NoSuchMethodException {
 
         if (!unlinkedAwares.containsKey(aware.getClass().getClassLoader())) {
             unlinkedAwares.put(aware.getClass().getClassLoader(), new HashSet<Object>());
@@ -60,9 +62,9 @@ public class ClassChangeNotifier {
         unlinkedAwares.get(aware.getClass().getClassLoader()).add(aware);
     }
 
-    public static void notify(Class<?>[] changed, ClassIdentifier[] newClasses) {
-        if (!notificationInProgress.get()) {
-            notificationInProgress.set(true);
+     public void notify(Class<?>[] changed, ClassIdentifier[] newClasses) {
+        if (!NOTIFICATION_IN_PROGRESS.get()) {
+            NOTIFICATION_IN_PROGRESS.set(true);
             try {
                 Class<?>[] a = new Class[0];
                 for (Set<ClassChangeAware> c : classChangeAwares.values()) {
@@ -86,12 +88,12 @@ public class ClassChangeNotifier {
                     }
                 }
             } finally {
-                notificationInProgress.set(false);
+                NOTIFICATION_IN_PROGRESS.set(false);
             }
         }
     }
 
-    public static void beforeChange(Class<?>[] changed, ClassIdentifier[] newClasses) {
+    public void beforeChange(Class<?>[] changed, ClassIdentifier[] newClasses) {
         Class<?>[] a = new Class[0];
         for (Set<ClassChangeAware> c : classChangeAwares.values()) {
             for (ClassChangeAware i : c) {
@@ -115,4 +117,7 @@ public class ClassChangeNotifier {
         }
     }
 
+    public static ClassChangeNotifier instance() {
+        return INSTANCE;
+    }
 }

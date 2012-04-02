@@ -130,9 +130,6 @@ public class FakereplaceProtocol {
             Agent.redefine(classDefinitions.toArray(new ClassDefinition[classDefinitions.size()]), new AddedClass[0]);
             DefaultEnvironment.getEnvironment().updateResource(archiveName, replacedResources);
 
-
-            DefaultEnvironment.getEnvironment().afterReplacement(replacedClasses, archiveName);
-
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
