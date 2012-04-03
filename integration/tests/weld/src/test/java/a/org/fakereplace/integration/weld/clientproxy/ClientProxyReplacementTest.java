@@ -13,7 +13,7 @@ import org.testng.annotations.Test;
 public class ClientProxyReplacementTest extends Arquillian {
 
     @Deployment
-    public Archive<?> deploy() {
+    public static Archive<?> deploy() {
         return ShrinkWrap.create(JavaArchive.class, "test.jar" )
                 .addClasses(ClientProxyReplacementTest.class, AppScopedBean.class);
     }

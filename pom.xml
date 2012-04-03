@@ -25,17 +25,18 @@
 
     <properties>
         <arquillian.version>1.0.0.CR7</arquillian.version>
-        <arquillian.weld-ee.version>1.0.0.CR3</arquillian.weld-ee.version>
+        <arquillian.weld-se.version>1.0.0.CR3</arquillian.weld-se.version>
         <fakereplace.version>0.10-SNAPSHOT</fakereplace.version>
         <javassist.version>3.15.0-GA</javassist.version>
         <jbossas.version>7.1.1.Final</jbossas.version>
         <jsf-api.version>1.2_13</jsf-api.version>
         <seam.version>2.1.2</seam.version>
         <servlet-api.version>2.4</servlet-api.version>
-        <testng.version>5.11</testng.version>
+        <testng.version>6.4</testng.version>
         <weld.version>1.1.6.Final</weld.version>
         <jboss.modules.version>1.1.1.GA</jboss.modules.version>
         <maven-plugin-api.version>2.0</maven-plugin-api.version>
+        <maven-project.version>2.2.1</maven-project.version>
     </properties>
 
 
@@ -56,6 +57,8 @@
 
     <dependencyManagement>
         <dependencies>
+
+            <!-- Project Dependencies -->
 
             <dependency>
                 <groupId>org.fakereplace</groupId>
@@ -99,23 +102,8 @@
                 <version>${fakereplace.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>org.javassist</groupId>
-                <artifactId>javassist</artifactId>
-                <version>${javassist.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.jboss.seam</groupId>
-                <artifactId>jboss-seam</artifactId>
-                <version>${seam.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.jboss.weld</groupId>
-                <artifactId>weld-core</artifactId>
-                <version>${weld.version}</version>
-            </dependency>
+            <!-- External dependencies-->
+            <!-- KEEP IN ALPHABETICAL ORDER-->
 
             <dependency>
                 <groupId>javax.servlet</groupId>
@@ -127,6 +115,24 @@
                 <groupId>javax.faces</groupId>
                 <artifactId>jsf-api</artifactId>
                 <version>${jsf-api.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-project</artifactId>
+                <version>${maven-project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-plugin-api</artifactId>
+                <version>${maven-plugin-api.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.javassist</groupId>
+                <artifactId>javassist</artifactId>
+                <version>${javassist.version}</version>
             </dependency>
 
             <dependency>
@@ -149,20 +155,6 @@
             </dependency>
 
             <dependency>
-                <groupId>org.jboss.modules</groupId>
-                <artifactId>jboss-modules</artifactId>
-                <version>${jboss.modules.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.testng</groupId>
-                <artifactId>testng</artifactId>
-                <version>${testng.version}</version>
-                <classifier>jdk15</classifier>
-                <scope>test</scope>
-            </dependency>
-
-            <dependency>
                 <groupId>org.jboss.arquillian.testng</groupId>
                 <artifactId>arquillian-testng-container</artifactId>
                 <version>${arquillian.version}</version>
@@ -171,15 +163,41 @@
 
             <dependency>
                 <groupId>org.jboss.arquillian.container</groupId>
-                <artifactId>arquillian-weld-ee-embedded-1.1</artifactId>
-                <version>${arquillian.weld-ee.version}</version>
+                <artifactId>arquillian-container-test-spi</artifactId>
+                <version>${arquillian.version}</version>
                 <scope>test</scope>
             </dependency>
 
             <dependency>
-                <groupId>org.apache.maven</groupId>
-                <artifactId>maven-plugin-api</artifactId>
-                <version>${maven-plugin-api.version}</version>
+                <groupId>org.jboss.arquillian.container</groupId>
+                <artifactId>arquillian-weld-se-embedded-1.1</artifactId>
+                <version>${arquillian.weld-se.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.modules</groupId>
+                <artifactId>jboss-modules</artifactId>
+                <version>${jboss.modules.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.seam</groupId>
+                <artifactId>jboss-seam</artifactId>
+                <version>${seam.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.weld</groupId>
+                <artifactId>weld-core</artifactId>
+                <version>${weld.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.testng</groupId>
+                <artifactId>testng</artifactId>
+                <version>${testng.version}</version>
+                <scope>test</scope>
             </dependency>
 
         </dependencies>
@@ -200,7 +218,32 @@
                     </descriptors>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.5</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
         </plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>2.7.2</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
 
 </project>
