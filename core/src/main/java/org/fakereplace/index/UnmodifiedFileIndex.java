@@ -8,7 +8,9 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -22,12 +24,14 @@ public class UnmodifiedFileIndex {
 
     public static String VERSION = "1.0";
 
-    private static String FILENAME = "fakereplace.index";
+    private static final String FILE_PROPERTY = "org.fakereplace.index";
+
+    private static final String FILENAME = "fakereplace.index";
 
     private static final Set<String> index = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
 
     public static void loadIndex() {
-        final File file = new File(FILENAME);
+        final File file = getFile();
         if (file.exists() && !file.isDirectory()) {
             BufferedReader reader = null;
             try {
@@ -57,14 +61,18 @@ public class UnmodifiedFileIndex {
         }
         final Thread writerThread = new Thread(new Runnable() {
             public void run() {
-                final File file = new File(FILENAME);
+                final File file = getFile();
                 if (!file.isDirectory()) {
                     Writer writer = null;
                     try {
                         writer = new BufferedWriter(new FileWriter(file));
                         writer.write(VERSION);
                         writer.write('\n');
-                        for (String clazz : index) {
+                        //there is no real need to sort
+                        //but it makes the file easier to examine when debugging
+                        final List<String> sortedIndex = new ArrayList<String>(index);
+                        Collections.sort(sortedIndex);
+                        for (String clazz : sortedIndex) {
                             writer.write(clazz);
                             writer.write('\n');
                         }
@@ -84,6 +92,14 @@ public class UnmodifiedFileIndex {
             }
         });
         Runtime.getRuntime().addShutdownHook(writerThread);
+    }
+
+    private static File getFile() {
+        final String fileProp = System.getProperty(FILE_PROPERTY);
+        if(fileProp != null) {
+            return new File(fileProp);
+        }
+        return new File(FILENAME);
     }
 
     public static void markClassUnmodified(final String clazz) {
