@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.fakereplace.data;
+package org.fakereplace.runtime;
 
 import java.util.Map;
 

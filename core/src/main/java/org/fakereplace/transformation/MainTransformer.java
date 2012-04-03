@@ -37,11 +37,10 @@ import java.util.Map;
 import java.util.Set;
 
 import javassist.bytecode.ClassFile;
-import org.fakereplace.ThreadLoader;
+import org.fakereplace.util.ThreadLoader;
 import org.fakereplace.api.IntegrationInfo;
 import org.fakereplace.boot.DefaultEnvironment;
 import org.fakereplace.com.google.common.collect.MapMaker;
-import org.fakereplace.index.UnmodifiedFileIndex;
 
 /**
  * @author Stuart Douglas

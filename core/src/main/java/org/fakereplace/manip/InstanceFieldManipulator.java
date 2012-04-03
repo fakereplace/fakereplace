@@ -34,9 +34,13 @@ import org.fakereplace.boot.Logger;
 import org.fakereplace.manip.data.AddedFieldData;
 import org.fakereplace.manip.util.Boxing;
 import org.fakereplace.manip.util.ManipulationDataStore;
+import org.fakereplace.runtime.FieldDataStore;
 import org.fakereplace.util.DescriptorUtils;
 
 public class InstanceFieldManipulator implements ClassManipulator {
+
+    private static final String FIELD_DATA_STORE_CLASS = FieldDataStore.class.getName();
+
     /**
      * added field information by class
      */
@@ -105,12 +109,12 @@ public class InstanceFieldManipulator implements ClassManipulator {
                                         Boxing.box(b, data.getDescriptor().charAt(0));
                                     }
                                     b.addLdc(arrayPos);
-                                    b.addInvokestatic("org.fakereplace.data.FieldDataStore", "setValue", "(Ljava/lang/Object;Ljava/lang/Object;I)V");
+                                    b.addInvokestatic(FIELD_DATA_STORE_CLASS, "setValue", "(Ljava/lang/Object;Ljava/lang/Object;I)V");
                                     it.insertEx(b.get());
                                 } else if (op == Opcode.GETFIELD) {
                                     Bytecode b = new Bytecode(file.getConstPool());
                                     b.addLdc(arrayPos);
-                                    b.addInvokestatic("org.fakereplace.data.FieldDataStore", "getValue", "(Ljava/lang/Object;I)Ljava/lang/Object;");
+                                    b.addInvokestatic(FIELD_DATA_STORE_CLASS, "getValue", "(Ljava/lang/Object;I)Ljava/lang/Object;");
 
                                     if (DescriptorUtils.isPrimitive(data.getDescriptor())) {
                                         Boxing.unbox(b, data.getDescriptor().charAt(0));

@@ -1,4 +1,4 @@
-package org.fakereplace.index;
+package org.fakereplace.transformation;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

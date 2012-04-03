@@ -31,7 +31,7 @@ import java.util.List;
 import org.fakereplace.data.AnnotationDataStore;
 import org.fakereplace.data.ModifiedMethod;
 
-public class AnnotationDelegate {
+public class AnnotationReflection {
 
     private static boolean heiracheyChanged(Class<?> clazz) {
         Class<?> c = clazz;

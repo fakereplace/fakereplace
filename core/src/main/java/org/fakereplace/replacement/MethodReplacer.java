@@ -56,7 +56,7 @@ import org.fakereplace.data.ClassDataBuilder;
 import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.data.MemberType;
 import org.fakereplace.data.MethodData;
-import org.fakereplace.data.MethodIdentifierStore;
+import org.fakereplace.runtime.MethodIdentifierStore;
 import org.fakereplace.manip.util.Boxing;
 import org.fakereplace.manip.util.ManipulationUtils;
 import org.fakereplace.manip.util.ManipulationUtils.MethodReturnRewriter;

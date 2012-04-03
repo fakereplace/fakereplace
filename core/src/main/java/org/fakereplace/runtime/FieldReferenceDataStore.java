@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.fakereplace.data;
+package org.fakereplace.runtime;
 
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -26,7 +26,8 @@ import org.fakereplace.com.google.common.base.Function;
 import org.fakereplace.com.google.common.collect.MapMaker;
 
 /**
- * Maps a unique field signiture to an arbitary number.
+ * Maps a unique field signature to an arbitrary number. This number will be the same for all fields with the
+ * same name and type, this field number is used to actually store the runtime data when adding fields
  *
  * @author stuart
  */

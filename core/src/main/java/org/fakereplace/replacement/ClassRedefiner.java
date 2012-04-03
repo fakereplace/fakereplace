@@ -36,7 +36,8 @@ import org.fakereplace.data.ClassDataBuilder;
 import org.fakereplace.data.ClassDataStore;
 
 public class ClassRedefiner {
-    static public ReplacementResult rewriteLoadedClasses(ClassDefinition... classDefinitions) {
+
+    public static ReplacementResult rewriteLoadedClasses(ClassDefinition... classDefinitions) {
         Set<ClassDefinition> defs = new HashSet<ClassDefinition>();
         Set<Class<?>> changedClasses = new HashSet<Class<?>>();
         Set<Class<?>> classesToReload = new HashSet<Class<?>>();

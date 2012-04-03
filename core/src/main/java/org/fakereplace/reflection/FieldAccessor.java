@@ -19,7 +19,7 @@
 
 package org.fakereplace.reflection;
 
-import org.fakereplace.data.FieldDataStore;
+import org.fakereplace.runtime.FieldDataStore;
 
 /**
  * Class that knows how to set and get replaced fields. This is very inefficent,

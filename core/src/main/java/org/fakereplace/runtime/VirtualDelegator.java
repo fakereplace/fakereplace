@@ -26,7 +26,6 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.fakereplace.boot.Constants;
 import org.fakereplace.boot.DefaultEnvironment;
-import org.fakereplace.data.MethodIdentifierStore;
 
 public class VirtualDelegator {
 

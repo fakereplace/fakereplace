@@ -39,7 +39,7 @@ import org.fakereplace.boot.DefaultEnvironment;
 import org.fakereplace.classloading.ClassIdentifier;
 import org.fakereplace.classloading.ClassLookupManager;
 import org.fakereplace.data.ClassDataStore;
-import org.fakereplace.index.UnmodifiedFileIndex;
+import org.fakereplace.transformation.UnmodifiedFileIndex;
 import org.fakereplace.replacement.AddedClass;
 import org.fakereplace.replacement.ClassRedefiner;
 import org.fakereplace.replacement.ReplacementResult;

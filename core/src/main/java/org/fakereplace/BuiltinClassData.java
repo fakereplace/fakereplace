@@ -21,9 +21,9 @@ package org.fakereplace;
 
 public class BuiltinClassData {
 
-    static final String[] doNotInstrument = {"org/fakereplace", "java/math", "java/lang", "java/util/concurrent", "java/util/Currency", "java/util/Random", "java/util",};
+    private static final String[] doNotInstrument = {"org/fakereplace", "java/math", "java/lang", "java/util/concurrent", "java/util/Currency", "java/util/Random", "java/util",};
 
-    static final String[] exceptions = {"java/lang/reflect/Proxy",};
+    private static final String[] exceptions = {"java/lang/reflect/Proxy",};
 
     public static boolean skipInstrumentation(String className) {
         className = className.replace('.', '/');
