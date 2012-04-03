@@ -10,10 +10,11 @@
     </parent>
 
     <groupId>org.fakereplace</groupId>
-    <artifactId>fakereplace-bundle</artifactId>
+    <artifactId>fakereplace-dist</artifactId>
     <packaging>jar</packaging>
     <version>0.10-SNAPSHOT</version>
-    <name>Fakereplace Bundle</name>
+    <name>Fakereplace Distribution</name>
+    <description>The complete fakereplace javaagent, with all dependencies shaded inside</description>
 
     <dependencies>
         <dependency>
@@ -113,35 +114,6 @@
                 </configuration>
             </plugin>
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <excludes>
-                        <exclude>**/*.java</exclude>
-                    </excludes>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>integration-tests</id>
-                        <phase>integration-test</phase>
-                        <goals>
-                            <goal>test</goal>
-                        </goals>
-                        <configuration>
-                            <skip>false</skip>
-                            <excludes>
-                                <exclude>none</exclude>
-                            </excludes>
-                            <includes>
-                                <include>**/*.java</include>
-                            </includes>
-                            <forkMode>once</forkMode>
-                            <argLine>-javaagent:${project.build.directory}/${project.build.finalName}.jar -Dorg.fakereplace.packages=org.fakereplace.test</argLine>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
 </project>

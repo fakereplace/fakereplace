@@ -23,10 +23,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>fakereplace-parent</artifactId>
+        <artifactId>fakereplace-integration-parent</artifactId>
         <groupId>org.fakereplace</groupId>
         <version>0.10-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <groupId>org.fakereplace</groupId>
@@ -58,17 +58,6 @@
         <dependency>
             <groupId>org.fakereplace</groupId>
             <artifactId>fakereplace</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
-            <version>5.11</version>
-            <classifier>jdk15</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.arquillian.testng</groupId>
-            <artifactId>arquillian-testng-container</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
