@@ -19,9 +19,6 @@
 
 package org.fakereplace.manip;
 
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
-
 import javassist.bytecode.AccessFlag;
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.AttributeInfo;
@@ -42,17 +39,8 @@ public class FinalMethodManipulator implements ClassManipulator {
 
     }
 
-    private static final Set<String> classLoaders = new CopyOnWriteArraySet<String>();
-
-    public static void addClassLoader(String nm) {
-        classLoaders.add(nm);
-    }
-
     public boolean transformClass(ClassFile file, ClassLoader loader, boolean modifiableClass) {
         if (!modifiableClass) {
-            return false;
-        }
-        if (classLoaders.contains(file.getName())) {
             return false;
         }
         boolean modified = false;

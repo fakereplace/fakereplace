@@ -32,11 +32,18 @@ import java.util.Map;
  * @author Stuart Douglas <stuart.w.douglas@gmail.com>
  */
 public class MethodIdentifierStore {
-    static private Map<String, Map<String, Integer>> data = new HashMap<String, Map<String, Integer>>();
 
-    static private int methodNo = 0;
+    private static final MethodIdentifierStore INSTANCE = new MethodIdentifierStore();
 
-    public static synchronized int getMethodNumber(String name, String descriptor) {
+    private final Map<String, Map<String, Integer>> data = new HashMap<String, Map<String, Integer>>();
+
+    private int methodNo = 0;
+
+    private MethodIdentifierStore() {
+
+    }
+
+    public synchronized int getMethodNumber(String name, String descriptor) {
         if (!data.containsKey(name)) {
             data.put(name, new HashMap<String, Integer>());
         }
@@ -47,15 +54,8 @@ public class MethodIdentifierStore {
         return im.get(descriptor);
     }
 
-    /**
-     * gets a unique method number for artifical methods that are added by
-     * fakereplace
-     *
-     * @param name
-     * @param descriptor
-     * @return
-     */
-    public static synchronized int getUniqueMethodNumber() {
-        return methodNo++;
+    public static MethodIdentifierStore instance() {
+        return INSTANCE;
     }
+
 }

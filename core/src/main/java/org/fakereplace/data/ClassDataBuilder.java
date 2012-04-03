@@ -26,15 +26,15 @@ import javassist.bytecode.FieldInfo;
 
 public class ClassDataBuilder {
 
-    final private BaseClassData baseData;
+    private final BaseClassData baseData;
 
-    final private Set<FieldData> fakeFields = new HashSet<FieldData>();
+    private final Set<FieldData> fakeFields = new HashSet<FieldData>();
 
-    final private Set<MethodData> fakeMethods = new HashSet<MethodData>();
+    private final Set<MethodData> fakeMethods = new HashSet<MethodData>();
 
-    final private Set<MethodData> removedMethods = new HashSet<MethodData>();
+    private final Set<MethodData> removedMethods = new HashSet<MethodData>();
 
-    final private Set<FieldData> removedFields = new HashSet<FieldData>();
+    private final Set<FieldData> removedFields = new HashSet<FieldData>();
 
     public ClassDataBuilder(BaseClassData b) {
         if (b == null) {

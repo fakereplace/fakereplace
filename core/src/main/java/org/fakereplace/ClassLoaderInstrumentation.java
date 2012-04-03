@@ -31,7 +31,6 @@ import javassist.bytecode.MethodInfo;
 import javassist.bytecode.Opcode;
 import org.fakereplace.classloading.ClassLookupManager;
 import org.fakereplace.com.google.common.collect.MapMaker;
-import org.fakereplace.manip.FinalMethodManipulator;
 import org.fakereplace.util.JumpMarker;
 import org.fakereplace.util.JumpUtils;
 
@@ -140,9 +139,7 @@ public class ClassLoaderInstrumentation {
                     notFakereplace.mark();
                 }
 
-
                 iterator.insert(b.get());
-                FinalMethodManipulator.addClassLoader(classFile.getName());
                 method.getCodeAttribute().computeMaxStack();
             }
         }

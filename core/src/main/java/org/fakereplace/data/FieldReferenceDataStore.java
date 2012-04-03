@@ -31,16 +31,27 @@ import org.fakereplace.com.google.common.collect.MapMaker;
  * @author stuart
  */
 public class FieldReferenceDataStore {
-    static private final AtomicInteger counter = new AtomicInteger();
 
-    private static final Map<FieldReference, Integer> addedFieldNumbers = new MapMaker().makeComputingMap(new Function<FieldReference, Integer>() {
+    private static final FieldReferenceDataStore INSTANCE = new FieldReferenceDataStore();
+
+    private final AtomicInteger counter = new AtomicInteger();
+
+    private final Map<FieldReference, Integer> addedFieldNumbers = new MapMaker().makeComputingMap(new Function<FieldReference, Integer>() {
         public Integer apply(FieldReference from) {
             return counter.incrementAndGet();
         }
     });
 
-    public static Integer getFieldNo(String fieldName, String desc, String sig) {
+    private FieldReferenceDataStore() {
+
+    }
+
+    public Integer getFieldNo(String fieldName, String desc, String sig) {
         return addedFieldNumbers.get(new FieldReference(fieldName, desc, sig));
+    }
+
+    public static FieldReferenceDataStore instance() {
+        return INSTANCE;
     }
 
     private static class FieldReference {

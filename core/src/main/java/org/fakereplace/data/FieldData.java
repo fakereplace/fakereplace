@@ -25,12 +25,12 @@ import javassist.bytecode.AccessFlag;
 import javassist.bytecode.FieldInfo;
 
 public class FieldData {
-    final private int accessFlags;
-    final private boolean priv, pack, prot;
-    final private String name;
-    final private String type;
-    final private MemberType memberType;
-    final private String className;
+    private final int accessFlags;
+    private final boolean priv, pack, prot;
+    private final String name;
+    private final String type;
+    private final MemberType memberType;
+    private final String className;
 
     public FieldData(FieldInfo info, MemberType memberType, String className, int modifiers) {
         this.accessFlags = modifiers;

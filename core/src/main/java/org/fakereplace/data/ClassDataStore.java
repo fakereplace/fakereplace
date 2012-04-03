@@ -44,6 +44,10 @@ public class ClassDataStore {
     private static final ClassLoader NULL_LOADER = new ClassLoader() {
     };
 
+    private ClassDataStore() {
+
+    }
+
     public void markClassReplaced(Class<?> clazz) {
         replacedClasses.put(clazz, NULL_LOADER);
     }

@@ -71,7 +71,7 @@ public class VirtualDelegator {
     public static Object run(Object val, String methodName, String methodDesc, Object[] params) {
         try {
             Method meth = val.getClass().getMethod(Constants.ADDED_METHOD_NAME, int.class, Object[].class);
-            int methodIdentifier = MethodIdentifierStore.getMethodNumber(methodName, methodDesc);
+            int methodIdentifier = MethodIdentifierStore.instance().getMethodNumber(methodName, methodDesc);
             return meth.invoke(val, methodIdentifier, params);
         } catch (Exception e) {
             throw new RuntimeException(e);

@@ -410,7 +410,7 @@ public class MethodReplacer {
      * Adds a method to a class
      */
     private static Class<?> addMethod(ClassFile file, ClassLoader loader, MethodInfo mInfo, ClassDataBuilder builder, CodeAttribute bytecode, boolean staticMethod, Class oldClass) {
-        int methodCount = MethodIdentifierStore.getMethodNumber(mInfo.getName(), mInfo.getDescriptor());
+        int methodCount = MethodIdentifierStore.instance().getMethodNumber(mInfo.getName(), mInfo.getDescriptor());
         try {
             if ((AccessFlag.ABSTRACT & mInfo.getAccessFlags()) == 0) {
                 // abstract methods don't get a body
@@ -567,7 +567,7 @@ public class MethodReplacer {
     }
 
     private static void addConstructor(ClassFile file, ClassLoader loader, MethodInfo mInfo, ClassDataBuilder builder, CodeAttribute bytecode, Class<?> oldClass) {
-        int methodCount = MethodIdentifierStore.getMethodNumber(mInfo.getName(), mInfo.getDescriptor());
+        int methodCount = MethodIdentifierStore.instance().getMethodNumber(mInfo.getName(), mInfo.getDescriptor());
 
         try {
             generateBoxedConditionalCodeBlock(methodCount, mInfo, file.getConstPool(), bytecode, false, true);

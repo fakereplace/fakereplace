@@ -182,7 +182,7 @@ public class FieldReplacer {
         if (sigat != null) {
             sig = sigat.getSignature();
         }
-        int fieldNo = FieldReferenceDataStore.getFieldNo(m.getName(), m.getDescriptor(), sig);
+        int fieldNo = FieldReferenceDataStore.instance().getFieldNo(m.getName(), m.getDescriptor(), sig);
         String proxyName = ProxyDefinitionStore.getProxyName();
         ClassFile proxy = new ClassFile(false, proxyName, "java.lang.Object");
         ClassDataStore.instance().registerProxyName(oldClass, proxyName);
