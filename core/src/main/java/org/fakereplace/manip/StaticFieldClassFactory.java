@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.fakereplace.manip.staticfield;
+package org.fakereplace.manip;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -46,6 +46,7 @@ import org.fakereplace.data.ClassDataStore;
  * @author stuart
  */
 public class StaticFieldClassFactory {
+
     private static final Map<StaticFieldDescriptor, String> fieldClasses = new MapMaker().makeComputingMap(new Function<StaticFieldDescriptor, String>() {
 
         public String apply(StaticFieldDescriptor from) {

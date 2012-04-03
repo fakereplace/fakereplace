@@ -53,15 +53,8 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <relocations>
-                                <relocation>
-                                    <pattern>com.google</pattern>
-                                    <shadedPattern>org.fakereplace.com.google</shadedPattern>
-                                </relocation>
-                            </relocations>
                             <artifactSet>
                                 <includes>
-                                    <include>com.google.collections:google-collections</include>
                                     <include>org.javassist:javassist</include>
                                 </includes>
                             </artifactSet>

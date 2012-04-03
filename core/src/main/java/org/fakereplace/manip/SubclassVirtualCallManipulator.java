@@ -52,7 +52,7 @@ import org.fakereplace.util.DescriptorUtils;
  */
 public class SubclassVirtualCallManipulator implements ClassManipulator {
 
-    final private ManipulationDataStore<SubclassVirtualCallData> data = new ManipulationDataStore<SubclassVirtualCallData>();
+    private final ManipulationDataStore<SubclassVirtualCallData> data = new ManipulationDataStore<SubclassVirtualCallData>();
 
     public void addClassData(String className, ClassLoader classLoader, String parentClassName, ClassLoader parentClassLoader, String methodName, String methodDesc) {
         data.add(parentClassName, new SubclassVirtualCallData(parentClassLoader, parentClassName, methodName, methodDesc));

@@ -91,7 +91,7 @@ public class FinalizableReferenceQueue {
 
 
     private static final String FINALIZER_CLASS_NAME
-            = "com.google.common.base.internal.Finalizer";
+            = "org.fakereplace.com.google.common.base.internal.Finalizer";
 
     /**
      * Reference to Finalizer.startFinalizer().

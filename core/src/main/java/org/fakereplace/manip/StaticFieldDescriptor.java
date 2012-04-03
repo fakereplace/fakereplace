@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.fakereplace.manip.staticfield;
+package org.fakereplace.manip;
 
 import java.lang.ref.WeakReference;
 

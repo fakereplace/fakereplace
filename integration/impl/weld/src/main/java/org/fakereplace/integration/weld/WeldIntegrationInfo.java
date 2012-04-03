@@ -30,7 +30,7 @@ import org.fakereplace.transformation.FakereplaceTransformer;
 public class WeldIntegrationInfo implements IntegrationInfo {
 
     public String getClassChangeAwareName() {
-        return "org.fakereplace.integration.weld.ClassRedefinitionPlugin";
+        return ClassRedefinitionPlugin.class.getName();
     }
 
     public Set<String> getIntegrationTriggerClassNames() {
@@ -39,7 +39,6 @@ public class WeldIntegrationInfo implements IntegrationInfo {
 
     public Set<String> getTrackedInstanceClassNames() {
         Set<String> ret = new HashSet<String>();
-        ret.add("org.jboss.weld.bean.proxy.ClientProxyProvider");
         return ret;
     }
 

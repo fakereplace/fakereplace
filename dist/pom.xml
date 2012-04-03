@@ -80,19 +80,10 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <relocations>
-                                <relocation>
-                                    <pattern>javassist</pattern>
-                                    <shadedPattern>org.fakereplace.javassist</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>com.google</pattern>
-                                    <shadedPattern>org.fakereplace.com.google</shadedPattern>
-                                </relocation>
-                            </relocations>
                             <artifactSet>
                                 <includes>
                                     <include>org.fakereplace:*</include>
+                                    <include>org.javassist:*</include>
                                 </includes>
                             </artifactSet>
                         </configuration>

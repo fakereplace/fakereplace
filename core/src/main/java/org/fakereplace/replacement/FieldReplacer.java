@@ -44,10 +44,10 @@ import org.fakereplace.data.BaseClassData;
 import org.fakereplace.data.ClassDataBuilder;
 import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.data.FieldData;
+import org.fakereplace.manip.StaticFieldClassFactory;
 import org.fakereplace.runtime.FieldReferenceDataStore;
 import org.fakereplace.data.MemberType;
 import org.fakereplace.manip.data.AddedFieldData;
-import org.fakereplace.manip.staticfield.StaticFieldClassFactory;
 import org.fakereplace.reflection.FieldAccessor;
 
 public class FieldReplacer {
