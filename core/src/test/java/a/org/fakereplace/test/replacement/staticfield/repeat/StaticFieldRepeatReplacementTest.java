@@ -22,10 +22,13 @@ package a.org.fakereplace.test.replacement.staticfield.repeat;
 import java.lang.reflect.Field;
 
 import a.org.fakereplace.test.util.ClassReplacer;
-import org.testng.annotations.Test;
+import org.jboss.arquillian.junit.InSequence;
+import org.junit.Assert;
+import org.junit.Test;
 
 public class StaticFieldRepeatReplacementTest {
     @Test
+    @InSequence(1)
     public void firstReplacement() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         ClassReplacer r = new ClassReplacer();
         r.queueClassForReplacement(StaticFieldRepeatClass.class, StaticFieldRepeatClass1.class);
@@ -39,7 +42,7 @@ public class StaticFieldRepeatReplacementTest {
         Field removedField = StaticFieldRepeatClass.class.getDeclaredField("removedField");
     }
 
-    @Test(dependsOnMethods = "firstReplacement")
+    @InSequence(2)
     public void secondReplacement() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         ClassReplacer r = new ClassReplacer();
         r.queueClassForReplacement(StaticFieldRepeatClass.class, StaticFieldRepeatClass2.class);
@@ -47,13 +50,13 @@ public class StaticFieldRepeatReplacementTest {
 
         Field someField = StaticFieldRepeatClass.class.getDeclaredField("someField");
         someField.setAccessible(true);
-        assert someField.get(null).equals(10);
+        Assert.assertEquals(10, someField.get(null));
         Field otherField = StaticFieldRepeatClass.class.getDeclaredField("otherField");
         otherField.setAccessible(true);
-        assert otherField.get(null) == this;
+        Assert.assertEquals(this,  otherField.get(null));
         try {
             Field removedField = StaticFieldRepeatClass.class.getDeclaredField("removedField");
-            assert false : "Field should have been removed";
+            Assert.fail();
         } catch (NoSuchFieldException e) {
 
         }

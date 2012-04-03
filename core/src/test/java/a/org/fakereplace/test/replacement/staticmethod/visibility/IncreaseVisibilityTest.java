@@ -23,12 +23,13 @@ import a.org.fakereplace.test.replacement.staticmethod.visibility.otherpackage.S
 import a.org.fakereplace.test.replacement.staticmethod.visibility.otherpackage.StaticMethodVisibilityClass1;
 import a.org.fakereplace.test.replacement.staticmethod.visibility.otherpackage.UnchangedStaticMethodCallingClass;
 import a.org.fakereplace.test.util.ClassReplacer;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 public class IncreaseVisibilityTest {
     @BeforeClass
-    public void setup() {
+    public static void setup() {
         ClassReplacer r = new ClassReplacer();
         r.queueClassForReplacement(StaticMethodVisibilityCallingClass.class, StaticMethodVisibilityCallingClass1.class);
         r.queueClassForReplacement(StaticMethodVisibilityClass.class, StaticMethodVisibilityClass1.class);
@@ -37,16 +38,16 @@ public class IncreaseVisibilityTest {
 
     @Test
     public void testExistingMethod() {
-        assert StaticMethodVisibilityClass.callingMethod().equals("helo world");
+        Assert.assertEquals("helo world", StaticMethodVisibilityClass.callingMethod());
     }
 
     @Test
     public void testNewExternalMethod() {
-        assert StaticMethodVisibilityCallingClass.callingClass().equals("helo world");
+        Assert.assertEquals("helo world", StaticMethodVisibilityCallingClass.callingClass());
     }
 
     @Test
     public void testUnchangedClassCallingExternalMethod() {
-        assert UnchangedStaticMethodCallingClass.callingClass().equals("helo world");
+        Assert.assertEquals("helo world", UnchangedStaticMethodCallingClass.callingClass());
     }
 }

@@ -38,8 +38,8 @@ import org.fakereplace.com.google.common.annotations.VisibleForTesting;
  *
  * Note that the sense of the expression is inverted; with {@code Preconditions}
  * you declare what you expect to be <i>true</i>, just as you do with an
- * <a href="http://java.sun.com/j2se/1.5.0/docs/guide/language/assert.html">
- * {@code assert}</a> or a JUnit {@code assertTrue} call.
+ * <a href="http://java.sun.com/j2se/1.5.0/docs/guide/language/Assert.assertEquals(.html">
+ * {@code Assert.assertEquals(}</a> or a JUnit {@code Assert.assertEquals(True} call.
  *
  * <p><b>Warning:</b> only the {@code "%s"} specifier is recognized as a
  * placeholder in these messages, not the full range of {@link

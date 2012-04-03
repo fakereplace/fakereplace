@@ -20,13 +20,14 @@
 package a.org.fakereplace.test.replacement.annotated.inherited;
 
 import a.org.fakereplace.test.util.ClassReplacer;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 public class InheritedAnnotationTest {
 
     @BeforeClass
-    public void setup() {
+    public static void setup() {
         ClassReplacer r = new ClassReplacer();
         r.queueClassForReplacement(AddedInheritedSuperClass.class, AddedInheritedSuperClass1.class);
         r.queueClassForReplacement(RemovedInheritedSuperClass.class, RemovedInheritedSuperClass1.class);
@@ -38,15 +39,15 @@ public class InheritedAnnotationTest {
      */
     @Test
     public void testInheritedBehaviorWithoutReplacement() {
-        assert InheritChild.class.isAnnotationPresent(InheritedAnnotation.class);
-        assert !InheritChild.class.isAnnotationPresent(NotInheritedAnnotation.class);
+        Assert.assertTrue(InheritChild.class.isAnnotationPresent(InheritedAnnotation.class));
+        Assert.assertFalse(InheritChild.class.isAnnotationPresent(NotInheritedAnnotation.class));
 
-        assert InheritChild.class.getAnnotation(InheritedAnnotation.class).value() == 10;
+        Assert.assertEquals(10, InheritChild.class.getAnnotation(InheritedAnnotation.class).value());
 
-        assert InheritChild.class.getAnnotations().length == 1;
-        assert InheritChild.class.getAnnotations()[0].annotationType() == InheritedAnnotation.class;
+        Assert.assertEquals(1, InheritChild.class.getAnnotations().length);
+        Assert.assertEquals(InheritedAnnotation.class, InheritChild.class.getAnnotations()[0].annotationType());
 
-        assert InheritChild.class.getDeclaredAnnotations().length == 0;
+        Assert.assertEquals(0, InheritChild.class.getDeclaredAnnotations().length);
     }
 
     /**
@@ -56,15 +57,15 @@ public class InheritedAnnotationTest {
      */
     @Test
     public void testAddedInheritedAnnotationBehavoir() {
-        assert AddedInheritedChild.class.isAnnotationPresent(InheritedAnnotation.class);
-        assert !AddedInheritedChild.class.isAnnotationPresent(NotInheritedAnnotation.class);
+        Assert.assertTrue(AddedInheritedChild.class.isAnnotationPresent(InheritedAnnotation.class));
+        Assert.assertFalse(AddedInheritedChild.class.isAnnotationPresent(NotInheritedAnnotation.class));
 
-        assert AddedInheritedChild.class.getAnnotation(InheritedAnnotation.class).value() == 20;
+        Assert.assertEquals(20, AddedInheritedChild.class.getAnnotation(InheritedAnnotation.class).value());
 
-        assert AddedInheritedChild.class.getAnnotations().length == 1;
-        assert AddedInheritedChild.class.getAnnotations()[0].annotationType() == InheritedAnnotation.class;
+        Assert.assertEquals(1, AddedInheritedChild.class.getAnnotations().length);
+        Assert.assertEquals(InheritedAnnotation.class, AddedInheritedChild.class.getAnnotations()[0].annotationType());
 
-        assert AddedInheritedChild.class.getDeclaredAnnotations().length == 0;
+        Assert.assertEquals(0, AddedInheritedChild.class.getDeclaredAnnotations().length);
     }
 
     /**
@@ -74,14 +75,14 @@ public class InheritedAnnotationTest {
      */
     @Test
     public void testRemovedInheritedAnnotationBehavoir() {
-        assert !RemovedInheritedChild.class.isAnnotationPresent(InheritedAnnotation.class);
-        assert !RemovedInheritedChild.class.isAnnotationPresent(NotInheritedAnnotation.class);
+        Assert.assertFalse(RemovedInheritedChild.class.isAnnotationPresent(InheritedAnnotation.class));
+        Assert.assertFalse(RemovedInheritedChild.class.isAnnotationPresent(NotInheritedAnnotation.class));
 
-        assert RemovedInheritedChild.class.getAnnotation(InheritedAnnotation.class) == null;
+        Assert.assertNull(RemovedInheritedChild.class.getAnnotation(InheritedAnnotation.class));
 
-        assert RemovedInheritedChild.class.getAnnotations().length == 0;
+        Assert.assertEquals(0, RemovedInheritedChild.class.getAnnotations().length);
 
-        assert RemovedInheritedChild.class.getDeclaredAnnotations().length == 0;
+        Assert.assertEquals(0, RemovedInheritedChild.class.getDeclaredAnnotations().length);
     }
 
 }

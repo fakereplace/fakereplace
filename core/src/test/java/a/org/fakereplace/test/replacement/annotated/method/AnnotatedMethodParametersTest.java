@@ -22,13 +22,14 @@ package a.org.fakereplace.test.replacement.annotated.method;
 import java.lang.reflect.Method;
 
 import a.org.fakereplace.test.util.ClassReplacer;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 public class AnnotatedMethodParametersTest {
 
     @BeforeClass
-    public void setup() {
+    public static void setup() {
         ClassReplacer r = new ClassReplacer();
         r.queueClassForReplacement(MethodParameterAnnotated.class, MethodParameterAnnotated1.class);
         r.replaceQueuedClasses();
@@ -42,9 +43,9 @@ public class AnnotatedMethodParametersTest {
         Method m2 = MethodParameterAnnotated.class.getMethod("method2", int.class);
         Method m3 = MethodParameterAnnotated.class.getMethod("method3", int.class);
 
-        assert ((MethodAnnotation) m1.getParameterAnnotations()[0][0]).value().equals("1");
-        assert m2.getParameterAnnotations()[0].length == 0;
-        assert ((MethodAnnotation) m3.getParameterAnnotations()[0][0]).value().equals("3");
+        Assert.assertEquals("1", ((MethodAnnotation) m1.getParameterAnnotations()[0][0]).value());
+        Assert.assertEquals(0, m2.getParameterAnnotations()[0].length);
+        Assert.assertEquals("3", ((MethodAnnotation) m3.getParameterAnnotations()[0][0]).value());
 
     }
 

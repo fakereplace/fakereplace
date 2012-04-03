@@ -21,13 +21,10 @@ package a.org.fakereplace.test.replacement.staticfield;
 
 import java.lang.reflect.Field;
 
-import a.org.fakereplace.test.coverage.ChangeTestType;
-import a.org.fakereplace.test.coverage.CodeChangeType;
-import a.org.fakereplace.test.coverage.Coverage;
-import a.org.fakereplace.test.coverage.MultipleCoverage;
 import a.org.fakereplace.test.util.ClassReplacer;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  * when changing instance fields to static existing reference will still
@@ -37,32 +34,28 @@ import org.testng.annotations.Test;
  */
 public class StaticToInstanceTest {
     @BeforeClass
-    public void setup() {
+    public static void setup() {
         ClassReplacer r = new ClassReplacer();
         r.queueClassForReplacement(StaticToInstance.class, StatictoInstance1.class);
         r.replaceQueuedClasses();
     }
 
     @Test
-    @Coverage(change = CodeChangeType.STATIC_FIELD_TO_INSTANCE, privateMember = true, test = ChangeTestType.ACCESS_THROUGH_BYTECODE)
     public void testStaticToInstance() {
         StaticToInstance f1 = new StaticToInstance();
         StaticToInstance f2 = new StaticToInstance();
         f1.setField(100);
-        assert f2.getField() != 100;
+        Assert.assertEquals(20,  f2.getField());
     }
 
     @Test
-    @MultipleCoverage({
-            @Coverage(change = CodeChangeType.STATIC_FIELD_TO_INSTANCE, privateMember = true, test = ChangeTestType.GET_DECLARED_BY_NAME),
-            @Coverage(change = CodeChangeType.STATIC_FIELD_TO_INSTANCE, privateMember = true, test = ChangeTestType.INVOKE_BY_REFLECTION)})
     public void testStaticToInstanceViaReflection() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         StaticToInstance f1 = new StaticToInstance();
         StaticToInstance f2 = new StaticToInstance();
         Field f = f1.getClass().getDeclaredField("field");
         f.setAccessible(true);
         f.setInt(f1, 200);
-        assert f.getInt(f2) != 200;
+        Assert.assertEquals(20,  f.getInt(f2));
     }
 
 }

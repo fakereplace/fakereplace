@@ -22,12 +22,13 @@ package a.org.fakereplace.test.basic.reflection;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.Test;
 
 public class FinalMethodTest {
     @Test
     public void testFinalMethodModifiers() throws SecurityException, NoSuchMethodException {
         Method m = ClassWithFinalMethods.class.getMethod("method");
-        assert (m.getModifiers() & Modifier.FINAL) != 0;
+        Assert.assertTrue((m.getModifiers() & Modifier.FINAL) != 0);
     }
 }

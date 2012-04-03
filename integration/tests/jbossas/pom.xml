@@ -30,8 +30,8 @@
     </parent>
 
     <groupId>org.fakereplace</groupId>
-    <artifactId>fakereplace-weld-tests</artifactId>
-    <name>Fakereplace Weld Integration Tests</name>
+    <artifactId>fakereplace-jbossas-tests</artifactId>
+    <name>Fakereplace Jboss AS Integration Tests</name>
     <version>0.10-SNAPSHOT</version>
     <url>http://maven.apache.org</url>
 
@@ -45,8 +45,8 @@
             <artifactId>junit</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.jboss.arquillian.container</groupId>
-            <artifactId>arquillian-weld-se-embedded-1.1</artifactId>
+            <groupId>org.jboss.as</groupId>
+            <artifactId>jboss-as-arquillian-container-managed</artifactId>
         </dependency>
     </dependencies>
 </project>

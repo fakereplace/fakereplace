@@ -23,79 +23,80 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 
 import a.org.fakereplace.test.util.ClassReplacer;
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.Test;
 
 public class AnnotatedClassTest {
 
-    @Test(groups = "annotatedclass")
+    @Test
     public void testStringA() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException, NoSuchFieldException {
         ClassReplacer rep = new ClassReplacer();
         rep.queueClassForReplacement(StringC.class, StringC1.class);
         rep.replaceQueuedClasses();
         StringC ns = new StringC();
         Class c = StringC.class;
-        assert !ns.getClass().isAnnotationPresent(StringA.class);
+        Assert.assertFalse(ns.getClass().isAnnotationPresent(StringA.class));
         Field field = c.getDeclaredField("field");
-        assert field.isAnnotationPresent(StringA.class);
-        assert field.getAnnotation(StringA.class).value().equals("1");
+        Assert.assertTrue(field.isAnnotationPresent(StringA.class));
+        Assert.assertEquals("1", field.getAnnotation(StringA.class).value());
 
     }
 
-    @Test(groups = "annotatedclass")
+    @Test
     public void testIntA() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException, NoSuchFieldException {
         ClassReplacer rep = new ClassReplacer();
         rep.queueClassForReplacement(IntC.class, IntC1.class);
         rep.replaceQueuedClasses();
         IntC ns = new IntC();
         Class c = IntC.class;
-        assert !ns.getClass().isAnnotationPresent(IntA.class);
+        Assert.assertFalse(ns.getClass().isAnnotationPresent(IntA.class));
         Field field = c.getDeclaredField("field");
-        assert field.isAnnotationPresent(IntA.class);
-        assert field.getAnnotation(IntA.class).value() == 2;
+        Assert.assertTrue(field.isAnnotationPresent(IntA.class));
+        Assert.assertEquals(2, field.getAnnotation(IntA.class).value());
 
     }
 
-    @Test(groups = "annotatedclass")
+    @Test
     public void testClassA() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException, NoSuchFieldException {
         ClassReplacer rep = new ClassReplacer();
         rep.queueClassForReplacement(ClassC.class, ClassC1.class);
         rep.replaceQueuedClasses();
         ClassC ns = new ClassC();
         Class c = ClassC.class;
-        assert !ns.getClass().isAnnotationPresent(ClassA.class);
+        Assert.assertFalse(ns.getClass().isAnnotationPresent(ClassA.class));
         Field field = c.getDeclaredField("field");
-        assert field.isAnnotationPresent(ClassA.class);
-        assert field.getAnnotation(ClassA.class).value() == Integer.class;
+        Assert.assertTrue(field.isAnnotationPresent(ClassA.class));
+        Assert.assertEquals(Integer.class, field.getAnnotation(ClassA.class).value());
 
     }
 
-    @Test(groups = "annotatedclass")
+    @Test
     public void testAnnotationA() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException, NoSuchFieldException {
         ClassReplacer rep = new ClassReplacer();
         rep.queueClassForReplacement(AnnotationC.class, AnnotationC1.class);
         rep.replaceQueuedClasses();
         AnnotationC ns = new AnnotationC();
         Class c = AnnotationC.class;
-        assert !ns.getClass().isAnnotationPresent(AnnotationA.class);
+        Assert.assertFalse(ns.getClass().isAnnotationPresent(AnnotationA.class));
         Field field = c.getDeclaredField("field");
-        assert field.isAnnotationPresent(AnnotationA.class);
-        assert field.getAnnotation(AnnotationA.class).value().value().equals("1");
+        Assert.assertTrue(field.isAnnotationPresent(AnnotationA.class));
+        Assert.assertEquals("1", field.getAnnotation(AnnotationA.class).value().value());
 
     }
 
-    @Test(groups = "annotatedclass")
+    @Test
     public void testAnnotationArrayA() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException, NoSuchFieldException {
         ClassReplacer rep = new ClassReplacer();
         rep.queueClassForReplacement(AnnotationArrayC.class, AnnotationArrayC1.class);
         rep.replaceQueuedClasses();
         AnnotationArrayC ns = new AnnotationArrayC();
         Class c = AnnotationArrayC.class;
-        assert !ns.getClass().isAnnotationPresent(AnnotationArrayA.class);
+        Assert.assertFalse(ns.getClass().isAnnotationPresent(AnnotationArrayA.class));
         Field field = c.getDeclaredField("field");
-        assert field.isAnnotationPresent(AnnotationArrayA.class);
+        Assert.assertTrue(field.isAnnotationPresent(AnnotationArrayA.class));
         StringA[] ar = field.getAnnotation(AnnotationArrayA.class).value();
-        assert ar[0].value().equals("1");
-        assert ar[1].value().equals("2");
+        Assert.assertEquals("1", ar[0].value());
+        Assert.assertEquals("2", ar[1].value());
 
     }
 }

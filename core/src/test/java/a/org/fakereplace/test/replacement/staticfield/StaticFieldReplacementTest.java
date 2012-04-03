@@ -24,13 +24,14 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 
 import a.org.fakereplace.test.util.ClassReplacer;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 public class StaticFieldReplacementTest {
 
     @BeforeClass
-    public void setup() {
+    public static void setup() {
         ClassReplacer r = new ClassReplacer();
         r.queueClassForReplacement(StaticFieldClass.class, StaticFieldClass1.class);
         r.replaceQueuedClasses(true);
@@ -40,9 +41,9 @@ public class StaticFieldReplacementTest {
     public void testStaticFieldReplacement() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
 
         Long v = StaticFieldClass.incAndGet();
-        assert v.equals(new Long(1)) : "expected 1, got " + v;
+        Assert.assertEquals((Object)1L, v);
         v = StaticFieldClass.incAndGet();
-        assert v.equals(new Long(2)) : "expected 2, got " + v;
+        Assert.assertEquals((Object)2L, v);
     }
 
     @Test
@@ -62,9 +63,9 @@ public class StaticFieldReplacementTest {
                 list = true;
             }
         }
-        assert list;
-        assert longField;
-        assert !removedField;
+        Assert.assertTrue( list);
+        Assert.assertTrue( longField);
+        Assert.assertTrue( !removedField);
     }
 
     @Test
@@ -84,18 +85,18 @@ public class StaticFieldReplacementTest {
                 list = true;
             }
         }
-        assert !list;
-        assert longField;
-        assert !removedField;
+        Assert.assertTrue( !list);
+        Assert.assertTrue( longField);
+        Assert.assertTrue( !removedField);
     }
 
     @Test
     public void testStaticFieldGenericType() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException, NoSuchFieldException {
         Field f = StaticFieldClass.class.getDeclaredField("list");
-        assert ((ParameterizedType) f.getGenericType()).getActualTypeArguments()[0].equals(String.class);
+        Assert.assertEquals(String.class,  ((ParameterizedType) f.getGenericType()).getActualTypeArguments()[0]);
     }
 
-    @Test(expectedExceptions = NoSuchFieldException.class)
+    @Test(expected = NoSuchFieldException.class)
     public void testStaticFieldGetFieldNonPublicFieldsNotAccessible() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException, NoSuchFieldException {
         Field f = StaticFieldClass.class.getField("list");
     }

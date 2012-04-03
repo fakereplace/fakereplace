@@ -24,7 +24,7 @@ import java.lang.reflect.Method;
 
 import org.fakereplace.boot.Constants;
 import org.fakereplace.util.NoInstrument;
-import org.testng.annotations.Test;
+import org.junit.Test;
 
 public class MethodTest {
     @Test

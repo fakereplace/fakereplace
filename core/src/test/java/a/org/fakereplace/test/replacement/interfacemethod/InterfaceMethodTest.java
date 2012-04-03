@@ -23,12 +23,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import a.org.fakereplace.test.util.ClassReplacer;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 public class InterfaceMethodTest {
-    @BeforeClass(groups = "interface")
-    public void setup() {
+    @BeforeClass
+    public static void setup() {
         ClassReplacer rep = new ClassReplacer();
         rep.queueClassForReplacement(InterfaceCallingClass.class, InterfaceCallingClass1.class);
         rep.queueClassForReplacement(SomeInterface.class, SomeInterface1.class);
@@ -36,17 +37,17 @@ public class InterfaceMethodTest {
         rep.replaceQueuedClasses();
     }
 
-    @Test(groups = "interface")
+    @Test
     public void testAddingInterfaceMethod() {
         SomeInterface iface = new ImplementingClass();
         InterfaceCallingClass caller = new InterfaceCallingClass();
-        assert caller.call(iface).equals("added");
+        Assert.assertEquals("added", caller.call(iface));
     }
 
-    @Test(groups = "interface")
+    @Test
     public void testAddingInterfaceMethodByReflection() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
         Method method = SomeInterface.class.getDeclaredMethod("added");
         ImplementingClass cls = new ImplementingClass();
-        assert method.invoke(cls).equals("added");
+        Assert.assertEquals("added", method.invoke(cls));
     }
 }

@@ -23,24 +23,22 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import a.org.fakereplace.test.coverage.ChangeTestType;
-import a.org.fakereplace.test.coverage.CodeChangeType;
-import a.org.fakereplace.test.coverage.Coverage;
-import a.org.fakereplace.test.coverage.MultipleCoverage;
 import a.org.fakereplace.test.util.ClassReplacer;
-import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
+import org.junit.Test;
 
 public class VirtualMethodTest {
-    @BeforeClass(groups = "virtualmethod")
-    public void setup() {
+    @BeforeClass
+    public static void setup() {
         ClassReplacer rep = new ClassReplacer();
         rep.queueClassForReplacement(VirtualClass.class, VirtualClass1.class);
         rep.queueClassForReplacement(VirtualCaller.class, VirtualCaller1.class);
@@ -48,7 +46,7 @@ public class VirtualMethodTest {
         rep.replaceQueuedClasses();
     }
 
-    @Test(groups = "virtualmethod")
+    @Test
     public void testVirtualMethodByReflection() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
 
         VirtualClass ns = new VirtualClass();
@@ -56,12 +54,12 @@ public class VirtualMethodTest {
         Method get = c.getMethod("getValue");
 
         Method add = c.getMethod("addValue", int.class);
-        assert get != null;
+        Assert.assertNotNull(get);
         Integer res = (Integer) get.invoke(ns);
-        assert res.equals(new Integer(1));
+        Assert.assertEquals(Integer.valueOf(1), res);
         add.invoke(ns, 1);
         res = (Integer) get.invoke(ns);
-        assert res.equals(new Integer(3)) : "Expected 3 got " + res;
+        Assert.assertEquals(Integer.valueOf(3), res);
 
         Map<String, String> tmap = new HashMap<String, String>();
         tmap.put("a", "b");
@@ -69,12 +67,12 @@ public class VirtualMethodTest {
         tset.add("c");
         Method clear = c.getMethod("clearFunction", Map.class, Set.class, int.class);
         clear.invoke(ns, tmap, tset, 0);
-        assert tmap.isEmpty();
-        assert tset.isEmpty();
+        Assert.assertTrue(tmap.isEmpty());
+        Assert.assertTrue(tset.isEmpty());
 
     }
 
-    @Test(groups = "virtualmethod")
+    @Test
     public void testVirtualMethodChildByReflection() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
 
         VirtualChild ns = new VirtualChild();
@@ -82,72 +80,68 @@ public class VirtualMethodTest {
         Method get = c.getMethod("getValue");
 
         Method add = c.getMethod("addValue", int.class);
-        assert get != null;
+        Assert.assertNotNull(get);
         Integer res = (Integer) get.invoke(ns);
-        assert res.equals(new Integer(1)) : " actual " + res;
+        Assert.assertEquals(Integer.valueOf(1), res);
         add.invoke(ns, 1);
         res = (Integer) get.invoke(ns);
-        assert res.equals(new Integer(3)) : "Expected 3 got " + res;
+        Assert.assertEquals(Integer.valueOf(3), res);
 
     }
 
-    @MultipleCoverage({@Coverage(change = CodeChangeType.ADD_INSTANCE_METHOD, privateMember = true, test = ChangeTestType.ACCESS_THROUGH_BYTECODE)})
-    @Test(groups = "virtualmethod")
+    @Test
     public void testVirtualMethod() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
 
         VirtualClass ns = new VirtualClass();
         VirtualCaller caller = new VirtualCaller();
         caller.add(ns);
         int val = ns.getValue();
-        assert val == 11 : "expected 10 got " + val;
+        Assert.assertEquals(11, val);
 
         Map<String, String> tmap = new HashMap<String, String>();
         tmap.put("a", "b");
         Set<String> tset = new HashSet<String>();
         tset.add("c");
         ns.clear(tmap, tset);
-        assert tmap.isEmpty();
-        assert tset.isEmpty();
+        Assert.assertEquals(Collections.emptyMap(), tmap);
+        Assert.assertEquals(Collections.emptySet(), tset);
 
     }
 
-    @Test(groups = "virtualmethod")
+    @Test
     public void testVirtualMethodModifiers() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
         Class<?> c = VirtualClass.class;
         Method add = c.getMethod("addValue", int.class);
-        assert !Modifier.isStatic(add.getModifiers());
+        Assert.assertTrue(!Modifier.isStatic(add.getModifiers()));
         add = c.getMethod("getStuff", List.class);
-        assert !Modifier.isStatic(add.getModifiers());
+        Assert.assertTrue(!Modifier.isStatic(add.getModifiers()));
         add = c.getMethod("getValue");
-        assert !Modifier.isStatic(add.getModifiers());
+        Assert.assertTrue(!Modifier.isStatic(add.getModifiers()));
     }
 
-    @Test(groups = "virtualmethod")
+    @Test
     public void testVirtualMethodExceptionsByReflection() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
         Class<?> c = VirtualClass.class;
         Method add = c.getMethod("addValue", int.class);
-        assert add.getExceptionTypes()[0].equals(ArithmeticException.class);
+        Assert.assertEquals(ArithmeticException.class, add.getExceptionTypes()[0]);
     }
 
-    @Test(groups = "virtualmethod")
+    @Test
     public void testVirtualMethodGernericTypeByReflection() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
 
         Class<?> c = VirtualClass.class;
         Method meth = c.getMethod("getStuff", List.class);
-        assert ((ParameterizedType) meth.getGenericReturnType()).getActualTypeArguments()[0].equals(String.class);
+        Assert.assertEquals(String.class, ((ParameterizedType) meth.getGenericReturnType()).getActualTypeArguments()[0]);
     }
 
-    @Test(groups = "virtualmethod")
+    @Test
     public void testVirtualMethodGernericParameterTypeByReflection() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
         Class<?> c = VirtualClass.class;
         Method meth = c.getMethod("getStuff", List.class);
-        assert ((ParameterizedType) meth.getGenericParameterTypes()[0]).getActualTypeArguments()[0].equals(Integer.class);
+        Assert.assertEquals(Integer.class, ((ParameterizedType) meth.getGenericParameterTypes()[0]).getActualTypeArguments()[0]);
     }
 
-    @MultipleCoverage({
-            @Coverage(change = CodeChangeType.ADD_INSTANCE_METHOD, privateMember = false, test = ChangeTestType.GET_DECLARED_ALL),
-            @Coverage(change = CodeChangeType.ADD_INSTANCE_METHOD, privateMember = true, test = ChangeTestType.GET_DECLARED_ALL)})
-    @Test(groups = "virtualmethod")
+    @Test
     public void testVirtualMethodgetDeclaredMethods() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
         boolean add = false;
         boolean stuff = false;
@@ -155,45 +149,42 @@ public class VirtualMethodTest {
         Class<?> c = VirtualClass.class;
         for (Method m : c.getDeclaredMethods()) {
             if (m.getName().equals("addValue")) {
-                assert m.getParameterTypes()[0] == int.class;
+                Assert.assertEquals(int.class, m.getParameterTypes()[0]);
                 add = true;
             }
             if (m.getName().equals("getStuff")) {
-                assert m.getParameterTypes()[0] == List.class;
+                Assert.assertEquals(List.class, m.getParameterTypes()[0]);
                 stuff = true;
             }
             if (m.getName().equals("privateFunction")) {
                 priv = true;
             }
         }
-        assert add;
-        assert stuff;
-        assert priv;
+        Assert.assertTrue(add);
+        Assert.assertTrue(stuff);
+        Assert.assertTrue(priv);
     }
 
-    @Test(groups = "virtualmethod")
+    @Test
     public void testVirtualChildMethodgetMethods() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
         boolean add = false;
         boolean stuff = false;
         Class<?> c = VirtualChild.class;
         for (Method m : c.getMethods()) {
             if (m.getName().equals("addValue")) {
-                assert m.getParameterTypes()[0] == int.class;
+                Assert.assertEquals(int.class, m.getParameterTypes()[0]);
                 add = true;
             }
             if (m.getName().equals("getStuff")) {
-                assert m.getParameterTypes()[0] == List.class;
+                Assert.assertEquals(List.class, m.getParameterTypes()[0]);
                 stuff = true;
             }
         }
-        assert add;
-        assert stuff;
+        Assert.assertTrue(add);
+        Assert.assertTrue(stuff);
     }
 
-    @MultipleCoverage({
-            @Coverage(change = CodeChangeType.ADD_INSTANCE_METHOD, privateMember = false, test = ChangeTestType.GET_ALL),
-            @Coverage(change = CodeChangeType.ADD_INSTANCE_METHOD, privateMember = true, test = ChangeTestType.GET_ALL)})
-    @Test(groups = "virtualmethod")
+    @Test
     public void testVirtualMethodgetMethods() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
         boolean add = false;
         boolean stuff = false;
@@ -201,50 +192,51 @@ public class VirtualMethodTest {
         Class<?> c = VirtualClass.class;
         for (Method m : c.getMethods()) {
             if (m.getName().equals("addValue")) {
-                assert m.getParameterTypes()[0] == int.class;
+                Assert.assertEquals(int.class, m.getParameterTypes()[0]);
                 add = true;
             }
             if (m.getName().equals("getStuff")) {
-                assert m.getParameterTypes()[0] == List.class;
+                Assert.assertEquals(List.class, m.getParameterTypes()[0]);
                 stuff = true;
             }
             if (m.getName().equals("privateFunction")) {
                 priv = true;
             }
         }
-        assert add;
-        assert stuff;
-        assert !priv;
+        Assert.assertTrue(add);
+        Assert.assertTrue(stuff);
+        Assert.assertTrue(!priv);
     }
 
-    @Test(groups = "virtualmethod", enabled = false)
+    @Ignore
+    @Test
     public void testToStringOverride() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
         VirtualClass c = new VirtualClass();
-        Assert.assertEquals(getString(c), "VirtualChild1");
+        Assert.assertEquals("VirtualChild1", getString(c));
     }
 
-    @Test(groups = "virtualmethod")
+    @Test
     public void testAddedDelegateMethodsDoNotBreakOnReplacement() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
         VirtualCaller c = new VirtualCaller();
-        assert c.toString().contains("VirtualCaller") : c.toString();
+        Assert.assertTrue(c.toString().contains("VirtualCaller"));
     }
 
-    @Test(groups = "virtualmethod")
+    @Test
     public void testOverrideWithSuperclassNotLoaded() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
         NoSupClass c = new NoSupChild();
-        assert c.getStuff(0, 0, "", 0, 0).equals("NoSupChild") : "Expected NoSupChild got:" + c.getStuff(0, 0, "", 0, 0);
+        Assert.assertEquals("NoSupChild", c.getStuff(0, 0, "", 0, 0));
     }
 
-    @Test(groups = "virtualmethod")
+    @Test
     public void testOverrideWithSuperclassNotLoadedSuperclassNotChanged() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
         NoSupClass c = new NoSupClass();
-        assert c.getStuff(0, 0, "", 0, 0).equals("NoSupClass") : "Expected NoSupClass got:" + c.getStuff(0, 0, "", 0, 0);
+        Assert.assertEquals("NoSupClass", c.getStuff(0, 0, "", 0, 0));
     }
 
-    @Test(groups = "virtualmethod")
+    @Test
     public void testOverrideWithSuperclassNotLoadedOtherChildNotChanged() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
         NoSupUnmodifiedChild c = new NoSupUnmodifiedChild();
-        assert c.getStuff(0, 0, "", 0, 0).equals("NoSupUnmodifiedChild") : "Expected NoSupUnmodifiedChild got:" + c.getStuff(0, 0, "", 0, 0);
+        Assert.assertEquals("NoSupUnmodifiedChild", c.getStuff(0, 0, "", 0, 0));
     }
 
     public String getString(Object o) {

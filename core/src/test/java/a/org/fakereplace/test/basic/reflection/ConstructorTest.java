@@ -22,7 +22,7 @@ package a.org.fakereplace.test.basic.reflection;
 import java.lang.reflect.Constructor;
 
 import org.fakereplace.ConstructorArgument;
-import org.testng.annotations.Test;
+import org.junit.Test;
 
 public class ConstructorTest {
     @Test

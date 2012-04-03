@@ -20,7 +20,8 @@
 package a.org.fakereplace.test.replacement.addedclass;
 
 import a.org.fakereplace.test.util.ClassReplacer;
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.Test;
 
 public class AddedClassTest {
 
@@ -32,7 +33,7 @@ public class AddedClassTest {
         r.replaceQueuedClasses();
 
         ReplacedClass c = new ReplacedClass();
-        assert c.getValue().equals("hello Bob");
+        Assert.assertEquals("hello Bob", c.getValue());
 
     }
 }

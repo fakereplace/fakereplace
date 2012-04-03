@@ -22,41 +22,42 @@ package a.org.fakereplace.test.replacement.instancefield;
 import java.lang.reflect.InvocationTargetException;
 
 import a.org.fakereplace.test.util.ClassReplacer;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 public class InstanceFieldTest {
-    @BeforeClass(groups = "instancefield")
-    public void setup() {
+    @BeforeClass
+    public static void setup() {
         ClassReplacer rep = new ClassReplacer();
         rep.queueClassForReplacement(InstanceFieldClass.class, InstanceFieldClass1.class);
         rep.replaceQueuedClasses();
     }
 
-    @Test(groups = "instancefield")
+    @Test
     public void testAddingInstanceField() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
 
         InstanceFieldClass ns = new InstanceFieldClass();
         ns.inc();
-        assert ns.get() == 1;
+        Assert.assertEquals(1, ns.get());
         ns.inclong();
-        assert ns.getlong() == 2;
-        assert ns.getSv().equals("aa");
+        Assert.assertEquals(2, ns.getlong());
+        Assert.assertEquals("aa", ns.getSv());
     }
 
-    @Test(groups = "instancefield")
+    @Test
     public void testChangingInstanceFieldType() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
         ClassReplacer rep = new ClassReplacer();
         rep.queueClassForReplacement(ChangeFieldType.class, ChangeFieldType1.class);
         rep.replaceQueuedClasses();
         ChangeFieldType type = new ChangeFieldType();
-        assert type.getValue() == 20;
+        Assert.assertEquals(20, type.getValue());
     }
 
-    @Test(groups = "instancefield")
+    @Test
     public void testSettingObjectInstanceField() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
         InstanceFieldClass ns = new InstanceFieldClass();
         ns.setFa2(this);
-        assert ns.getFa2() == this;
+        Assert.assertEquals(this, ns.getFa2());
     }
 }

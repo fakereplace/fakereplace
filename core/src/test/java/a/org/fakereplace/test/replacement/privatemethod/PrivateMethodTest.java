@@ -23,25 +23,25 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import a.org.fakereplace.test.util.ClassReplacer;
-import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 public class PrivateMethodTest {
-    @BeforeClass(groups = "privatemethod")
-    public void setup() {
+    @BeforeClass
+    public static void setup() {
         ClassReplacer rep = new ClassReplacer();
         rep.queueClassForReplacement(PrivateMethodClass.class, PrivateMethodClass1.class);
         rep.replaceQueuedClasses();
     }
 
-    @Test(groups = "privatemethod")
+    @Test
     public void testAddingPrivateMethod() {
         PrivateMethodClass instance = new PrivateMethodClass();
         Assert.assertEquals(1, instance.getResult());
     }
 
-    @Test(groups = "privatemethod")
+    @Test
     public void testAddingPrivateMethodByReflection() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
         Method method = PrivateMethodClass.class.getDeclaredMethod("realResult");
         method.setAccessible(true);
@@ -49,7 +49,7 @@ public class PrivateMethodTest {
         Assert.assertEquals(1, method.invoke(cls));
     }
 
-    @Test(groups = "privatemethod", expectedExceptions = IllegalAccessException.class)
+    @Test(expected = IllegalAccessException.class)
     public void testExceptionIfNotSetAccessible() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
         Method method = PrivateMethodClass.class.getDeclaredMethod("realResult");
         PrivateMethodClass cls = new PrivateMethodClass();

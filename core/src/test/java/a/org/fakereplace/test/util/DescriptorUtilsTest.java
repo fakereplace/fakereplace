@@ -20,7 +20,8 @@
 package a.org.fakereplace.test.util;
 
 import org.fakereplace.util.DescriptorUtils;
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.Test;
 
 public class DescriptorUtilsTest {
 
@@ -28,42 +29,42 @@ public class DescriptorUtilsTest {
     public void testMethodParsing() throws ClassNotFoundException {
         Class[] test = DescriptorUtils.argumentStringToClassArray("(IJ)V", this
                 .getClass());
-        assert test[0] == int.class;
-        assert test[1] == long.class;
+        Assert.assertEquals(int.class, test[0]);
+        Assert.assertEquals(long.class, test[1]);
         test = DescriptorUtils.argumentStringToClassArray("([I[[J)V", this
                 .getClass());
-        assert test[0] == int[].class;
-        assert test[1] == long[][].class;
+        Assert.assertEquals(int[].class, test[0]);
+        Assert.assertEquals(long[][].class, test[1]);
         test = DescriptorUtils.argumentStringToClassArray(
                 "([I[[JLjava/lang/String;)V", this.getClass());
-        assert test[0] == int[].class;
-        assert test[1] == long[][].class;
-        assert test[2] == String.class;
+        Assert.assertEquals(int[].class, test[0] );
+        Assert.assertEquals(long[][].class, test[1] );
+        Assert.assertEquals( String.class, test[2]);
         test = DescriptorUtils.argumentStringToClassArray(
                 "([I[[J[Ljava/lang/String;[[[Ljava/lang/String;)V", this
                 .getClass());
-        assert test[0] == int[].class;
-        assert test[1] == long[][].class;
-        assert test[2] == String[].class;
-        assert test[3] == String[][][].class;
+        Assert.assertEquals(int[].class, test[0] );
+        Assert.assertEquals(long[][].class, test[1]);
+        Assert.assertEquals(String[].class, test[2] );
+        Assert.assertEquals(String[][][].class, test[3]);
     }
 
     @Test
     public void getReturnTypeTest() {
         String ret;
         ret = DescriptorUtils.getReturnType("()C");
-        assert ret.equals("C") : ret;
+        Assert.assertEquals("C" , ret);
         ret = DescriptorUtils.getReturnType("(IJ)Ljava/lang/String;");
-        assert ret.equals("Ljava/lang/String;");
+        Assert.assertEquals("Ljava/lang/String;", ret);
     }
 
     @Test
     public void getArgumentTest() {
         String ret;
         ret = DescriptorUtils.getArgumentString("()C");
-        assert ret.equals("()") : ret;
+        Assert.assertEquals("()", ret);
 
         ret = DescriptorUtils.getArgumentString("(IJ)Ljava/lang/String;");
-        assert ret.equals("(IJ)");
+        Assert.assertEquals("(IJ)", ret);
     }
 }

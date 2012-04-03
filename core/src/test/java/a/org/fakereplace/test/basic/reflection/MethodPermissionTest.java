@@ -22,7 +22,7 @@ package a.org.fakereplace.test.basic.reflection;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import org.testng.annotations.Test;
+import org.junit.Test;
 
 public class MethodPermissionTest {
 
@@ -32,7 +32,7 @@ public class MethodPermissionTest {
         m.invoke(this);
     }
 
-    @Test(expectedExceptions = IllegalAccessException.class)
+    @Test(expected = IllegalAccessException.class)
     public void testMethodPermissionsOnOtherClass() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
         Method m = MethodPermissionBean.class.getDeclaredMethod("method");
         m.invoke(null);

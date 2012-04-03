@@ -22,8 +22,9 @@ package a.org.fakereplace.test.replacement.instancefield;
 import java.lang.reflect.Field;
 
 import a.org.fakereplace.test.util.ClassReplacer;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  * when changing instance fields to static existing reference will still
@@ -33,7 +34,7 @@ import org.testng.annotations.Test;
  */
 public class InstanceToStaticTest {
     @BeforeClass
-    public void setup() {
+    public static void setup() {
         ClassReplacer r = new ClassReplacer();
         r.queueClassForReplacement(InstanceToStatic.class, InstanceToStatic1.class);
         r.replaceQueuedClasses();
@@ -44,7 +45,7 @@ public class InstanceToStaticTest {
         InstanceToStatic f1 = new InstanceToStatic();
         InstanceToStatic f2 = new InstanceToStatic();
         f1.setField(100);
-        assert f2.getField() == 100;
+        Assert.assertEquals(100, f2.getField());
     }
 
     @Test
@@ -54,7 +55,7 @@ public class InstanceToStaticTest {
         Field f = f1.getClass().getDeclaredField("field");
         f.setAccessible(true);
         f.setInt(null, 200);
-        assert f.getInt(null) == 200;
+        Assert.assertEquals(200, f.getInt(null));
     }
 
 }

@@ -22,90 +22,91 @@ package a.org.fakereplace.test.replacement.instancefield;
 import java.lang.reflect.Field;
 
 import a.org.fakereplace.test.util.ClassReplacer;
-import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 public class InstanceFieldReflectionTest {
 
-    @BeforeClass(groups = "instanceFieldByReflection")
-    public void setup() {
+    @BeforeClass
+    public static void setup() {
         ClassReplacer c = new ClassReplacer();
         c.queueClassForReplacement(InstanceFieldReflection.class, InstanceFieldReflection1.class);
         c.replaceQueuedClasses();
     }
 
-    @Test(groups = "instanceFieldByReflection")
+    @Test
     public void testSettingInstanceFieldByReflection() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         InstanceFieldReflection r = new InstanceFieldReflection();
         Field field = InstanceFieldReflection.class.getDeclaredField("value");
         field.set(r, "hello world");
-        assert r.getValue().equals("hello world");
+        Assert.assertEquals("hello world", r.getValue());
     }
 
-    @Test(groups = "instanceFieldByReflection")
+    @Test
     public void testSettingPrimitiveFieldByReflection() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         InstanceFieldReflection r = new InstanceFieldReflection();
         Field field = InstanceFieldReflection.class.getDeclaredField("intValue");
         field.setInt(r, 10);
-        Assert.assertEquals(r.getIntValue(), 10);
-        Assert.assertEquals(field.getInt(r), 10);
+        Assert.assertEquals(10, r.getIntValue());
+        Assert.assertEquals(10, field.getInt(r));
     }
 
-    @Test(groups = "instanceFieldByReflection")
+    @Test
     public void testSettingWideFieldByReflection() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         InstanceFieldReflection r = new InstanceFieldReflection();
         Field field = InstanceFieldReflection.class.getDeclaredField("longValue");
         field.setLong(r, 10L);
-        Assert.assertEquals(r.getLongValue(), 10);
-        Assert.assertEquals(field.getLong(r), 10);
+        Assert.assertEquals(10, r.getLongValue());
+        Assert.assertEquals(10, field.getLong(r));
     }
 
-    @Test(groups = "instanceFieldByReflection")
+    @Test
     public void testGettingInstanceFieldByReflection() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         InstanceFieldReflection r = new InstanceFieldReflection();
         Field field = InstanceFieldReflection.class.getDeclaredField("value");
         field.get(r);
-        assert r.getValue().equals("hi");
+        Assert.assertEquals("hi", r.getValue());
     }
 
-    @Test(groups = "instanceFieldByReflection")
+    @Test
     public void testPublicAddedFieldsAccessible() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         InstanceFieldReflection r = new InstanceFieldReflection();
         Field field = InstanceFieldReflection.class.getField("vis");
     }
 
-    @Test(groups = "instanceFieldByReflection", expectedExceptions = NoSuchFieldException.class)
+    @Test(expected = NoSuchFieldException.class)
     public void testPrivateAddedFieldsNotAccessibleThroughGetField() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         InstanceFieldReflection r = new InstanceFieldReflection();
         Field field = InstanceFieldReflection.class.getField("hid");
     }
 
-    @Test(groups = "instanceFieldByReflection")
+    @Test
     public void testPrivateAddedFieldsAccessibleThroughGetDeclaredField() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         InstanceFieldReflection r = new InstanceFieldReflection();
         Field field = InstanceFieldReflection.class.getDeclaredField("hid");
     }
 
-    @Test(groups = "instanceFieldByReflection")
+    @Test
     public void testSettingPrivateFieldByReflection() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         InstanceFieldReflection r = new InstanceFieldReflection();
         Field field = InstanceFieldReflection.class.getDeclaredField("privateField");
         field.setAccessible(true);
         field.setInt(r, 10);
-        Assert.assertEquals(r.getPrivateField(), 10);
-        Assert.assertEquals(field.getInt(r), 10);
+        Assert.assertEquals(10, r.getPrivateField());
+        Assert.assertEquals(10, field.getInt(r));
     }
 
-    @Test(groups = "instanceFieldByReflection", expectedExceptions = IllegalAccessException.class)
+    @Test(expected = IllegalAccessException.class)
     public void testSettingPrivateFieldByReflectionWithException() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         InstanceFieldReflection r = new InstanceFieldReflection();
         Field field = InstanceFieldReflection.class.getDeclaredField("privateField");
         field.setInt(r, 10);
-        Assert.assertEquals(r.getPrivateField(), 10);
-        Assert.assertEquals(field.getInt(r), 10);
+        Assert.assertEquals(10, r.getPrivateField());
+        Assert.assertEquals(10, field.getInt(r));
     }
 
+    @Test
     public void testPublicAddedFieldAccessibleThroughGetFields() {
         boolean found = false;
         for (Field f : InstanceFieldReflection.class.getFields()) {
@@ -113,9 +114,10 @@ public class InstanceFieldReflectionTest {
                 found = true;
             }
         }
-        assert found;
+        Assert.assertTrue(found);
     }
 
+    @Test
     public void testPrivateAddedFieldNotAccessibleThroughGetFields() {
         boolean found = false;
         for (Field f : InstanceFieldReflection.class.getFields()) {
@@ -123,18 +125,19 @@ public class InstanceFieldReflectionTest {
                 found = true;
             }
         }
-        assert !found;
+        Assert.assertFalse(found);
     }
 
+    @Test
     public void testPrivateAddedFieldAccessibleThroughGetDeclaredFields() {
         boolean found = false;
         for (Field f : InstanceFieldReflection.class.getDeclaredFields()) {
             if (f.getName().equals("hid")) {
                 found = true;
-                assert f.isAnnotationPresent(SomeAnnotation.class);
+                Assert.assertTrue(f.isAnnotationPresent(SomeAnnotation.class));
             }
         }
-        assert found;
+        Assert.assertTrue(found);
     }
 
 }

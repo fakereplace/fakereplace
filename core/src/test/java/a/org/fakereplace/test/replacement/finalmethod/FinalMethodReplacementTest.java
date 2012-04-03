@@ -24,31 +24,35 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import a.org.fakereplace.test.util.ClassReplacer;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
+import org.junit.Test;
 
 public class FinalMethodReplacementTest {
 
     @BeforeClass
-    public void setup() {
+    public static void setup() {
         ClassReplacer cr = new ClassReplacer();
         cr.queueClassForReplacement(FinalMethodClass.class, FinalMethodClass1.class);
         cr.replaceQueuedClasses();
     }
 
-    @Test(enabled = false)
+    @Ignore
+    @Test
     public void testNonFinalMethodIsNonFinal() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
         FinalMethodClass cl = new FinalMethodClass();
         Method method = cl.getClass().getMethod("finalMethod-replaced");
-        assert Modifier.isFinal(method.getModifiers());
-        assert method.invoke(cl).equals("finalMethod-replaced");
+        Assert.assertTrue(Modifier.isFinal(method.getModifiers()));
+        Assert.assertEquals("finalMethod-replaced", method.invoke(cl));
     }
 
-    @Test(enabled = false)
+    @Ignore
+    @Test
     public void testFinalMethodIsFinal() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
         FinalMethodClass cl = new FinalMethodClass();
         Method method = cl.getClass().getMethod("nonFinalMethod-replaced");
-        assert !Modifier.isFinal(method.getModifiers());
-        assert method.invoke(cl).equals("nonFinalMethod-replaced");
+        Assert.assertFalse(Modifier.isFinal(method.getModifiers()));
+        Assert.assertEquals("nonFinalMethod-replaced", method.invoke(cl));
     }
 }

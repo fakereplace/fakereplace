@@ -23,13 +23,14 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 
 import a.org.fakereplace.test.util.ClassReplacer;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 public class AnnotatedMethodTest {
 
     @BeforeClass
-    public void setup() {
+    public static void setup() {
         ClassReplacer r = new ClassReplacer();
         r.queueClassForReplacement(MethodAnnotated.class, MethodAnnotated1.class);
         r.replaceQueuedClasses();
@@ -42,10 +43,10 @@ public class AnnotatedMethodTest {
         Method m2 = MethodAnnotated.class.getMethod("method2");
         Method m3 = MethodAnnotated.class.getMethod("method3");
         Method m4 = MethodAnnotated.class.getMethod("method4");
-        assert m1.getAnnotation(MethodAnnotation.class).value().equals("1");
-        assert !m2.isAnnotationPresent(MethodAnnotation.class);
-        assert m3.getAnnotation(MethodAnnotation.class).value().equals("3");
-        assert !m4.isAnnotationPresent(MethodAnnotation.class);
+        Assert.assertEquals("1", m1.getAnnotation(MethodAnnotation.class).value());
+        Assert.assertFalse(m2.isAnnotationPresent(MethodAnnotation.class));
+        Assert.assertEquals("3", m3.getAnnotation(MethodAnnotation.class).value());
+        Assert.assertFalse(m4.isAnnotationPresent(MethodAnnotation.class));
     }
 
     @Test
@@ -55,15 +56,15 @@ public class AnnotatedMethodTest {
         Method m3 = MethodAnnotated.class.getMethod("method3");
         Method m4 = MethodAnnotated.class.getMethod("method4");
 
-        assert getDeclaredAnnotations(m1).length == 1 : m1.getDeclaredAnnotations().length;
-        assert getDeclaredAnnotations(m1)[0].annotationType() == MethodAnnotation.class;
+        Assert.assertEquals(1, getDeclaredAnnotations(m1).length);
+        Assert.assertEquals(MethodAnnotation.class, getDeclaredAnnotations(m1)[0].annotationType());
 
-        assert getDeclaredAnnotations(m2).length == 0;
+        Assert.assertEquals(0, getDeclaredAnnotations(m2).length);
 
-        assert getDeclaredAnnotations(m3).length == 1;
-        assert getDeclaredAnnotations(m3)[0].annotationType() == MethodAnnotation.class;
+        Assert.assertEquals(1 ,getDeclaredAnnotations(m3).length);
+        Assert.assertEquals(MethodAnnotation.class, getDeclaredAnnotations(m3)[0].annotationType() );
 
-        assert getDeclaredAnnotations(m4).length == 0;
+        Assert.assertEquals(0, getDeclaredAnnotations(m4).length);
     }
 
     @Test
@@ -73,15 +74,15 @@ public class AnnotatedMethodTest {
         Method m3 = MethodAnnotated.class.getMethod("method3");
         Method m4 = MethodAnnotated.class.getMethod("method4");
 
-        assert m1.getDeclaredAnnotations().length == 1 : m1.getDeclaredAnnotations().length;
-        assert m1.getDeclaredAnnotations()[0].annotationType() == MethodAnnotation.class;
+        Assert.assertEquals(1, m1.getDeclaredAnnotations().length);
+        Assert.assertEquals(MethodAnnotation.class, m1.getDeclaredAnnotations()[0].annotationType() );
 
-        assert m2.getDeclaredAnnotations().length == 0;
+        Assert.assertEquals(0, m2.getDeclaredAnnotations().length);
 
-        assert m3.getDeclaredAnnotations().length == 1;
-        assert m3.getDeclaredAnnotations()[0].annotationType() == MethodAnnotation.class;
+        Assert.assertEquals(1, m3.getDeclaredAnnotations().length);
+        Assert.assertEquals(MethodAnnotation.class, m3.getDeclaredAnnotations()[0].annotationType() );
 
-        assert m4.getDeclaredAnnotations().length == 0;
+        Assert.assertEquals(0, m4.getDeclaredAnnotations().length);
     }
 
     @Test
@@ -91,15 +92,15 @@ public class AnnotatedMethodTest {
         Method m3 = MethodAnnotated.class.getMethod("method3");
         Method m4 = MethodAnnotated.class.getMethod("method4");
 
-        assert getAnnotations(m1).length == 1 : m1.getDeclaredAnnotations().length;
-        assert getAnnotations(m1)[0].annotationType() == MethodAnnotation.class;
+        Assert.assertEquals(1, getAnnotations(m1).length);
+        Assert.assertEquals(MethodAnnotation.class, getAnnotations(m1)[0].annotationType());
 
-        assert getAnnotations(m2).length == 0;
+        Assert.assertEquals(0, getAnnotations(m2).length);
 
-        assert getAnnotations(m3).length == 1;
-        assert getAnnotations(m3)[0].annotationType() == MethodAnnotation.class;
+        Assert.assertEquals(1, getAnnotations(m3).length);
+        Assert.assertEquals(MethodAnnotation.class, getAnnotations(m3)[0].annotationType());
 
-        assert getAnnotations(m4).length == 0;
+        Assert.assertEquals(0, getAnnotations(m4).length);
     }
 
     @Test
@@ -109,15 +110,15 @@ public class AnnotatedMethodTest {
         Method m3 = MethodAnnotated.class.getMethod("method3");
         Method m4 = MethodAnnotated.class.getMethod("method4");
 
-        assert m1.getAnnotations().length == 1 : m1.getDeclaredAnnotations().length;
-        assert m1.getAnnotations()[0].annotationType() == MethodAnnotation.class;
+        Assert.assertEquals(1, m1.getAnnotations().length);
+        Assert.assertEquals(MethodAnnotation.class, m1.getAnnotations()[0].annotationType());
 
-        assert m2.getAnnotations().length == 0;
+        Assert.assertEquals(0, m2.getAnnotations().length);
 
-        assert m3.getAnnotations().length == 1;
-        assert m3.getAnnotations()[0].annotationType() == MethodAnnotation.class;
+        Assert.assertEquals(1, m3.getAnnotations().length);
+        Assert.assertEquals(MethodAnnotation.class, m3.getAnnotations()[0].annotationType());
 
-        assert m4.getAnnotations().length == 0;
+        Assert.assertEquals(0, m4.getAnnotations().length);
     }
 
     public java.lang.annotation.Annotation[] getDeclaredAnnotations(AnnotatedElement element) {

@@ -32,11 +32,11 @@
         <jsf-api.version>1.2_13</jsf-api.version>
         <seam.version>2.1.2</seam.version>
         <servlet-api.version>2.4</servlet-api.version>
-        <testng.version>6.4</testng.version>
         <weld.version>1.1.6.Final</weld.version>
         <jboss.modules.version>1.1.1.GA</jboss.modules.version>
         <maven-plugin-api.version>2.0</maven-plugin-api.version>
         <maven-project.version>2.2.1</maven-project.version>
+        <junit.version>4.8.2</junit.version>
     </properties>
 
 
@@ -118,6 +118,12 @@
             </dependency>
 
             <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>org.apache.maven</groupId>
                 <artifactId>maven-project</artifactId>
                 <version>${maven-project.version}</version>
@@ -155,8 +161,14 @@
             </dependency>
 
             <dependency>
-                <groupId>org.jboss.arquillian.testng</groupId>
-                <artifactId>arquillian-testng-container</artifactId>
+                <groupId>org.jboss.as</groupId>
+                <artifactId>jboss-as-arquillian-container-managed</artifactId>
+                <version>${jbossas.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.arquillian.junit</groupId>
+                <artifactId>arquillian-junit-container</artifactId>
                 <version>${arquillian.version}</version>
                 <scope>test</scope>
             </dependency>
@@ -191,13 +203,6 @@
                 <groupId>org.jboss.weld</groupId>
                 <artifactId>weld-core</artifactId>
                 <version>${weld.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.testng</groupId>
-                <artifactId>testng</artifactId>
-                <version>${testng.version}</version>
-                <scope>test</scope>
             </dependency>
 
         </dependencies>

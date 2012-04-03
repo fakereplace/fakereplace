@@ -22,7 +22,8 @@ package a.org.fakereplace.test.replacement.annotated.field;
 import java.lang.reflect.Field;
 
 import a.org.fakereplace.test.util.ClassReplacer;
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.Test;
 
 public class AnnotatedFieldTest {
 
@@ -35,9 +36,9 @@ public class AnnotatedFieldTest {
         Field m1 = FieldAnnotated.class.getField("field1");
         Field m2 = FieldAnnotated.class.getField("field2");
         Field m3 = FieldAnnotated.class.getField("field3");
-        assert m1.getAnnotation(FieldAnnotation.class).value().equals("1");
-        assert !m2.isAnnotationPresent(FieldAnnotation.class);
-        assert m3.getAnnotation(FieldAnnotation.class).value().equals("3");
+        Assert.assertEquals("1", m1.getAnnotation(FieldAnnotation.class).value());
+        Assert.assertFalse(m2.isAnnotationPresent(FieldAnnotation.class));
+        Assert.assertEquals("3", m3.getAnnotation(FieldAnnotation.class).value());
 
     }
 

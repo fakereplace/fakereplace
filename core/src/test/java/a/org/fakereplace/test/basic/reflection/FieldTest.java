@@ -21,19 +21,20 @@ package a.org.fakereplace.test.basic.reflection;
 
 import java.lang.reflect.Field;
 
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.Test;
 
 public class FieldTest {
-    @Test()
+    @Test
     public void testFieldAccess() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
 
         DoStuff d = new DoStuff();
         Field f = d.getClass().getField("field");
         String s = (String) f.get(d);
-        assert s.equals("hello world");
+        Assert.assertEquals("hello world", s);
         f.set(d, "bye world");
         s = (String) f.get(d);
-        assert s.equals("bye world");
+        Assert.assertEquals("bye world", s);
 
     }
 

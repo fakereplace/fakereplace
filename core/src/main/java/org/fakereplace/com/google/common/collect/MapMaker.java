@@ -694,7 +694,7 @@ public final class MapMaker {
             public V waitForValue() throws InterruptedException {
                 boolean success = false;
                 try {
-                    // assert that key != null
+                    // Assert.assertEquals( that key != null
                     V value = StrategyImpl.this.waitForValue(original);
                     success = true;
                     return value;

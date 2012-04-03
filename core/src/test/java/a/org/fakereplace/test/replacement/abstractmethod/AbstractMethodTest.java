@@ -22,12 +22,13 @@ package a.org.fakereplace.test.replacement.abstractmethod;
 import java.lang.reflect.InvocationTargetException;
 
 import a.org.fakereplace.test.util.ClassReplacer;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 public class AbstractMethodTest {
-    @BeforeClass(groups = "abstractmethod")
-    public void setup() {
+    @BeforeClass
+    public static void setup() {
         ClassReplacer rep = new ClassReplacer();
         rep.queueClassForReplacement(AbstractClass.class, AbstractClass1.class);
         rep.queueClassForReplacement(AbstractCaller.class, AbstractCaller1.class);
@@ -36,14 +37,14 @@ public class AbstractMethodTest {
         rep.replaceQueuedClasses();
     }
 
-    @Test(groups = "abstractmethod")
+    @Test
     public void testAbstractMethod() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
         AbstractCaller caller = new AbstractCaller();
         BigChild big = new BigChild();
         SmallChild small = new SmallChild();
 
-        assert caller.getValue(big).equals("big");
-        assert caller.getValue(small).equals("small");
+        Assert.assertEquals("big", caller.getValue(big));
+        Assert.assertEquals("small", caller.getValue(small));
     }
 
 }

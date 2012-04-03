@@ -20,10 +20,17 @@
 package a.org.fakereplace.test.replacement.repeat;
 
 import a.org.fakereplace.test.util.ClassReplacer;
-import org.testng.annotations.Test;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit.InSequence;
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
+@RunWith(Arquillian.class)
 public class RepeatReplacementTest {
+
     @Test
+    @InSequence(1)
     public void firstReplacementTest() throws SecurityException, NoSuchFieldException, NoSuchMethodException {
         ClassReplacer r = new ClassReplacer();
         r.queueClassForReplacement(Replace.class, Replace1.class);
@@ -36,28 +43,29 @@ public class RepeatReplacementTest {
 
         try {
             Replace.class.getDeclaredField("field");
-            assert false;
+            Assert.fail();
         } catch (NoSuchFieldException e) {
         }
         try {
             Replace.class.getDeclaredField("sfield");
-            assert false;
+            Assert.fail();
         } catch (NoSuchFieldException e) {
         }
         try {
             Replace.class.getDeclaredMethod("method");
-            assert false;
+            Assert.fail();
         } catch (NoSuchMethodException e) {
         }
         try {
             Replace.class.getDeclaredMethod("smethod");
-            assert false;
+            Assert.fail();
         } catch (NoSuchMethodException e) {
         }
 
     }
 
-    @Test(dependsOnMethods = "firstReplacementTest")
+    @Test
+    @InSequence(2)
     public void secondReplacementTest() throws SecurityException, NoSuchFieldException, NoSuchMethodException {
         ClassReplacer r = new ClassReplacer();
         r.queueClassForReplacement(Replace.class, Replace2.class);
@@ -70,27 +78,28 @@ public class RepeatReplacementTest {
 
         try {
             Replace.class.getDeclaredField("field1");
-            assert false;
+            Assert.fail();
         } catch (NoSuchFieldException e) {
         }
         try {
             Replace.class.getDeclaredField("sfield1");
-            assert false;
+            Assert.fail();
         } catch (NoSuchFieldException e) {
         }
         try {
             Replace.class.getDeclaredMethod("method1");
-            assert false;
+            Assert.fail();
         } catch (NoSuchMethodException e) {
         }
         try {
             Replace.class.getDeclaredMethod("smethod1");
-            assert false;
+            Assert.fail();
         } catch (NoSuchMethodException e) {
         }
     }
 
-    @Test(dependsOnMethods = "secondReplacementTest")
+    @Test
+    @InSequence(3)
     public void thirdReplacementTest() throws SecurityException, NoSuchFieldException, NoSuchMethodException {
         ClassReplacer r = new ClassReplacer();
         r.queueClassForReplacement(Replace.class, Replace3.class);
@@ -103,27 +112,28 @@ public class RepeatReplacementTest {
 
         try {
             Replace.class.getDeclaredField("field2");
-            assert false;
+            Assert.fail();
         } catch (NoSuchFieldException e) {
         }
         try {
             Replace.class.getDeclaredField("sfield2");
-            assert false;
+            Assert.fail();
         } catch (NoSuchFieldException e) {
         }
         try {
             Replace.class.getDeclaredMethod("method2");
-            assert false;
+            Assert.fail();
         } catch (NoSuchMethodException e) {
         }
         try {
             Replace.class.getDeclaredMethod("smethod2");
-            assert false;
+            Assert.fail();
         } catch (NoSuchMethodException e) {
         }
     }
 
-    @Test(dependsOnMethods = "thirdReplacementTest")
+    @Test
+    @InSequence(4)
     public void fourthReplacementTest() throws SecurityException, NoSuchFieldException, NoSuchMethodException {
         ClassReplacer r = new ClassReplacer();
         r.queueClassForReplacement(Replace.class, Replace4.class);
@@ -136,22 +146,22 @@ public class RepeatReplacementTest {
 
         try {
             Replace.class.getDeclaredField("field3");
-            assert false;
+            Assert.fail();
         } catch (NoSuchFieldException e) {
         }
         try {
             Replace.class.getDeclaredField("sfield3");
-            assert false;
+            Assert.fail();
         } catch (NoSuchFieldException e) {
         }
         try {
             Replace.class.getDeclaredMethod("method3");
-            assert false;
+            Assert.fail();
         } catch (NoSuchMethodException e) {
         }
         try {
             Replace.class.getDeclaredMethod("smethod3");
-            assert false;
+            Assert.fail();
         } catch (NoSuchMethodException e) {
         }
     }

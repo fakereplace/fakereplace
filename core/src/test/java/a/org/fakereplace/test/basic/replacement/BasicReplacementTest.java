@@ -20,20 +20,21 @@
 package a.org.fakereplace.test.basic.replacement;
 
 import a.org.fakereplace.test.util.ClassReplacer;
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.Test;
 
 public class BasicReplacementTest {
     @Test
     public void testInstrumentationReplacement() {
         BasicTestRep re = new BasicTestRep();
         int val0 = re.value();
-        assert val0 == 0 : "Test setup wrong";
+        Assert.assertEquals("Test setup wrong", 0 , val0);
         ClassReplacer cr = new ClassReplacer();
         cr.queueClassForReplacement(BasicTestRep.class, BasicTestRep1.class);
         cr.replaceQueuedClassesWithInstrumentation();
         re = new BasicTestRep();
         val0 = re.value();
-        assert val0 == 1 : "BasicTestRep was not replaced";
+        Assert.assertEquals("BasicTestRep was not replaced",1, val0  ) ;
 
     }
 
@@ -41,13 +42,13 @@ public class BasicReplacementTest {
     public void testFakeReplaceReplacement() {
         InstTestRep re = new InstTestRep();
         int val0 = re.value();
-        assert val0 == 0 : "Test setup wrong";
+        Assert.assertEquals( "Test setup wrong", 0, val0);
         ClassReplacer cr = new ClassReplacer();
         cr.queueClassForReplacement(InstTestRep.class, InstTestRep1.class);
         cr.replaceQueuedClasses();
         re = new InstTestRep();
         val0 = re.value();
-        assert val0 == 1 : "InstTestRep was not replaced";
+        Assert.assertEquals("InstTestRep was not replaced", 1,  val0 );
 
     }
 

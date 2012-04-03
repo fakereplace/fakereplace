@@ -21,7 +21,8 @@ package a.org.fakereplace.test.basic.synchronizedtests;
 
 import java.lang.reflect.Modifier;
 
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
  * This class tests that syncronisation still works as it should
@@ -50,7 +51,7 @@ public class SyncronisedTest {
                 e.printStackTrace();
             }
         }
-        assert !r.failed;
+        Assert.assertFalse(r.failed);
     }
 
     @Test
@@ -67,12 +68,12 @@ public class SyncronisedTest {
                 e.printStackTrace();
             }
         }
-        assert !StaticRunnableClass.failed;
+        Assert.assertFalse(StaticRunnableClass.failed);
     }
 
     @Test
     public void testSyncBitSet() throws SecurityException, NoSuchMethodException {
-        assert (StaticRunnableClass.class.getDeclaredMethod("doStuff").getModifiers() & Modifier.SYNCHRONIZED) != 0;
-        assert (InstanceRunnableClass.class.getDeclaredMethod("doStuff").getModifiers() & Modifier.SYNCHRONIZED) != 0;
+        Assert.assertTrue((StaticRunnableClass.class.getDeclaredMethod("doStuff").getModifiers() & Modifier.SYNCHRONIZED) != 0);
+        Assert.assertTrue((InstanceRunnableClass.class.getDeclaredMethod("doStuff").getModifiers() & Modifier.SYNCHRONIZED) != 0);
     }
 }

@@ -4,17 +4,19 @@ import javax.inject.Inject;
 
 import a.org.fakereplace.integration.weld.util.ClassReplacer;
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.testng.Arquillian;
+import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /**
  * @author Stuart Douglas
  */
-public class ClientProxyReplacementTest extends Arquillian {
+@RunWith(Arquillian.class)
+public class ClientProxyReplacementTest  {
 
     @Deployment
     public static Archive<?> deploy() {
@@ -32,7 +34,7 @@ public class ClientProxyReplacementTest extends Arquillian {
         replacer.queueClassForReplacement(AppScopedBean.class, AppScopedBean1.class);
         replacer.queueClassForReplacement(DependentBean.class, DependentBean1.class);
         replacer.replaceQueuedClasses();
-        Assert.assertEquals(dependentBean.getValue(), "Hello CDI");
+        Assert.assertEquals("Hello CDI", dependentBean.getValue());
 
     }
 }
