@@ -11,7 +11,6 @@ import java.io.InputStream;
  */
 public class Util {
 
-
     public static byte[] getBytesFromFile(File file) throws IOException {
         InputStream is = new FileInputStream(file);
         try {

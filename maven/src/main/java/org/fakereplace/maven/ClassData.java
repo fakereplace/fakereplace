@@ -3,7 +3,7 @@ package org.fakereplace.maven;
 /**
 * @author Stuart Douglas
 */
-final class ClassData {
+public final class ClassData {
     private final String className;
     private final long timestamp;
     private final ContentSource contentSource;

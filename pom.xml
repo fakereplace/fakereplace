@@ -37,6 +37,7 @@
         <maven-plugin-api.version>2.0</maven-plugin-api.version>
         <maven-project.version>2.2.1</maven-project.version>
         <junit.version>4.8.2</junit.version>
+        <jboss-ejb-api_3.1_spec.version>1.0.1.Final</jboss-ejb-api_3.1_spec.version>
     </properties>
 
 
@@ -99,6 +100,12 @@
             <dependency>
                 <groupId>org.fakereplace</groupId>
                 <artifactId>fakereplace-weld</artifactId>
+                <version>${fakereplace.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.fakereplace</groupId>
+                <artifactId>fakereplace-plugin</artifactId>
                 <version>${fakereplace.version}</version>
             </dependency>
 
@@ -197,6 +204,12 @@
                 <groupId>org.jboss.seam</groupId>
                 <artifactId>jboss-seam</artifactId>
                 <version>${seam.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.spec.javax.ejb</groupId>
+                <artifactId>jboss-ejb-api_3.1_spec</artifactId>
+                <version>${jboss-ejb-api_3.1_spec.version}</version>
             </dependency>
 
             <dependency>

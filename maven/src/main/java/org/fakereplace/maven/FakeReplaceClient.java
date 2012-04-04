@@ -81,6 +81,11 @@ public class FakeReplaceClient {
 
             output.flush();
 
+            int result = input.readInt();
+            if(result != 0) {
+                System.out.println("Replacement failed");
+            }
+
         } catch (IOException e) {
             e.printStackTrace();
         } finally {

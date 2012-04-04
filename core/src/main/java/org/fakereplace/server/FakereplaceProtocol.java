@@ -47,9 +47,10 @@ import org.fakereplace.replacement.AddedClass;
 public class FakereplaceProtocol {
 
     public static void run(Socket socket) {
+        DataOutputStream output = null;
         try {
             final DataInputStream input = new DataInputStream(socket.getInputStream());
-            final DataOutputStream output = new DataOutputStream(socket.getOutputStream());
+            output = new DataOutputStream(socket.getOutputStream());
             final Map<String, Long> classes = new HashMap<String, Long>();
             final Map<String, Long> resources = new HashMap<String, Long>();
             int magic = input.readInt();
@@ -129,15 +130,17 @@ public class FakereplaceProtocol {
 
             Agent.redefine(classDefinitions.toArray(new ClassDefinition[classDefinitions.size()]), new AddedClass[0]);
             DefaultEnvironment.getEnvironment().updateResource(archiveName, replacedResources);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (UnmodifiableClassException e) {
+            output.write(0);
+        } catch (Exception e) {
+            try {
+                output.write(1);
+            } catch (IOException e1) {
+                //ignore
+            }
             e.printStackTrace();
         } finally {
             try {
+                //write the result to
                 socket.close();
             } catch (IOException e) {
                 e.printStackTrace();

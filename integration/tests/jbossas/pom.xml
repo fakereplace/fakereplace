@@ -48,6 +48,14 @@
             <groupId>org.jboss.as</groupId>
             <artifactId>jboss-as-arquillian-container-managed</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.fakereplace</groupId>
+            <artifactId>fakereplace-plugin</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.spec.javax.ejb</groupId>
+            <artifactId>jboss-ejb-api_3.1_spec</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

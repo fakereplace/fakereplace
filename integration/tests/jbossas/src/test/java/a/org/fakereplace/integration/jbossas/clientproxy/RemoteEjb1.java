@@ -1,11 +1,13 @@
 package a.org.fakereplace.integration.jbossas.clientproxy;
 
+import javax.ejb.Stateless;
 import javax.inject.Inject;
 
 /**
  * @author Stuart Douglas
  */
-public class DependentBean1 {
+@Stateless
+public class RemoteEjb1 implements RemoteInterface {
 
     @Inject
     private AppScopedBean1 appScopedBean;
