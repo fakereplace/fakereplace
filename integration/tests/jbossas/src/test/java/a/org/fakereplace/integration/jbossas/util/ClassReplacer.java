@@ -28,10 +28,10 @@ import java.util.Map.Entry;
 
 import javassist.ClassPool;
 import javassist.CtClass;
-import org.fakereplace.maven.ClassData;
-import org.fakereplace.maven.ContentSource;
-import org.fakereplace.maven.FakeReplaceClient;
-import org.fakereplace.maven.ResourceData;
+import org.fakereplace.client.ClassData;
+import org.fakereplace.client.ContentSource;
+import org.fakereplace.client.FakeReplaceClient;
+import org.fakereplace.client.ResourceData;
 
 public class ClassReplacer {
 

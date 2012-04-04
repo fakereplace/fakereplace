@@ -4,7 +4,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.instrument.ClassDefinition;
-import java.lang.instrument.UnmodifiableClassException;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -130,10 +129,10 @@ public class FakereplaceProtocol {
 
             Agent.redefine(classDefinitions.toArray(new ClassDefinition[classDefinitions.size()]), new AddedClass[0]);
             DefaultEnvironment.getEnvironment().updateResource(archiveName, replacedResources);
-            output.write(0);
+            output.writeInt(0);
         } catch (Exception e) {
             try {
-                output.write(1);
+                output.writeInt(1);
             } catch (IOException e1) {
                 //ignore
             }
