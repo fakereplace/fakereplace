@@ -1,6 +1,5 @@
 package org.fakereplace.client;
 
-import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -8,7 +7,6 @@ import java.net.Socket;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.zip.ZipInputStream;
 
 /**
  * Simple client side implementation of the fakereplace protocol
@@ -32,24 +30,18 @@ public class FakeReplaceClient {
             final DataOutputStream output = new DataOutputStream(socket.getOutputStream());
             output.writeInt(0xCAFEDEAF);
             output.writeInt(deploymentName.length());
-            for (int i = 0; i < deploymentName.length(); ++i) {
-                output.writeChar(deploymentName.charAt(i));
-            }
+            output.write(deploymentName.getBytes());
             output.writeInt(classes.size());
             for (Map.Entry<String, ClassData> entry : classes.entrySet()) {
                 output.writeInt(entry.getKey().length());
-                for (int i = 0; i < entry.getKey().length(); ++i) {
-                    output.writeChar(entry.getKey().charAt(i));
-                }
+                output.write(entry.getKey().getBytes());
                 output.writeLong(entry.getValue().getTimestamp());
             }
             output.writeInt(resources.size());
             for (Map.Entry<String, ResourceData> entry : resources.entrySet()) {
                 final ResourceData data = entry.getValue();
                 output.writeInt(data.getRelativePath().length());
-                for (int i = 0; i < data.getRelativePath().length(); ++i) {
-                    output.writeChar(data.getRelativePath().charAt(i));
-                }
+                output.write(data.getRelativePath().getBytes());
                 output.writeLong(data.getTimestamp());
             }
             output.flush();
@@ -63,9 +55,7 @@ public class FakeReplaceClient {
             for (String name : classNames) {
                 final ClassData data = classes.get(name);
                 output.writeInt(name.length());
-                for (int i = 0; i < name.length(); ++i) {
-                    output.writeChar(name.charAt(i));
-                }
+                output.write(name.getBytes());
                 byte[] bytes = data.getContentSource().getData();
                 output.writeInt(bytes.length);
                 output.write(bytes);
@@ -75,9 +65,7 @@ public class FakeReplaceClient {
             for (final String resource : resourceNames) {
                 final ResourceData data = resources.get(resource);
                 output.writeInt(resource.length());
-                for (int i = 0; i < resource.length(); ++i) {
-                    output.writeChar(resource.charAt(i));
-                }
+                output.write(resource.getBytes());
                 byte[] bytes = data.getContentSource().getData();
                 output.writeInt(bytes.length);
                 output.write(bytes);
@@ -105,30 +93,18 @@ public class FakeReplaceClient {
     private static void readReplacable(final DataInputStream input, final Set<String> resourceNames) throws IOException {
         int noResources = input.readInt();
         for (int i = 0; i < noResources; ++i) {
-            int length = input.readInt();
-            char[] nameBuffer = new char[length];
-            for (int pos = 0; pos < length; ++pos) {
-                nameBuffer[pos] = input.readChar();
-            }
-            final String className = new String(nameBuffer);
+            final String className = readString(input);
             resourceNames.add(className);
         }
     }
 
-
-    private static byte[] getBytesFromZip(ZipInputStream zip) throws IOException {
-        // Get the size of the file
-        final ByteArrayOutputStream stream = new ByteArrayOutputStream();
-
-
-        // Read in the bytes
-        int numRead = 0;
-        byte[] bytes = new byte[1024];
-        while ((numRead = zip.read(bytes)) >= 0) {
-            stream.write(bytes, 0, numRead);
+    private static String readString(final DataInputStream input) throws IOException {
+        int toread = input.readInt();
+        byte [] buf = new byte[toread];
+        int read = 0;
+        while (toread > 0 && (read = input.read(buf, read, toread)) != -1) {
+            toread -= read;
         }
-
-        return stream.toByteArray();
+        return new String(buf);
     }
-
 }

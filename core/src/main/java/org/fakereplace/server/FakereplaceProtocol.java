@@ -57,12 +57,7 @@ public class FakereplaceProtocol {
                 System.err.println("Fakereplace server error, wrong magic number");
                 return;
             }
-            int nameLength = input.readInt();
-            char[] nameBuffer = new char[nameLength];
-            for (int pos = 0; pos < nameLength; ++pos) {
-                nameBuffer[pos] = input.readChar();
-            }
-            final String archiveName = new String(nameBuffer);
+            final String archiveName = readString(input);
 
             readAvailable(input, classes);
             readAvailable(input, resources);
@@ -74,18 +69,14 @@ public class FakereplaceProtocol {
             for (Class clazz : classesToReplace) {
                 final String cname = clazz.getName();
                 output.writeInt(cname.length());
-                for (int i = 0; i < cname.length(); ++i) {
-                    output.writeChar(cname.charAt(i));
-                }
+                output.write(cname.getBytes());
                 classMap.put(cname, clazz);
             }
             final Set<String> resourcesToReplace = DefaultEnvironment.getEnvironment().getUpdatedResources(archiveName, resources);
             output.writeInt(resourcesToReplace.size());
             for (String cname : resourcesToReplace) {
                 output.writeInt(cname.length());
-                for (int i = 0; i < cname.length(); ++i) {
-                    output.writeChar(cname.charAt(i));
-                }
+                output.write(cname.getBytes());
             }
 
             output.flush();
@@ -94,13 +85,8 @@ public class FakereplaceProtocol {
             final Set<Class<?>> replacedClasses = new HashSet<Class<?>>();
             int noClasses = input.readInt();
             for (int i = 0; i < noClasses; ++i) {
+                final String className = readString(input);
                 int length = input.readInt();
-                nameBuffer = new char[length];
-                for (int pos = 0; pos < length; ++pos) {
-                    nameBuffer[pos] = input.readChar();
-                }
-                final String className = new String(nameBuffer);
-                length = input.readInt();
                 byte[] buffer = new byte[length];
                 for (int j = 0; j < length; ++j) {
                     buffer[j] = (byte) input.read();
@@ -113,13 +99,8 @@ public class FakereplaceProtocol {
 
             int noResources = input.readInt();
             for (int i = 0; i < noResources; ++i) {
+                final String resourceName = readString(input);
                 int length = input.readInt();
-                nameBuffer = new char[length];
-                for (int pos = 0; pos < length; ++pos) {
-                    nameBuffer[pos] = input.readChar();
-                }
-                final String resourceName = new String(nameBuffer);
-                length = input.readInt();
                 byte[] buffer = new byte[length];
                 for (int j = 0; j < length; ++j) {
                     buffer[j] = (byte) input.read();
@@ -148,18 +129,22 @@ public class FakereplaceProtocol {
     }
 
     private static void readAvailable(final DataInputStream input, final Map<String, Long> resources) throws IOException {
-        char[] nameBuffer;
         int noResources = input.readInt();
         for (int i = 0; i < noResources; ++i) {
-            int length = input.readInt();
-            nameBuffer = new char[length];
-            for (int pos = 0; pos < length; ++pos) {
-                nameBuffer[pos] = input.readChar();
-            }
-            final String resourceName = new String(nameBuffer);
+            final String resourceName = readString(input);
             long ts = input.readLong();
             resources.put(resourceName, ts);
         }
+    }
+
+    private static String readString(final DataInputStream input) throws IOException {
+        int toread = input.readInt();
+        byte [] buf = new byte[toread];
+        int read = 0;
+        while (toread > 0 && (read = input.read(buf, read, toread)) != -1) {
+            toread -= read;
+        }
+        return new String(buf);
     }
 
 }

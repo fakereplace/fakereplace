@@ -93,6 +93,7 @@ public class Agent {
         //start the server
         Thread thread = new Thread(new FakereplaceServer(6555));
         thread.setDaemon(true);
+        thread.setName("Fakereplace Thread");
         thread.start();
     }
 
