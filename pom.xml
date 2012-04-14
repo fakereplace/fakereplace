@@ -51,9 +51,10 @@
 
     <modules>
         <module>core</module>
+        <module>client</module>
         <module>dist</module>
-        <module>integration/impl</module>
-        <module>integration/tests</module>
+        <module>plugins</module>
+        <module>testsuite</module>
     </modules>
 
     <dependencyManagement>

@@ -23,7 +23,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>fakereplace-integration-tests-parent</artifactId>
+        <artifactId>fakereplace-testsuite-parent</artifactId>
         <groupId>org.fakereplace</groupId>
         <version>0.10-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>

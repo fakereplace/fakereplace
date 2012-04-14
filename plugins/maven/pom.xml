@@ -1,38 +1,39 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>fakereplace-integration-parent</artifactId>
+        <artifactId>fakereplace-plugins-parent</artifactId>
         <groupId>org.fakereplace</groupId>
         <version>0.10-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
+    <modelVersion>4.0.0</modelVersion>
     <groupId>org.fakereplace</groupId>
-    <artifactId>fakereplace-jsf</artifactId>
-    <name>Fakereplace JSF Integration</name>
+    <artifactId>fakereplace-plugin</artifactId>
+    <packaging>maven-plugin</packaging>
     <version>0.10-SNAPSHOT</version>
+    <name>Fakereplace Maven Plugin</name>
 
     <dependencies>
+
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <scope>provided</scope>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-plugin-api</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>javax.faces</groupId>
-            <artifactId>jsf-api</artifactId>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-project</artifactId>
         </dependency>
 
         <dependency>
             <groupId>org.fakereplace</groupId>
-            <artifactId>fakereplace</artifactId>
+            <artifactId>fakereplace-client</artifactId>
         </dependency>
+
     </dependencies>
-    <scm>
-        <developerConnection>scm:git:git@github.com:fakereplace/fakereplace.git</developerConnection>
-    </scm>
+
 </project>
+

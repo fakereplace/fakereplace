@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>fakereplace-integration-parent</artifactId>
+        <artifactId>fakereplace-plugins-parent</artifactId>
         <groupId>org.fakereplace</groupId>
         <version>0.10-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>

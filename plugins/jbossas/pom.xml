@@ -19,31 +19,45 @@
   -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>fakereplace-parent</artifactId>
+        <artifactId>fakereplace-plugins-parent</artifactId>
         <groupId>org.fakereplace</groupId>
         <version>0.10-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <groupId>org.fakereplace</groupId>
-    <artifactId>fakereplace-integration-parent</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>fakereplace-jbossas</artifactId>
+    <name>Fakereplace JBoss Application Server Integration</name>
     <version>0.10-SNAPSHOT</version>
 
-    <name>Fakereplace Integration Parent</name>
+    <dependencies>
 
-    <modules>
-        <module>client</module>
-        <module>seam</module>
-        <module>jsf</module>
-        <module>metawidget</module>
-        <module>maven</module>
-        <module>jbossas</module>
-        <module>weld</module>
-    </modules>
+        <dependency>
+            <groupId>org.jboss.modules</groupId>
+            <artifactId>jboss-modules</artifactId>
+        </dependency>
 
+        <dependency>
+            <groupId>org.jboss.as</groupId>
+            <artifactId>jboss-as-server</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.javassist</groupId>
+            <artifactId>javassist</artifactId>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.fakereplace</groupId>
+            <artifactId>fakereplace</artifactId>
+        </dependency>
+    </dependencies>
+    <scm>
+        <developerConnection>scm:git:git@github.com:fakereplace/fakereplace.git</developerConnection>
+    </scm>
 </project>

@@ -23,35 +23,37 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>fakereplace-integration-parent</artifactId>
+        <artifactId>fakereplace-plugins-parent</artifactId>
         <groupId>org.fakereplace</groupId>
         <version>0.10-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <groupId>org.fakereplace</groupId>
-    <artifactId>fakereplace-jbossas</artifactId>
-    <name>Fakereplace JBoss Application Server Integration</name>
+    <artifactId>fakereplace-seam</artifactId>
+    <name>Fakereplace Seam Integration</name>
     <version>0.10-SNAPSHOT</version>
 
     <dependencies>
-
         <dependency>
-            <groupId>org.jboss.modules</groupId>
-            <artifactId>jboss-modules</artifactId>
+            <groupId>org.jboss.seam</groupId>
+            <artifactId>jboss-seam</artifactId>
+            <scope>compile</scope>
         </dependency>
-
-        <dependency>
-            <groupId>org.jboss.as</groupId>
-            <artifactId>jboss-as-server</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>org.javassist</groupId>
             <artifactId>javassist</artifactId>
             <scope>compile</scope>
         </dependency>
-
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.faces</groupId>
+            <artifactId>jsf-api</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.fakereplace</groupId>
             <artifactId>fakereplace</artifactId>
