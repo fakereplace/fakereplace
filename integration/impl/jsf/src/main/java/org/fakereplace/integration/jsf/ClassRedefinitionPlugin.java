@@ -26,14 +26,10 @@ import java.lang.reflect.Method;
 import java.util.Set;
 
 import org.fakereplace.api.ClassChangeAware;
-import org.fakereplace.api.ClassChangeNotifier;
 import org.fakereplace.classloading.ClassIdentifier;
 import org.fakereplace.data.InstanceTracker;
 
 public class ClassRedefinitionPlugin implements ClassChangeAware {
-    public ClassRedefinitionPlugin() {
-        ClassChangeNotifier.instance().add(this);
-    }
 
     Field getField(Class<?> clazz, String name) throws NoSuchFieldException {
         if (clazz == Object.class)

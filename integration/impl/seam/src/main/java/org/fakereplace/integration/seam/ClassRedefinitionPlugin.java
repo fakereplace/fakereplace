@@ -32,7 +32,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.fakereplace.api.ClassChangeAware;
-import org.fakereplace.api.ClassChangeNotifier;
 import org.fakereplace.classloading.ClassIdentifier;
 import org.fakereplace.data.InstanceTracker;
 import org.jboss.seam.Component;
@@ -59,7 +58,6 @@ public class ClassRedefinitionPlugin implements ClassChangeAware {
         } catch (Throwable t) {
             System.out.println("Could not set org.jboss.seam.util.ProxyFactory.useCache to false: " + t.getMessage());
         }
-        ClassChangeNotifier.instance().add(this);
     }
 
     byte[] readFile(File file) throws IOException {

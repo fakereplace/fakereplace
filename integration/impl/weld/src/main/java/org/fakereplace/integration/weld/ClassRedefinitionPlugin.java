@@ -29,7 +29,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import javax.enterprise.inject.spi.Bean;
 
 import org.fakereplace.api.ClassChangeAware;
-import org.fakereplace.api.ClassChangeNotifier;
 import org.fakereplace.classloading.ClassIdentifier;
 import org.jboss.weld.bean.proxy.ProxyFactory;
 
@@ -46,10 +45,6 @@ public class ClassRedefinitionPlugin implements ClassChangeAware {
         } catch (NoSuchFieldException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public ClassRedefinitionPlugin() {
-        ClassChangeNotifier.instance().add(this);
     }
 
     @Override

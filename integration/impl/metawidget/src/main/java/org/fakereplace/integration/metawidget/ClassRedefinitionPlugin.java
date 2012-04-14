@@ -25,14 +25,10 @@ import java.util.Map;
 import java.util.Set;
 
 import org.fakereplace.api.ClassChangeAware;
-import org.fakereplace.api.ClassChangeNotifier;
 import org.fakereplace.classloading.ClassIdentifier;
 import org.fakereplace.data.InstanceTracker;
 
 public class ClassRedefinitionPlugin implements ClassChangeAware {
-    public ClassRedefinitionPlugin() {
-        ClassChangeNotifier.instance().add(this);
-    }
 
     static private Method remove;
 

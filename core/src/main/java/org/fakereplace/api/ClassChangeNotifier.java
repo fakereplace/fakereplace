@@ -19,7 +19,6 @@
 
 package org.fakereplace.api;
 
-import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -41,25 +40,11 @@ public class ClassChangeNotifier {
 
     private final Map<ClassLoader, Set<ClassChangeAware>> classChangeAwares = new MapMaker().weakKeys().makeMap();
 
-    /**
-     * These are objects that want to be notified but that do not have a
-     * dependency on fakereplace.
-     */
-    private final Map<ClassLoader, Set<Object>> unlinkedAwares = new MapMaker().weakKeys().makeMap();
-
     public void add(ClassChangeAware aware) {
         if (!classChangeAwares.containsKey(aware.getClass().getClassLoader())) {
             classChangeAwares.put(aware.getClass().getClassLoader(), new HashSet<ClassChangeAware>());
         }
         classChangeAwares.get(aware.getClass().getClassLoader()).add(aware);
-    }
-
-    public void add(Object aware) throws SecurityException, NoSuchMethodException {
-
-        if (!unlinkedAwares.containsKey(aware.getClass().getClassLoader())) {
-            unlinkedAwares.put(aware.getClass().getClassLoader(), new HashSet<Object>());
-        }
-        unlinkedAwares.get(aware.getClass().getClassLoader()).add(aware);
     }
 
      public void notify(Class<?>[] changed, ClassIdentifier[] newClasses) {
@@ -71,17 +56,6 @@ public class ClassChangeNotifier {
                     for (ClassChangeAware i : c) {
                         try {
                             i.notify(changed, newClasses);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-
-                for (Set<Object> c : unlinkedAwares.values()) {
-                    for (Object i : c) {
-                        try {
-                            Method m = i.getClass().getMethod("notify", a.getClass(), a.getClass());
-                            m.invoke(i, changed, newClasses);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -101,17 +75,6 @@ public class ClassChangeNotifier {
                     i.beforeChange(changed, newClasses);
                 } catch (Throwable t) {
                     t.printStackTrace();
-                }
-            }
-        }
-
-        for (Set<Object> c : unlinkedAwares.values()) {
-            for (Object i : c) {
-                try {
-                    Method m = i.getClass().getMethod("beforeChange", a.getClass(), a.getClass());
-                    m.invoke(i, changed, newClasses);
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
             }
         }

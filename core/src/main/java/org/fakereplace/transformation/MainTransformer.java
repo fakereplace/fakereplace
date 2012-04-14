@@ -37,7 +37,8 @@ import java.util.Map;
 import java.util.Set;
 
 import javassist.bytecode.ClassFile;
-import org.fakereplace.util.ThreadLoader;
+import org.fakereplace.api.ClassChangeAware;
+import org.fakereplace.api.ClassChangeNotifier;
 import org.fakereplace.api.IntegrationInfo;
 import org.fakereplace.boot.DefaultEnvironment;
 import org.fakereplace.com.google.common.collect.MapMaker;
@@ -70,7 +71,15 @@ public class MainTransformer implements ClassFileTransformer {
             integrationClassloader.put(loader, new Object());
             // we need to load the class in another thread
             // otherwise it will not go through the javaagent
-            ThreadLoader.loadAsync(integrationClassTriggers.get(className).getClassChangeAwareName(), loader, true);
+            try {
+                Class<?> clazz = Class.forName(integrationClassTriggers.get(className).getClassChangeAwareName(), true, loader);
+                final Object intance = clazz.newInstance();
+                if(intance instanceof ClassChangeAware) {
+                    ClassChangeNotifier.instance().add((ClassChangeAware) intance);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         boolean changed = false;

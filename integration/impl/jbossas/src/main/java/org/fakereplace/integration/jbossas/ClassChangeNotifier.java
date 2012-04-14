@@ -38,7 +38,6 @@ public class ClassChangeNotifier implements ClassChangeAware {
 
     public ClassChangeNotifier() {
         DefaultEnvironment.setEnvironment(new JBossAsEnvironment());
-        org.fakereplace.api.ClassChangeNotifier.instance().add(this);
     }
 
     public void beforeChange(final Class<?>[] changed, final ClassIdentifier[] added) {
