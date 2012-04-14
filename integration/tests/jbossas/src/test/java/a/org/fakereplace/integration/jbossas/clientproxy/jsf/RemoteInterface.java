@@ -1,4 +1,4 @@
-package a.org.fakereplace.integration.jbossas.clientproxy;
+package a.org.fakereplace.integration.jbossas.clientproxy.jsf;
 
 import javax.ejb.Remote;
 

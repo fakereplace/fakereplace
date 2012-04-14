@@ -1,4 +1,4 @@
-package a.org.fakereplace.integration.jbossas.clientproxy;
+package a.org.fakereplace.integration.jbossas.clientproxy.remoteejb;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -7,13 +7,13 @@ import javax.inject.Inject;
  * @author Stuart Douglas
  */
 @Stateless
-public class RemoteEjb implements RemoteInterface {
+public class RemoteEjb1 implements RemoteInterface {
 
     @Inject
-    private AppScopedBean appScopedBean;
+    private AppScopedBean1 appScopedBean;
 
     public String getValue() {
-        return "FAIL";
+        return appScopedBean.getValue();
     }
 
     public void setValue(String value) {

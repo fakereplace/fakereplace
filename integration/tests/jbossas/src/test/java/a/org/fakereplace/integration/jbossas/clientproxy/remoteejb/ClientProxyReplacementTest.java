@@ -1,4 +1,4 @@
-package a.org.fakereplace.integration.jbossas.clientproxy;
+package a.org.fakereplace.integration.jbossas.clientproxy.remoteejb;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;

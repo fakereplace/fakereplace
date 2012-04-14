@@ -19,8 +19,9 @@
 
 package a.org.fakereplace.integration.jbossas.util;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Collections;
+import java.io.InputStream;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,6 +42,8 @@ public class ClassReplacer {
 
     private final Map<Class<?>, String> addedClasses = new HashMap<Class<?>, String>();
 
+    private final Map<String, ResourceData> replacedResources = new HashMap<String, ResourceData>();
+
     private final ClassPool pool = new ClassPool();
 
     public ClassReplacer() {
@@ -49,6 +52,27 @@ public class ClassReplacer {
 
     public void queueClassForReplacement(Class<?> oldClass, Class<?> newClass) {
         queuedClassReplacements.put(oldClass, newClass);
+    }
+
+    public void queueResourceForReplacement(final Class<?> packageClass, final String old, final String newResource) {
+        replacedResources.put(old, new ResourceData(old, new Date().getTime(), new ContentSource() {
+            @Override
+            public byte[] getData() throws IOException {
+                final InputStream stream = packageClass.getResource(newResource).openStream();
+                try {
+                    ByteArrayOutputStream bs = new ByteArrayOutputStream();
+                    int read;
+                    byte[] buff = new byte[512];
+                    while ((read = stream.read(buff)) != -1) {
+                        bs.write(buff, 0, read);
+                    }
+                    return bs.toByteArray();
+                } finally {
+                    stream.close();
+                }
+
+            }
+        }));
     }
 
     public void addNewClass(Class<?> definition, String name) {
@@ -110,7 +134,7 @@ public class ClassReplacer {
                     }
                 }));
             }
-            FakeReplaceClient.run(deploymentName, classes, Collections.<String, ResourceData>emptyMap());
+            FakeReplaceClient.run(deploymentName, classes, replacedResources);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

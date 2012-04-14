@@ -27,6 +27,8 @@ import org.fakereplace.transformation.FakereplaceTransformer;
 
 public class JbossasIntegrationInfo implements IntegrationInfo {
 
+    public static final String RESOURCE_CACHE_CLASS = "org.apache.naming.resources.ResourceCache";
+
     public String getClassChangeAwareName() {
         return "org.fakereplace.integration.jbossas.ClassChangeNotifier";
     }
@@ -36,7 +38,7 @@ public class JbossasIntegrationInfo implements IntegrationInfo {
     }
 
     public Set<String> getTrackedInstanceClassNames() {
-        return Collections.emptySet();
+        return Collections.singleton(RESOURCE_CACHE_CLASS);
     }
 
     public FakereplaceTransformer getTransformer() {

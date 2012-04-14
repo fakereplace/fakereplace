@@ -163,6 +163,7 @@ public class JBossAsEnvironment implements Environment {
                 final FileOutputStream stream = new FileOutputStream(file.getPhysicalFile(), false);
                 try {
                     stream.write(entry.getValue());
+                    stream.flush();
                 } finally {
                     stream.close();
                 }
