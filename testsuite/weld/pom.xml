@@ -41,10 +41,6 @@
             <artifactId>fakereplace-weld</artifactId>
         </dependency>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.jboss.arquillian.container</groupId>
             <artifactId>arquillian-weld-se-embedded-1.1</artifactId>
         </dependency>

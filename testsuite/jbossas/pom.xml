@@ -35,14 +35,14 @@
     <version>0.10-SNAPSHOT</version>
     <url>http://maven.apache.org</url>
 
+    <properties>
+        <jboss.vm.args>-ea</jboss.vm.args>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.fakereplace</groupId>
             <artifactId>fakereplace-weld</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
         </dependency>
         <dependency>
             <groupId>org.jboss.as</groupId>
@@ -88,6 +88,7 @@
                             <forkMode>once</forkMode>
                             <systemPropertyVariables>
                                 <project.build.directory>${project.build.directory}</project.build.directory>
+                                <jboss.vm.args>${jboss.vm.args}</jboss.vm.args>
                             </systemPropertyVariables>
                         </configuration>
                     </execution>
@@ -95,4 +96,20 @@
             </plugin>
         </plugins>
     </build>
+
+
+
+    <profiles>
+        <profile>
+            <id>debug</id>
+            <activation>
+                <property>
+                    <name>debug</name>
+                </property>
+            </activation>
+            <properties>
+                <jboss.vm.args>-ea -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,address=5005,server=y,suspend=y</jboss.vm.args>
+            </properties>
+        </profile>
+    </profiles>
 </project>

@@ -39,6 +39,8 @@ import org.jboss.as.server.deployment.Services;
 import org.jboss.as.server.deployment.module.ResourceRoot;
 import org.jboss.modules.ModuleClassLoader;
 import org.jboss.modules.ModuleIdentifier;
+import org.jboss.msc.service.ServiceController;
+import org.jboss.msc.service.ServiceName;
 import org.jboss.vfs.VirtualFile;
 
 /**
@@ -100,8 +102,13 @@ public class JBossAsEnvironment implements Environment {
 
 
     public Set<Class> getUpdatedClasses(final String deploymentName, Map<String, Long> updatedClasses) {
+        ServiceController<DeploymentUnit> deploymentService = deploymentService(deploymentName);
+        if(deploymentService == null) {
+            System.out.println("Could not find deployment " + deploymentName);
+            return Collections.emptySet();
+        }
 
-        final ModuleIdentifier moduleId = getModuleIdentifier(deploymentName);
+        final ModuleIdentifier moduleId = getModuleIdentifier(deploymentService);
         final ModuleClassLoader loader = loadersByModuleIdentifier.get(moduleId);
         if (loader == null) {
             return Collections.emptySet();
@@ -124,13 +131,18 @@ public class JBossAsEnvironment implements Environment {
 
     @Override
     public Set<String> getUpdatedResources(final String deploymentName, final Map<String, Long> updatedResources) {
-        final ModuleIdentifier moduleId = getModuleIdentifier(deploymentName);
+        ServiceController<DeploymentUnit> deploymentService = deploymentService(deploymentName);
+        if(deploymentService == null) {
+            return Collections.emptySet();
+        }
+
+        final ModuleIdentifier moduleId = getModuleIdentifier(deploymentService);
         final ModuleClassLoader loader = loadersByModuleIdentifier.get(moduleId);
         if (loader == null) {
             return Collections.emptySet();
         }
 
-        final DeploymentUnit deploymentUnit = (DeploymentUnit) CurrentServiceContainer.getServiceContainer().getRequiredService(Services.deploymentUnitName(deploymentName)).getValue();
+        final DeploymentUnit deploymentUnit = deploymentService.getValue();
         final ResourceRoot root = deploymentUnit.getAttachment(Attachments.DEPLOYMENT_ROOT);
 
         final Set<String> resources = new HashSet<String>();
@@ -146,15 +158,33 @@ public class JBossAsEnvironment implements Environment {
         return resources;
     }
 
+    private ServiceController<DeploymentUnit> deploymentService(final String deploymentName) {
+        ServiceController<DeploymentUnit> deploymentService = (ServiceController<DeploymentUnit>) CurrentServiceContainer.getServiceContainer().getService(Services.deploymentUnitName(deploymentName));
+        if(deploymentService == null) {
+            //now try for a sub deployment
+            for(final ServiceName serviceName : CurrentServiceContainer.getServiceContainer().getServiceNames()) {
+                if(Services.JBOSS_DEPLOYMENT_SUB_UNIT.isParentOf(serviceName)) {
+                    final String[] parts = serviceName.toArray();
+                    if(parts[parts.length - 1].equals(deploymentName)) {
+                        deploymentService = (ServiceController<DeploymentUnit>) CurrentServiceContainer.getServiceContainer().getService(serviceName);
+                        break;
+                    }
+                }
+            }
+        }
+        return deploymentService;
+    }
+
     @Override
     public void updateResource(final String archiveName, final Map<String, byte[]> replacedResources) {
-        final ModuleIdentifier moduleId = getModuleIdentifier(archiveName);
+        ServiceController<DeploymentUnit> deploymentService = deploymentService(archiveName);
+        final ModuleIdentifier moduleId = getModuleIdentifier(deploymentService);
         final ModuleClassLoader loader = loadersByModuleIdentifier.get(moduleId);
         if (loader == null) {
             return;
         }
 
-        final DeploymentUnit deploymentUnit = (DeploymentUnit) CurrentServiceContainer.getServiceContainer().getRequiredService(Services.deploymentUnitName(archiveName)).getValue();
+        final DeploymentUnit deploymentUnit = deploymentService.getValue();
         final ResourceRoot root = deploymentUnit.getAttachment(Attachments.DEPLOYMENT_ROOT);
 
         for (final Map.Entry<String, byte[]> entry : replacedResources.entrySet()) {
@@ -173,8 +203,8 @@ public class JBossAsEnvironment implements Environment {
         }
     }
 
-    private ModuleIdentifier getModuleIdentifier(final String deploymentArchive) {
-        return ModuleIdentifier.create("deployment." + deploymentArchive);
+    private ModuleIdentifier getModuleIdentifier(final ServiceController<DeploymentUnit> deploymentArchive) {
+        return deploymentArchive.getValue().getAttachment(Attachments.MODULE_IDENTIFIER);
     }
 
 }
