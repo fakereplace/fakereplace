@@ -32,6 +32,7 @@ import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.net.URL;
 import java.security.ProtectionDomain;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -52,7 +53,7 @@ public class MainTransformer implements ClassFileTransformer {
 
     private final Map<String, IntegrationInfo> integrationClassTriggers;
 
-    private static final Map<ClassLoader, Object> integrationClassloader = new MapMaker().weakKeys().makeMap();
+    private static final Set<ClassLoader> integrationClassloader = Collections.newSetFromMap(new MapMaker().weakKeys().<ClassLoader, Boolean>makeMap());
 
     public MainTransformer(Set<IntegrationInfo> integrationInfo) {
         Map<String, IntegrationInfo> integrationClassTriggers = new HashMap<String, IntegrationInfo>();
@@ -68,7 +69,7 @@ public class MainTransformer implements ClassFileTransformer {
     public byte[] transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final byte[] classfileBuffer) throws IllegalClassFormatException {
 
         if (integrationClassTriggers.containsKey(className)) {
-            integrationClassloader.put(loader, new Object());
+            integrationClassloader.add(loader);
             // we need to load the class in another thread
             // otherwise it will not go through the javaagent
             try {
@@ -144,7 +145,7 @@ public class MainTransformer implements ClassFileTransformer {
 
 
     public static byte[] getIntegrationClass(ClassLoader c, String name) {
-        if (!integrationClassloader.containsKey(c)) {
+        if (!integrationClassloader.contains(c)) {
             return null;
         }
         URL resource = ClassLoader.getSystemClassLoader().getResource(name.replace('.', '/') + ".class");
