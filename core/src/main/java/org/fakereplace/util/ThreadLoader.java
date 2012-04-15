@@ -47,7 +47,7 @@ public class ThreadLoader implements Runnable {
         }
     }
 
-    static public void loadAsync(String className, ClassLoader classLoader, boolean create) {
+    public static void loadAsync(String className, ClassLoader classLoader, boolean create) {
         new Thread(new ThreadLoader(className, classLoader, create)).start();
     }
 

@@ -73,77 +73,77 @@ public class AnnotationDataStore {
 
     static final String PROXY_METHOD_NAME = "annotationsMethod";
 
-    static public boolean isClassDataRecorded(Class<?> clazz) {
+    public static boolean isClassDataRecorded(Class<?> clazz) {
         return classAnnotations.containsKey(clazz);
     }
 
-    static public Annotation[] getClassAnnotations(Class<?> clazz) {
+    public static Annotation[] getClassAnnotations(Class<?> clazz) {
         return classAnnotations.get(clazz);
     }
 
-    static public Annotation getClassAnnotation(Class<?> clazz, Class<? extends Annotation> annotation) {
+    public static Annotation getClassAnnotation(Class<?> clazz, Class<? extends Annotation> annotation) {
         return classAnnotationsByType.get(clazz).get(annotation);
     }
 
-    static public boolean isClassAnnotationPresent(Class<?> clazz, Class<? extends Annotation> annotation) {
+    public static boolean isClassAnnotationPresent(Class<?> clazz, Class<? extends Annotation> annotation) {
         return classAnnotationsByType.get(clazz).containsKey(annotation);
     }
 
-    static public boolean isFieldDataRecorded(Field clazz) {
+    public static boolean isFieldDataRecorded(Field clazz) {
         return fieldAnnotations.containsKey(clazz);
     }
 
-    static public Annotation[] getFieldAnnotations(Field clazz) {
+    public static Annotation[] getFieldAnnotations(Field clazz) {
         return fieldAnnotations.get(clazz);
     }
 
-    static public Annotation getFieldAnnotation(Field clazz, Class<? extends Annotation> annotation) {
+    public static Annotation getFieldAnnotation(Field clazz, Class<? extends Annotation> annotation) {
         return fieldAnnotationsByType.get(clazz).get(annotation);
     }
 
-    static public boolean isFieldAnnotationPresent(Field clazz, Class<? extends Annotation> annotation) {
+    public static boolean isFieldAnnotationPresent(Field clazz, Class<? extends Annotation> annotation) {
         return fieldAnnotationsByType.get(clazz).containsKey(annotation);
     }
 
-    static public boolean isMethodDataRecorded(Method clazz) {
+    public static boolean isMethodDataRecorded(Method clazz) {
         return methodAnnotations.containsKey(clazz);
     }
 
-    static public Annotation[] getMethodAnnotations(Method clazz) {
+    public static Annotation[] getMethodAnnotations(Method clazz) {
         return methodAnnotations.get(clazz);
     }
 
-    static public Annotation getMethodAnnotation(Method clazz, Class<? extends Annotation> annotation) {
+    public static Annotation getMethodAnnotation(Method clazz, Class<? extends Annotation> annotation) {
         return methodAnnotationsByType.get(clazz).get(annotation);
     }
 
-    static public boolean isMethodAnnotationPresent(Method clazz, Class<? extends Annotation> annotation) {
+    public static boolean isMethodAnnotationPresent(Method clazz, Class<? extends Annotation> annotation) {
         return methodAnnotationsByType.get(clazz).containsKey(annotation);
     }
 
-    static public Annotation[][] getMethodParameterAnnotations(Method clazz) {
+    public static Annotation[][] getMethodParameterAnnotations(Method clazz) {
         return parameterAnnotations.get(clazz);
     }
 
     // constructor
 
-    static public boolean isConstructorDataRecorded(Constructor<?> clazz) {
+    public static boolean isConstructorDataRecorded(Constructor<?> clazz) {
         return constructorAnnotations.containsKey(clazz);
     }
 
-    static public Annotation[] getConstructorAnnotations(Constructor<?> clazz) {
+    public static Annotation[] getConstructorAnnotations(Constructor<?> clazz) {
         return constructorAnnotations.get(clazz);
     }
 
-    static public Annotation getConstructorAnnotation(Constructor<?> clazz, Class<? extends Annotation> annotation) {
+    public static Annotation getConstructorAnnotation(Constructor<?> clazz, Class<? extends Annotation> annotation) {
         return constructorAnnotationsByType.get(clazz).get(annotation);
     }
 
-    static public boolean isConstructorAnnotationPresent(Constructor<?> clazz, Class<? extends Annotation> annotation) {
+    public static boolean isConstructorAnnotationPresent(Constructor<?> clazz, Class<? extends Annotation> annotation) {
         return constructorAnnotationsByType.get(clazz).containsKey(annotation);
     }
 
-    static public Annotation[][] getMethodParameterAnnotations(Constructor<?> clazz) {
+    public static Annotation[][] getMethodParameterAnnotations(Constructor<?> clazz) {
         return constructorParameterAnnotations.get(clazz);
     }
 
@@ -203,7 +203,7 @@ public class AnnotationDataStore {
         }
     }
 
-    static public void recordClassAnnotations(Class<?> clazz, AnnotationsAttribute annotations) {
+    public static void recordClassAnnotations(Class<?> clazz, AnnotationsAttribute annotations) {
         // no annotations
         if (annotations == null) {
             Annotation[] ans = new Annotation[0];
@@ -222,7 +222,7 @@ public class AnnotationDataStore {
         }
     }
 
-    static public void recordFieldAnnotations(Field field, AnnotationsAttribute annotations) {
+    public static void recordFieldAnnotations(Field field, AnnotationsAttribute annotations) {
         // no annotations
         if (annotations == null) {
             Annotation[] ans = new Annotation[0];
@@ -241,7 +241,7 @@ public class AnnotationDataStore {
         }
     }
 
-    static public void recordMethodAnnotations(Method method, AnnotationsAttribute annotations) {
+    public static void recordMethodAnnotations(Method method, AnnotationsAttribute annotations) {
         // no annotations
         if (annotations == null) {
             Annotation[] ans = new Annotation[0];
@@ -260,7 +260,7 @@ public class AnnotationDataStore {
         }
     }
 
-    static public void recordMethodParameterAnnotations(Method method, ParameterAnnotationsAttribute annotations) {
+    public static void recordMethodParameterAnnotations(Method method, ParameterAnnotationsAttribute annotations) {
         // no annotations
         if (annotations == null) {
             Annotation[][] ans = new Annotation[method.getParameterAnnotations().length][0];
@@ -283,7 +283,7 @@ public class AnnotationDataStore {
 
     }
 
-    static public void recordConstructorAnnotations(Constructor<?> constructor, AnnotationsAttribute annotations) {
+    public static void recordConstructorAnnotations(Constructor<?> constructor, AnnotationsAttribute annotations) {
         // no annotations
         if (annotations == null) {
             Annotation[] ans = new Annotation[0];
@@ -303,7 +303,7 @@ public class AnnotationDataStore {
 
     }
 
-    static public void recordConstructorParameterAnnotations(Constructor<?> method, ParameterAnnotationsAttribute annotations) {
+    public static void recordConstructorParameterAnnotations(Constructor<?> method, ParameterAnnotationsAttribute annotations) {
         // no annotations
         if (annotations == null) {
             Annotation[][] ans = new Annotation[method.getParameterAnnotations().length][0];

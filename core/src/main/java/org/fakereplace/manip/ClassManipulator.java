@@ -22,7 +22,7 @@ package org.fakereplace.manip;
 import javassist.bytecode.ClassFile;
 
 public interface ClassManipulator {
-    public void clearRewrites(String className, ClassLoader classLoader);
+    void clearRewrites(String className, ClassLoader classLoader);
 
-    public boolean transformClass(ClassFile file, ClassLoader loader, boolean modifiableClass);
+    boolean transformClass(ClassFile file, ClassLoader loader, boolean modifiableClass);
 }

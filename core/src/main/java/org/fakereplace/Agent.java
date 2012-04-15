@@ -97,7 +97,7 @@ public class Agent {
         thread.start();
     }
 
-    static public void redefine(ClassDefinition[] classes, AddedClass[] addedData) throws UnmodifiableClassException, ClassNotFoundException {
+    public static void redefine(ClassDefinition[] classes, AddedClass[] addedData) throws UnmodifiableClassException, ClassNotFoundException {
         final ClassIdentifier[] addedClass = new ClassIdentifier[addedData.length];
         int count = 0;
         for (AddedClass i : addedData) {

@@ -86,7 +86,7 @@ final class EmptyImmutableSet extends ImmutableSet<Object> {
     }
 
     @Override
-    public final int hashCode() {
+    public int hashCode() {
         return 0;
     }
 

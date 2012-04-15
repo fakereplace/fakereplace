@@ -100,5 +100,10 @@ abstract class AbstractSetMultimap<K, V>
         return super.equals(object);
     }
 
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
     private static final long serialVersionUID = 7431625294878419160L;
 }

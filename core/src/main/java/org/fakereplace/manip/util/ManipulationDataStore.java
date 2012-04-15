@@ -36,7 +36,7 @@ import org.fakereplace.com.google.common.collect.MapMaker;
  * @param <T>
  * @author stuart
  */
-public class ManipulationDataStore<T extends ClassloaderFiltered<T>> {
+public class ManipulationDataStore<T extends ClassLoaderFiltered<T>> {
     private final ClassLoader NULL_CLASS_LOADER = new ClassLoader() {
     };
 
@@ -51,7 +51,7 @@ public class ManipulationDataStore<T extends ClassloaderFiltered<T>> {
             for (Entry<String, Set<T>> e : centry.getValue().entrySet()) {
                 Set<T> set = new HashSet<T>();
                 ret.put(e.getKey(), set);
-                for (ClassloaderFiltered<T> f : e.getValue()) {
+                for (ClassLoaderFiltered<T> f : e.getValue()) {
                     if (includeClassLoader(loader, f.getClassLoader())) {
                         set.add(f.getInstance());
                     }

@@ -90,5 +90,10 @@ abstract class AbstractListMultimap<K, V>
         return super.equals(object);
     }
 
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
     private static final long serialVersionUID = 6588350623831699109L;
 }

@@ -19,13 +19,13 @@
 
 package org.fakereplace.manip.data;
 
-import org.fakereplace.manip.util.ClassloaderFiltered;
+import org.fakereplace.manip.util.ClassLoaderFiltered;
 
-public class StaticFieldAccessRewriteData implements ClassloaderFiltered<StaticFieldAccessRewriteData> {
-    final private String oldClass;
-    final private String newClass;
-    final private String fieldName;
-    final private ClassLoader classLoader;
+public class StaticFieldAccessRewriteData implements ClassLoaderFiltered<StaticFieldAccessRewriteData> {
+    private final String oldClass;
+    private final String newClass;
+    private final String fieldName;
+    private final ClassLoader classLoader;
 
     public StaticFieldAccessRewriteData(String oldClass, String newClass, String fieldName, ClassLoader classLoader) {
         this.oldClass = oldClass;

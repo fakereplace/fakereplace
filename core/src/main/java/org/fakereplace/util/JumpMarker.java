@@ -35,5 +35,5 @@ public interface JumpMarker {
      * Changes the jump instructions target to the next bytecode to be added to
      * the {@link Bytecode}
      */
-    public void mark();
+    void mark();
 }

@@ -35,6 +35,6 @@ public interface FakereplaceTransformer {
     /**
      * Transforms a class, returning true if any modifications where made
      */
-    public boolean transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final ClassFile file) throws IllegalClassFormatException;
+    boolean transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final ClassFile file) throws IllegalClassFormatException;
 
 }

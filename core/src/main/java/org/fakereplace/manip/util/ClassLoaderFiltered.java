@@ -25,8 +25,8 @@ package org.fakereplace.manip.util;
  * @param <T>
  * @author stuart
  */
-public interface ClassloaderFiltered<T> {
-    public ClassLoader getClassLoader();
+public interface ClassLoaderFiltered<T> {
+    ClassLoader getClassLoader();
 
-    public T getInstance();
+    T getInstance();
 }

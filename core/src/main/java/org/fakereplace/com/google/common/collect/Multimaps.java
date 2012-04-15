@@ -1015,6 +1015,11 @@ public final class Multimaps {
         public boolean equals(Object object) {
             return Collections2.setEquals(this, object);
         }
+
+        @Override
+        public int hashCode() {
+            return super.hashCode();
+        }
     }
 
     /**

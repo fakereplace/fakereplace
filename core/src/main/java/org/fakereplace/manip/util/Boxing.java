@@ -32,7 +32,7 @@ import javassist.bytecode.Bytecode;
  */
 public class Boxing {
 
-    static public void box(Bytecode b, char type) {
+    public static void box(Bytecode b, char type) {
         switch (type) {
             case 'I':
                 boxInt(b);
@@ -64,7 +64,7 @@ public class Boxing {
 
     }
 
-    static public Bytecode unbox(Bytecode b, char type) {
+    public static Bytecode unbox(Bytecode b, char type) {
         switch (type) {
             case 'I':
                 return unboxInt(b);
@@ -86,83 +86,83 @@ public class Boxing {
         throw new RuntimeException("Cannot unbox unkown primitive type: " + type);
     }
 
-    static public void boxInt(Bytecode bc) {
+    public static void boxInt(Bytecode bc) {
         bc.addInvokestatic("java.lang.Integer", "valueOf", "(I)Ljava/lang/Integer;");
     }
 
-    static public void boxLong(Bytecode bc) {
+    public static void boxLong(Bytecode bc) {
         bc.addInvokestatic("java.lang.Long", "valueOf", "(J)Ljava/lang/Long;");
     }
 
-    static public void boxShort(Bytecode bc) {
+    public static void boxShort(Bytecode bc) {
         bc.addInvokestatic("java.lang.Short", "valueOf", "(S)Ljava/lang/Short;");
     }
 
-    static public void boxByte(Bytecode bc) {
+    public static void boxByte(Bytecode bc) {
         bc.addInvokestatic("java.lang.Byte", "valueOf", "(B)Ljava/lang/Byte;");
     }
 
-    static public void boxFloat(Bytecode bc) {
+    public static void boxFloat(Bytecode bc) {
         bc.addInvokestatic("java.lang.Float", "valueOf", "(F)Ljava/lang/Float;");
     }
 
-    static public void boxDouble(Bytecode bc) {
+    public static void boxDouble(Bytecode bc) {
         bc.addInvokestatic("java.lang.Double", "valueOf", "(D)Ljava/lang/Double;");
     }
 
-    static public void boxChar(Bytecode bc) {
+    public static void boxChar(Bytecode bc) {
         bc.addInvokestatic("java.lang.Character", "valueOf", "(C)Ljava/lang/Character;");
     }
 
-    static public void boxBoolean(Bytecode bc) {
+    public static void boxBoolean(Bytecode bc) {
         bc.addInvokestatic("java.lang.Boolean", "valueOf", "(Z)Ljava/lang/Boolean;");
     }
 
     // unboxing
 
-    static public Bytecode unboxInt(Bytecode bc) {
+    public static Bytecode unboxInt(Bytecode bc) {
         bc.addCheckcast("java.lang.Number");
         bc.addInvokevirtual("java.lang.Number", "intValue", "()I");
         return bc;
     }
 
-    static public Bytecode unboxLong(Bytecode bc) {
+    public static Bytecode unboxLong(Bytecode bc) {
         bc.addCheckcast("java.lang.Number");
         bc.addInvokevirtual("java.lang.Number", "longValue", "()J");
         return bc;
     }
 
-    static public Bytecode unboxShort(Bytecode bc) {
+    public static Bytecode unboxShort(Bytecode bc) {
         bc.addCheckcast("java.lang.Number");
         bc.addInvokevirtual("java.lang.Number", "shortValue", "()S");
         return bc;
     }
 
-    static public Bytecode unboxByte(Bytecode bc) {
+    public static Bytecode unboxByte(Bytecode bc) {
         bc.addCheckcast("java.lang.Number");
         bc.addInvokevirtual("java.lang.Number", "byteValue", "()B");
         return bc;
     }
 
-    static public Bytecode unboxFloat(Bytecode bc) {
+    public static Bytecode unboxFloat(Bytecode bc) {
         bc.addCheckcast("java.lang.Number");
         bc.addInvokevirtual("java.lang.Number", "floatValue", "()F");
         return bc;
     }
 
-    static public Bytecode unboxDouble(Bytecode bc) {
+    public static Bytecode unboxDouble(Bytecode bc) {
         bc.addCheckcast("java.lang.Number");
         bc.addInvokevirtual("java.lang.Number", "doubleValue", "()D");
         return bc;
     }
 
-    static public Bytecode unboxChar(Bytecode bc) {
+    public static Bytecode unboxChar(Bytecode bc) {
         bc.addCheckcast("java.lang.Character");
         bc.addInvokevirtual("java.lang.Character", "charValue", "()C");
         return bc;
     }
 
-    static public Bytecode unboxBoolean(Bytecode bc) {
+    public static Bytecode unboxBoolean(Bytecode bc) {
         bc.addCheckcast("java.lang.Boolean");
         bc.addInvokevirtual("java.lang.Boolean", "booleanValue", "()Z");
         return bc;

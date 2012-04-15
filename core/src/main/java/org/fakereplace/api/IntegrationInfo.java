@@ -41,7 +41,7 @@ public interface IntegrationInfo {
      *
      * @return
      */
-    public FakereplaceTransformer getTransformer();
+    FakereplaceTransformer getTransformer();
 
     /**
      * returns the name of the ClassChangeAware object
@@ -55,7 +55,7 @@ public interface IntegrationInfo {
      *
      * @return
      */
-    public String getClassChangeAwareName();
+    String getClassChangeAwareName();
 
     /**
      * If a classloader loads one of these classes it enables
@@ -64,19 +64,19 @@ public interface IntegrationInfo {
      * This also means that the classloader that loaded
      * the class will be intrumented to load classes from the integration.
      */
-    public Set<String> getIntegrationTriggerClassNames();
+    Set<String> getIntegrationTriggerClassNames();
 
     /**
      * If a classloader is registered as an instrumentation
      * classloader it will attempt to load classes from here
      * first.
      */
-    public byte[] loadClass(String className);
+    byte[] loadClass(String className);
 
     /**
      * get a list of classes that should be turned into tracked instances.
      *
      * @return
      */
-    public Set<String> getTrackedInstanceClassNames();
+    Set<String> getTrackedInstanceClassNames();
 }

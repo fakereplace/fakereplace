@@ -102,7 +102,7 @@ final class SingletonImmutableSet<E> extends ImmutableSet<E> {
     }
 
     @Override
-    public final int hashCode() {
+    public int hashCode() {
         Integer code = cachedHashCode;
         if (code == null) {
             return cachedHashCode = element.hashCode();

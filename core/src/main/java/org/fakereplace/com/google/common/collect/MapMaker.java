@@ -924,7 +924,7 @@ public final class MapMaker {
         /**
          * Gets the key for this entry.
          */
-        public K getKey();
+        K getKey();
     }
 
     /**

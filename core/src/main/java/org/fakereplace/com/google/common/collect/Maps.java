@@ -1006,7 +1006,7 @@ public final class Maps {
         return new FilteredEntryMap<K, V>(map.unfiltered, predicate);
     }
 
-    private static abstract class AbstractFilteredMap<K, V>
+    private abstract static  class AbstractFilteredMap<K, V>
             extends AbstractMap<K, V> {
 
         final Map<K, V> unfiltered;

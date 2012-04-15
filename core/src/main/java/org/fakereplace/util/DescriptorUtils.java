@@ -245,9 +245,7 @@ public class DescriptorUtils {
             return "Z";
         } else if (c.isArray()) {
             return c.getName().replace(".", "/");
-        } else
-        // normal object
-        {
+        } else {
             return extToInt(c.getName());
         }
     }

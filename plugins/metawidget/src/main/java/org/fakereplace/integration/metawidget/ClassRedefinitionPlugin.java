@@ -30,7 +30,7 @@ import org.fakereplace.data.InstanceTracker;
 
 public class ClassRedefinitionPlugin implements ClassChangeAware {
 
-    static private Method remove;
+    private static Method remove;
 
     static {
         try {
@@ -40,7 +40,7 @@ public class ClassRedefinitionPlugin implements ClassChangeAware {
         }
     }
 
-    static private Field getField(Class<?> clazz, String name) throws NoSuchFieldException {
+    private static Field getField(Class<?> clazz, String name) throws NoSuchFieldException {
         if (clazz == Object.class)
             throw new NoSuchFieldException();
         try {

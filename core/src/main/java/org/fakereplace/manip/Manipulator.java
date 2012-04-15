@@ -32,17 +32,17 @@ import org.fakereplace.manip.data.AddedFieldData;
  */
 public class Manipulator {
 
-    final private MethodInvokationManipulator methodInvokationManipulator = new MethodInvokationManipulator();
-    final private StaticFieldManipulator staticFieldManipulator = new StaticFieldManipulator();
-    final private InstanceFieldManipulator instanceFieldManapulator = new InstanceFieldManipulator();
-    final private ConstructorInvocationManipulator constructorInvocationManipulator = new ConstructorInvocationManipulator();
-    final private ConstructorAccessManipulator constructorAccessManipulator = new ConstructorAccessManipulator();
-    final private SubclassVirtualCallManipulator subclassVirtualCallManilulator = new SubclassVirtualCallManipulator();
-    final private FinalMethodManipulator finalMethodManipulator = new FinalMethodManipulator();
-    final private FieldAccessManipulator fieldAccessManipulator = new FieldAccessManipulator();
-    final private MethodAccessManipulator methodAccessManipulator = new MethodAccessManipulator();
+    private final MethodInvokationManipulator methodInvokationManipulator = new MethodInvokationManipulator();
+    private final StaticFieldManipulator staticFieldManipulator = new StaticFieldManipulator();
+    private final InstanceFieldManipulator instanceFieldManapulator = new InstanceFieldManipulator();
+    private final ConstructorInvocationManipulator constructorInvocationManipulator = new ConstructorInvocationManipulator();
+    private final ConstructorAccessManipulator constructorAccessManipulator = new ConstructorAccessManipulator();
+    private final SubclassVirtualCallManipulator subclassVirtualCallManilulator = new SubclassVirtualCallManipulator();
+    private final FinalMethodManipulator finalMethodManipulator = new FinalMethodManipulator();
+    private final FieldAccessManipulator fieldAccessManipulator = new FieldAccessManipulator();
+    private final MethodAccessManipulator methodAccessManipulator = new MethodAccessManipulator();
 
-    final private Set<ClassManipulator> manipulators = new CopyOnWriteArraySet<ClassManipulator>();
+    private final Set<ClassManipulator> manipulators = new CopyOnWriteArraySet<ClassManipulator>();
 
     public Manipulator() {
         manipulators.add(methodInvokationManipulator);

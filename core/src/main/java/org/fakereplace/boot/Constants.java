@@ -20,7 +20,7 @@
 package org.fakereplace.boot;
 
 public class Constants {
-    public final static String GENERATED_CLASS_PACKAGE = "org.fakereplace.proxies";
+    public static final String GENERATED_CLASS_PACKAGE = "org.fakereplace.proxies";
 
     public static final String ADDED_METHOD_NAME = "______REDEFINED_METHOD_DELEGATOR_$";
 

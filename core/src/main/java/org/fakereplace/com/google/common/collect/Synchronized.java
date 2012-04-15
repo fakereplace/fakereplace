@@ -1140,6 +1140,11 @@ final class Synchronized {
         }
 
         @Override
+        public int hashCode() {
+            return super.hashCode();
+        }
+
+        @Override
         public boolean remove(Object o) {
             synchronized (mutex) {
                 return Maps.removeEntryImpl(delegate(), o);

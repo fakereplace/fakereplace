@@ -28,8 +28,8 @@ import org.fakereplace.transformation.FakereplaceTransformer;
 
 public class MetawidgetIntegrationInfo implements IntegrationInfo {
 
-    public final static String BASE_PROPERTY_STYLE = "org.metawidget.inspector.impl.propertystyle.BasePropertyStyle";
-    public final static String BASE_ACTION_STYLE = "org.metawidget.inspector.impl.actionstyle.BaseActionStyle";
+    public static final String BASE_PROPERTY_STYLE = "org.metawidget.inspector.impl.propertystyle.BasePropertyStyle";
+    public static final String BASE_ACTION_STYLE = "org.metawidget.inspector.impl.actionstyle.BaseActionStyle";
 
 
     private static final Set<String> classNames;

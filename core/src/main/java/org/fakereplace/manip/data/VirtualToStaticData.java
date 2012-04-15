@@ -22,16 +22,16 @@
  */
 package org.fakereplace.manip.data;
 
-import org.fakereplace.manip.util.ClassloaderFiltered;
+import org.fakereplace.manip.util.ClassLoaderFiltered;
 
-public class VirtualToStaticData implements ClassloaderFiltered<VirtualToStaticData> {
-    final private String oldClass;
-    final private String newClass;
-    final private String methodName;
-    final private String newMethodName;
-    final private String methodDesc;
-    final private String newStaticMethodDesc;
-    final private ClassLoader classLoader;
+public class VirtualToStaticData implements ClassLoaderFiltered<VirtualToStaticData> {
+    private final String oldClass;
+    private final String newClass;
+    private final String methodName;
+    private final String newMethodName;
+    private final String methodDesc;
+    private final String newStaticMethodDesc;
+    private final ClassLoader classLoader;
 
     public VirtualToStaticData(String oldClass, String newClass, String methodName, String methodDesc, String newStaticMethodDesc, String newMethodName, ClassLoader classLoader) {
         this.oldClass = oldClass;

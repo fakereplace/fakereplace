@@ -19,9 +19,9 @@
 
 package org.fakereplace.manip.data;
 
-import org.fakereplace.manip.util.ClassloaderFiltered;
+import org.fakereplace.manip.util.ClassLoaderFiltered;
 
-public class SubclassVirtualCallData implements ClassloaderFiltered<SubclassVirtualCallData> {
+public class SubclassVirtualCallData implements ClassLoaderFiltered<SubclassVirtualCallData> {
 
     private final ClassLoader classLoader;
     private final String className;

@@ -261,7 +261,7 @@ public class MethodReflection {
     /**
      * appends object to the start of the array
      */
-    static public Object[] prependInstanceToParams(Object object, Object[] array) {
+    public static Object[] prependInstanceToParams(Object object, Object[] array) {
         int length = 0;
         if (array != null) {
             length = array.length;

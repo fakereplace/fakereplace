@@ -28,7 +28,7 @@ import org.fakereplace.classloading.ClassIdentifier;
  * @author stuart
  */
 public interface ClassChangeAware {
-    public void beforeChange(Class<?>[] changed, ClassIdentifier[] added);
+    void beforeChange(Class<?>[] changed, ClassIdentifier[] added);
 
-    public void notify(Class<?>[] changed, ClassIdentifier[] added);
+    void notify(Class<?>[] changed, ClassIdentifier[] added);
 }

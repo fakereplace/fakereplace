@@ -22,15 +22,15 @@
  */
 package org.fakereplace.manip.data;
 
-import org.fakereplace.manip.util.ClassloaderFiltered;
+import org.fakereplace.manip.util.ClassLoaderFiltered;
 import org.fakereplace.util.DescriptorUtils;
 
-public class ConstructorRewriteData implements ClassloaderFiltered<ConstructorRewriteData> {
-    final private String clazz;
-    final private String methodDesc;
-    final private String[] parameters;
-    final private int methodNo;
-    final private ClassLoader classLoader;
+public class ConstructorRewriteData implements ClassLoaderFiltered<ConstructorRewriteData> {
+    private final String clazz;
+    private final String methodDesc;
+    private final String[] parameters;
+    private final int methodNo;
+    private final ClassLoader classLoader;
 
     public ConstructorRewriteData(String clazz, String methodDesc, int methodNo, ClassLoader classLoader) {
         this.clazz = clazz;

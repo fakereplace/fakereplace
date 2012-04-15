@@ -19,19 +19,19 @@
 
 package org.fakereplace.manip.data;
 
-import org.fakereplace.manip.util.ClassloaderFiltered;
+import org.fakereplace.manip.util.ClassLoaderFiltered;
 
 /**
  * Stores information about an added instance field.
  *
  * @author stuart
  */
-public class AddedFieldData implements ClassloaderFiltered<AddedFieldData> {
-    final private int arrayIndex;
-    final private String name;
-    final private String descriptor;
-    final private String className;
-    final private ClassLoader classLoader;
+public class AddedFieldData implements ClassLoaderFiltered<AddedFieldData> {
+    private final int arrayIndex;
+    private final String name;
+    private final String descriptor;
+    private final String className;
+    private final ClassLoader classLoader;
 
     public AddedFieldData(int arrayIndex, String name, String descriptor, String className, ClassLoader classLoader) {
         super();

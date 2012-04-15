@@ -36,5 +36,5 @@ public interface Supplier<T> {
      *
      * @return an instance of the appropriate type
      */
-    public T get();
+    T get();
 }
