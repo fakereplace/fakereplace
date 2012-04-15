@@ -19,12 +19,12 @@
 
 package org.fakereplace.data;
 
-import java.util.Map;
+import java.util.Collections;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import org.fakereplace.com.google.common.collect.MapMaker;
-import org.fakereplace.manip.util.MapFunction;
 
 /**
  * This class is responsible for tracking instances of certain classes as they
@@ -34,16 +34,25 @@ import org.fakereplace.manip.util.MapFunction;
  */
 public class InstanceTracker {
 
-    private static Object TEMP = new Object();
-
-    private static Map<String, ConcurrentMap<Object, Object>> data = new MapMaker().initialCapacity(100).makeComputingMap(new MapFunction<Object, Object, Object>(true));
+    private static ConcurrentMap<String, Set<Object>> data = new ConcurrentHashMap<String, Set<Object>>();
 
     public static void add(String type, Object object) {
-        Map<Object, Object> set = data.get(type);
-        set.put(object, TEMP);
+        Set<Object> set = data.get(type);
+        if(set == null) {
+            set = Collections.newSetFromMap(new MapMaker().weakKeys().<Object, Boolean>makeMap());
+            Set<Object> existing = data.putIfAbsent(type, set);
+            if(existing != null) {
+                set = existing;
+            }
+        }
+        set.add(object);
     }
 
     public static Set<?> get(String type) {
-        return data.get(type).keySet();
+        final Set<Object> result =  data.get(type);
+        if(result != null) {
+            return result;
+        }
+        return Collections.emptySet();
     }
 }

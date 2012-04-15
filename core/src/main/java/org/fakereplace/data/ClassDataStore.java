@@ -19,7 +19,9 @@
 
 package org.fakereplace.data;
 
+import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -37,7 +39,7 @@ public class ClassDataStore {
     private final Map<ClassLoader, ConcurrentMap<String, ClassData>> classData = new MapMaker().weakKeys().makeComputingMap(new MapFunction<ClassLoader, String, ClassData>(false));
     private final Map<ClassLoader, ConcurrentMap<String, BaseClassData>> baseClassData = new MapMaker().weakKeys().makeComputingMap(new MapFunction<ClassLoader, String, BaseClassData>(false));
     private final Map<String, MethodData> proxyNameToMethodData = new ConcurrentHashMap<String, MethodData>();
-    private final Map<Class<?>, Object> replacedClasses = new MapMaker().weakKeys().makeMap();
+    private final Set<Class<?>> replacedClasses = Collections.newSetFromMap(new MapMaker().weakKeys().<Class<?>, Boolean>makeMap());
 
     /**
      * takes the place of the null key on ConcurrentHashMap
@@ -50,11 +52,11 @@ public class ClassDataStore {
     }
 
     public void markClassReplaced(Class<?> clazz) {
-        replacedClasses.put(clazz, NULL_LOADER);
+        replacedClasses.add(clazz);
     }
 
     public boolean isClassReplaced(Class<?> clazz) {
-        return replacedClasses.containsKey(clazz);
+        return replacedClasses.contains(clazz);
     }
 
     public void saveClassData(ClassLoader loader, String className, ClassDataBuilder data) {

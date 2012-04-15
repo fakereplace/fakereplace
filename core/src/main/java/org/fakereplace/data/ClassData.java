@@ -41,7 +41,6 @@ public class ClassData {
     private final String className;
     private final String internalName;
     private final Map<String, Map<String, Set<MethodData>>> methods = new MapMaker().makeMap();
-    // TODO: this leaks memory
     private final Map<Method, MethodData> methodsByMethod = new MapMaker().makeComputingMap(new MethodResolver());
     private final Map<String, FieldData> fields = new MapMaker().makeMap();
     private final Set<MethodData> methodSet = new HashSet<MethodData>();
