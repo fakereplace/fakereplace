@@ -21,6 +21,7 @@ package org.fakereplace.data;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import org.fakereplace.BuiltinClassData;
 import org.fakereplace.com.google.common.collect.MapMaker;
@@ -33,8 +34,8 @@ public class ClassDataStore {
 
     private final Map<String, Class<?>> proxyNameToReplacedClass = new ConcurrentHashMap<String, Class<?>>();
     private final Map<String, FieldAccessor> proxyNameToFieldAccessor = new ConcurrentHashMap<String, FieldAccessor>();
-    private final Map<ClassLoader, Map<String, ClassData>> classData = new MapMaker().weakKeys().makeComputingMap(new MapFunction<ClassLoader, String, ClassData>(false));
-    private final Map<ClassLoader, Map<String, BaseClassData>> baseClassData = new MapMaker().weakKeys().makeComputingMap(new MapFunction<ClassLoader, String, BaseClassData>(false));
+    private final Map<ClassLoader, ConcurrentMap<String, ClassData>> classData = new MapMaker().weakKeys().makeComputingMap(new MapFunction<ClassLoader, String, ClassData>(false));
+    private final Map<ClassLoader, ConcurrentMap<String, BaseClassData>> baseClassData = new MapMaker().weakKeys().makeComputingMap(new MapFunction<ClassLoader, String, BaseClassData>(false));
     private final Map<String, MethodData> proxyNameToMethodData = new ConcurrentHashMap<String, MethodData>();
     private final Map<Class<?>, Object> replacedClasses = new MapMaker().weakKeys().makeMap();
 

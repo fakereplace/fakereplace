@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.fakereplace.com.google.common.collect.MapMaker;
@@ -40,14 +41,14 @@ public class ManipulationDataStore<T extends ClassLoaderFiltered<T>> {
     private final ClassLoader NULL_CLASS_LOADER = new ClassLoader() {
     };
 
-    Map<ClassLoader, Map<String, Set<T>>> cldata = new MapMaker().weakKeys().makeComputingMap(new MapFunction(false));
+    private final Map<ClassLoader, ConcurrentMap<String, Set<T>>> cldata = new MapMaker().weakKeys().makeComputingMap(new MapFunction<ClassLoader, String, Set<T>>(false));
 
     public Map<String, Set<T>> getManipulationData(ClassLoader loader) {
         if (loader == null) {
             loader = NULL_CLASS_LOADER;
         }
         Map<String, Set<T>> ret = new HashMap<String, Set<T>>();
-        for (Entry<ClassLoader, Map<String, Set<T>>> centry : cldata.entrySet()) {
+        for (Entry<ClassLoader, ConcurrentMap<String, Set<T>>> centry : cldata.entrySet()) {
             for (Entry<String, Set<T>> e : centry.getValue().entrySet()) {
                 Set<T> set = new HashSet<T>();
                 ret.put(e.getKey(), set);
@@ -67,11 +68,16 @@ public class ManipulationDataStore<T extends ClassLoaderFiltered<T>> {
         if (loader == null) {
             loader = NULL_CLASS_LOADER;
         }
-        Map<String, Set<T>> data = cldata.get(loader);
-        if (!data.containsKey(name)) {
-            data.put(name, new CopyOnWriteArraySet<T>());
+        ConcurrentMap<String, Set<T>> data = cldata.get(loader);
+        Set<T> store = data.get(name);
+        if(store == null) {
+            store = new CopyOnWriteArraySet<T>();
+            Set<T> existing = data.putIfAbsent(name, store);
+            if(existing != null) {
+                store = existing;
+            }
         }
-        data.get(name).add(mdata);
+        store.add(mdata);
     }
 
     /**
@@ -124,7 +130,7 @@ public class ManipulationDataStore<T extends ClassLoaderFiltered<T>> {
         }
     }
 
-    public Map<ClassLoader, Map<String, Set<T>>> getRawData() {
+    public Map<ClassLoader, ConcurrentMap<String, Set<T>>> getRawData() {
         return cldata;
     }
 

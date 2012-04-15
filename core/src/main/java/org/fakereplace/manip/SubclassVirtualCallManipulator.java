@@ -104,7 +104,7 @@ public class SubclassVirtualCallManipulator implements ClassManipulator {
                             count++;
                         }
                         ManipulationUtils.pushParametersIntoArray(run, method.getDescriptor());
-                        run.addInvokestatic("org.fakereplace.runtime.VirtualDelegator", "run", "(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;");
+                        run.addInvokestatic(VirtualDelegator.class.getName(), "run", "(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/Object;");
                         ManipulationUtils.MethodReturnRewriter.addReturnProxyMethod(method.getDescriptor(), run);
 
                         Bytecode cd = new Bytecode(file.getConstPool());
@@ -112,7 +112,7 @@ public class SubclassVirtualCallManipulator implements ClassManipulator {
                         cd.addLdc(file.getName());
                         cd.addLdc(method.getName());
                         cd.addLdc(method.getDescriptor());
-                        cd.addInvokestatic("org.fakereplace.runtime.VirtualDelegator", "contains", "(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z");
+                        cd.addInvokestatic(VirtualDelegator.class.getName(), "contains", "(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z");
                         cd.add(Opcode.IFEQ); // if contains is true
                         ManipulationUtils.add16bit(cd, run.getSize() + 3);
 
