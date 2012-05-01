@@ -108,6 +108,7 @@ public class DefaultEnvironment implements Environment {
     }
 
     public void recordTimestamp(String className, ClassLoader loader) {
+        Logger.trace(this, "Recording timestamp for " + className);
         if (loader == null) {
             return;
         }

@@ -69,6 +69,8 @@ public class JBossAsEnvironment implements Environment {
 
 
     public void recordTimestamp(String className, ClassLoader loader) {
+        Logger.trace(this, "Recording timestamp for " + className);
+
         if (!(loader instanceof ModuleClassLoader)) {
             return;
         }
@@ -94,7 +96,9 @@ public class JBossAsEnvironment implements Environment {
             URLConnection connection = null;
             try {
                 connection = file.openConnection();
-                stamps.put(className, connection.getLastModified());
+                final long lastModified = connection.getLastModified();
+                stamps.put(className, lastModified);
+                Logger.trace(this, "Timestamp for " + className + " is " + lastModified);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -104,6 +108,7 @@ public class JBossAsEnvironment implements Environment {
 
     public Set<Class> getUpdatedClasses(final String deploymentName, Map<String, Long> updatedClasses) {
         Logger.trace(this, "Finding classes for " + deploymentName);
+        Logger.trace(this, "Server time stamps: " + timestamps);
         ServiceController<DeploymentUnit> deploymentService = deploymentService(deploymentName);
         if (deploymentService == null) {
             Logger.log(this, "Could not find deployment " + deploymentName);
