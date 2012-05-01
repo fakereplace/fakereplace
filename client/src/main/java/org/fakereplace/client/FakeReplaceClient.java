@@ -50,6 +50,12 @@ public class FakeReplaceClient {
             readReplacable(input, classNames);
             readReplacable(input, resourceNames);
 
+            if(classNames.isEmpty()) {
+                System.out.println("No updated classes found to replace");
+            } else {
+                System.out.println("Updating " + classNames.size() + " classes");
+            }
+
             output.flush();
             output.writeInt(classNames.size());
             for (String name : classNames) {

@@ -27,6 +27,14 @@ package org.fakereplace.boot;
  */
 public class Logger {
 
+    private static final String TRACE_PROPERTY = "org.fakereplace.trace";
+
+    private static final boolean trace;
+
+    static {
+        trace = Boolean.getBoolean(TRACE_PROPERTY);
+    }
+
     public static void log(Object invoker, String message) {
         Class c = null;
         if (invoker.getClass().isAssignableFrom(Class.class)) {
@@ -35,6 +43,19 @@ public class Logger {
             c = invoker.getClass();
         }
         System.out.println("[" + c.getCanonicalName() + "] " + message);
+    }
+
+    public static void trace(Object invoker, String message) {
+        if(!trace) {
+            return;
+        }
+        Class c = null;
+        if (invoker.getClass().isAssignableFrom(Class.class)) {
+            c = (Class) invoker;
+        } else {
+            c = invoker.getClass();
+        }
+        System.out.println("[" + c.getCanonicalName() + "] TRACE " + message);
     }
 
     public static void debug(Object invoker, String message) {

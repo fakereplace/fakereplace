@@ -32,6 +32,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.fakereplace.boot.Environment;
+import org.fakereplace.boot.Logger;
 import org.jboss.as.server.CurrentServiceContainer;
 import org.jboss.as.server.deployment.Attachments;
 import org.jboss.as.server.deployment.DeploymentUnit;
@@ -103,7 +104,7 @@ public class JBossAsEnvironment implements Environment {
 
     public Set<Class> getUpdatedClasses(final String deploymentName, Map<String, Long> updatedClasses) {
         ServiceController<DeploymentUnit> deploymentService = deploymentService(deploymentName);
-        if(deploymentService == null) {
+        if (deploymentService == null) {
             System.out.println("Could not find deployment " + deploymentName);
             return Collections.emptySet();
         }
@@ -117,14 +118,32 @@ public class JBossAsEnvironment implements Environment {
 
         final Set<Class> ret = new HashSet<Class>();
         for (Map.Entry<String, Long> entry : updatedClasses.entrySet()) {
-            if (timestamps.containsKey(entry.getKey()) && timestamps.get(entry.getKey()) < entry.getValue()) {
-                try {
-                    ret.add(loader.loadClass(entry.getKey()));
-                    timestamps.put(entry.getKey(), entry.getValue());
-                } catch (ClassNotFoundException e) {
-                    System.err.println("Could not load class " + entry);
+            StringBuilder traceString = new StringBuilder();
+            traceString.append("Comparing class ");
+            traceString.append(entry.getKey());
+            traceString.append(" TS: ");
+            traceString.append(entry.getValue());
+
+            if (timestamps.containsKey(entry.getKey())) {
+                traceString.append(" Server TS: ");
+                final Long timestamp = timestamps.get(entry.getKey());
+                traceString.append(timestamp);
+                if (timestamp < entry.getValue()) {
+                    traceString.append(" replacing");
+                    try {
+                        ret.add(loader.loadClass(entry.getKey()));
+                        timestamps.put(entry.getKey(), entry.getValue());
+                    } catch (ClassNotFoundException e) {
+                        System.err.println("Could not load class " + entry);
+                    }
+                } else {
+                    traceString.append(" not replacing");
                 }
+            } else {
+                traceString.append(" Server TS not found");
             }
+
+            Logger.trace(this, traceString.toString());
         }
         return ret;
     }
@@ -132,7 +151,7 @@ public class JBossAsEnvironment implements Environment {
     @Override
     public Set<String> getUpdatedResources(final String deploymentName, final Map<String, Long> updatedResources) {
         ServiceController<DeploymentUnit> deploymentService = deploymentService(deploymentName);
-        if(deploymentService == null) {
+        if (deploymentService == null) {
             return Collections.emptySet();
         }
 
@@ -160,12 +179,12 @@ public class JBossAsEnvironment implements Environment {
 
     private ServiceController<DeploymentUnit> deploymentService(final String deploymentName) {
         ServiceController<DeploymentUnit> deploymentService = (ServiceController<DeploymentUnit>) CurrentServiceContainer.getServiceContainer().getService(Services.deploymentUnitName(deploymentName));
-        if(deploymentService == null) {
+        if (deploymentService == null) {
             //now try for a sub deployment
-            for(final ServiceName serviceName : CurrentServiceContainer.getServiceContainer().getServiceNames()) {
-                if(Services.JBOSS_DEPLOYMENT_SUB_UNIT.isParentOf(serviceName)) {
+            for (final ServiceName serviceName : CurrentServiceContainer.getServiceContainer().getServiceNames()) {
+                if (Services.JBOSS_DEPLOYMENT_SUB_UNIT.isParentOf(serviceName)) {
                     final String[] parts = serviceName.toArray();
-                    if(parts[parts.length - 1].equals(deploymentName)) {
+                    if (parts[parts.length - 1].equals(deploymentName)) {
                         deploymentService = (ServiceController<DeploymentUnit>) CurrentServiceContainer.getServiceContainer().getService(serviceName);
                         break;
                     }
