@@ -51,25 +51,25 @@ import org.fakereplace.classloading.ProxyDefinitionStore;
  */
 public class AnnotationDataStore {
 
-    static Map<Class<?>, Annotation[]> classAnnotations = new ConcurrentHashMap<Class<?>, Annotation[]>();
+    private static Map<Class<?>, Annotation[]> classAnnotations = new ConcurrentHashMap<Class<?>, Annotation[]>();
 
-    static Map<Class<?>, Map<Class<? extends Annotation>, Annotation>> classAnnotationsByType = new ConcurrentHashMap<Class<?>, Map<Class<? extends Annotation>, Annotation>>();
+    private static Map<Class<?>, Map<Class<? extends Annotation>, Annotation>> classAnnotationsByType = new ConcurrentHashMap<Class<?>, Map<Class<? extends Annotation>, Annotation>>();
 
-    static Map<Field, Annotation[]> fieldAnnotations = new ConcurrentHashMap<Field, Annotation[]>();
+    private static Map<Field, Annotation[]> fieldAnnotations = new ConcurrentHashMap<Field, Annotation[]>();
 
-    static Map<Field, Map<Class<? extends Annotation>, Annotation>> fieldAnnotationsByType = new ConcurrentHashMap<Field, Map<Class<? extends Annotation>, Annotation>>();
+    private static Map<Field, Map<Class<? extends Annotation>, Annotation>> fieldAnnotationsByType = new ConcurrentHashMap<Field, Map<Class<? extends Annotation>, Annotation>>();
 
-    static Map<Method, Annotation[]> methodAnnotations = new ConcurrentHashMap<Method, Annotation[]>();
+    private static Map<Method, Annotation[]> methodAnnotations = new ConcurrentHashMap<Method, Annotation[]>();
 
-    static Map<Method, Map<Class<? extends Annotation>, Annotation>> methodAnnotationsByType = new ConcurrentHashMap<Method, Map<Class<? extends Annotation>, Annotation>>();
+    private static Map<Method, Map<Class<? extends Annotation>, Annotation>> methodAnnotationsByType = new ConcurrentHashMap<Method, Map<Class<? extends Annotation>, Annotation>>();
 
-    static Map<Method, Annotation[][]> parameterAnnotations = new ConcurrentHashMap<Method, Annotation[][]>();
+    private static Map<Method, Annotation[][]> parameterAnnotations = new ConcurrentHashMap<Method, Annotation[][]>();
 
-    static Map<Constructor<?>, Annotation[]> constructorAnnotations = new ConcurrentHashMap<Constructor<?>, Annotation[]>();
+    private static Map<Constructor<?>, Annotation[]> constructorAnnotations = new ConcurrentHashMap<Constructor<?>, Annotation[]>();
 
-    static Map<Constructor<?>, Map<Class<? extends Annotation>, Annotation>> constructorAnnotationsByType = new ConcurrentHashMap<Constructor<?>, Map<Class<? extends Annotation>, Annotation>>();
+    private static Map<Constructor<?>, Map<Class<? extends Annotation>, Annotation>> constructorAnnotationsByType = new ConcurrentHashMap<Constructor<?>, Map<Class<? extends Annotation>, Annotation>>();
 
-    static Map<Constructor<?>, Annotation[][]> constructorParameterAnnotations = new ConcurrentHashMap<Constructor<?>, Annotation[][]>();
+    private static Map<Constructor<?>, Annotation[][]> constructorParameterAnnotations = new ConcurrentHashMap<Constructor<?>, Annotation[][]>();
 
     static final String PROXY_METHOD_NAME = "annotationsMethod";
 

@@ -59,7 +59,7 @@ public class AnnotationBuilder {
         }
     }
 
-    static MemberValue createMemberValue(Class<?> type, Object val, ConstPool cp) {
+    private static MemberValue createMemberValue(Class<?> type, Object val, ConstPool cp) {
         if (type == int.class) {
             return new IntegerMemberValue(cp, (Integer) val);
         } else if (type == short.class) {
