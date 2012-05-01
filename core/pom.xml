@@ -37,7 +37,6 @@
     </scm>
 
     <build>
-        <finalName>fakereplace</finalName>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
