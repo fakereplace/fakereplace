@@ -103,15 +103,17 @@ public class JBossAsEnvironment implements Environment {
 
 
     public Set<Class> getUpdatedClasses(final String deploymentName, Map<String, Long> updatedClasses) {
+        Logger.trace(this, "Finding classes for " + deploymentName);
         ServiceController<DeploymentUnit> deploymentService = deploymentService(deploymentName);
         if (deploymentService == null) {
-            System.out.println("Could not find deployment " + deploymentName);
+            Logger.log(this, "Could not find deployment " + deploymentName);
             return Collections.emptySet();
         }
 
         final ModuleIdentifier moduleId = getModuleIdentifier(deploymentService);
         final ModuleClassLoader loader = loadersByModuleIdentifier.get(moduleId);
         if (loader == null) {
+            Logger.log(this, "Could not find module " + moduleId);
             return Collections.emptySet();
         }
         final Map<String, Long> timestamps = this.timestamps.get(loader);
