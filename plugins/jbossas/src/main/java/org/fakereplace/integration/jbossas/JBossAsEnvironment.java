@@ -93,9 +93,8 @@ public class JBossAsEnvironment implements Environment {
         final URL file = loader.getResource(className.replace(".", "/") + ".class");
         className = className.replace("/", ".");
         if (file != null) {
-            URLConnection connection = null;
             try {
-                connection = file.openConnection();
+                final URLConnection connection = file.openConnection();
                 final long lastModified = connection.getLastModified();
                 stamps.put(className, lastModified);
                 Logger.trace(this, "Timestamp for " + className + " is " + lastModified);
@@ -204,6 +203,9 @@ public class JBossAsEnvironment implements Environment {
     @Override
     public void updateResource(final String archiveName, final Map<String, byte[]> replacedResources) {
         ServiceController<DeploymentUnit> deploymentService = deploymentService(archiveName);
+        if(deploymentService == null) {
+            return;
+        }
         final ModuleIdentifier moduleId = getModuleIdentifier(deploymentService);
         final ModuleClassLoader loader = loadersByModuleIdentifier.get(moduleId);
         if (loader == null) {
