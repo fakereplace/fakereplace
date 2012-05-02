@@ -8,6 +8,7 @@ import javassist.bytecode.Bytecode;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.CodeIterator;
 import javassist.bytecode.MethodInfo;
+import org.fakereplace.integration.weld.javassist.WeldProxyClassLoadingDelegate;
 import org.fakereplace.manip.MethodInvokationManipulator;
 import org.fakereplace.transformation.FakereplaceTransformer;
 

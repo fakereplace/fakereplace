@@ -1,4 +1,4 @@
-package org.fakereplace.integration.weld;
+package org.fakereplace.integration.weld.javassist;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;

@@ -30,6 +30,7 @@ import javax.enterprise.inject.spi.Bean;
 
 import org.fakereplace.api.ClassChangeAware;
 import org.fakereplace.classloading.ClassIdentifier;
+import org.fakereplace.integration.weld.javassist.WeldProxyClassLoadingDelegate;
 import org.jboss.weld.bean.proxy.ProxyFactory;
 
 public class ClassRedefinitionPlugin implements ClassChangeAware {
