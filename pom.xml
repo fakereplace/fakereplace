@@ -40,6 +40,13 @@
         <jboss-ejb-api_3.1_spec.version>1.0.1.Final</jboss-ejb-api_3.1_spec.version>
         <httpclient.version>4.1.3</httpclient.version>
         <checkstyle.plugin.version>2.5</checkstyle.plugin.version>
+
+
+        <!-- ***************** -->
+        <!-- Repository Deployment URLs -->
+        <!-- ***************** -->
+        <jboss.releases.repo.url>https://repository.jboss.org/nexus/service/local/staging/deploy/maven2/</jboss.releases.repo.url>
+        <jboss.snapshots.repo.url>https://repository.jboss.org/nexus/content/repositories/snapshots/</jboss.snapshots.repo.url>
     </properties>
 
 
@@ -324,5 +331,19 @@
             </plugin>
         </plugins>
     </build>
+
+
+    <distributionManagement>
+        <repository>
+            <id>jboss-releases-repository</id>
+            <name>JBoss Releases Repository</name>
+            <url>${jboss.releases.repo.url}</url>
+        </repository>
+        <snapshotRepository>
+            <id>jboss-snapshots-repository</id>
+            <name>JBoss Snapshots Repository</name>
+            <url>${jboss.snapshots.repo.url}</url>
+        </snapshotRepository>
+    </distributionManagement>
 
 </project>
