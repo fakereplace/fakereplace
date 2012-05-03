@@ -31,13 +31,17 @@ import javassist.bytecode.ClassFile;
 import javassist.bytecode.CodeIterator;
 import javassist.bytecode.MethodInfo;
 import org.fakereplace.integration.weld.javassist.WeldProxyClassLoadingDelegate;
+import org.fakereplace.logging.Logger;
 import org.fakereplace.manip.MethodInvokationManipulator;
 import org.fakereplace.transformation.FakereplaceTransformer;
+import org.fakereplace.util.DescriptorUtils;
 
 /**
  * @author Stuart Douglas
  */
 public class WeldClassTransformer implements FakereplaceTransformer {
+
+    private static final Logger log = Logger.getLogger(WeldClassTransformer.class);
 
     @Override
     public boolean transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, ClassFile file) throws IllegalClassFormatException {
@@ -54,11 +58,30 @@ public class WeldClassTransformer implements FakereplaceTransformer {
                     methodInvokationManipulator.transformClass(file, loader, true);
                     return true;
                 } else if (method.getName().equals("<init>")) {
+
+                    Integer beanArgument = null;
+                    int count = 0;
+                    for(final String paramType  : DescriptorUtils.descriptorStringToParameterArray(method.getDescriptor())) {
+                        if(paramType.equals("javax/enterprise/inject/spi/Bean")) {
+                            beanArgument = count;
+                            break;
+                        } else if(paramType.equals("D") || paramType.equals("J")) {
+                            count += 2;
+                        } else {
+                            count++;
+                        }
+                    }
+                    if(beanArgument == null) {
+                        log.error("Constructor org.jboss.weld.bean.proxy.ProxyFactory.<init>" + method.getDescriptor() + " does not have a bean parameter, proxies produced by this factory will not be reloadable");
+                        continue;
+                    }
+
                     //similar to other tracked instances
                     //but we need a strong ref
                     Bytecode code = new Bytecode(file.getConstPool());
                     code.addAload(0);
-                    code.addInvokestatic(ClassRedefinitionPlugin.class.getName(), "addProxyFactory", "(Lorg/jboss/weld/bean/proxy/ProxyFactory;)V");
+                    code.addAload(beanArgument);
+                    code.addInvokestatic(WeldClassChangeAware.class.getName(), "addProxyFactory", "(Lorg/jboss/weld/bean/proxy/ProxyFactory;)V");
                     CodeIterator it = method.getCodeAttribute().iterator();
                     try {
                         it.skipConstructor();

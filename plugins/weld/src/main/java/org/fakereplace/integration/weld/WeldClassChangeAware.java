@@ -25,22 +25,25 @@ package org.fakereplace.integration.weld;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.enterprise.inject.spi.Bean;
 
 import org.fakereplace.api.ClassChangeAware;
 import org.fakereplace.classloading.ClassIdentifier;
+import org.fakereplace.com.google.common.collect.MapMaker;
 import org.fakereplace.integration.weld.javassist.WeldProxyClassLoadingDelegate;
 import org.jboss.weld.bean.proxy.ProxyFactory;
 
-public class ClassRedefinitionPlugin implements ClassChangeAware {
+public class WeldClassChangeAware implements ClassChangeAware {
 
     private static final Field beanField;
 
-    private static final List<ProxyFactory<?>> proxyFactories = new CopyOnWriteArrayList<ProxyFactory<?>>();
+    /**
+     * proxy factories, key by by a weak reference to their bean object to prevent a memory leak.
+     */
+    private static final Map<Object, ProxyFactory<?>> proxyFactories = new MapMaker().weakKeys().makeMap();
 
     static {
         try {
@@ -63,9 +66,8 @@ public class ClassRedefinitionPlugin implements ClassChangeAware {
         try {
             final Set<Class<?>> changedClasses = new HashSet<Class<?>>(Arrays.asList(changed));
 
-
             //Hack to re-generate the weld client proxies
-            for (final ProxyFactory instance : proxyFactories) {
+            for (final ProxyFactory instance : proxyFactories.values()) {
                 try {
                     final Bean<?> bean = (Bean<?>) beanField.get(instance);
                     for(final Class<?> clazz: changedClasses) {
@@ -84,7 +86,7 @@ public class ClassRedefinitionPlugin implements ClassChangeAware {
         }
     }
 
-    public static void addProxyFactory(final ProxyFactory<?> factory) {
-        proxyFactories.add(factory);
+    public static void addProxyFactory(final ProxyFactory<?> factory, final Object bean) {
+        proxyFactories.put(bean, factory);
     }
 }

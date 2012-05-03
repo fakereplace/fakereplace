@@ -33,7 +33,7 @@ import org.fakereplace.transformation.FakereplaceTransformer;
 public class WeldExtension implements Extension {
 
     public String getClassChangeAwareName() {
-        return ClassRedefinitionPlugin.class.getName();
+        return WeldClassChangeAware.class.getName();
     }
 
     public Set<String> getIntegrationTriggerClassNames() {

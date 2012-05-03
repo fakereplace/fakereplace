@@ -26,7 +26,9 @@ import org.fakereplace.classloading.ClassIdentifier;
 
 /**
  * interface that should be implemented by classes that with to be notified of
- * class changes
+ * class changes.
+ *
+ * The classes that implement this interface are loaded into the
  *
  * @author stuart
  */
