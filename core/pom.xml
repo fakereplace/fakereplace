@@ -74,7 +74,7 @@
                 <configuration>
                     <archive>
                         <manifestEntries>
-                            <Premain-Class>org.fakereplace.Agent</Premain-Class>
+                            <Premain-Class>org.fakereplace.TestAgent</Premain-Class>
                             <Can-Redefine-Classes>true</Can-Redefine-Classes>
                             <Can-Retransform-Classes>true</Can-Retransform-Classes>
                             <Boot-Class-Path>${project.build.finalName}.jar</Boot-Class-Path>
@@ -106,7 +106,7 @@
                                 <include>**/*.java</include>
                             </includes>
                             <forkMode>once</forkMode>
-                            <argLine>-javaagent:${project.build.directory}/${project.build.finalName}.jar=index-file=${project.build.directory}/fakereplace.index,packages=org.fakereplace.test </argLine>
+                            <argLine>-javaagent:${project.build.directory}/${project.build.finalName}.jar=index-file=${project.build.directory}/fakereplace.index,packages=org.fakereplace.test,testRun </argLine>
                         </configuration>
                     </execution>
                 </executions>
