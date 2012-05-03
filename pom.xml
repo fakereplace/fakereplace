@@ -50,6 +50,21 @@
 
     <name>Fakereplace Parent</name>
 
+
+    <licenses>
+        <license>
+            <name>lgpl</name>
+            <url>http://repository.jboss.org/licenses/lgpl-2.1.txt</url>
+        </license>
+
+        <license>
+            <name>Apache 2.0</name>
+            <comments>All code in the org.fakereplace.com.google package</comments>
+            <url>http://repository.jboss.org/licenses/apache-2.0.txt</url>
+        </license>
+    </licenses>
+
+
     <modules>
         <module>build-config</module>
         <module>core</module>
