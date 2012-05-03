@@ -27,34 +27,26 @@
     <includeBaseDirectory>false</includeBaseDirectory>
 
     <fileSets>
-
         <fileSet>
-            <directory>.</directory>
-            <outputDirectory>fakereplace</outputDirectory>
+            <directory>${project.basedir}</directory>
+            <outputDirectory>/fakereplace-${project.version}</outputDirectory>
             <includes>
-                <include>readme.txt</include>
-                <include>lgpl.txt</include>
-            </includes>
-        </fileSet>
-
-        <fileSet>
-            <directory>core/src/main/java</directory>
-            <outputDirectory>fakereplace/source</outputDirectory>
-            <includes>
-                <include>**</include>
+                <include>lgpl*</include>
+                <include>readme*</include>
             </includes>
         </fileSet>
 
     </fileSets>
 
     <moduleSets>
+
         <moduleSet>
             <includes>
-                <include>org.fakereplace:fakereplace-bundle:jar</include>
+                <include>org.fakereplace:fakereplace-dist:jar</include>
             </includes>
             <binaries>
-                <outputFileNameMapping>fakereplace.${module.extension}</outputFileNameMapping>
-                <outputDirectory>fakereplace</outputDirectory>
+                <outputFileNameMapping>fakereplace.jar</outputFileNameMapping>
+                <outputDirectory>/fakereplace-${project.version}</outputDirectory>
                 <unpack>false</unpack>
             </binaries>
         </moduleSet>
