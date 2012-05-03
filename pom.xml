@@ -31,7 +31,7 @@
     <properties>
         <arquillian.version>1.0.0.CR7</arquillian.version>
         <arquillian.weld-se.version>1.0.0.CR3</arquillian.weld-se.version>
-        <fakereplace.version>0.10-SNAPSHOT</fakereplace.version>
+        <fakereplace.version>1.0.0.Alpha1</fakereplace.version>
         <javassist.version>3.15.0-GA</javassist.version>
         <jbossas.version>7.1.1.Final</jbossas.version>
         <jsf-api.version>1.2_13</jsf-api.version>
@@ -51,7 +51,7 @@
     <groupId>org.fakereplace</groupId>
     <artifactId>fakereplace-parent</artifactId>
     <packaging>pom</packaging>
-    <version>0.10-SNAPSHOT</version>
+    <version>1.0.0.Alpha1</version>
 
     <name>Fakereplace Parent</name>
 

@@ -32,7 +32,7 @@
 
     <groupId>org.fakereplace</groupId>
     <artifactId>fakereplace-build-config</artifactId>
-    <version>0.10-SNAPSHOT</version>
+    <version>1.0.0.Alpha1</version>
     <name>Fakereplace: Build Configuration</name>
 
 </project>

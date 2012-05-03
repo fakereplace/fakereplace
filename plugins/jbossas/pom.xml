@@ -25,14 +25,14 @@
     <parent>
         <artifactId>fakereplace-plugins-parent</artifactId>
         <groupId>org.fakereplace</groupId>
-        <version>0.10-SNAPSHOT</version>
+        <version>1.0.0.Alpha1</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <groupId>org.fakereplace</groupId>
     <artifactId>fakereplace-jbossas</artifactId>
     <name>Fakereplace JBoss Application Server Integration</name>
-    <version>0.10-SNAPSHOT</version>
+    <version>1.0.0.Alpha1</version>
 
     <dependencies>
 
