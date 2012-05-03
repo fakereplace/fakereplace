@@ -64,12 +64,6 @@ public class JBossAsEnvironment implements Environment {
         return false;
     }
 
-    @Override
-    public String getDumpDirectory() {
-        return null;
-    }
-
-
     public void recordTimestamp(String className, ClassLoader loader) {
         log.trace("Recording timestamp for " + className);
 

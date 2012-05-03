@@ -22,7 +22,6 @@
 
 package org.fakereplace.boot;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -32,6 +31,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.fakereplace.AgentOption;
+import org.fakereplace.AgentOptions;
 import org.fakereplace.logging.Logger;
 
 /**
@@ -43,8 +44,6 @@ public class DefaultEnvironment implements Environment {
 
     private static final Logger log = Logger.getLogger(DefaultEnvironment.class);
 
-    protected static final String dumpDirectory;
-
     protected static final String[] replaceablePackages;
 
     protected static volatile Environment environment = new DefaultEnvironment();
@@ -53,24 +52,11 @@ public class DefaultEnvironment implements Environment {
     private final Map<String, ClassLoader> loaders = new ConcurrentHashMap<String, ClassLoader>();
 
     static {
-        String dump = System.getProperty(Constants.DUMP_DIRECTORY_KEY);
-        if (dump != null) {
-            File f = new File(dump);
-            if (!f.exists()) {
-                log.error("dump directory  " + dump + " does not exist ");
-                dumpDirectory = null;
-            } else {
-                dumpDirectory = dump;
-                log.info("dumping class definitions to " + dump);
-            }
-        } else {
-            dumpDirectory = null;
-        }
-        String plist = System.getProperty(Constants.REPLACEABLE_PACKAGES_KEY);
+        String plist = AgentOptions.getOption(AgentOption.PACKAGES);
         if (plist == null || plist.length() == 0) {
             replaceablePackages = new String[0];
         } else {
-            replaceablePackages = plist.split(",");
+            replaceablePackages = plist.split(";");
         }
     }
 
@@ -93,12 +79,6 @@ public class DefaultEnvironment implements Environment {
             }
         }
         return false;
-    }
-
-
-    @Override
-    public String getDumpDirectory() {
-        return dumpDirectory;
     }
 
     /**

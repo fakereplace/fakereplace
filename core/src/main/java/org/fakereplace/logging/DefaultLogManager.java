@@ -25,6 +25,7 @@ package org.fakereplace.logging;
 import java.util.Arrays;
 import java.util.Locale;
 
+import org.fakereplace.AgentOption;
 import org.fakereplace.AgentOptions;
 
 /**
@@ -37,7 +38,7 @@ class DefaultLogManager implements LogManager {
     private final Level level;
 
     DefaultLogManager() {
-        final String levelString = AgentOptions.getOptions().get("log");
+        final String levelString = AgentOptions.getOption(AgentOption.LOG);
         Level level = Level.INFO;
         if(levelString != null) {
             try {

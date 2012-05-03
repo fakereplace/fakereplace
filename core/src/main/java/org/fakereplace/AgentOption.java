@@ -19,23 +19,28 @@
  *  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-package org.fakereplace.boot;
 
-import java.util.Map;
-import java.util.Set;
+package org.fakereplace;
 
 /**
+ * Options that can be passed to the javaagent
+ *
  * @author Stuart Douglas
  */
-public interface Environment {
+public enum AgentOption {
+    INDEX_FILE("index-file"),
+    DUMP_DIR("dump-dir"),
+    PACKAGES("packages"),
+    LOG("log"),
+    ;
 
-    boolean isClassReplaceable(final String className, final ClassLoader loader);
+    private final String key;
 
-    void recordTimestamp(final String className, final ClassLoader loader);
+    private AgentOption(final String key) {
+        this.key = key;
+    }
 
-    Set<Class> getUpdatedClasses(final String deploymentName, final Map<String, Long> updatedClasses);
-
-    Set<String> getUpdatedResources(final String deploymentName, final Map<String, Long> updatedResources);
-
-    void updateResource(final String archiveName, Map<String, byte[]> replacedResources);
+    public String getKey() {
+        return key;
+    }
 }

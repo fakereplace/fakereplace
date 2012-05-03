@@ -56,10 +56,14 @@ public class AgentOptions {
         instance = new AgentOptions(map);
     }
 
-    public static Map<String, String> getOptions() {
+    public static boolean set(AgentOption option) {
+        return instance.options.containsKey(option.getKey());
+    }
+
+    public static String getOption(AgentOption option) {
         if (instance == null) {
             throw new IllegalStateException("setup() not called");
         }
-        return instance.options;
+        return instance.options.get(option.getKey());
     }
 }

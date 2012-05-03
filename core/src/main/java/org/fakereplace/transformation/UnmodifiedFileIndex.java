@@ -36,6 +36,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.fakereplace.AgentOption;
+import org.fakereplace.AgentOptions;
+
 /**
  * Class that tracks unmodified files that can be ignored on future boots. This provides a big speed improvement,
  * as it means that only classes that actually have to be modified are parsed by javassist.
@@ -45,8 +48,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class UnmodifiedFileIndex {
 
     public static String VERSION = "1.0";
-
-    private static final String FILE_PROPERTY = "org.fakereplace.index";
 
     private static final String FILENAME = "fakereplace.index";
 
@@ -117,7 +118,7 @@ public class UnmodifiedFileIndex {
     }
 
     private static File getFile() {
-        final String fileProp = System.getProperty(FILE_PROPERTY);
+        final String fileProp = AgentOptions.getOption(AgentOption.INDEX_FILE);
         if(fileProp != null) {
             return new File(fileProp);
         }

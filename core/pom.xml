@@ -106,7 +106,7 @@
                                 <include>**/*.java</include>
                             </includes>
                             <forkMode>once</forkMode>
-                            <argLine>-javaagent:${project.build.directory}/${project.build.finalName}.jar -Dorg.fakereplace.packages=org.fakereplace.test -Dorg.fakereplace.dump=/tmp -Dorg.fakereplace.index=${project.build.directory}/fakereplace.index</argLine>
+                            <argLine>-javaagent:${project.build.directory}/${project.build.finalName}.jar=index-file=${project.build.directory}/fakereplace.index,packages=org.fakereplace.test </argLine>
                         </configuration>
                     </execution>
                 </executions>

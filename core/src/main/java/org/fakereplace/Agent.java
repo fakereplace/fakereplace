@@ -24,7 +24,6 @@ package org.fakereplace;
 
 import java.beans.Introspector;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.FileOutputStream;
@@ -38,17 +37,16 @@ import java.util.Set;
 import javassist.bytecode.ClassFile;
 import org.fakereplace.api.ClassChangeNotifier;
 import org.fakereplace.api.Extension;
-import org.fakereplace.boot.DefaultEnvironment;
 import org.fakereplace.classloading.ClassIdentifier;
 import org.fakereplace.classloading.ClassLookupManager;
 import org.fakereplace.data.ClassDataStore;
-import org.fakereplace.transformation.UnmodifiedFileIndex;
 import org.fakereplace.replacement.AddedClass;
 import org.fakereplace.replacement.ClassRedefiner;
 import org.fakereplace.replacement.ReplacementResult;
 import org.fakereplace.server.FakereplaceServer;
 import org.fakereplace.transformation.ClassLoaderTransformer;
 import org.fakereplace.transformation.MainTransformer;
+import org.fakereplace.transformation.UnmodifiedFileIndex;
 
 /**
  * The agent entry point.
@@ -62,6 +60,7 @@ public class Agent {
     private static volatile Instrumentation inst;
 
     private static volatile MainTransformer mainTransformer;
+    public static final String DUMP_CLASSES = "dump-classes";
 
     public static void premain(java.lang.String s, java.lang.instrument.Instrumentation i) {
 
@@ -70,7 +69,7 @@ public class Agent {
 
         final Set<Extension> extension = IntegrationLoader.getIntegrationInfo(ClassLoader.getSystemClassLoader());
 
-        for(final Extension info : extension) {
+        for (final Extension info : extension) {
 
         }
 
@@ -142,25 +141,18 @@ public class Agent {
                     try {
                         ByteArrayInputStream bin = new ByteArrayInputStream(d.getDefinitionClassFile());
                         DataInputStream dis = new DataInputStream(bin);
-                        ClassFile file = new ClassFile(dis);
-
+                        final ClassFile file = new ClassFile(dis);
                         Transformer.getManipulator().transformClass(file, d.getDefinitionClass().getClassLoader(), true);
-                        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                        DataOutputStream dos = new DataOutputStream(bos);
-                        file.write(dos);
-                        dos.close();
-
-                        String dumpDir = DefaultEnvironment.getEnvironment().getDumpDirectory();
-                        if (dumpDir == null) {
-                            dumpDir = "/tmp";
+                        String dumpDir = AgentOptions.getOption(AgentOption.DUMP_DIR);
+                        if (dumpDir != null) {
+                            FileOutputStream s = new FileOutputStream(dumpDir + '/' + d.getDefinitionClass().getName() + "1.class");
+                            DataOutputStream dos = new DataOutputStream(s);
+                            file.write(dos);
+                            dos.flush();
+                            dos.close();
+                            // s.write(d.getDefinitionClassFile());
+                            s.close();
                         }
-                        FileOutputStream s = new FileOutputStream(dumpDir + '/' + d.getDefinitionClass().getName() + "1.class");
-                        dos = new DataOutputStream(s);
-                        file.write(dos);
-                        dos.flush();
-                        dos.close();
-                        // s.write(d.getDefinitionClassFile());
-                        s.close();
                     } catch (IOException a) {
                         a.printStackTrace();
                     }

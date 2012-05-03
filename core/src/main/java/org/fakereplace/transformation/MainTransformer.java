@@ -38,10 +38,11 @@ import java.util.Map;
 import java.util.Set;
 
 import javassist.bytecode.ClassFile;
+import org.fakereplace.AgentOption;
+import org.fakereplace.AgentOptions;
 import org.fakereplace.api.ClassChangeAware;
 import org.fakereplace.api.ClassChangeNotifier;
 import org.fakereplace.api.Extension;
-import org.fakereplace.boot.DefaultEnvironment;
 import org.fakereplace.com.google.common.collect.MapMaker;
 
 /**
@@ -105,8 +106,9 @@ public class MainTransformer implements ClassFileTransformer {
                 ByteArrayOutputStream bs = new ByteArrayOutputStream();
                 file.write(new DataOutputStream(bs));
                 // dump the class for debugging purposes
-                if (DefaultEnvironment.getEnvironment().getDumpDirectory() != null && classBeingRedefined != null) {
-                    FileOutputStream s = new FileOutputStream(DefaultEnvironment.getEnvironment().getDumpDirectory() + '/' + file.getName() + ".class");
+                final String dumpDir = AgentOptions.getOption(AgentOption.DUMP_DIR);
+                if (dumpDir != null && classBeingRedefined != null) {
+                    FileOutputStream s = new FileOutputStream(dumpDir + '/' + file.getName() + ".class");
                     DataOutputStream dos = new DataOutputStream(s);
                     file.write(dos);
                     s.close();

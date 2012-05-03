@@ -22,8 +22,6 @@
 
 package org.fakereplace;
 
-import java.io.DataOutputStream;
-import java.io.FileOutputStream;
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
 import java.util.HashSet;
@@ -64,7 +62,6 @@ import org.fakereplace.util.NoInstrument;
 public class Transformer implements FakereplaceTransformer {
 
     private static final Manipulator manipulator = new Manipulator();
-
 
     private final Set<String> trackedInstances = new HashSet<String>();
 
@@ -142,14 +139,6 @@ public class Transformer implements FakereplaceTransformer {
 
                 BaseClassData baseData = new BaseClassData(file, loader, replaceable);
                 ClassDataStore.instance().saveClassData(loader, baseData.getInternalName(), baseData);
-
-                // dump the class for debugging purposes
-                if (DefaultEnvironment.getEnvironment().getDumpDirectory() != null) {
-                    FileOutputStream s = new FileOutputStream(DefaultEnvironment.getEnvironment().getDumpDirectory() + '/' + file.getName() + ".class");
-                    DataOutputStream dos = new DataOutputStream(s);
-                    file.write(dos);
-                    s.close();
-                }
             }
             // SerialVersionUIDChecker.testReflectionInfo(loader, file.getName(),
             // file.getSuperclass(), classfileBuffer);
