@@ -56,25 +56,25 @@ Performing a hot deployment
 To actually perform a hot deployment add the following to your projects
 pom.xml:
 
-`
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.fakereplace</groupId>
-        <artifactId>fakereplace-plugin</artifactId>
-        <version>1.0.0.Alpha1</version>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>fakereplace</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
-`
+
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.fakereplace</groupId>
+            <artifactId>fakereplace-plugin</artifactId>
+            <version>1.0.0.Alpha1</version>
+            <executions>
+              <execution>
+                <phase>package</phase>
+                <goals>
+                  <goal>fakereplace</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+
 
 You will need the [JBoss Maven Repository](https://community.jboss.org/wiki/MavenGettingStarted-Users) in your pom.xml
 or settings.xml.
