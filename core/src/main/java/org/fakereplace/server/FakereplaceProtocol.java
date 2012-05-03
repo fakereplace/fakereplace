@@ -34,7 +34,7 @@ import java.util.Set;
 
 import org.fakereplace.Agent;
 import org.fakereplace.boot.DefaultEnvironment;
-import org.fakereplace.boot.Logger;
+import org.fakereplace.logging.Logger;
 import org.fakereplace.replacement.AddedClass;
 
 /**
@@ -68,10 +68,12 @@ import org.fakereplace.replacement.AddedClass;
  */
 public class FakereplaceProtocol {
 
+    private static final Logger log = Logger.getLogger(FakereplaceProtocol.class);
+
     public static void run(Socket socket) {
         DataOutputStream output = null;
         try {
-            Logger.trace(FakereplaceProtocol.class, "Fakereplace update is running");
+            log.trace("Fakereplace update is running");
             final DataInputStream input = new DataInputStream(socket.getInputStream());
             output = new DataOutputStream(socket.getOutputStream());
             final Map<String, Long> classes = new HashMap<String, Long>();
@@ -86,7 +88,7 @@ public class FakereplaceProtocol {
             readAvailable(input, classes);
             readAvailable(input, resources);
 
-            Logger.log(FakereplaceProtocol.class, "Fakereplace is checking for updates classes. Client sent " + classes.size() + "classes");
+            log.info("Fakereplace is checking for updates classes. Client sent " + classes.size() + "classes");
 
 
             final Set<Class> classesToReplace = DefaultEnvironment.getEnvironment().getUpdatedClasses(archiveName, classes);

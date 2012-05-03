@@ -34,14 +34,16 @@ import javassist.bytecode.ConstPool;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.Opcode;
 import org.fakereplace.boot.Constants;
-import org.fakereplace.boot.Logger;
+import org.fakereplace.logging.Logger;
 import org.fakereplace.manip.data.ConstructorRewriteData;
 import org.fakereplace.manip.util.ManipulationDataStore;
 import org.fakereplace.manip.util.ManipulationUtils;
 
 public class ConstructorInvocationManipulator implements ClassManipulator {
 
-    ManipulationDataStore<ConstructorRewriteData> data = new ManipulationDataStore<ConstructorRewriteData>();
+    private static final Logger log = Logger.getLogger(ConstructorInvocationManipulator.class);
+
+    private final ManipulationDataStore<ConstructorRewriteData> data = new ManipulationDataStore<ConstructorRewriteData>();
 
     public synchronized void clearRewrites(String className, ClassLoader loader) {
         data.remove(className, loader);
@@ -145,8 +147,7 @@ public class ConstructorInvocationManipulator implements ClassManipulator {
                     }
                     m.getCodeAttribute().computeMaxStack();
                 } catch (Exception e) {
-                    Logger.log(this, "Bad byte code transforming " + file.getName());
-                    e.printStackTrace();
+                    log.error("Bad byte code transforming " + file.getName(), e);
                 }
             }
             return true;

@@ -26,10 +26,10 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.fakereplace.api.IntegrationInfo;
+import org.fakereplace.api.Extension;
 import org.fakereplace.transformation.FakereplaceTransformer;
 
-public class MetawidgetIntegrationInfo implements IntegrationInfo {
+public class MetawidgetExtension implements Extension {
 
     public static final String BASE_PROPERTY_STYLE = "org.metawidget.inspector.impl.propertystyle.BasePropertyStyle";
     public static final String BASE_ACTION_STYLE = "org.metawidget.inspector.impl.actionstyle.BaseActionStyle";

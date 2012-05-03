@@ -41,7 +41,7 @@ import javassist.bytecode.CodeIterator;
 import javassist.bytecode.DuplicateMemberException;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.Opcode;
-import org.fakereplace.api.IntegrationInfo;
+import org.fakereplace.api.Extension;
 import org.fakereplace.boot.Constants;
 import org.fakereplace.boot.DefaultEnvironment;
 import org.fakereplace.data.BaseClassData;
@@ -70,9 +70,9 @@ public class Transformer implements FakereplaceTransformer {
 
     private final List<FakereplaceTransformer> integrationTransformers = new CopyOnWriteArrayList<FakereplaceTransformer>();
 
-    Transformer(Set<IntegrationInfo> integrationInfo) {
+    Transformer(Set<Extension> extension) {
         ReflectionInstrumentationSetup.setup(manipulator);
-        for (IntegrationInfo i : integrationInfo) {
+        for (Extension i : extension) {
             trackedInstances.addAll(i.getTrackedInstanceClassNames());
             FakereplaceTransformer t = i.getTransformer();
             if (t != null) {

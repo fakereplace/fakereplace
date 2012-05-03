@@ -32,7 +32,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.fakereplace.boot.Environment;
-import org.fakereplace.boot.Logger;
+import org.fakereplace.logging.Logger;
 import org.jboss.as.server.CurrentServiceContainer;
 import org.jboss.as.server.deployment.Attachments;
 import org.jboss.as.server.deployment.DeploymentUnit;
@@ -52,6 +52,8 @@ public class JBossAsEnvironment implements Environment {
     private final Map<ModuleIdentifier, ModuleClassLoader> loadersByModuleIdentifier = new ConcurrentHashMap<ModuleIdentifier, ModuleClassLoader>();
     private final Map<ModuleClassLoader, Map<String, Long>> timestamps = new ConcurrentHashMap<ModuleClassLoader, Map<String, Long>>();
 
+    private final Logger log = Logger.getLogger(JBossAsEnvironment.class);
+
     @Override
     public boolean isClassReplaceable(final String className, final ClassLoader loader) {
         if (loader instanceof ModuleClassLoader) {
@@ -69,7 +71,7 @@ public class JBossAsEnvironment implements Environment {
 
 
     public void recordTimestamp(String className, ClassLoader loader) {
-        Logger.trace(this, "Recording timestamp for " + className);
+        log.trace("Recording timestamp for " + className);
 
         if (!(loader instanceof ModuleClassLoader)) {
             return;
@@ -97,7 +99,7 @@ public class JBossAsEnvironment implements Environment {
                 final URLConnection connection = file.openConnection();
                 final long lastModified = connection.getLastModified();
                 stamps.put(className, lastModified);
-                Logger.trace(this, "Timestamp for " + className + " is " + lastModified);
+                log.trace("Timestamp for " + className + " is " + lastModified);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -106,18 +108,18 @@ public class JBossAsEnvironment implements Environment {
 
 
     public Set<Class> getUpdatedClasses(final String deploymentName, Map<String, Long> updatedClasses) {
-        Logger.trace(this, "Finding classes for " + deploymentName);
-        Logger.trace(this, "Server time stamps: " + timestamps);
+        log.info("Finding classes for " + deploymentName);
+        log.trace("Server time stamps: " + timestamps);
         ServiceController<DeploymentUnit> deploymentService = deploymentService(deploymentName);
         if (deploymentService == null) {
-            Logger.log(this, "Could not find deployment " + deploymentName);
+            log.error("Could not find deployment " + deploymentName);
             return Collections.emptySet();
         }
 
         final ModuleIdentifier moduleId = getModuleIdentifier(deploymentService);
         final ModuleClassLoader loader = loadersByModuleIdentifier.get(moduleId);
         if (loader == null) {
-            Logger.log(this, "Could not find module " + moduleId);
+            log.error("Could not find module " + moduleId);
             return Collections.emptySet();
         }
         final Map<String, Long> timestamps = this.timestamps.get(loader);
@@ -149,7 +151,7 @@ public class JBossAsEnvironment implements Environment {
                 traceString.append(" Server TS not found");
             }
 
-            Logger.trace(this, traceString.toString());
+            log.trace(traceString.toString());
         }
         return ret;
     }

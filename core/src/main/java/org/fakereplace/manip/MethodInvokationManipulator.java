@@ -31,12 +31,15 @@ import javassist.bytecode.ClassFile;
 import javassist.bytecode.CodeIterator;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.MethodInfo;
-import org.fakereplace.boot.Logger;
+import org.fakereplace.logging.Logger;
 import org.fakereplace.manip.data.VirtualToStaticData;
 import org.fakereplace.manip.util.ManipulationDataStore;
 
 public class MethodInvokationManipulator implements ClassManipulator {
-    ManipulationDataStore<VirtualToStaticData> data = new ManipulationDataStore<VirtualToStaticData>();
+
+    private final ManipulationDataStore<VirtualToStaticData> data = new ManipulationDataStore<VirtualToStaticData>();
+
+    private final Logger log = Logger.getLogger(MethodInvokationManipulator.class);
 
     public void clearRewrites(String className, ClassLoader loader) {
         data.remove(className, loader);
@@ -156,7 +159,7 @@ public class MethodInvokationManipulator implements ClassManipulator {
                     }
                     m.getCodeAttribute().computeMaxStack();
                 } catch (Exception e) {
-                    Logger.log(this, "Bad byte code transforming " + file.getName());
+                    log.error("Bad byte code transforming " + file.getName(), e);
                     e.printStackTrace();
                 }
             }

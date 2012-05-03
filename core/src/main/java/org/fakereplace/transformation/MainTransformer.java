@@ -40,7 +40,7 @@ import java.util.Set;
 import javassist.bytecode.ClassFile;
 import org.fakereplace.api.ClassChangeAware;
 import org.fakereplace.api.ClassChangeNotifier;
-import org.fakereplace.api.IntegrationInfo;
+import org.fakereplace.api.Extension;
 import org.fakereplace.boot.DefaultEnvironment;
 import org.fakereplace.com.google.common.collect.MapMaker;
 
@@ -51,13 +51,13 @@ public class MainTransformer implements ClassFileTransformer {
 
     private volatile FakereplaceTransformer[] transformers = {};
 
-    private final Map<String, IntegrationInfo> integrationClassTriggers;
+    private final Map<String, Extension> integrationClassTriggers;
 
     private static final Set<ClassLoader> integrationClassloader = Collections.newSetFromMap(new MapMaker().weakKeys().<ClassLoader, Boolean>makeMap());
 
-    public MainTransformer(Set<IntegrationInfo> integrationInfo) {
-        Map<String, IntegrationInfo> integrationClassTriggers = new HashMap<String, IntegrationInfo>();
-        for (IntegrationInfo i : integrationInfo) {
+    public MainTransformer(Set<Extension> extension) {
+        Map<String, Extension> integrationClassTriggers = new HashMap<String, Extension>();
+        for (Extension i : extension) {
             for (String j : i.getIntegrationTriggerClassNames()) {
                 integrationClassTriggers.put(j.replace(".", "/"), i);
             }

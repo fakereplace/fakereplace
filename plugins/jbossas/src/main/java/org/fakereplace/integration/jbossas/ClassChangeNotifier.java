@@ -29,12 +29,14 @@ import org.fakereplace.api.ClassChangeAware;
 import org.fakereplace.boot.DefaultEnvironment;
 import org.fakereplace.classloading.ClassIdentifier;
 import org.fakereplace.data.InstanceTracker;
+import org.fakereplace.logging.Logger;
 
 /**
  * @author Stuart Douglas
  */
 public class ClassChangeNotifier implements ClassChangeAware {
 
+    private static final Logger log = Logger.getLogger(ClassChangeNotifier.class);
 
     public ClassChangeNotifier() {
         DefaultEnvironment.setEnvironment(new JBossAsEnvironment());
@@ -49,7 +51,7 @@ public class ClassChangeNotifier implements ClassChangeAware {
     }
 
     private void clearJSRResourceCache() {
-        final Set<?> caches = InstanceTracker.get(JbossasIntegrationInfo.RESOURCE_CACHE_CLASS);
+        final Set<?> caches = InstanceTracker.get(JbossasExtension.RESOURCE_CACHE_CLASS);
         for(Object cache : caches) {
             try {
                 Field field = cache.getClass().getDeclaredField("cache");
@@ -57,7 +59,7 @@ public class ClassChangeNotifier implements ClassChangeAware {
                 final Class fieldType = field.getType();
                 field.set(cache, Array.newInstance(fieldType.getComponentType(), 0));
             } catch (Exception e) {
-                System.out.println("Failed to clear JSF resource cache");
+                log.error("Failed to clear JSF resource cache", e);
                 e.printStackTrace();
             }
         }

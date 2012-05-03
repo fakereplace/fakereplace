@@ -33,12 +33,14 @@ import java.util.Set;
 
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.Descriptor;
-import org.fakereplace.boot.Logger;
+import org.fakereplace.logging.Logger;
 import org.fakereplace.data.BaseClassData;
 import org.fakereplace.data.ClassDataBuilder;
 import org.fakereplace.data.ClassDataStore;
 
 public class ClassRedefiner {
+
+    private static final Logger log = new Logger(ClassRedefiner.class);
 
     public static ReplacementResult rewriteLoadedClasses(ClassDefinition... classDefinitions) {
         Set<ClassDefinition> defs = new HashSet<ClassDefinition>();
@@ -55,7 +57,7 @@ public class ClassRedefiner {
                 ClassDefinition n = new ClassDefinition(d.getDefinitionClass(), bs.toByteArray());
                 defs.add(n);
             } catch (IOException e) {
-                Logger.log(ClassRedefiner.class, "IO Error");
+                log.error("IO Error", e);
             }
         }
         classesToReload.removeAll(changedClasses);

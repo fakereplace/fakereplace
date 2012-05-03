@@ -20,26 +20,29 @@
  *
  */
 
-package org.fakereplace.integration.jsf;
+package org.fakereplace.integration.seam;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
-import org.fakereplace.api.IntegrationInfo;
+import org.fakereplace.api.Extension;
 import org.fakereplace.transformation.FakereplaceTransformer;
 
-public class JsfIntegrationInfo implements IntegrationInfo {
+public class SeamExtension implements Extension {
 
     public String getClassChangeAwareName() {
-        return "org.fakereplace.integration.jsf.ClassRedefinitionPlugin";
+        return "org.fakereplace.integration.seam.ClassRedefinitionPlugin";
     }
 
     public Set<String> getIntegrationTriggerClassNames() {
-        return Collections.singleton("javax.faces.webapp.FacesServlet");
+        return Collections.singleton("org.jboss.seam.servlet.SeamFilter");
     }
 
     public Set<String> getTrackedInstanceClassNames() {
-        return Collections.singleton("javax.el.BeanELResolver");
+        Set<String> ret = new HashSet<String>();
+        ret.add("org.jboss.seam.servlet.SeamFilter");
+        return ret;
     }
 
     public FakereplaceTransformer getTransformer() {

@@ -51,7 +51,7 @@ import javassist.bytecode.SignatureAttribute;
 import org.fakereplace.BuiltinClassData;
 import org.fakereplace.Transformer;
 import org.fakereplace.boot.Constants;
-import org.fakereplace.boot.Logger;
+import org.fakereplace.logging.Logger;
 import org.fakereplace.classloading.ProxyDefinitionStore;
 import org.fakereplace.data.AnnotationDataStore;
 import org.fakereplace.data.BaseClassData;
@@ -68,6 +68,9 @@ import org.fakereplace.util.AccessFlagUtils;
 import org.fakereplace.util.DescriptorUtils;
 
 public class MethodReplacer {
+
+    private static final Logger logger = Logger.getLogger(MethodReplacer.class);
+
     public static void handleMethodReplacement(ClassFile file, ClassLoader loader, Class<?> oldClass, ClassDataBuilder builder, Set<Class<?>> superclassesToHotswap) {
         // state for added static methods
         CodeAttribute staticCodeAttribute = null, virtualCodeAttribute = null, constructorCodeAttribute = null;
@@ -562,9 +565,9 @@ public class MethodReplacer {
             ca.computeMaxStack();
             file.addMethod(m);
         } catch (DuplicateMemberException e) {
-            Logger.log(ClassRedefiner.class, "Duplicate error");
+            logger.error("Duplicate error", e);
         } catch (BadBytecode e) {
-            e.printStackTrace();
+            logger.error("Bad bytecode", e);
         }
         builder.removeRethod(md);
     }

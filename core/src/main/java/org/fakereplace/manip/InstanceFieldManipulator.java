@@ -33,7 +33,7 @@ import javassist.bytecode.CodeIterator;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.Opcode;
-import org.fakereplace.boot.Logger;
+import org.fakereplace.logging.Logger;
 import org.fakereplace.manip.data.AddedFieldData;
 import org.fakereplace.manip.util.Boxing;
 import org.fakereplace.manip.util.ManipulationDataStore;
@@ -43,6 +43,8 @@ import org.fakereplace.util.DescriptorUtils;
 public class InstanceFieldManipulator implements ClassManipulator {
 
     private static final String FIELD_DATA_STORE_CLASS = FieldDataStore.class.getName();
+
+    private static final Logger log = Logger.getLogger(InstanceFieldManipulator.class);
 
     /**
      * added field information by class
@@ -132,7 +134,7 @@ public class InstanceFieldManipulator implements ClassManipulator {
                     }
                     m.getCodeAttribute().computeMaxStack();
                 } catch (Exception e) {
-                    Logger.log(this, "Bad byte code transforming " + file.getName());
+                    log.error("Bad byte code transforming " + file.getName(), e);
                     e.printStackTrace();
                 }
             }

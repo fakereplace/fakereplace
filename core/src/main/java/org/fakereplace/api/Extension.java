@@ -34,7 +34,9 @@ import org.fakereplace.transformation.FakereplaceTransformer;
  *
  * @author stuart
  */
-public interface IntegrationInfo {
+public interface Extension {
+
+
 
     /**
      * Integrations have a change to transform classes

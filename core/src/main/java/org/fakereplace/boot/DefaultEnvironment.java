@@ -32,12 +32,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.fakereplace.logging.Logger;
+
 /**
  * class that stores some basic environment info.
  *
  * @author stuart
  */
 public class DefaultEnvironment implements Environment {
+
+    private static final Logger log = Logger.getLogger(DefaultEnvironment.class);
 
     protected static final String dumpDirectory;
 
@@ -53,11 +57,11 @@ public class DefaultEnvironment implements Environment {
         if (dump != null) {
             File f = new File(dump);
             if (!f.exists()) {
-                System.out.println("dump directory  " + dump + " does not exist ");
+                log.error("dump directory  " + dump + " does not exist ");
                 dumpDirectory = null;
             } else {
                 dumpDirectory = dump;
-                System.out.println("dumping class definitions to " + dump);
+                log.info("dumping class definitions to " + dump);
             }
         } else {
             dumpDirectory = null;
@@ -111,7 +115,7 @@ public class DefaultEnvironment implements Environment {
     }
 
     public void recordTimestamp(String className, ClassLoader loader) {
-        Logger.trace(this, "Recording timestamp for " + className);
+        log.trace("Recording timestamp for " + className);
         if (loader == null) {
             return;
         }
@@ -139,7 +143,7 @@ public class DefaultEnvironment implements Environment {
                     ret.add(loader.loadClass(entry.getKey()));
                     timestamps.put(entry.getKey(), entry.getValue());
                 } catch (ClassNotFoundException e) {
-                    System.err.println("Could not load class " + entry);
+                    log.error("Could not load class " + entry, e);
                 }
             }
         }

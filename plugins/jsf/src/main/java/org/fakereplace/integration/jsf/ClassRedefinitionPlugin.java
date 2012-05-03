@@ -31,8 +31,11 @@ import java.util.Set;
 import org.fakereplace.api.ClassChangeAware;
 import org.fakereplace.classloading.ClassIdentifier;
 import org.fakereplace.data.InstanceTracker;
+import org.fakereplace.logging.Logger;
 
 public class ClassRedefinitionPlugin implements ClassChangeAware {
+
+    private static final Logger log = Logger.getLogger(ClassRedefinitionPlugin.class);
 
     Field getField(Class<?> clazz, String name) throws NoSuchFieldException {
         if (clazz == Object.class)
@@ -87,7 +90,7 @@ public class ClassRedefinitionPlugin implements ClassChangeAware {
                 m.invoke(cache);
             }
         } catch (Exception e) {
-            System.out.println("Could not clear EL cache:" + e.getMessage());
+            log.error("Could not clear EL cache:", e);
         }
     }
 

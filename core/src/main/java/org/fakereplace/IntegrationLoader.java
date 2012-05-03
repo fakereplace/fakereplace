@@ -32,7 +32,8 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import org.fakereplace.api.IntegrationInfo;
+import org.fakereplace.api.Extension;
+import org.fakereplace.logging.Logger;
 
 /**
  * class that is responsible for loading any bundled integrations from
@@ -42,7 +43,7 @@ import org.fakereplace.api.IntegrationInfo;
  * bundled
  * into a super jar. Instead we look for classes that take the form:
  * <p/>
- * org.fakereplace.integration.$1.$1IntegrationInfo
+ * org.fakereplace.integration.$1.$1Extension
  * <p/>
  * and load them
  *
@@ -51,9 +52,12 @@ import org.fakereplace.api.IntegrationInfo;
 public class IntegrationLoader {
 
     public static final String INTEGRATION_PACKAGE = "org/fakereplace/integration";
+    public static final String EXTENSION = "Extension";
 
-    public static Set<IntegrationInfo> getIntegrationInfo(ClassLoader clr) {
-        Set<IntegrationInfo> integrations = new HashSet<IntegrationInfo>();
+    private static final Logger log = Logger.getLogger(IntegrationLoader.class);
+
+    public static Set<Extension> getIntegrationInfo(ClassLoader clr) {
+        Set<Extension> integrations = new HashSet<Extension>();
         Set<String> intPackages = new HashSet<String>();
         try {
             Enumeration<URL> urlJars = clr.getResources(INTEGRATION_PACKAGE);
@@ -86,7 +90,7 @@ public class IntegrationLoader {
                 }
             }
             for (String s : intPackages) {
-                IntegrationInfo info = loadIntegration(s);
+                Extension info = loadIntegration(s);
                 if (info != null) {
                     integrations.add(info);
                 }
@@ -99,20 +103,14 @@ public class IntegrationLoader {
         return integrations;
     }
 
-    private static IntegrationInfo loadIntegration(String name) {
-        String integrationClass = "org.fakereplace.integration." + name + "." + name.substring(0, 1).toUpperCase() + name.substring(1) + "IntegrationInfo";
+    private static Extension loadIntegration(String name) {
+        String integrationClass = "org.fakereplace.integration." + name + "." + name.substring(0, 1).toUpperCase() + name.substring(1) + EXTENSION;
         try {
             Class<?> cls = Class.forName(integrationClass);
-            IntegrationInfo info = (IntegrationInfo) cls.newInstance();
+            Extension info = (Extension) cls.newInstance();
             return info;
-        } catch (ClassNotFoundException e) {
-            System.out.println("COULD NOT LOAD INTEGRATION CLASS: " + integrationClass);
-        } catch (InstantiationException e) {
-            System.out.println("COULD NOT INSTANCIATE INTEGRATION CLASS: " + integrationClass);
-        } catch (IllegalAccessException e) {
-            System.out.println("IllegalAccessException CREATING INTEGRATION CLASS: " + integrationClass);
-        } catch (ClassCastException e) {
-            System.out.println(integrationClass + " WAS NOT AN INSTANCE OF  IntegrationInfo");
+        } catch (Exception e) {
+            log.error("Could not load integration for " + name + ": " + integrationClass, e);
         }
         return null;
     }

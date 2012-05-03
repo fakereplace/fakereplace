@@ -34,7 +34,7 @@ import javassist.bytecode.ConstPool;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.Opcode;
 import org.fakereplace.boot.Constants;
-import org.fakereplace.boot.Logger;
+import org.fakereplace.logging.Logger;
 import org.fakereplace.util.JumpMarker;
 import org.fakereplace.util.JumpUtils;
 
@@ -51,6 +51,9 @@ import org.fakereplace.util.JumpUtils;
  * @author stuart
  */
 public class FieldAccessManipulator implements ClassManipulator {
+
+    private static final Logger log = Logger.getLogger(FieldAccessManipulator.class);
+
     private final Map<String, RewriteData> manipulationData = new ConcurrentHashMap<String, RewriteData>();
 
     public void clearRewrites(String className, ClassLoader loader) {
@@ -176,8 +179,7 @@ public class FieldAccessManipulator implements ClassManipulator {
                     }
                     m.getCodeAttribute().computeMaxStack();
                 } catch (Exception e) {
-                    Logger.log(this, "Bad byte code transforming " + file.getName() + "." + m.getName());
-                    e.printStackTrace();
+                    log.error("Bad byte code transforming " + file.getName() + "." + m.getName(), e);
                 }
             }
             return true;

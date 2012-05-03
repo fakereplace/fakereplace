@@ -20,33 +20,30 @@
  *
  */
 
-package org.fakereplace.integration.weld;
-
+package org.fakereplace.integration.jsf;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
-import org.fakereplace.api.IntegrationInfo;
+import org.fakereplace.api.Extension;
 import org.fakereplace.transformation.FakereplaceTransformer;
 
-public class WeldIntegrationInfo implements IntegrationInfo {
+public class JsfExtension implements Extension {
 
     public String getClassChangeAwareName() {
-        return ClassRedefinitionPlugin.class.getName();
+        return "org.fakereplace.integration.jsf.ClassRedefinitionPlugin";
     }
 
     public Set<String> getIntegrationTriggerClassNames() {
-        return Collections.singleton("org.jboss.weld.bootstrap.WeldBootstrap");
+        return Collections.singleton("javax.faces.webapp.FacesServlet");
     }
 
     public Set<String> getTrackedInstanceClassNames() {
-        Set<String> ret = new HashSet<String>();
-        return ret;
+        return Collections.singleton("javax.el.BeanELResolver");
     }
 
     public FakereplaceTransformer getTransformer() {
-        return new WeldClassTransformer();
+        return null;
     }
 
     public byte[] loadClass(String className) {

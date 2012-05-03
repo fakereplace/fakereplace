@@ -20,29 +20,28 @@
  *
  */
 
-package org.fakereplace.integration.seam;
+package org.fakereplace.integration.jbossas;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
-import org.fakereplace.api.IntegrationInfo;
+import org.fakereplace.api.Extension;
 import org.fakereplace.transformation.FakereplaceTransformer;
 
-public class SeamIntegrationInfo implements IntegrationInfo {
+public class JbossasExtension implements Extension {
+
+    public static final String RESOURCE_CACHE_CLASS = "org.apache.naming.resources.ResourceCache";
 
     public String getClassChangeAwareName() {
-        return "org.fakereplace.integration.seam.ClassRedefinitionPlugin";
+        return "org.fakereplace.integration.jbossas.ClassChangeNotifier";
     }
 
     public Set<String> getIntegrationTriggerClassNames() {
-        return Collections.singleton("org.jboss.seam.servlet.SeamFilter");
+        return Collections.singleton("org.jboss.as.server.ApplicationServerService");
     }
 
     public Set<String> getTrackedInstanceClassNames() {
-        Set<String> ret = new HashSet<String>();
-        ret.add("org.jboss.seam.servlet.SeamFilter");
-        return ret;
+        return Collections.singleton(RESOURCE_CACHE_CLASS);
     }
 
     public FakereplaceTransformer getTransformer() {

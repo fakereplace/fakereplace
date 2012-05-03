@@ -33,7 +33,7 @@ import javassist.bytecode.ConstPool;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.Opcode;
 import org.fakereplace.boot.Constants;
-import org.fakereplace.boot.Logger;
+import org.fakereplace.logging.Logger;
 import org.fakereplace.reflection.ConstructorReflection;
 import org.fakereplace.util.JumpMarker;
 import org.fakereplace.util.JumpUtils;
@@ -55,6 +55,8 @@ public class ConstructorAccessManipulator implements ClassManipulator {
     public static final String METHOD_NAME = "newInstance";
     public static final String REPLACED_METHOD_DESCRIPTOR = "(Ljava/lang/reflect/Constructor;[Ljava/lang/Object;)Ljava/lang/Object;";
     public static final String METHOD_DESCRIPTOR = "([Ljava/lang/Object;)Ljava/lang/Object;";
+
+    private static final Logger log = Logger.getLogger(ConstructorInvocationManipulator.class);
 
     public void clearRewrites(String className, ClassLoader loader) {
 
@@ -134,8 +136,7 @@ public class ConstructorAccessManipulator implements ClassManipulator {
                     }
                     m.getCodeAttribute().computeMaxStack();
                 } catch (Exception e) {
-                    Logger.log(this, "Bad byte code transforming " + file.getName());
-                    e.printStackTrace();
+                    log.error("Bad byte code transforming " + file.getName(), e);
                 }
             }
             return true;

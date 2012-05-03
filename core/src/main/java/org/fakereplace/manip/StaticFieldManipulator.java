@@ -31,12 +31,15 @@ import javassist.bytecode.ClassFile;
 import javassist.bytecode.CodeIterator;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.MethodInfo;
-import org.fakereplace.boot.Logger;
+import org.fakereplace.logging.Logger;
 import org.fakereplace.manip.data.StaticFieldAccessRewriteData;
 import org.fakereplace.manip.util.ManipulationDataStore;
 
 public class StaticFieldManipulator implements ClassManipulator {
-    ManipulationDataStore<StaticFieldAccessRewriteData> data = new ManipulationDataStore<StaticFieldAccessRewriteData>();
+
+    private static final Logger log = Logger.getLogger(StaticFieldManipulator.class);
+
+    private final ManipulationDataStore<StaticFieldAccessRewriteData> data = new ManipulationDataStore<StaticFieldAccessRewriteData>();
 
     public void clearRewrites(String className, ClassLoader classLoader) {
         data.remove(className, classLoader);
@@ -111,8 +114,7 @@ public class StaticFieldManipulator implements ClassManipulator {
                     }
                     m.getCodeAttribute().computeMaxStack();
                 } catch (Exception e) {
-                    Logger.log(this, "Bad byte code transforming " + file.getName());
-                    e.printStackTrace();
+                    log.error("Bad byte code transforming " + file.getName(), e);
                 }
             }
             return true;

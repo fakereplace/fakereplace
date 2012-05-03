@@ -37,6 +37,7 @@ import java.util.Set;
 import org.fakereplace.api.ClassChangeAware;
 import org.fakereplace.classloading.ClassIdentifier;
 import org.fakereplace.data.InstanceTracker;
+import org.fakereplace.logging.Logger;
 import org.jboss.seam.Component;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.Seam;
@@ -52,6 +53,9 @@ import org.jboss.seam.web.AbstractFilter;
 import org.jboss.seam.web.HotDeployFilter;
 
 public class ClassRedefinitionPlugin implements ClassChangeAware {
+
+    private static final Logger log = Logger.getLogger(ClassRedefinitionPlugin.class);
+
     public ClassRedefinitionPlugin() {
         try {
             Class<?> proxyFactory = getClass().getClassLoader().loadClass("org.jboss.seam.util.ProxyFactory");
@@ -59,7 +63,7 @@ public class ClassRedefinitionPlugin implements ClassChangeAware {
             f.setAccessible(true);
             f.setBoolean(null, false);
         } catch (Throwable t) {
-            System.out.println("Could not set org.jboss.seam.util.ProxyFactory.useCache to false: " + t.getMessage());
+            log.error("Could not set org.jboss.seam.util.ProxyFactory.useCache to false", t);
         }
     }
 
@@ -172,13 +176,13 @@ public class ClassRedefinitionPlugin implements ClassChangeAware {
                 while (it.hasNext()) {
                     Object val = it.next();
                     if (val instanceof HotDeployFilter) {
-                        System.out.println("Disabling seam hot deployment filter, it does not play nicely with fakereplace");
+                        log.info("Disabling seam hot deployment filter, it does not play nicely with fakereplace");
                         it.remove();
                     }
                 }
             }
         } catch (Exception e) {
-            System.out.println("Unable to disable hot deploy filter");
+            log.error("Unable to disable hot deploy filter", e);
             e.printStackTrace();
         }
     }

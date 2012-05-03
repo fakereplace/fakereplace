@@ -20,36 +20,24 @@
  *
  */
 
-package org.fakereplace.integration.jbossas;
+package org.fakereplace.logging;
 
-import java.util.Collections;
-import java.util.Set;
+/**
+ * Class that is responsible for actually dealing with log output
+ *
+ * @author Stuart Douglas
+ */
+public interface LogManager {
 
-import org.fakereplace.api.IntegrationInfo;
-import org.fakereplace.transformation.FakereplaceTransformer;
+    void error(Class<?> category, String message);
+    void error(Class<?> category, String message, Throwable cause);
 
-public class JbossasIntegrationInfo implements IntegrationInfo {
+    void info(Class<?> category, String message);
+    void info(Class<?> category, String message, Throwable cause);
 
-    public static final String RESOURCE_CACHE_CLASS = "org.apache.naming.resources.ResourceCache";
+    void debug(Class<?> category, String message);
+    void debug(Class<?> category, String message, Throwable cause);
 
-    public String getClassChangeAwareName() {
-        return "org.fakereplace.integration.jbossas.ClassChangeNotifier";
-    }
-
-    public Set<String> getIntegrationTriggerClassNames() {
-        return Collections.singleton("org.jboss.as.server.ApplicationServerService");
-    }
-
-    public Set<String> getTrackedInstanceClassNames() {
-        return Collections.singleton(RESOURCE_CACHE_CLASS);
-    }
-
-    public FakereplaceTransformer getTransformer() {
-        return null;
-    }
-
-    public byte[] loadClass(String className) {
-        return null;
-    }
-
+    void trace(Class<?> category, String message);
+    void trace(Class<?> category, String message, Throwable cause);
 }

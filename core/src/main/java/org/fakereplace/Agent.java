@@ -37,7 +37,7 @@ import java.util.Set;
 
 import javassist.bytecode.ClassFile;
 import org.fakereplace.api.ClassChangeNotifier;
-import org.fakereplace.api.IntegrationInfo;
+import org.fakereplace.api.Extension;
 import org.fakereplace.boot.DefaultEnvironment;
 import org.fakereplace.classloading.ClassIdentifier;
 import org.fakereplace.classloading.ClassLookupManager;
@@ -65,11 +65,17 @@ public class Agent {
 
     public static void premain(java.lang.String s, java.lang.instrument.Instrumentation i) {
 
+        AgentOptions.setup(s);
+        inst = i;
+
+        final Set<Extension> extension = IntegrationLoader.getIntegrationInfo(ClassLoader.getSystemClassLoader());
+
+        for(final Extension info : extension) {
+
+        }
+
         //initialise the unmodified file index
         UnmodifiedFileIndex.loadIndex();
-
-        final Set<IntegrationInfo> integrationInfo = IntegrationLoader.getIntegrationInfo(ClassLoader.getSystemClassLoader());
-        inst = i;
 
         //first we need to instrument the class loaders
         final Set<Class> cls = new HashSet<Class>();
@@ -80,7 +86,7 @@ public class Agent {
         }
 
         final ClassLoaderTransformer classLoaderTransformer = new ClassLoaderTransformer();
-        final MainTransformer mainTransformer = new MainTransformer(integrationInfo);
+        final MainTransformer mainTransformer = new MainTransformer(extension);
         Agent.mainTransformer = mainTransformer;
         inst.addTransformer(mainTransformer, true);
 
@@ -91,7 +97,7 @@ public class Agent {
         } catch (UnmodifiableClassException e) {
             e.printStackTrace();
         }
-        mainTransformer.addTransformer(new Transformer(integrationInfo));
+        mainTransformer.addTransformer(new Transformer(extension));
 
         //start the server
         Thread thread = new Thread(new FakereplaceServer(6555));

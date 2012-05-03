@@ -20,7 +20,7 @@
  *
  */
 
-package org.fakereplace.boot;
+package org.fakereplace.logging;
 
 /**
  * Logging class, at the moment just writes to stdout. Using java.util.logging is problematic from a javaagent,
@@ -30,39 +30,49 @@ package org.fakereplace.boot;
  */
 public class Logger {
 
-    private static final String TRACE_PROPERTY = "org.fakereplace.trace";
+    private static final String TRACE = "trace";
 
-    private static final boolean trace;
+    private static volatile LogManager logManager = new DefaultLogManager();
 
-    static {
-        trace = Boolean.getBoolean(TRACE_PROPERTY);
+    public Logger(final Class<?> clazz) {
+        this.clazz = clazz;
     }
 
-    public static void log(Object invoker, String message) {
-        Class c = null;
-        if (invoker.getClass().isAssignableFrom(Class.class)) {
-            c = (Class) invoker;
-        } else {
-            c = invoker.getClass();
-        }
-        System.out.println("[" + c.getCanonicalName() + "] " + message);
+    public static Logger getLogger(final Class<?> clazz) {
+        return new Logger(clazz);
     }
 
-    public static void trace(Object invoker, String message) {
-        if(!trace) {
-            return;
-        }
-        Class c = null;
-        if (invoker.getClass().isAssignableFrom(Class.class)) {
-            c = (Class) invoker;
-        } else {
-            c = invoker.getClass();
-        }
-        System.out.println("[" + c.getCanonicalName() + "] TRACE " + message);
+    private final Class<?> clazz;
+
+    public void error(final String message) {
+        logManager.error(clazz, message);
     }
 
-    public static void debug(Object invoker, String message) {
-        log(invoker, message);
+    public void error(final String message, Throwable cause) {
+        logManager.error(clazz, message, cause);
     }
 
+    public void info(final String message) {
+        logManager.info(clazz, message);
+    }
+
+    public void info(final String message, Throwable cause) {
+        logManager.info(clazz, message, cause);
+    }
+
+    public void debug(final String message) {
+        logManager.debug(clazz, message);
+    }
+
+    public void debug(final String message, Throwable cause) {
+        logManager.debug(clazz, message, cause);
+    }
+
+    public void trace(final String message) {
+        logManager.trace(clazz, message);
+    }
+
+    public void trace(final String message, Throwable cause) {
+        logManager.trace(clazz, message, cause);
+    }
 }
