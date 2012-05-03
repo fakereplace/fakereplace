@@ -62,7 +62,7 @@ pom.xml:
       <plugin>
         <groupId>org.fakereplace</groupId>
         <artifactId>fakereplace-plugin</artifactId>
-        <version>${fakereplace.version}</version>
+        <version>1.0.0.Alpha1</version>
         <executions>
           <execution>
             <phase>package</phase>
@@ -75,6 +75,9 @@ pom.xml:
     </plugins>
   </build>
 `
+
+You will need the [JBoss Maven Repository](https://community.jboss.org/wiki/MavenGettingStarted-Users) in your pom.xml
+or settings.xml.
 
 And then run
 
