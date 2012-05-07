@@ -28,7 +28,7 @@ import java.util.List;
 
 import javassist.bytecode.AccessFlag;
 import javassist.bytecode.Descriptor;
-import org.fakereplace.boot.Constants;
+import org.fakereplace.core.Constants;
 import org.fakereplace.data.ClassData;
 import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.data.FieldData;
@@ -365,7 +365,7 @@ public class FieldReflection {
     }
 
     public static boolean isFakeField(Field f) {
-        if ((f.getModifiers() & Modifier.STATIC) == 0 && f.getDeclaringClass().getName().startsWith(org.fakereplace.boot.Constants.GENERATED_CLASS_PACKAGE)) {
+        if ((f.getModifiers() & Modifier.STATIC) == 0 && f.getDeclaringClass().getName().startsWith(org.fakereplace.core.Constants.GENERATED_CLASS_PACKAGE)) {
             return true;
         }
         return false;

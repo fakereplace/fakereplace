@@ -17,23 +17,27 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.fakereplace.boot;
 
-import java.util.Map;
-import java.util.Set;
+package org.fakereplace.core;
 
-/**
- * @author Stuart Douglas
- */
-public interface Environment {
+public class BuiltinClassData {
 
-    boolean isClassReplaceable(final String className, final ClassLoader loader);
+    private static final String[] doNotInstrument = {"org/fakereplace", "java/math", "java/lang", "java/util/concurrent", "java/util/Currency", "java/util/Random", "java/util",};
 
-    void recordTimestamp(final String className, final ClassLoader loader);
+    private static final String[] exceptions = {"java/lang/reflect/Proxy",};
 
-    Set<Class> getUpdatedClasses(final String deploymentName, final Map<String, Long> updatedClasses);
-
-    Set<String> getUpdatedResources(final String deploymentName, final Map<String, Long> updatedResources);
-
-    void updateResource(final String archiveName, Map<String, byte[]> replacedResources);
+    public static boolean skipInstrumentation(String className) {
+        className = className.replace('.', '/');
+        for (String s : exceptions) {
+            if (className.startsWith(s)) {
+                return false;
+            }
+        }
+        for (String s : doNotInstrument) {
+            if (className.startsWith(s)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

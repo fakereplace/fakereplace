@@ -28,8 +28,8 @@ import java.util.List;
 
 import javassist.bytecode.AccessFlag;
 import javassist.bytecode.Descriptor;
-import org.fakereplace.ConstructorArgument;
-import org.fakereplace.boot.Constants;
+import org.fakereplace.core.ConstructorArgument;
+import org.fakereplace.core.Constants;
 import org.fakereplace.data.ClassData;
 import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.data.MemberType;

@@ -23,8 +23,8 @@ package org.fakereplace.logging;
 import java.util.Arrays;
 import java.util.Locale;
 
-import org.fakereplace.AgentOption;
-import org.fakereplace.AgentOptions;
+import org.fakereplace.core.AgentOption;
+import org.fakereplace.core.AgentOptions;
 
 /**
  * The default logger, just uses System.out and System.err

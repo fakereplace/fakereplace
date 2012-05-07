@@ -27,7 +27,7 @@ import java.security.ProtectionDomain;
 
 import javassist.CannotCompileException;
 import javassist.bytecode.ClassFile;
-import org.fakereplace.Agent;
+import org.fakereplace.core.Agent;
 import org.fakereplace.replacement.AddedClass;
 import org.jboss.weld.util.bytecode.ClassFileUtils;
 

@@ -18,18 +18,31 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.fakereplace;
+package org.fakereplace.api;
+
+import java.lang.annotation.Annotation;
 
 /**
- * This is a class that is added to the replaced constructors
- * <p/>
- * As we cannot generate a unique name for the constructor we instead put an
- * internal type in the constructor args.
+ * A modified annotation
  *
- * @author stuart
+ * @author Stuart Douglas
  */
-public final class ConstructorArgument {
-    private ConstructorArgument() {
+public class ChangedAnnotation extends Changed<Annotation> {
 
+    private final AnnotationTarget annotationTarget;
+    private final Class<? extends  Annotation> annotationType;
+
+    public ChangedAnnotation(Annotation modified, Annotation existing, ChangeType type, AnnotationTarget annotationTarget, final Class<? extends Annotation> annotationType) {
+        super(modified, existing, type);
+        this.annotationTarget = annotationTarget;
+        this.annotationType = annotationType;
+    }
+
+    public AnnotationTarget getAnnotationTarget() {
+        return annotationTarget;
+    }
+
+    public Class<? extends Annotation> getAnnotationType() {
+        return annotationType;
     }
 }

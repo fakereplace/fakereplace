@@ -18,22 +18,27 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.fakereplace.api;
-
-import java.util.List;
-
-import org.fakereplace.classloading.ClassIdentifier;
+package org.fakereplace.core;
 
 /**
- * interface that should be implemented by classes that with to be notified of
- * class changes.
+ * Options that can be passed to the javaagent
  *
- * The classes that implement this interface are loaded into the
- *
- * @author stuart
+ * @author Stuart Douglas
  */
-public interface ClassChangeAware {
-    void beforeChange(List<Class<?>> changed, List<ClassIdentifier> added);
+public enum AgentOption {
+    INDEX_FILE("index-file"),
+    DUMP_DIR("dump-dir"),
+    PACKAGES("packages"),
+    LOG("log"),
+    ;
 
-    void afterChange(List<ChangedClass> changed, List<ClassIdentifier> added);
+    private final String key;
+
+    private AgentOption(final String key) {
+        this.key = key;
+    }
+
+    public String getKey() {
+        return key;
+    }
 }

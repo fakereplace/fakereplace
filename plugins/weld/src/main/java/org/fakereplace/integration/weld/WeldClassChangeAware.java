@@ -21,13 +21,14 @@
 package org.fakereplace.integration.weld;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.enterprise.inject.spi.Bean;
 
+import org.fakereplace.api.ChangedClass;
 import org.fakereplace.api.ClassChangeAware;
 import org.fakereplace.classloading.ClassIdentifier;
 import org.fakereplace.com.google.common.collect.MapMaker;
@@ -53,23 +54,23 @@ public class WeldClassChangeAware implements ClassChangeAware {
     }
 
     @Override
-    public void beforeChange(final Class<?>[] changed, final ClassIdentifier[] added) {
+    public void beforeChange(final List<Class<?>> changed, final List<ClassIdentifier> added) {
 
     }
 
     @Override
-    public void notify(final Class<?>[] changed, final ClassIdentifier[] added) {
+    public void afterChange(List<ChangedClass> changed, List<ClassIdentifier> added) {
         ClassLoader oldCl = null;
         WeldProxyClassLoadingDelegate.beginProxyRegeneration();
         try {
-            final Set<Class<?>> changedClasses = new HashSet<Class<?>>(Arrays.asList(changed));
+            final Set<ChangedClass> changedClasses = new HashSet<ChangedClass>(changed);
 
             //Hack to re-generate the weld client proxies
             for (final ProxyFactory instance : proxyFactories.values()) {
                 try {
                     final Bean<?> bean = (Bean<?>) beanField.get(instance);
-                    for(final Class<?> clazz: changedClasses) {
-                        if(bean.getTypes().contains(clazz)) {
+                    for(final ChangedClass clazz: changedClasses) {
+                        if(bean.getTypes().contains(clazz.getChangedClass())) {
                             Thread.currentThread().setContextClassLoader(bean.getBeanClass().getClassLoader());
                             instance.getProxyClass();
                         }

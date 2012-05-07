@@ -23,7 +23,7 @@ package org.fakereplace.classloading;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.fakereplace.boot.Constants;
+import org.fakereplace.core.Constants;
 import org.fakereplace.com.google.common.collect.MapMaker;
 import org.fakereplace.manip.util.MapFunction;
 

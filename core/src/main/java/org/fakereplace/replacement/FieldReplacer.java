@@ -38,7 +38,7 @@ import javassist.bytecode.ClassFile;
 import javassist.bytecode.DuplicateMemberException;
 import javassist.bytecode.FieldInfo;
 import javassist.bytecode.SignatureAttribute;
-import org.fakereplace.Transformer;
+import org.fakereplace.core.Transformer;
 import org.fakereplace.classloading.ProxyDefinitionStore;
 import org.fakereplace.data.AnnotationDataStore;
 import org.fakereplace.data.BaseClassData;

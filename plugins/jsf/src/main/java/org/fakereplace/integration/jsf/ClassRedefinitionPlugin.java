@@ -24,8 +24,10 @@ import java.beans.Introspector;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Set;
 
+import org.fakereplace.api.ChangedClass;
 import org.fakereplace.api.ClassChangeAware;
 import org.fakereplace.classloading.ClassIdentifier;
 import org.fakereplace.data.InstanceTracker;
@@ -46,11 +48,14 @@ public class ClassRedefinitionPlugin implements ClassChangeAware {
         return getField(clazz.getSuperclass(), name);
     }
 
-    public void beforeChange(Class<?>[] changed, ClassIdentifier[] added) {
+
+    @Override
+    public void beforeChange(final List<Class<?>> changed, final List<ClassIdentifier> added) {
 
     }
 
-    public void notify(Class<?>[] changed, ClassIdentifier[] added) {
+    @Override
+    public void afterChange(List<ChangedClass> changed, List<ClassIdentifier> added) {
         try {
             Introspector.flushCaches();
         } catch (Exception e) {

@@ -18,21 +18,18 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.fakereplace;
+package org.fakereplace.core;
 
 /**
- * Entry point when running the core tests.
+ * This is a class that is added to the replaced constructors
+ * <p/>
+ * As we cannot generate a unique name for the constructor we instead put an
+ * internal type in the constructor args.
  *
- * This is used to prevent confusion, so people do not use the core jar without the integrations by mistake.
- *
- * @author Stuart Douglas
+ * @author stuart
  */
-public class TestAgent  {
+public final class ConstructorArgument {
+    private ConstructorArgument() {
 
-    public static void premain(java.lang.String s, java.lang.instrument.Instrumentation i) {
-        if(s == null || !s.contains("testRun")) {
-            throw new IllegalStateException("You should not use Fakereplace core directly, you should use the fakereplace.jar found in the dist directory.");
-        }
-        Agent.premain(s, i);
     }
 }

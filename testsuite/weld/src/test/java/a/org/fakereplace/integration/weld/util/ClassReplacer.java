@@ -27,7 +27,7 @@ import java.util.Map.Entry;
 
 import javassist.ClassPool;
 import javassist.CtClass;
-import org.fakereplace.Agent;
+import org.fakereplace.core.Agent;
 import org.fakereplace.replacement.AddedClass;
 
 public class ClassReplacer {

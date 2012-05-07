@@ -21,10 +21,12 @@ package org.fakereplace.integration.jbossas;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.util.List;
 import java.util.Set;
 
+import org.fakereplace.api.ChangedClass;
 import org.fakereplace.api.ClassChangeAware;
-import org.fakereplace.boot.DefaultEnvironment;
+import org.fakereplace.api.CurrentEnvironment;
 import org.fakereplace.classloading.ClassIdentifier;
 import org.fakereplace.data.InstanceTracker;
 import org.fakereplace.logging.Logger;
@@ -32,19 +34,21 @@ import org.fakereplace.logging.Logger;
 /**
  * @author Stuart Douglas
  */
-public class ClassChangeNotifier implements ClassChangeAware {
+public class JBossASClassChangeAware implements ClassChangeAware {
 
-    private static final Logger log = Logger.getLogger(ClassChangeNotifier.class);
+    private static final Logger log = Logger.getLogger(JBossASClassChangeAware.class);
 
-    public ClassChangeNotifier() {
-        DefaultEnvironment.setEnvironment(new JBossAsEnvironment());
+    public JBossASClassChangeAware() {
+        CurrentEnvironment.setEnvironment(new JBossAsEnvironment());
     }
 
-    public void beforeChange(final Class<?>[] changed, final ClassIdentifier[] added) {
+    @Override
+    public void beforeChange(final List<Class<?>> changed, final List<ClassIdentifier> added) {
 
     }
 
-    public void notify(final Class<?>[] changed, final ClassIdentifier[] added) {
+    @Override
+    public void afterChange(List<ChangedClass> changed, List<ClassIdentifier> added) {
         clearJSRResourceCache();
     }
 

@@ -20,20 +20,12 @@
 
 package org.fakereplace.api;
 
-import java.util.List;
-
-import org.fakereplace.classloading.ClassIdentifier;
-
 /**
- * interface that should be implemented by classes that with to be notified of
- * class changes.
- *
- * The classes that implement this interface are loaded into the
- *
- * @author stuart
+ * The type of change
+ * @author Stuart Douglas
  */
-public interface ClassChangeAware {
-    void beforeChange(List<Class<?>> changed, List<ClassIdentifier> added);
-
-    void afterChange(List<ChangedClass> changed, List<ClassIdentifier> added);
+public enum ChangeType {
+    ADD,
+    REMOVE,
+    MODIFY
 }

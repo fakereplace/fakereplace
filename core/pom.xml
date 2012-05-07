@@ -74,7 +74,7 @@
                 <configuration>
                     <archive>
                         <manifestEntries>
-                            <Premain-Class>org.fakereplace.TestAgent</Premain-Class>
+                            <Premain-Class>org.fakereplace.core.TestAgent</Premain-Class>
                             <Can-Redefine-Classes>true</Can-Redefine-Classes>
                             <Can-Retransform-Classes>true</Can-Retransform-Classes>
                             <Boot-Class-Path>${project.build.finalName}.jar</Boot-Class-Path>

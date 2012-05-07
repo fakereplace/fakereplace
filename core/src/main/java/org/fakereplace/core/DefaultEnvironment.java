@@ -18,7 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.fakereplace.boot;
+package org.fakereplace.core;
 
 import java.io.IOException;
 import java.net.URL;
@@ -29,8 +29,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.fakereplace.AgentOption;
-import org.fakereplace.AgentOptions;
+import org.fakereplace.api.Environment;
 import org.fakereplace.logging.Logger;
 
 /**
@@ -43,8 +42,6 @@ public class DefaultEnvironment implements Environment {
     private static final Logger log = Logger.getLogger(DefaultEnvironment.class);
 
     protected static final String[] replaceablePackages;
-
-    protected static volatile Environment environment = new DefaultEnvironment();
 
     private final Map<String, Long> timestamps = new ConcurrentHashMap<String, Long>();
     private final Map<String, ClassLoader> loaders = new ConcurrentHashMap<String, ClassLoader>();
@@ -77,19 +74,6 @@ public class DefaultEnvironment implements Environment {
             }
         }
         return false;
-    }
-
-    /**
-     * todo: move this somewhere else
-     *
-     * @return
-     */
-    public static Environment getEnvironment() {
-        return environment;
-    }
-
-    public static void setEnvironment(final Environment environment) {
-        DefaultEnvironment.environment = environment;
     }
 
     public void recordTimestamp(String className, ClassLoader loader) {

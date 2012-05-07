@@ -34,8 +34,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.fakereplace.AgentOption;
-import org.fakereplace.AgentOptions;
+import org.fakereplace.core.AgentOption;
+import org.fakereplace.core.AgentOptions;
 
 /**
  * Class that tracks unmodified files that can be ignored on future boots. This provides a big speed improvement,

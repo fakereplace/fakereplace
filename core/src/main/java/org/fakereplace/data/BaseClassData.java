@@ -32,7 +32,7 @@ import javassist.bytecode.ClassFile;
 import javassist.bytecode.Descriptor;
 import javassist.bytecode.FieldInfo;
 import javassist.bytecode.MethodInfo;
-import org.fakereplace.boot.Constants;
+import org.fakereplace.core.Constants;
 import org.fakereplace.util.DescriptorUtils;
 
 /**

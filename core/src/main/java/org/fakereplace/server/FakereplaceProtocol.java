@@ -30,8 +30,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.fakereplace.Agent;
-import org.fakereplace.boot.DefaultEnvironment;
+import org.fakereplace.api.CurrentEnvironment;
+import org.fakereplace.core.Agent;
 import org.fakereplace.logging.Logger;
 import org.fakereplace.replacement.AddedClass;
 
@@ -89,7 +89,7 @@ public class FakereplaceProtocol {
             log.info("Fakereplace is checking for updates classes. Client sent " + classes.size() + "classes");
 
 
-            final Set<Class> classesToReplace = DefaultEnvironment.getEnvironment().getUpdatedClasses(archiveName, classes);
+            final Set<Class> classesToReplace = CurrentEnvironment.getEnvironment().getUpdatedClasses(archiveName, classes);
             final Map<String, Class> classMap = new HashMap<String, Class>();
             output.writeInt(classesToReplace.size());
             for (Class clazz : classesToReplace) {
@@ -98,7 +98,7 @@ public class FakereplaceProtocol {
                 output.write(cname.getBytes());
                 classMap.put(cname, clazz);
             }
-            final Set<String> resourcesToReplace = DefaultEnvironment.getEnvironment().getUpdatedResources(archiveName, resources);
+            final Set<String> resourcesToReplace = CurrentEnvironment.getEnvironment().getUpdatedResources(archiveName, resources);
             output.writeInt(resourcesToReplace.size());
             for (String cname : resourcesToReplace) {
                 output.writeInt(cname.length());
@@ -135,7 +135,7 @@ public class FakereplaceProtocol {
             }
 
             Agent.redefine(classDefinitions.toArray(new ClassDefinition[classDefinitions.size()]), new AddedClass[0]);
-            DefaultEnvironment.getEnvironment().updateResource(archiveName, replacedResources);
+            CurrentEnvironment.getEnvironment().updateResource(archiveName, replacedResources);
             output.writeInt(0);
         } catch (Exception e) {
             try {

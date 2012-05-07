@@ -32,6 +32,7 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.fakereplace.api.ChangedClass;
 import org.fakereplace.api.ClassChangeAware;
 import org.fakereplace.classloading.ClassIdentifier;
 import org.fakereplace.data.InstanceTracker;
@@ -93,7 +94,7 @@ public class ClassRedefinitionPlugin implements ClassChangeAware {
         return getField(clazz.getSuperclass(), name);
     }
 
-    public void beforeChange(Class<?>[] changed, ClassIdentifier[] added) {
+    public void beforeChange(List<Class<?>> changed, List<ClassIdentifier> added) {
         disableHotDeployFilter();
         if (!Lifecycle.isApplicationInitialized()) {
             return;
@@ -107,8 +108,8 @@ public class ClassRedefinitionPlugin implements ClassChangeAware {
 
         }
         Seam.clearComponentNameCache();
-        for (int i = 0; i < changed.length; ++i) {
-            Class<?> d = changed[i];
+        for (int i = 0; i < changed.size(); ++i) {
+            Class<?> d = changed.get(i);
 
             // if the class is a seam component
             if (d.isAnnotationPresent(Name.class)) {
@@ -126,7 +127,7 @@ public class ClassRedefinitionPlugin implements ClassChangeAware {
         }
     }
 
-    public void notify(Class<?>[] changed, ClassIdentifier[] added) {
+    public void afterChange(List<ChangedClass> changed, List<ClassIdentifier> added) {
         if (!Lifecycle.isApplicationInitialized()) {
             return;
         }
@@ -148,8 +149,8 @@ public class ClassRedefinitionPlugin implements ClassChangeAware {
 
             Method redeploy = Initialization.class.getDeclaredMethod("installScannedComponentAndRoles", Class.class);
             redeploy.setAccessible(true);
-            for (int i = 0; i < changed.length; ++i) {
-                redeploy.invoke(init, changed[i]);
+            for (int i = 0; i < changed.size(); ++i) {
+                redeploy.invoke(init, changed.get(i).getChangedClass());
             }
             redeploy = Initialization.class.getDeclaredMethod("installComponents", Init.class);
             redeploy.setAccessible(true);

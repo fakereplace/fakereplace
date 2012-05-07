@@ -18,22 +18,21 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.fakereplace.api;
-
-import java.util.List;
-
-import org.fakereplace.classloading.ClassIdentifier;
+package org.fakereplace.core;
 
 /**
- * interface that should be implemented by classes that with to be notified of
- * class changes.
+ * Entry point when running the core tests.
  *
- * The classes that implement this interface are loaded into the
+ * This is used to prevent confusion, so people do not use the core jar without the integrations by mistake.
  *
- * @author stuart
+ * @author Stuart Douglas
  */
-public interface ClassChangeAware {
-    void beforeChange(List<Class<?>> changed, List<ClassIdentifier> added);
+public class TestAgent  {
 
-    void afterChange(List<ChangedClass> changed, List<ClassIdentifier> added);
+    public static void premain(java.lang.String s, java.lang.instrument.Instrumentation i) {
+        if(s == null || !s.contains("testRun")) {
+            throw new IllegalStateException("You should not use Fakereplace core directly, you should use the fakereplace.jar found in the dist directory.");
+        }
+        Agent.premain(s, i);
+    }
 }

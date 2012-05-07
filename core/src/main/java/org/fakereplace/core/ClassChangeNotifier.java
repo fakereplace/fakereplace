@@ -18,12 +18,15 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.fakereplace.api;
+package org.fakereplace.core;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.fakereplace.api.ChangedClass;
+import org.fakereplace.api.ClassChangeAware;
 import org.fakereplace.classloading.ClassIdentifier;
 import org.fakereplace.com.google.common.collect.MapMaker;
 
@@ -48,7 +51,7 @@ public class ClassChangeNotifier {
         classChangeAwares.get(aware.getClass().getClassLoader()).add(aware);
     }
 
-     public void notify(Class<?>[] changed, ClassIdentifier[] newClasses) {
+     public void afterChange(List<ChangedClass> changed, List<ClassIdentifier> newClasses) {
         if (!NOTIFICATION_IN_PROGRESS.get()) {
             NOTIFICATION_IN_PROGRESS.set(true);
             try {
@@ -56,7 +59,7 @@ public class ClassChangeNotifier {
                 for (Set<ClassChangeAware> c : classChangeAwares.values()) {
                     for (ClassChangeAware i : c) {
                         try {
-                            i.notify(changed, newClasses);
+                            i.afterChange(changed, newClasses);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -68,7 +71,7 @@ public class ClassChangeNotifier {
         }
     }
 
-    public void beforeChange(Class<?>[] changed, ClassIdentifier[] newClasses) {
+    public void beforeChange(List<Class<?>> changed, List<ClassIdentifier> newClasses) {
         Class<?>[] a = new Class[0];
         for (Set<ClassChangeAware> c : classChangeAwares.values()) {
             for (ClassChangeAware i : c) {

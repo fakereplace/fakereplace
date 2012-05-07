@@ -21,7 +21,7 @@ package a.org.fakereplace.test.basic.reflection;
 
 import java.lang.reflect.Constructor;
 
-import org.fakereplace.ConstructorArgument;
+import org.fakereplace.core.ConstructorArgument;
 import org.junit.Test;
 
 public class ConstructorTest {

@@ -26,7 +26,7 @@ import javassist.bytecode.AttributeInfo;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.annotation.Annotation;
-import org.fakereplace.boot.Constants;
+import org.fakereplace.core.Constants;
 import org.fakereplace.data.ModifiedMethod;
 
 /**

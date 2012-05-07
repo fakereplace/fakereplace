@@ -18,27 +18,27 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.fakereplace;
+package org.fakereplace.api;
+
+import org.fakereplace.core.DefaultEnvironment;
 
 /**
- * Options that can be passed to the javaagent
+ * Holds the current environment.
  *
  * @author Stuart Douglas
  */
-public enum AgentOption {
-    INDEX_FILE("index-file"),
-    DUMP_DIR("dump-dir"),
-    PACKAGES("packages"),
-    LOG("log"),
-    ;
+public class CurrentEnvironment {
+    protected static volatile Environment environment = new DefaultEnvironment();
 
-    private final String key;
-
-    private AgentOption(final String key) {
-        this.key = key;
+    /**
+     *
+     * @return The current environment
+     */
+    public static Environment getEnvironment() {
+        return environment;
     }
 
-    public String getKey() {
-        return key;
+    public static void setEnvironment(final Environment environment) {
+        CurrentEnvironment.environment = environment;
     }
 }

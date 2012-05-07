@@ -26,7 +26,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import org.fakereplace.BuiltinClassData;
+import org.fakereplace.core.BuiltinClassData;
 import org.fakereplace.com.google.common.collect.MapMaker;
 import org.fakereplace.manip.util.MapFunction;
 import org.fakereplace.reflection.FieldAccessor;

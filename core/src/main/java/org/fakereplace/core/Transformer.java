@@ -18,7 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.fakereplace;
+package org.fakereplace.core;
 
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
@@ -37,9 +37,8 @@ import javassist.bytecode.CodeIterator;
 import javassist.bytecode.DuplicateMemberException;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.Opcode;
+import org.fakereplace.api.CurrentEnvironment;
 import org.fakereplace.api.Extension;
-import org.fakereplace.boot.Constants;
-import org.fakereplace.boot.DefaultEnvironment;
 import org.fakereplace.data.BaseClassData;
 import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.data.InstanceTracker;
@@ -116,7 +115,7 @@ public class Transformer implements FakereplaceTransformer {
                 modified = true;
             }
 
-            final boolean replaceable = DefaultEnvironment.getEnvironment().isClassReplaceable(className, loader);
+            final boolean replaceable = CurrentEnvironment.getEnvironment().isClassReplaceable(className, loader);
             if (manipulator.transformClass(file, loader, replaceable)) {
                 modified = true;
             }
@@ -125,7 +124,7 @@ public class Transformer implements FakereplaceTransformer {
                 if ((AccessFlag.ENUM & file.getAccessFlags()) == 0 && (AccessFlag.ANNOTATION & file.getAccessFlags()) == 0) {
                     modified = true;
 
-                    DefaultEnvironment.getEnvironment().recordTimestamp(className, loader);
+                    CurrentEnvironment.getEnvironment().recordTimestamp(className, loader);
                     if (file.isInterface()) {
                         addAbstractMethodForInstrumentation(file);
                     } else {

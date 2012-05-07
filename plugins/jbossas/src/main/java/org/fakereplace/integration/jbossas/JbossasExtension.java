@@ -29,9 +29,10 @@ import org.fakereplace.transformation.FakereplaceTransformer;
 public class JbossasExtension implements Extension {
 
     public static final String RESOURCE_CACHE_CLASS = "org.apache.naming.resources.ResourceCache";
+    private static final String CLASS_CHANGE_AWARE = "org.fakereplace.integration.jbossas.JBossASClassChangeAware";
 
     public String getClassChangeAwareName() {
-        return "org.fakereplace.integration.jbossas.ClassChangeNotifier";
+        return CLASS_CHANGE_AWARE;
     }
 
     public Set<String> getIntegrationTriggerClassNames() {

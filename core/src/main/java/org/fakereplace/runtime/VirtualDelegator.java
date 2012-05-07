@@ -25,8 +25,8 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import org.fakereplace.boot.Constants;
-import org.fakereplace.boot.DefaultEnvironment;
+import org.fakereplace.api.CurrentEnvironment;
+import org.fakereplace.core.Constants;
 
 public class VirtualDelegator {
 
@@ -52,7 +52,7 @@ public class VirtualDelegator {
     }
 
     public static boolean contains(Object val, String callingClassName, String methodName, String methodDesc) {
-        if (!DefaultEnvironment.getEnvironment().isClassReplaceable(val.getClass().getName(), val.getClass().getClassLoader())) {
+        if (!CurrentEnvironment.getEnvironment().isClassReplaceable(val.getClass().getName(), val.getClass().getClassLoader())) {
             return false;
         }
         Class<?> c = val.getClass();

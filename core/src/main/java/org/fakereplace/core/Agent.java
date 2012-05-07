@@ -18,7 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.fakereplace;
+package org.fakereplace.core;
 
 import java.beans.Introspector;
 import java.io.ByteArrayInputStream;
@@ -29,17 +29,20 @@ import java.io.IOException;
 import java.lang.instrument.ClassDefinition;
 import java.lang.instrument.Instrumentation;
 import java.lang.instrument.UnmodifiableClassException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javassist.bytecode.ClassFile;
-import org.fakereplace.api.ClassChangeNotifier;
 import org.fakereplace.api.Extension;
 import org.fakereplace.classloading.ClassIdentifier;
 import org.fakereplace.classloading.ClassLookupManager;
 import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.replacement.AddedClass;
 import org.fakereplace.replacement.ClassRedefiner;
+import org.fakereplace.replacement.CurrentChangedClasses;
 import org.fakereplace.replacement.ReplacementResult;
 import org.fakereplace.server.FakereplaceServer;
 import org.fakereplace.transformation.ClassLoaderTransformer;
@@ -104,21 +107,20 @@ public class Agent {
     }
 
     public static void redefine(ClassDefinition[] classes, AddedClass[] addedData) throws UnmodifiableClassException, ClassNotFoundException {
-        final ClassIdentifier[] addedClass = new ClassIdentifier[addedData.length];
-        int count = 0;
+        final List<ClassIdentifier> addedClass = new ArrayList<ClassIdentifier>();
         for (AddedClass i : addedData) {
-            addedClass[count++] = i.getClassIdentifier();
+            addedClass.add(i.getClassIdentifier());
         }
 
-        final Class<?>[] changedClasses = new Class<?>[classes.length];
-        count = 0;
+        final List<Class<?>> changedClasses = new ArrayList<Class<?>>();
         for (ClassDefinition i : classes) {
             System.out.println("Fakereplace is replacing class " + i.getDefinitionClass());
-            changedClasses[count++] = i.getDefinitionClass();
+            changedClasses.add(i.getDefinitionClass());
             ClassDataStore.instance().markClassReplaced(i.getClass());
         }
         // notify the integration classes that stuff is about to change
-        ClassChangeNotifier.instance().beforeChange(changedClasses, addedClass);
+        ClassChangeNotifier.instance().beforeChange(Collections.unmodifiableList(changedClasses), Collections.unmodifiableList(addedClass));
+        CurrentChangedClasses.prepareClasses(changedClasses);
         // re-write the classes so their field
         ReplacementResult result = ClassRedefiner.rewriteLoadedClasses(classes);
         try {
@@ -131,7 +133,7 @@ public class Agent {
             }
             Introspector.flushCaches();
 
-            ClassChangeNotifier.instance().notify(changedClasses, addedClass);
+            ClassChangeNotifier.instance().afterChange(Collections.unmodifiableList(CurrentChangedClasses.getChanged()), Collections.unmodifiableList(addedClass));
         } catch (Throwable e) {
             try {
                 // dump the classes to /tmp so we can look at them

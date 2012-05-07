@@ -22,9 +22,11 @@ package org.fakereplace.integration.metawidget;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.fakereplace.api.ChangedClass;
 import org.fakereplace.api.ClassChangeAware;
 import org.fakereplace.classloading.ClassIdentifier;
 import org.fakereplace.data.InstanceTracker;
@@ -52,14 +54,17 @@ public class ClassRedefinitionPlugin implements ClassChangeAware {
         return getField(clazz.getSuperclass(), name);
     }
 
-    public void beforeChange(Class<?>[] changed, ClassIdentifier[] added) {
+
+    @Override
+    public void beforeChange(final List<Class<?>> changed, final List<ClassIdentifier> added) {
 
     }
 
     /**
      * clear the action and properties caches
      */
-    public void notify(Class<?>[] changed, ClassIdentifier[] added) {
+    @Override
+    public void afterChange(List<ChangedClass> changed, List<ClassIdentifier> added) {
         Set<?> data = InstanceTracker.get(MetawidgetExtension.BASE_ACTION_STYLE);
         for (Object i : data) {
             clearMap(changed, i, "mActionCache");
@@ -71,13 +76,13 @@ public class ClassRedefinitionPlugin implements ClassChangeAware {
 
     }
 
-    public static void clearMap(Class<?>[] changed, Object i, String cacheName) {
+    public static void clearMap(List<ChangedClass> changed, Object i, String cacheName) {
         try {
             Field f = getField(i.getClass(), cacheName);
             f.setAccessible(true);
             Object map = f.get(i);
-            for (Class<?> c : changed) {
-                remove.invoke(map, c);
+            for (ChangedClass c : changed) {
+                remove.invoke(map, c.getChangedClass());
             }
         } catch (Exception e) {
             e.printStackTrace();

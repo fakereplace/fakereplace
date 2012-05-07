@@ -18,7 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.fakereplace.boot;
+package org.fakereplace.core;
 
 public class Constants {
     public static final String GENERATED_CLASS_PACKAGE = "org.fakereplace.proxies";
@@ -31,7 +31,7 @@ public class Constants {
 
     public static final String ADDED_STATIC_METHOD_DESCRIPTOR = "(I[Ljava/lang/Object;)Ljava/lang/Object;";
 
-    public static final String ADDED_CONSTRUCTOR_DESCRIPTOR = "(I[Ljava/lang/Object;Lorg/fakereplace/ConstructorArgument;)V";
+    public static final String ADDED_CONSTRUCTOR_DESCRIPTOR = "(I[Ljava/lang/Object;Lorg/fakereplace/core/ConstructorArgument;)V";
 
     public static final String FINAL_METHOD_ATTRIBUTE = "org.fakereplace.final";
 

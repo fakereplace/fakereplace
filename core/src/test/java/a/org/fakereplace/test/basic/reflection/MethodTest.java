@@ -22,7 +22,7 @@ package a.org.fakereplace.test.basic.reflection;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import org.fakereplace.boot.Constants;
+import org.fakereplace.core.Constants;
 import org.fakereplace.util.NoInstrument;
 import org.junit.Test;
 

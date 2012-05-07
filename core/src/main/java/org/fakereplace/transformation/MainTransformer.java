@@ -36,10 +36,10 @@ import java.util.Map;
 import java.util.Set;
 
 import javassist.bytecode.ClassFile;
-import org.fakereplace.AgentOption;
-import org.fakereplace.AgentOptions;
+import org.fakereplace.core.AgentOption;
+import org.fakereplace.core.AgentOptions;
 import org.fakereplace.api.ClassChangeAware;
-import org.fakereplace.api.ClassChangeNotifier;
+import org.fakereplace.core.ClassChangeNotifier;
 import org.fakereplace.api.Extension;
 import org.fakereplace.com.google.common.collect.MapMaker;
 

@@ -4,7 +4,7 @@
 
     <container qualifier="jboss" default="true">
         <configuration>
-            <property name="javaVmArguments">-javaagent:${project.build.directory}/fakereplace/fakereplace.jar -Dorg.fakereplace.index=${project.build.directory}/fakereplace.index ${jboss.vm.args}</property>
+            <property name="javaVmArguments">-javaagent:${project.build.directory}/fakereplace/fakereplace.jar=index-file=${project.build.directory}/fakereplace.index ${jboss.vm.args}</property>
         </configuration>
     </container>
 </arquillian>
