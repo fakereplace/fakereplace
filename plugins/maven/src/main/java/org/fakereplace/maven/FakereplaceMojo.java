@@ -60,6 +60,9 @@ public class FakereplaceMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+        if(project.getArtifact() == null || project.getArtifact().getFile() == null) {
+            throw new IllegalStateException("You must run mvn package before the fakereplace plugin runs, e.g. mvn package fakereplace:fakereplace");
+        }
         final String fileName = project.getArtifact().getFile().getName();
         ZipFile zipFile = null;
         try {
