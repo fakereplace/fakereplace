@@ -48,6 +48,11 @@
         </dependency>
 
         <dependency>
+            <groupId>org.fakereplace.fakereplace-google-collections</groupId>
+            <artifactId>fakereplace-google-collections</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.javassist</groupId>
             <artifactId>javassist</artifactId>
         </dependency>
@@ -83,6 +88,7 @@
                             <artifactSet>
                                 <includes>
                                     <include>org.fakereplace:*</include>
+                                    <include>org.fakereplace.fakereplace-google-collections:*</include>
                                     <include>org.javassist:*</include>
                                 </includes>
                             </artifactSet>

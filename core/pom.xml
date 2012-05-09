@@ -29,6 +29,11 @@
             <groupId>org.jboss.arquillian.junit</groupId>
             <artifactId>arquillian-junit-container</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>org.fakereplace.fakereplace-google-collections</groupId>
+            <artifactId>fakereplace-google-collections</artifactId>
+        </dependency>
     </dependencies>
 
 
@@ -60,6 +65,7 @@
                             <artifactSet>
                                 <includes>
                                     <include>org.javassist:javassist</include>
+                                    <include>org.fakereplace.fakereplace-google-collections:*</include>
                                 </includes>
                             </artifactSet>
                         </configuration>
