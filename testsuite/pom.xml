@@ -38,7 +38,6 @@
 
     <modules>
         <module>weld</module>
-        <module>jbossas</module>
     </modules>
 
     <dependencies>
@@ -103,4 +102,19 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>jbossas</id>
+            <activation>
+                <property>
+                    <name>jbossas</name>
+                </property>
+            </activation>
+            <modules>
+                <module>jbossas</module>
+            </modules>
+        </profile>
+    </profiles>
+
 </project>
