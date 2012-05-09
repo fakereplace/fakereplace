@@ -43,7 +43,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -215,7 +217,6 @@ public class AnnotationDataStore {
             Annotation[] ans = new Annotation[0];
             classAnnotations.put(clazz, ans);
             classAnnotationsByType.put(clazz, Collections.EMPTY_MAP);
-
             for(Annotation annotation : clazz.getDeclaredAnnotations()) {
                 changedClass.changeClassAnnotation(new ChangedAnnotationImpl(null, annotation, ChangeType.REMOVE, changedClass, annotation.annotationType()));
             }
@@ -228,6 +229,22 @@ public class AnnotationDataStore {
             for (Annotation a : pclass.getAnnotations()) {
                 anVals.put(a.annotationType(), a);
                 count++;
+            }
+            final Set<Class<? extends Annotation>> newAnnotations = new HashSet<Class<? extends Annotation>>(anVals.keySet());
+            for(Annotation annotation : clazz.getDeclaredAnnotations()) {
+                final Annotation newAnnotation = anVals.get(annotation.annotationType());
+                if(newAnnotation == null) {
+                    //the annotation was removed
+                    changedClass.changeClassAnnotation(new ChangedAnnotationImpl(null, annotation, ChangeType.REMOVE, changedClass, annotation.annotationType()));
+                } else if(!newAnnotation.equals(annotation)) {
+                    //same annotation, but it has been modified
+                    changedClass.changeClassAnnotation(new ChangedAnnotationImpl(newAnnotation, annotation, ChangeType.MODIFY, changedClass, annotation.annotationType()));
+                }
+                newAnnotations.remove(annotation.annotationType());
+            }
+            for(final Class<? extends Annotation> newAnnotationType : newAnnotations) {
+                final Annotation newAnnotation = anVals.get(newAnnotationType);
+                changedClass.changeClassAnnotation(new ChangedAnnotationImpl(newAnnotation, null, ChangeType.ADD, changedClass, newAnnotationType));
             }
         }
     }
