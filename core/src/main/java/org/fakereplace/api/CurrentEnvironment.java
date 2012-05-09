@@ -28,6 +28,7 @@ import org.fakereplace.core.DefaultEnvironment;
  * @author Stuart Douglas
  */
 public class CurrentEnvironment {
+
     protected static volatile Environment environment = new DefaultEnvironment();
 
     /**

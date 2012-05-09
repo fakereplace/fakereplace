@@ -42,7 +42,7 @@ import org.fakereplace.classloading.ClassLookupManager;
 import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.replacement.AddedClass;
 import org.fakereplace.replacement.ClassRedefiner;
-import org.fakereplace.replacement.CurrentChangedClasses;
+import org.fakereplace.replacement.notification.CurrentChangedClasses;
 import org.fakereplace.replacement.ReplacementResult;
 import org.fakereplace.server.FakereplaceServer;
 import org.fakereplace.transformation.ClassLoaderTransformer;

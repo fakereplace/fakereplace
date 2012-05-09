@@ -18,23 +18,40 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.fakereplace.api;
+package org.fakereplace.replacement.notification;
 
-import org.fakereplace.classloading.ClassIdentifier;
-
-import java.util.List;
+import org.fakereplace.api.ChangeType;
+import org.fakereplace.api.Changed;
 
 /**
- * interface that should be implemented by classes that with to be notified of
- * class changes.
+ * Represents an addition, a removal or a modification
  *
- * The classes that implement this interface are loaded into the
- *
- * @author stuart
+ * @author Stuart Douglas
  */
-public interface ClassChangeAware {
+public class ChangedImpl<T> implements Changed<T> {
 
-    void beforeChange(List<Class<?>> changed, List<ClassIdentifier> added);
+    private final ChangeType type;
+    private final T modified;
+    private final T existing;
 
-    void afterChange(List<ChangedClass> changed, List<ClassIdentifier> added);
+    public ChangedImpl(T modified, T existing, ChangeType type) {
+        this.modified = modified;
+        this.existing = existing;
+        this.type = type;
+    }
+
+    @Override
+    public ChangeType getType() {
+        return type;
+    }
+
+    @Override
+    public T getModified() {
+        return modified;
+    }
+
+    @Override
+    public T getExisting() {
+        return existing;
+    }
 }

@@ -18,14 +18,14 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.fakereplace.replacement;
+package org.fakereplace.replacement.notification;
+
+import org.fakereplace.api.ChangedClass;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.fakereplace.api.ChangedClass;
 
 /**
  * Holds builders for changed class information as the classes are being hot replaced.
@@ -36,21 +36,22 @@ import org.fakereplace.api.ChangedClass;
  */
 public class CurrentChangedClasses {
 
-    private static final ThreadLocal<Map<Class<?>, ChangedClassBuilder>> CHANGED = new ThreadLocal<Map<Class<?>, ChangedClassBuilder>>();
+    private static final ThreadLocal<Map<Class<?>, ChangedClassImpl>> CHANGED = new ThreadLocal<Map<Class<?>, ChangedClassImpl>>();
+
+    public static ChangedClassImpl get(final Class<?> clazz) {
+        return CHANGED.get().get(clazz);
+    }
 
     public static void prepareClasses(final List<Class<?>> changed) {
-        final HashMap<Class<?>, ChangedClassBuilder> map = new HashMap<Class<?>, ChangedClassBuilder>();
+        final HashMap<Class<?>, ChangedClassImpl> map = new HashMap<Class<?>, ChangedClassImpl>();
         CHANGED.set(map);
         for(Class<?> clazz: changed) {
-            map.put(clazz, new ChangedClassBuilder(clazz));
+            map.put(clazz, new ChangedClassImpl(clazz));
         }
     }
 
     public static List<ChangedClass> getChanged() {
-        final List<ChangedClass> ret = new ArrayList<ChangedClass>();
-        for(ChangedClassBuilder builder : CHANGED.get().values()) {
-            ret.add(builder.build());
-        }
+        final List<ChangedClass> ret = new ArrayList<ChangedClass>(CHANGED.get().values());
         CHANGED.remove();
         return ret;
     }

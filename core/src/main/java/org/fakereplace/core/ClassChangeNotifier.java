@@ -20,15 +20,15 @@
 
 package org.fakereplace.core;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.fakereplace.api.ChangedClass;
 import org.fakereplace.api.ClassChangeAware;
 import org.fakereplace.classloading.ClassIdentifier;
 import org.fakereplace.com.google.common.collect.MapMaker;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class ClassChangeNotifier {
 

@@ -146,7 +146,7 @@ such a program is covered only if its contents constitute a work based
 on the Library (independent of the use of the Library in a tool for
 writing it).  Whether that is true depends on what the Library does
 and what the program that uses the Library does.
-  
+
   1. You may copy and distribute verbatim copies of the Library's
 complete source code as you receive it, in any medium, provided that
 you conspicuously and appropriately publish on each copy an
@@ -167,7 +167,7 @@ above, provided that you also meet all of these conditions:
     a) The modified work must itself be a software library.
 
     b) You must cause the files modified to carry prominent notices
-    stating that you changed the files and the date of any change.
+    stating that you changedImpl the files and the date of any change.
 
     c) You must cause the whole of the work to be licensed at no
     charge to all third parties under the terms of this License.
@@ -456,7 +456,7 @@ SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH
 DAMAGES.
 
 		     END OF TERMS AND CONDITIONS
-		     
+
            How to Apply These Terms to Your New Libraries
 
   If you develop a new library, and you want it to be of the greatest

@@ -20,6 +20,20 @@
 
 package org.fakereplace.data;
 
+import javassist.bytecode.AccessFlag;
+import javassist.bytecode.AnnotationsAttribute;
+import javassist.bytecode.AttributeInfo;
+import javassist.bytecode.Bytecode;
+import javassist.bytecode.ClassFile;
+import javassist.bytecode.MethodInfo;
+import javassist.bytecode.Opcode;
+import javassist.bytecode.ParameterAnnotationsAttribute;
+import org.fakereplace.api.ChangeType;
+import org.fakereplace.replacement.notification.ChangedAnnotationImpl;
+import org.fakereplace.classloading.ProxyDefinitionStore;
+import org.fakereplace.replacement.notification.ChangedClassImpl;
+import org.fakereplace.replacement.notification.CurrentChangedClasses;
+
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -31,16 +45,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import javassist.bytecode.AccessFlag;
-import javassist.bytecode.AnnotationsAttribute;
-import javassist.bytecode.AttributeInfo;
-import javassist.bytecode.Bytecode;
-import javassist.bytecode.ClassFile;
-import javassist.bytecode.MethodInfo;
-import javassist.bytecode.Opcode;
-import javassist.bytecode.ParameterAnnotationsAttribute;
-import org.fakereplace.classloading.ProxyDefinitionStore;
 
 /**
  * Stores information about the annotations on reloaded classes
@@ -206,20 +210,25 @@ public class AnnotationDataStore {
 
     public static void recordClassAnnotations(Class<?> clazz, AnnotationsAttribute annotations) {
         // no annotations
+        ChangedClassImpl changedClass = CurrentChangedClasses.get(clazz);
         if (annotations == null) {
             Annotation[] ans = new Annotation[0];
             classAnnotations.put(clazz, ans);
             classAnnotationsByType.put(clazz, Collections.EMPTY_MAP);
-            return;
-        }
-        Class<?> pclass = createAnnotationsProxy(clazz.getClassLoader(), annotations);
-        classAnnotations.put(clazz, pclass.getAnnotations());
-        Map<Class<? extends Annotation>, Annotation> anVals = new HashMap<Class<? extends Annotation>, Annotation>();
-        classAnnotationsByType.put(clazz, anVals);
-        int count = 0;
-        for (Annotation a : pclass.getAnnotations()) {
-            anVals.put(a.annotationType(), a);
-            count++;
+
+            for(Annotation annotation : clazz.getDeclaredAnnotations()) {
+                changedClass.changeClassAnnotation(new ChangedAnnotationImpl(null, annotation, ChangeType.REMOVE, changedClass, annotation.annotationType()));
+            }
+        } else {
+            final Class<?> pclass = createAnnotationsProxy(clazz.getClassLoader(), annotations);
+            classAnnotations.put(clazz, pclass.getAnnotations());
+            Map<Class<? extends Annotation>, Annotation> anVals = new HashMap<Class<? extends Annotation>, Annotation>();
+            classAnnotationsByType.put(clazz, anVals);
+            int count = 0;
+            for (Annotation a : pclass.getAnnotations()) {
+                anVals.put(a.annotationType(), a);
+                count++;
+            }
         }
     }
 
