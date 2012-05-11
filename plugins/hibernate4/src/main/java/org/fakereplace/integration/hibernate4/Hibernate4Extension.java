@@ -17,23 +17,37 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.fakereplace.transformation;
 
-import java.lang.instrument.IllegalClassFormatException;
-import java.security.ProtectionDomain;
+package org.fakereplace.integration.hibernate4;
 
-import javassist.bytecode.BadBytecode;
-import javassist.bytecode.ClassFile;
+import java.util.Collections;
+import java.util.Set;
+
+import org.fakereplace.api.Extension;
+import org.fakereplace.transformation.FakereplaceTransformer;
 
 /**
  * @author Stuart Douglas
  */
-public interface FakereplaceTransformer {
+public class Hibernate4Extension implements Extension {
 
+    @Override
+    public FakereplaceTransformer getTransformer() {
+        return new Hibernate4ClassTransformer();
+    }
 
-    /**
-     * Transforms a class, returning true if any modifications where made
-     */
-    boolean transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final ClassFile file) throws IllegalClassFormatException, BadBytecode;
+    @Override
+    public String getClassChangeAwareName() {
+        return "org.fakereplace.integration.hibernate4.Hibernate4ClassChangeAware";
+    }
 
+    @Override
+    public Set<String> getIntegrationTriggerClassNames() {
+        return Collections.singleton("org.hibernate.ejb.EntityManagerFactoryImpl");
+    }
+
+    @Override
+    public Set<String> getTrackedInstanceClassNames() {
+        return Collections.emptySet();
+    }
 }

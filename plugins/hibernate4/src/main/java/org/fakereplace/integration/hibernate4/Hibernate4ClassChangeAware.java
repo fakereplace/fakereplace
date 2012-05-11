@@ -17,23 +17,32 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.fakereplace.transformation;
 
-import java.lang.instrument.IllegalClassFormatException;
-import java.security.ProtectionDomain;
+package org.fakereplace.integration.hibernate4;
 
-import javassist.bytecode.BadBytecode;
-import javassist.bytecode.ClassFile;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.fakereplace.api.ChangedClass;
+import org.fakereplace.api.ClassChangeAware;
+import org.fakereplace.classloading.ClassIdentifier;
 
 /**
  * @author Stuart Douglas
  */
-public interface FakereplaceTransformer {
+public class Hibernate4ClassChangeAware implements ClassChangeAware {
+    @Override
+    public void beforeChange(final List<Class<?>> changed, final List<ClassIdentifier> added) {
 
+    }
 
-    /**
-     * Transforms a class, returning true if any modifications where made
-     */
-    boolean transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final ClassFile file) throws IllegalClassFormatException, BadBytecode;
-
+    @Override
+    public void afterChange(final List<ChangedClass> changed, final List<ClassIdentifier> added) {
+        final Set<Class<?>> changedClasses = new HashSet<Class<?>>();
+        for(ChangedClass changedClass : changed) {
+            changedClasses.add(changedClass.getChangedClass());
+        }
+        CurrentEntityManagerFactories.handleChangedClasses(changedClasses);
+    }
 }

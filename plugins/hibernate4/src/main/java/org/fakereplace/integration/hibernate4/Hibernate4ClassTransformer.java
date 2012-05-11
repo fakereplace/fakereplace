@@ -1,0 +1,115 @@
+/*
+ * Copyright 2012, Stuart Douglas, and individual contributors as indicated
+ * by the @authors tag.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
+package org.fakereplace.integration.hibernate4;
+
+import java.lang.instrument.IllegalClassFormatException;
+import java.security.ProtectionDomain;
+import java.util.List;
+
+import javassist.bytecode.BadBytecode;
+import javassist.bytecode.Bytecode;
+import javassist.bytecode.ClassFile;
+import javassist.bytecode.CodeIterator;
+import javassist.bytecode.MethodInfo;
+import javassist.bytecode.Opcode;
+import org.fakereplace.transformation.FakereplaceTransformer;
+
+/**
+ * Class transformer that replaces invocations of the
+ *
+ * @author Stuart Douglas
+ */
+public class Hibernate4ClassTransformer implements FakereplaceTransformer {
+
+    public static final String PROXY_NAME = "org.fakereplace.integration.hibernate4.FakereplaceEntityManagerFactoryProxy";
+
+    @Override
+    public boolean transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final ClassFile file) throws IllegalClassFormatException, BadBytecode {
+        if (className.equals("org.hibernate.ejb.HibernatePersistence")) {
+            for (MethodInfo method : (List<MethodInfo>) file.getMethods()) {
+                if(method.getName().equals("createContainerEntityManagerFactory")) {
+
+                    //need to save the method params so we can re-use them when we re-create our EMF
+                    final int oldMax =  method.getCodeAttribute().getMaxLocals();
+                    method.getCodeAttribute().setMaxLocals(oldMax + 2);
+                    Bytecode s = new Bytecode(file.getConstPool());
+                    s.addAload(1);
+                    s.addAstore(oldMax);
+                    s.addAload(2);
+                    s.addAstore(oldMax + 1);
+
+                    //we need to interceptor the return value
+                    //and add in our own bytecode fragment.
+                    //first lets create our proxy creation code
+                    final Bytecode b = new Bytecode(file.getConstPool());
+                    b.addNew(PROXY_NAME);
+                    b.add(Opcode.DUP_X1);
+                    b.add(Opcode.SWAP);
+                    b.addAload(oldMax);
+                    b.addAload(oldMax + 1);
+                    b.addInvokespecial(PROXY_NAME, "<init>", "(Ljavax/persistence/EntityManagerFactory;Lorg/hibernate/ejb/HibernatePersistence;Ljavax/persistence/spi/PersistenceUnitInfo;Ljava/util/Map;)V");
+
+                    final CodeIterator itr = method.getCodeAttribute().iterator();
+                    itr.insert(s.get());
+                    while (itr.hasNext()) {
+                        final int opcode = itr.next();
+                        if(opcode == Opcode.ARETURN) {
+                            itr.insert(b.get());
+                        }
+                    }
+                } else if (method.getName().equals("createEntityManagerFactory")) {
+
+                    //need to save the method params so we can re-use them when we re-create our EMF
+                    final int oldMax =  method.getCodeAttribute().getMaxLocals();
+                    method.getCodeAttribute().setMaxLocals(oldMax + 2);
+                    Bytecode s = new Bytecode(file.getConstPool());
+                    s.addAload(1);
+                    s.addAstore(oldMax);
+                    s.addAload(2);
+                    s.addAstore(oldMax + 1);
+
+                    //we need to interceptor the return value
+                    //and add in our own bytecode fragment.
+                    //first lets create our proxy creation code
+                    final Bytecode b = new Bytecode(file.getConstPool());
+                    b.addNew(PROXY_NAME);
+                    b.add(Opcode.DUP_X1);
+                    b.add(Opcode.SWAP);
+                    b.addAload(oldMax);
+                    b.addAload(oldMax + 1);
+                    b.addInvokespecial(PROXY_NAME, "<init>", "(Ljavax/persistence/EntityManagerFactory;Lorg/hibernate/ejb/HibernatePersistence;Ljava/lang/String;Ljava/util/Map;)V");
+
+                    final CodeIterator itr = method.getCodeAttribute().iterator();
+                    itr.insert(s.get());
+                    while (itr.hasNext()) {
+                        final int opcode = itr.next();
+                        if(opcode == Opcode.ARETURN) {
+                            itr.insert(b.get());
+                        }
+                    }
+                }
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+}

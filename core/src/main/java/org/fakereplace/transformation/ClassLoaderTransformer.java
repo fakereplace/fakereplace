@@ -23,6 +23,7 @@ package org.fakereplace.transformation;
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
 
+import javassist.bytecode.BadBytecode;
 import javassist.bytecode.ClassFile;
 import org.fakereplace.core.ClassLoaderInstrumentation;
 
@@ -39,17 +40,11 @@ public class ClassLoaderTransformer implements FakereplaceTransformer {
     }
 
     @Override
-    public boolean transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final ClassFile file) throws IllegalClassFormatException {
-
-        try {
-            if (classBeingRedefined != null && ClassLoader.class.isAssignableFrom(classBeingRedefined)) {
-                return ClassLoaderInstrumentation.redefineClassLoader(file);
-            } else if (classBeingRedefined == null && className.endsWith("ClassLoader")) {
-                return ClassLoaderInstrumentation.redefineClassLoader(file);
-            }
-        } catch (Throwable e) {
-            e.printStackTrace();
-            throw new IllegalClassFormatException();
+    public boolean transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final ClassFile file) throws IllegalClassFormatException, BadBytecode {
+        if (classBeingRedefined != null && ClassLoader.class.isAssignableFrom(classBeingRedefined)) {
+            return ClassLoaderInstrumentation.redefineClassLoader(file);
+        } else if (classBeingRedefined == null && className.endsWith("ClassLoader")) {
+            return ClassLoaderInstrumentation.redefineClassLoader(file);
         }
         return false;
     }

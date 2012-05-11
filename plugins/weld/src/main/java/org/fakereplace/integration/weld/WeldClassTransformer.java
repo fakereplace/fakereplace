@@ -24,6 +24,7 @@ import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
 import java.util.List;
 
+import javassist.bytecode.BadBytecode;
 import javassist.bytecode.Bytecode;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.CodeIterator;
@@ -42,7 +43,7 @@ public class WeldClassTransformer implements FakereplaceTransformer {
     private static final Logger log = Logger.getLogger(WeldClassTransformer.class);
 
     @Override
-    public boolean transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, ClassFile file) throws IllegalClassFormatException {
+    public boolean transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, ClassFile file) throws IllegalClassFormatException, BadBytecode {
 
         /**
          * Hack up the proxy factory so it stores the proxy ClassFile. We need this to regenerate proxies.
@@ -59,17 +60,17 @@ public class WeldClassTransformer implements FakereplaceTransformer {
 
                     Integer beanArgument = null;
                     int count = 0;
-                    for(final String paramType  : DescriptorUtils.descriptorStringToParameterArray(method.getDescriptor())) {
-                        if(paramType.equals("javax/enterprise/inject/spi/Bean")) {
+                    for (final String paramType : DescriptorUtils.descriptorStringToParameterArray(method.getDescriptor())) {
+                        if (paramType.equals("javax/enterprise/inject/spi/Bean")) {
                             beanArgument = count;
                             break;
-                        } else if(paramType.equals("D") || paramType.equals("J")) {
+                        } else if (paramType.equals("D") || paramType.equals("J")) {
                             count += 2;
                         } else {
                             count++;
                         }
                     }
-                    if(beanArgument == null) {
+                    if (beanArgument == null) {
                         log.error("Constructor org.jboss.weld.bean.proxy.ProxyFactory.<init>" + method.getDescriptor() + " does not have a bean parameter, proxies produced by this factory will not be reloadable");
                         continue;
                     }
@@ -81,12 +82,8 @@ public class WeldClassTransformer implements FakereplaceTransformer {
                     code.addAload(beanArgument);
                     code.addInvokestatic(WeldClassChangeAware.class.getName(), "addProxyFactory", "(Lorg/jboss/weld/bean/proxy/ProxyFactory;)V");
                     CodeIterator it = method.getCodeAttribute().iterator();
-                    try {
-                        it.skipConstructor();
-                        it.insert(code.get());
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
+                    it.skipConstructor();
+                    it.insert(code.get());
                 }
             }
         }
