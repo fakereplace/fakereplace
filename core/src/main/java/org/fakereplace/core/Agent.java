@@ -61,7 +61,7 @@ public class Agent {
     private static volatile Instrumentation inst;
 
     private static volatile MainTransformer mainTransformer;
-    public static final String DUMP_CLASSES = "dump-classes";
+
 
     public static void premain(java.lang.String s, java.lang.instrument.Instrumentation i) {
 
@@ -100,7 +100,7 @@ public class Agent {
         mainTransformer.addTransformer(new Transformer(extension));
 
         //start the server
-        Thread thread = new Thread(new FakereplaceServer(6555));
+        Thread thread = new Thread(new FakereplaceServer(Integer.parseInt(AgentOptions.getOption(AgentOption.PORT))));
         thread.setDaemon(true);
         thread.setName("Fakereplace Thread");
         thread.start();

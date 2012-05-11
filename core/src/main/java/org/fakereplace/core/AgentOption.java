@@ -26,19 +26,31 @@ package org.fakereplace.core;
  * @author Stuart Douglas
  */
 public enum AgentOption {
-    INDEX_FILE("index-file"),
+    INDEX_FILE("index-file", "fakereplace.index"),
     DUMP_DIR("dump-dir"),
     PACKAGES("packages"),
     LOG("log"),
+    PORT("port", "6555"),
     ;
 
     private final String key;
+    private final String defaultValue;
 
     private AgentOption(final String key) {
         this.key = key;
+        this.defaultValue = null;
+    }
+
+    private AgentOption(final String key, final String defaultValue) {
+        this.key = key;
+        this.defaultValue = defaultValue;
     }
 
     public String getKey() {
         return key;
+    }
+
+    public String getDefaultValue() {
+        return defaultValue;
     }
 }

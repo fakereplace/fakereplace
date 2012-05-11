@@ -101,6 +101,7 @@ after the *-javaagent* command and comma seperated, e.g.
 * **log** Supported options are trace,debug,info,error
 * **index-file** The path to the fakereplace index file. Fakereplace stores this file after the first run to speed up later boots
 * **dump-dir** Dumps classes to this dir on hot replacement, only useful for developers working on Fakereplace
+* **port** The port that Fakereplace listens on
 
 Other
 -----

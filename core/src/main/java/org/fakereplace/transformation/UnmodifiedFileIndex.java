@@ -47,8 +47,6 @@ public class UnmodifiedFileIndex {
 
     public static String VERSION = "1.0";
 
-    private static final String FILENAME = "fakereplace.index";
-
     private static final Set<String> index = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
 
     public static void loadIndex() {
@@ -117,10 +115,7 @@ public class UnmodifiedFileIndex {
 
     private static File getFile() {
         final String fileProp = AgentOptions.getOption(AgentOption.INDEX_FILE);
-        if(fileProp != null) {
-            return new File(fileProp);
-        }
-        return new File(FILENAME);
+        return new File(fileProp);
     }
 
     public static void markClassUnmodified(final String clazz) {
