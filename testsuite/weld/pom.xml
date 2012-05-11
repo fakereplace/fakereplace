@@ -33,7 +33,6 @@
     <artifactId>fakereplace-weld-tests</artifactId>
     <name>Fakereplace Weld Integration Tests</name>
     <version>1.0.0.Alpha2-SNAPSHOT</version>
-    <url>http://maven.apache.org</url>
 
     <dependencies>
         <dependency>

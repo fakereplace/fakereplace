@@ -62,16 +62,11 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <version>1.5.10</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>javax.el</groupId>
             <artifactId>el-api</artifactId>
-            <version>2.2</version>
         </dependency>
     </dependencies>
-    <scm>
-        <developerConnection>scm:git:git@github.com:fakereplace/fakereplace.git</developerConnection>
-    </scm>
 </project>

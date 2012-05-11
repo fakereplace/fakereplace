@@ -30,39 +30,19 @@
     </parent>
 
     <groupId>org.fakereplace</groupId>
-    <artifactId>fakereplace-jbossas-tests</artifactId>
-    <name>Fakereplace Jboss AS Integration Tests</name>
+    <artifactId>fakereplace-hibernate4-tests</artifactId>
+    <name>Fakereplace Hibernate 4 Integration Tests</name>
     <version>1.0.0.Alpha2-SNAPSHOT</version>
-
-    <properties>
-        <jboss.vm.args>-ea</jboss.vm.args>
-    </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.fakereplace</groupId>
-            <artifactId>fakereplace-weld</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.as</groupId>
-            <artifactId>jboss-as-arquillian-container-managed</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.fakereplace</groupId>
-            <artifactId>fakereplace-client</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.spec.javax.ejb</groupId>
-            <artifactId>jboss-ejb-api_3.1_spec</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
+            <artifactId>fakereplace-hibernate4</artifactId>
         </dependency>
     </dependencies>
-
     <build>
         <plugins>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -85,30 +65,11 @@
                                 <include>**/*.java</include>
                             </includes>
                             <forkMode>once</forkMode>
-                            <systemPropertyVariables>
-                                <project.build.directory>${project.build.directory}</project.build.directory>
-                                <jboss.vm.args>${jboss.vm.args}</jboss.vm.args>
-                            </systemPropertyVariables>
+                            <argLine>-javaagent:${project.build.directory}/fakereplace/fakereplace.jar=index-file=${project.build.directory}/fakereplace.index,packages=a.org.fakereplace.test</argLine>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
         </plugins>
     </build>
-
-
-
-    <profiles>
-        <profile>
-            <id>debug</id>
-            <activation>
-                <property>
-                    <name>debug</name>
-                </property>
-            </activation>
-            <properties>
-                <jboss.vm.args>-ea -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,address=5005,server=y,suspend=y</jboss.vm.args>
-            </properties>
-        </profile>
-    </profiles>
 </project>

@@ -19,31 +19,35 @@
   -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>fakereplace-parent</artifactId>
+        <artifactId>fakereplace-plugins-parent</artifactId>
         <groupId>org.fakereplace</groupId>
         <version>1.0.0.Alpha2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <groupId>org.fakereplace</groupId>
-    <artifactId>fakereplace-plugins-parent</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>fakereplace-hibernate4</artifactId>
+    <name>Fakereplace Hibernate 4 Integration</name>
     <version>1.0.0.Alpha2-SNAPSHOT</version>
 
-    <name>Fakereplace Integration Parent</name>
-
-    <modules>
-        <module>seam</module>
-        <module>jsf</module>
-        <module>metawidget</module>
-        <module>maven</module>
-        <module>jbossas</module>
-        <module>weld</module>
-        <module>hibernate4</module>
-    </modules>
-
+    <dependencies>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.javassist</groupId>
+            <artifactId>javassist</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.fakereplace</groupId>
+            <artifactId>fakereplace</artifactId>
+        </dependency>
+    </dependencies>
 </project>

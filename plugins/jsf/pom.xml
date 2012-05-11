@@ -32,7 +32,4 @@
             <artifactId>fakereplace</artifactId>
         </dependency>
     </dependencies>
-    <scm>
-        <developerConnection>scm:git:git@github.com:fakereplace/fakereplace.git</developerConnection>
-    </scm>
 </project>
