@@ -46,9 +46,4 @@ public class WeldExtension implements Extension {
     public FakereplaceTransformer getTransformer() {
         return new WeldClassTransformer();
     }
-
-    public byte[] loadClass(String className) {
-        return null;
-    }
-
 }

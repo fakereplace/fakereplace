@@ -46,9 +46,4 @@ public class SeamExtension implements Extension {
     public FakereplaceTransformer getTransformer() {
         return null;
     }
-
-    public byte[] loadClass(String className) {
-        return null;
-    }
-
 }

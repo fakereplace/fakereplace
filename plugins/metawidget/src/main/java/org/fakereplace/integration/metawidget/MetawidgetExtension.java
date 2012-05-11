@@ -58,8 +58,4 @@ public class MetawidgetExtension implements Extension {
         return null;
     }
 
-    public byte[] loadClass(String className) {
-        return null;
-    }
-
 }

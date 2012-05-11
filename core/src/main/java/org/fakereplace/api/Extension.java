@@ -70,13 +70,6 @@ public interface Extension {
     Set<String> getIntegrationTriggerClassNames();
 
     /**
-     * If a classloader is registered as an instrumentation
-     * classloader it will attempt to load classes from here
-     * first.
-     */
-    byte[] loadClass(String className);
-
-    /**
      * get a list of classes that should be turned into tracked instances.
      *
      * @return
