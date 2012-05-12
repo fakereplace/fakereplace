@@ -23,7 +23,7 @@ package a.org.fakereplace.integration.jbossas.clientproxy.remoteejb;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import a.org.fakereplace.integration.jbossas.util.ClassReplacer;
+import a.org.fakereplace.integration.jbossas.util.RemoteClassReplacer;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -58,7 +58,7 @@ public class ClientProxyReplacementTest   {
         final RemoteInterface remote = (RemoteInterface) initialContext.lookup("ejb:/test/RemoteEjb!" + RemoteInterface.class.getName());
 
         remote.setValue("Hello CDI");
-        final ClassReplacer replacer = new ClassReplacer();
+        final RemoteClassReplacer replacer = new RemoteClassReplacer();
         replacer.queueClassForReplacement(AppScopedBean.class, AppScopedBean1.class);
         replacer.queueClassForReplacement(RemoteEjb.class, RemoteEjb1.class);
         replacer.replaceQueuedClasses("test.jar");

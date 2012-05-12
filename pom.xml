@@ -50,6 +50,7 @@
         <slf4j-simple.version>1.5.10</slf4j-simple.version>
         <hibernate-entitymanager.version>4.1.2.Final</hibernate-entitymanager.version>
         <hibernate-jpa-2.0-api.version>1.0.1.Final</hibernate-jpa-2.0-api.version>
+        <derby.version>10.8.2.2</derby.version>
     </properties>
 
 
@@ -86,6 +87,7 @@
         <module>client</module>
         <module>dist</module>
         <module>plugins</module>
+        <module>testsuite/shared</module>
         <module>testsuite</module>
     </modules>
 
@@ -144,6 +146,13 @@
 
             <dependency>
                 <groupId>org.fakereplace</groupId>
+                <artifactId>fakereplace-testsuite-shared</artifactId>
+                <version>${fakereplace.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.fakereplace</groupId>
                 <artifactId>fakereplace-weld</artifactId>
                 <version>${fakereplace.version}</version>
             </dependency>
@@ -179,6 +188,13 @@
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>${junit.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.derby</groupId>
+                <artifactId>derby</artifactId>
+                <version>${derby.version}</version>
+                <scope>test</scope>
             </dependency>
 
             <dependency>

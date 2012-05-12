@@ -38,7 +38,6 @@
 
     <modules>
         <module>weld</module>
-        <module>hibernate4</module>
     </modules>
 
     <dependencies>

@@ -18,22 +18,17 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package a.org.fakereplace.integration.jbossas.util;
+package a.org.fakereplace.testsuite.shared;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Date;
+import java.lang.instrument.ClassDefinition;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import javassist.ClassPool;
 import javassist.CtClass;
-import org.fakereplace.client.ClassData;
-import org.fakereplace.client.ContentSource;
-import org.fakereplace.client.FakeReplaceClient;
-import org.fakereplace.client.ResourceData;
+import org.fakereplace.core.Agent;
+import org.fakereplace.replacement.AddedClass;
 
 public class ClassReplacer {
 
@@ -42,8 +37,6 @@ public class ClassReplacer {
     private final Map<Class<?>, Class<?>> queuedClassReplacements = new HashMap<Class<?>, Class<?>>();
 
     private final Map<Class<?>, String> addedClasses = new HashMap<Class<?>, String>();
-
-    private final Map<String, ResourceData> replacedResources = new HashMap<String, ResourceData>();
 
     private final ClassPool pool = new ClassPool();
 
@@ -55,35 +48,22 @@ public class ClassReplacer {
         queuedClassReplacements.put(oldClass, newClass);
     }
 
-    public void queueResourceForReplacement(final Class<?> packageClass, final String old, final String newResource) {
-        replacedResources.put(old, new ResourceData(old, new Date().getTime(), new ContentSource() {
-            @Override
-            public byte[] getData() throws IOException {
-                final InputStream stream = packageClass.getResource(newResource).openStream();
-                try {
-                    ByteArrayOutputStream bs = new ByteArrayOutputStream();
-                    int read;
-                    byte[] buff = new byte[512];
-                    while ((read = stream.read(buff)) != -1) {
-                        bs.write(buff, 0, read);
-                    }
-                    return bs.toByteArray();
-                } finally {
-                    stream.close();
-                }
-
-            }
-        }));
-    }
-
     public void addNewClass(Class<?> definition, String name) {
         addedClasses.put(definition, name);
     }
 
+    public void replaceQueuedClasses() {
+        replaceQueuedClasses(true);
+    }
 
-    public void replaceQueuedClasses(final String deploymentName) {
+    public void replaceQueuedClassesWithInstrumentation() {
+        replaceQueuedClasses(false);
+    }
+
+    public void replaceQueuedClasses(boolean useFakereplace) {
         try {
-            final Map<String, ClassData> classes = new HashMap<String, ClassData>();
+            ClassDefinition[] definitions = new ClassDefinition[queuedClassReplacements.size()];
+            AddedClass[] newClasses = new AddedClass[addedClasses.size()];
             for (Class<?> o : queuedClassReplacements.keySet()) {
                 Class<?> n = queuedClassReplacements.get(o);
                 String newName = o.getName();
@@ -94,7 +74,7 @@ public class ClassReplacer {
             for (Entry<Class<?>, String> o : addedClasses.entrySet()) {
                 nameReplacements.put(o.getKey().getName(), o.getValue());
             }
-
+            int count = 0;
             for (Class<?> o : queuedClassReplacements.keySet()) {
                 Class<?> n = queuedClassReplacements.get(o);
                 CtClass nc = pool.get(n.getName());
@@ -108,14 +88,10 @@ public class ClassReplacer {
                     nc.replaceClassName(oldName, newName);
                 }
                 nc.setName(o.getName());
-                final byte[] data = nc.toBytecode();
-                classes.put(o.getName(), new ClassData(o.getName(), new Date().getTime(), new ContentSource() {
-                    @Override
-                    public byte[] getData() throws IOException {
-                        return data;
-                    }
-                }));
+                ClassDefinition cd = new ClassDefinition(o, nc.toBytecode());
+                definitions[count++] = cd;
             }
+            count = 0;
             for (Entry<Class<?>, String> o : addedClasses.entrySet()) {
                 CtClass nc = pool.get(o.getKey().getName());
 
@@ -127,15 +103,15 @@ public class ClassReplacer {
                     String oldName = nameReplacements.get(newName);
                     nc.replaceClassName(newName, oldName);
                 }
-                final byte[] data = nc.toBytecode();
-                classes.put(o.getKey().getName(), new ClassData(o.getKey().getName(), new Date().getTime(), new ContentSource() {
-                    @Override
-                    public byte[] getData() throws IOException {
-                        return data;
-                    }
-                }));
+                AddedClass ncd = new AddedClass(o.getValue(), nc.toBytecode(), o.getKey().getClassLoader());
+                newClasses[count++] = ncd;
             }
-            FakeReplaceClient.run(deploymentName, classes, replacedResources);
+
+            if (useFakereplace) {
+                Agent.redefine(definitions, newClasses);
+            } else {
+                Agent.getInstrumentation().redefineClasses(definitions);
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

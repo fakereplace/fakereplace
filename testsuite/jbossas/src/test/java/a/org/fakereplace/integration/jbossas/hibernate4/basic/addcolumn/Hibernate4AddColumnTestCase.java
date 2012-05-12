@@ -23,7 +23,7 @@ package a.org.fakereplace.integration.jbossas.hibernate4.basic.addcolumn;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import a.org.fakereplace.integration.jbossas.util.ClassReplacer;
+import a.org.fakereplace.integration.jbossas.util.RemoteClassReplacer;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -59,7 +59,7 @@ public class Hibernate4AddColumnTestCase {
         RemoteEmployee ejb = (RemoteEmployee)initialContext.lookup("ejb:/Hibernate4AddColumnTestCase/" + EmployeeEjb.class.getSimpleName() + "!" + RemoteEmployee.class.getName());
         ejb.saveEntity(1);
         Assert.assertEquals("1-name", ejb.getEntityDesc(1));
-        final ClassReplacer replacer = new ClassReplacer();
+        final RemoteClassReplacer replacer = new RemoteClassReplacer();
         replacer.queueClassForReplacement(Employee.class, Employee1.class);
         replacer.queueClassForReplacement(EmployeeEjb.class, EmployeeEjb1.class);
         replacer.replaceQueuedClasses(DEPLOYMENT_NAME);

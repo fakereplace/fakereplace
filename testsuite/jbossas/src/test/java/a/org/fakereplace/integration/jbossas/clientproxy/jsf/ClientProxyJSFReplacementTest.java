@@ -25,7 +25,7 @@ import java.net.URL;
 
 import javax.naming.NamingException;
 
-import a.org.fakereplace.integration.jbossas.util.ClassReplacer;
+import a.org.fakereplace.integration.jbossas.util.RemoteClassReplacer;
 import a.org.fakereplace.integration.jbossas.util.HttpUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -69,7 +69,7 @@ public class ClientProxyJSFReplacementTest {
         String content = HttpUtils.getContent(result);
         Assert.assertTrue(content, content.contains("FIRST: a"));
         Assert.assertFalse(content, content.contains("SECOND: b"));
-        final ClassReplacer replacer = new ClassReplacer();
+        final RemoteClassReplacer replacer = new RemoteClassReplacer();
         replacer.queueClassForReplacement(AppScopedBean.class, AppScopedBean1.class);
         replacer.queueResourceForReplacement(getClass(), "index.xhtml", "index1.xhtml");
         replacer.replaceQueuedClasses("test.war");
