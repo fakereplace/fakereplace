@@ -23,16 +23,16 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.jboss</groupId>
-        <artifactId>jboss-parent</artifactId>
-        <version>8</version>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
     </parent>
 
     <properties>
         <arquillian.version>1.0.0.CR7</arquillian.version>
         <arquillian.weld-se.version>1.0.0.CR3</arquillian.weld-se.version>
         <fakereplace.version>1.0.0.Alpha2-SNAPSHOT</fakereplace.version>
-        <fakereplace.google.collections.version>1.0.0.Final</fakereplace.google.collections.version>
+        <fakereplace.google.collections.version>1.0.1.Final</fakereplace.google.collections.version>
         <javassist.version>3.15.0-GA</javassist.version>
         <jbossas.version>7.1.1.Final</jbossas.version>
         <jsf-api.version>1.2_13</jsf-api.version>
@@ -59,21 +59,24 @@
     <version>1.0.0.Alpha2-SNAPSHOT</version>
 
     <name>Fakereplace Parent</name>
+    <url>http://fakereplace.org</url>
+    <description>The Fakereplace parent pom</description>
 
     <licenses>
         <license>
             <name>lgpl</name>
             <url>http://repository.jboss.org/licenses/lgpl-2.1.txt</url>
         </license>
-
-        <license>
-            <name>Apache 2.0</name>
-            <comments>All code in the org.fakereplace.com.google package</comments>
-            <url>http://repository.jboss.org/licenses/apache-2.0.txt</url>
-        </license>
     </licenses>
 
+    <developers>
+        <developer>
+            <name>Stuart Douglas</name>
+        </developer>
+    </developers>
+
     <scm>
+        <url>https://github.com/fakereplace/fakereplace</url>
         <developerConnection>scm:git:git@github.com:fakereplace/fakereplace.git</developerConnection>
     </scm>
 
