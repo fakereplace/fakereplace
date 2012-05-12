@@ -63,7 +63,7 @@ pom.xml:
           <plugin>
             <groupId>org.fakereplace</groupId>
             <artifactId>fakereplace-plugin</artifactId>
-            <version>1.0.0.Alpha1</version>
+            <version>1.0.0.Alpha2</version>
             <executions>
               <execution>
                 <phase>package</phase>
