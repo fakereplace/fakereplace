@@ -25,14 +25,14 @@
     <parent>
         <artifactId>fakereplace-testsuite-parent</artifactId>
         <groupId>org.fakereplace</groupId>
-        <version>1.0.0.Alpha2</version>
+        <version>1.0.0.Alpha3-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <groupId>org.fakereplace</groupId>
     <artifactId>fakereplace-hibernate4-tests</artifactId>
     <name>Fakereplace Hibernate 4 Integration Tests</name>
-    <version>1.0.0.Alpha2</version>
+    <version>1.0.0.Alpha3-SNAPSHOT</version>
 
     <dependencies>
         <dependency>
