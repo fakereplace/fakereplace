@@ -66,7 +66,7 @@ public class FakereplaceEntityManagerFactoryProxy implements EntityManagerFactor
     }
 
     public void reload() {
-        final EntityManagerFactory old = delegate;
+        delegate.close();
         if (persistenceUnitInfo != null) {
             delegate = hibernatePersistence.createContainerEntityManagerFactory(persistenceUnitInfo, properties);
         } else if (persistenceUnitName != null) {
@@ -74,8 +74,6 @@ public class FakereplaceEntityManagerFactoryProxy implements EntityManagerFactor
         } else {
             delegate = hibernatePersistence.createEntityManagerFactory(properties);
         }
-        //TODO: should we actually close this here?
-        old.close();
     }
 
     @Override

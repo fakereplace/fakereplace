@@ -32,7 +32,6 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -41,7 +40,6 @@ import org.junit.runner.RunWith;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-@Ignore
 public class Hibernate4AddColumnTestCase {
 
     public static final String DEPLOYMENT_NAME = "Hibernate4AddColumnTestCase.jar";
@@ -63,10 +61,10 @@ public class Hibernate4AddColumnTestCase {
         Assert.assertEquals("1-name", ejb.getEntityDesc(1));
         final ClassReplacer replacer = new ClassReplacer();
         replacer.queueClassForReplacement(Employee.class, Employee1.class);
-        replacer.queueClassForReplacement(EmployeeEjb.class, EmployeeEjb.class);
+        replacer.queueClassForReplacement(EmployeeEjb.class, EmployeeEjb1.class);
         replacer.replaceQueuedClasses(DEPLOYMENT_NAME);
         ejb.saveEntity(2);
-        Assert.assertEquals("2-name-address", ejb.getEntityDesc(1));
+        Assert.assertEquals("2-name-address", ejb.getEntityDesc(2));
     }
 
 }

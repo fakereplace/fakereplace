@@ -20,7 +20,7 @@
 
 package org.fakereplace.integration.jbossas.hibernate4;
 
-import org.fakereplace.integration.hibernate4.HibernateEnvironment;
+import org.fakereplace.hibernate4.HibernateEnvironment;
 
 /**
  * @author Stuart Douglas

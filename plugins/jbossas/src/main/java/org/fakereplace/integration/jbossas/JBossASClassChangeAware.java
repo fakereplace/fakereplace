@@ -54,7 +54,7 @@ public class JBossASClassChangeAware implements ClassChangeAware {
     }
 
     private void clearJSRResourceCache() {
-        final Set<?> caches = InstanceTracker.get(JbossasExtension.RESOURCE_CACHE_CLASS);
+        final Set<?> caches = InstanceTracker.get(JBossASExtension.RESOURCE_CACHE_CLASS);
         for(Object cache : caches) {
             try {
                 Field field = cache.getClass().getDeclaredField("cache");

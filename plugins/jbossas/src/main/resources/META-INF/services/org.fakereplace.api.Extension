@@ -1,1 +1,2 @@
-org.fakereplace.integration.jbossas.JbossasExtension
+org.fakereplace.integration.jbossas.JBossASExtension
+org.fakereplace.integration.jbossas.hibernate4.JBossASHibernate4Extension

@@ -31,7 +31,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.fakereplace.api.Environment;
-import org.fakereplace.integration.hibernate4.HibernateEnvironment;
+import org.fakereplace.hibernate4.HibernateEnvironment;
 import org.fakereplace.integration.jbossas.hibernate4.JBossASHibernateEnvironment;
 import org.fakereplace.logging.Logger;
 import org.jboss.as.server.CurrentServiceContainer;

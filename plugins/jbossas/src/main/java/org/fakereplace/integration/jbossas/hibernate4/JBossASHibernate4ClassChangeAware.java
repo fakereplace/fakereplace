@@ -21,15 +21,16 @@
 package org.fakereplace.integration.jbossas.hibernate4;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.fakereplace.api.ChangedClass;
+import org.fakereplace.api.ClassChangeAware;
 import org.fakereplace.classloading.ClassIdentifier;
 import org.fakereplace.data.InstanceTracker;
-import org.fakereplace.integration.hibernate4.FakereplaceEntityManagerFactoryProxy;
-import org.fakereplace.integration.jbossas.JbossasExtension;
 import org.jboss.as.jpa.service.PersistenceUnitServiceImpl;
 import org.jboss.as.jpa.spi.PersistenceProviderAdaptor;
 import org.jboss.as.jpa.spi.PersistenceUnitMetadata;
@@ -39,31 +40,38 @@ import org.jboss.as.server.CurrentServiceContainer;
 /**
  * @author Stuart Douglas
  */
-public class JBossASHibernate4Replacer {
+public class JBossASHibernate4ClassChangeAware implements ClassChangeAware {
 
-    public static void handleHibernateReplacement(List<ChangedClass> changed, List<ClassIdentifier> added) {
+    @Override
+    public void beforeChange(final List<Class<?>> changed, final List<ClassIdentifier> added) {
+
+    }
+
+    @Override
+    public void afterChange(final List<ChangedClass> changed, final List<ClassIdentifier> added) {
         final Set<Class<?>> changedClasses = new HashSet<Class<?>>();
         for (ChangedClass changedClass : changed) {
             changedClasses.add(changedClass.getChangedClass());
         }
-        final Set<PersistenceUnitServiceImpl> puServices = (Set<PersistenceUnitServiceImpl>) InstanceTracker.get(JbossasExtension.PERSISTENCE_UNIT_SERVICE);
+        final Set<PersistenceUnitServiceImpl> puServices = (Set<PersistenceUnitServiceImpl>) InstanceTracker.get(JBossASHibernate4Extension.PERSISTENCE_UNIT_SERVICE);
 
         try {
             final Field puField = PersistenceUnitServiceImpl.class.getDeclaredField("pu");
             puField.setAccessible(true);
-            final Field persistenceProviderAdaptorField = PersistenceUnitServiceImpl.class.getField("persistenceProviderAdaptor");
+            final Field persistenceProviderAdaptorField = PersistenceUnitServiceImpl.class.getDeclaredField("persistenceProviderAdaptor");
             persistenceProviderAdaptorField.setAccessible(true);
 
 
             WritableServiceBasedNamingStore.pushOwner(CurrentServiceContainer.getServiceContainer());
             try {
                 for (PersistenceUnitServiceImpl puService : puServices) {
-                    final FakereplaceEntityManagerFactoryProxy proxy = (FakereplaceEntityManagerFactoryProxy) puService.getEntityManagerFactory();
+                    final Object proxy = puService.getEntityManagerFactory();
                     final PersistenceProviderAdaptor adaptor = (PersistenceProviderAdaptor) persistenceProviderAdaptorField.get(puService);
                     final PersistenceUnitMetadata pu = (PersistenceUnitMetadata) puField.get(puService);
                     adaptor.beforeCreateContainerEntityManagerFactory(pu);
                     try {
-                        proxy.reload();
+                        Method method = proxy.getClass().getDeclaredMethod("reload");
+                        method.invoke(proxy);
                     } finally {
                         adaptor.afterCreateContainerEntityManagerFactory(pu);
                     }
@@ -75,6 +83,10 @@ public class JBossASHibernate4Replacer {
         } catch (NoSuchFieldException e) {
             throw new RuntimeException(e);
         } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        } catch (InvocationTargetException e) {
             throw new RuntimeException(e);
         }
     }
