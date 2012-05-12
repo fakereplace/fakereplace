@@ -32,7 +32,9 @@ import java.lang.instrument.UnmodifiableClassException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ServiceLoader;
 import java.util.Set;
 
 import javassist.bytecode.ClassFile;
@@ -68,7 +70,7 @@ public class Agent {
         AgentOptions.setup(s);
         inst = i;
 
-        final Set<Extension> extension = IntegrationLoader.getIntegrationInfo(ClassLoader.getSystemClassLoader());
+        final Set<Extension> extension = getIntegrationInfo(ClassLoader.getSystemClassLoader());
 
         for (final Extension info : extension) {
 
@@ -168,4 +170,13 @@ public class Agent {
         return inst;
     }
 
+    public static Set<Extension> getIntegrationInfo(ClassLoader clr) {
+        final ServiceLoader<Extension> loader = ServiceLoader.load(Extension.class, clr);
+        final Set<Extension> integrations = new HashSet<Extension>();
+        final Iterator<Extension> it = loader.iterator();
+        while (it.hasNext()) {
+            integrations.add(it.next());
+        }
+        return integrations;
+    }
 }
