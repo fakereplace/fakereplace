@@ -25,14 +25,14 @@
     <parent>
         <artifactId>fakereplace-testsuite-parent</artifactId>
         <groupId>org.fakereplace</groupId>
-        <version>1.0.0.Alpha2-SNAPSHOT</version>
+        <version>1.0.0.Alpha2</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <groupId>org.fakereplace</groupId>
     <artifactId>fakereplace-jbossas-tests</artifactId>
     <name>Fakereplace Jboss AS Integration Tests</name>
-    <version>1.0.0.Alpha2-SNAPSHOT</version>
+    <version>1.0.0.Alpha2</version>
 
     <properties>
         <jboss.vm.args>-ea</jboss.vm.args>
