@@ -30,12 +30,14 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.metamodel.Metamodel;
 import javax.persistence.spi.PersistenceUnitInfo;
 
+import org.hibernate.SessionFactory;
+import org.hibernate.ejb.HibernateEntityManagerFactory;
 import org.hibernate.ejb.HibernatePersistence;
 
 /**
  * @author Stuart Douglas
  */
-public class FakereplaceEntityManagerFactoryProxy implements EntityManagerFactory {
+public class FakereplaceEntityManagerFactoryProxy implements EntityManagerFactory, HibernateEntityManagerFactory {
 
     private volatile EntityManagerFactory delegate;
 
@@ -44,7 +46,7 @@ public class FakereplaceEntityManagerFactoryProxy implements EntityManagerFactor
     private final Map properties;
     private final PersistenceUnitInfo persistenceUnitInfo;
 
-    public FakereplaceEntityManagerFactoryProxy(final EntityManagerFactory delegate, final HibernatePersistence hibernatePersistence, final Map properties, final PersistenceUnitInfo persistenceUnitInfo) {
+    public FakereplaceEntityManagerFactoryProxy(final EntityManagerFactory delegate, final HibernatePersistence hibernatePersistence, final PersistenceUnitInfo persistenceUnitInfo, final Map properties) {
         this.delegate = delegate;
         this.hibernatePersistence = hibernatePersistence;
         this.properties = properties;
@@ -53,7 +55,7 @@ public class FakereplaceEntityManagerFactoryProxy implements EntityManagerFactor
         CurrentEntityManagerFactories.registerEntityManager(this);
     }
 
-    public FakereplaceEntityManagerFactoryProxy(final EntityManagerFactory delegate, final HibernatePersistence hibernatePersistence, final Map properties, final String persistenceUnitName) {
+    public FakereplaceEntityManagerFactoryProxy(final EntityManagerFactory delegate, final HibernatePersistence hibernatePersistence, final String persistenceUnitName, final Map properties) {
         this.delegate = delegate;
         this.hibernatePersistence = hibernatePersistence;
         this.properties = properties;
@@ -64,10 +66,12 @@ public class FakereplaceEntityManagerFactoryProxy implements EntityManagerFactor
 
     public void reload() {
         final EntityManagerFactory old = delegate;
-        if(persistenceUnitInfo != null) {
+        if (persistenceUnitInfo != null) {
             delegate = hibernatePersistence.createContainerEntityManagerFactory(persistenceUnitInfo, properties);
-        } else {
+        } else if (persistenceUnitName != null) {
             delegate = hibernatePersistence.createEntityManagerFactory(persistenceUnitName, properties);
+        } else {
+            delegate = hibernatePersistence.createEntityManagerFactory(properties);
         }
         //TODO: should we actually clode this here?
         old.close();
@@ -116,5 +120,10 @@ public class FakereplaceEntityManagerFactoryProxy implements EntityManagerFactor
     @Override
     public PersistenceUnitUtil getPersistenceUnitUtil() {
         return delegate.getPersistenceUnitUtil();
+    }
+
+    @Override
+    public SessionFactory getSessionFactory() {
+        return ((HibernateEntityManagerFactory)delegate).getSessionFactory();
     }
 }

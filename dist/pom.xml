@@ -34,6 +34,11 @@
 
         <dependency>
             <groupId>org.fakereplace</groupId>
+            <artifactId>fakereplace-hibernate4</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.fakereplace</groupId>
             <artifactId>fakereplace-metawidget</artifactId>
         </dependency>
 

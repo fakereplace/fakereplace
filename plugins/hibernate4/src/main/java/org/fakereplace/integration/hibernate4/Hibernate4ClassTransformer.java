@@ -43,7 +43,7 @@ public class Hibernate4ClassTransformer implements FakereplaceTransformer {
 
     @Override
     public boolean transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final ClassFile file) throws IllegalClassFormatException, BadBytecode {
-        if (className.equals("org.hibernate.ejb.HibernatePersistence")) {
+        if (file.getName().equals("org.hibernate.ejb.HibernatePersistence")) {
             for (MethodInfo method : (List<MethodInfo>) file.getMethods()) {
                 if(method.getName().equals("createContainerEntityManagerFactory")) {
 
@@ -63,19 +63,14 @@ public class Hibernate4ClassTransformer implements FakereplaceTransformer {
                     b.addNew(PROXY_NAME);
                     b.add(Opcode.DUP_X1);
                     b.add(Opcode.SWAP);
+                    b.addAload(0);
                     b.addAload(oldMax);
                     b.addAload(oldMax + 1);
                     b.addInvokespecial(PROXY_NAME, "<init>", "(Ljavax/persistence/EntityManagerFactory;Lorg/hibernate/ejb/HibernatePersistence;Ljavax/persistence/spi/PersistenceUnitInfo;Ljava/util/Map;)V");
 
-                    final CodeIterator itr = method.getCodeAttribute().iterator();
-                    itr.insert(s.get());
-                    while (itr.hasNext()) {
-                        final int opcode = itr.next();
-                        if(opcode == Opcode.ARETURN) {
-                            itr.insert(b.get());
-                        }
-                    }
-                } else if (method.getName().equals("createEntityManagerFactory")) {
+                    insertBeforeReturn(method, s, b);
+                } else if (method.getName().equals("createEntityManagerFactory") &&
+                        method.getDescriptor().equals("(Ljava/lang/String;Ljava/util/Map;)Ljavax/persistence/EntityManagerFactory;")) {
 
                     //need to save the method params so we can re-use them when we re-create our EMF
                     final int oldMax =  method.getCodeAttribute().getMaxLocals();
@@ -93,23 +88,53 @@ public class Hibernate4ClassTransformer implements FakereplaceTransformer {
                     b.addNew(PROXY_NAME);
                     b.add(Opcode.DUP_X1);
                     b.add(Opcode.SWAP);
+                    b.addAload(0);
                     b.addAload(oldMax);
                     b.addAload(oldMax + 1);
                     b.addInvokespecial(PROXY_NAME, "<init>", "(Ljavax/persistence/EntityManagerFactory;Lorg/hibernate/ejb/HibernatePersistence;Ljava/lang/String;Ljava/util/Map;)V");
 
-                    final CodeIterator itr = method.getCodeAttribute().iterator();
-                    itr.insert(s.get());
-                    while (itr.hasNext()) {
-                        final int opcode = itr.next();
-                        if(opcode == Opcode.ARETURN) {
-                            itr.insert(b.get());
-                        }
-                    }
+                    insertBeforeReturn(method, s, b);
+                } else if (method.getName().equals("createEntityManagerFactory") &&
+                        method.getDescriptor().equals("(Ljava/util/Map;)Ljavax/persistence/EntityManagerFactory;")) {
+
+                    //need to save the method params so we can re-use them when we re-create our EMF
+                    final int oldMax =  method.getCodeAttribute().getMaxLocals();
+                    method.getCodeAttribute().setMaxLocals(oldMax + 1);
+                    Bytecode s = new Bytecode(file.getConstPool());
+                    s.addAload(1);
+                    s.addAstore(oldMax);
+
+                    //we need to interceptor the return value
+                    //and add in our own bytecode fragment.
+                    //first lets create our proxy creation code
+                    final Bytecode b = new Bytecode(file.getConstPool());
+                    b.addNew(PROXY_NAME);
+                    b.add(Opcode.DUP_X1);
+                    b.add(Opcode.SWAP);
+                    b.addAload(0);
+                    b.add(Opcode.ACONST_NULL);
+                    b.addAload(oldMax);
+                    b.addInvokespecial(PROXY_NAME, "<init>", "(Ljavax/persistence/EntityManagerFactory;Lorg/hibernate/ejb/HibernatePersistence;Ljava/lang/String;Ljava/util/Map;)V");
+
+                    insertBeforeReturn(method, s, b);
                 }
             }
             return true;
         } else {
             return false;
         }
+    }
+
+    private void insertBeforeReturn(final MethodInfo method, final Bytecode s, final Bytecode b) throws BadBytecode {
+        final CodeIterator itr = method.getCodeAttribute().iterator();
+        itr.insert(s.get());
+        while (itr.hasNext()) {
+            final int pos = itr.next();
+            int opcode = itr.byteAt(pos);
+            if(opcode == Opcode.ARETURN) {
+                itr.insert(pos, b.get());
+            }
+        }
+        method.getCodeAttribute().computeMaxStack();
     }
 }

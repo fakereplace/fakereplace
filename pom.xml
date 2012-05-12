@@ -49,6 +49,7 @@
         <el-api.version>2.2</el-api.version>
         <slf4j-simple.version>1.5.10</slf4j-simple.version>
         <hibernate-entitymanager.version>4.1.2.Final</hibernate-entitymanager.version>
+        <hibernate-jpa-2.0-api.version>1.0.1.Final</hibernate-jpa-2.0-api.version>
     </properties>
 
 
@@ -205,6 +206,12 @@
                 <groupId>org.hibernate</groupId>
                 <artifactId>hibernate-entitymanager</artifactId>
                 <version>${hibernate-entitymanager.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.hibernate.javax.persistence</groupId>
+                <artifactId>hibernate-jpa-2.0-api</artifactId>
+                <version>${hibernate-jpa-2.0-api.version}</version>
             </dependency>
 
             <dependency>
