@@ -76,10 +76,6 @@ pom.xml:
         </plugins>
       </build>
 
-
-You will need the [JBoss Maven Repository](https://community.jboss.org/wiki/MavenGettingStarted-Users) in your pom.xml
-or settings.xml.
-
 And then run
 
 `
