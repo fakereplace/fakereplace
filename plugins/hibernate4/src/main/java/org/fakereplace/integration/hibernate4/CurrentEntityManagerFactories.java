@@ -20,7 +20,9 @@
 
 package org.fakereplace.integration.hibernate4;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.WeakHashMap;
 
@@ -35,19 +37,13 @@ public class CurrentEntityManagerFactories {
         ENTITY_MANAGERS.add(proxy);
     }
 
-    public static void handleChangedClasses(final Set<Class<?>> changedClasses) {
-
-        for(FakereplaceEntityManagerFactoryProxy entityManagerFactory : ENTITY_MANAGERS) {
-            for(Class<?> clazz : changedClasses) {
-                try {
-                    entityManagerFactory.getMetamodel().entity(clazz);
-                    entityManagerFactory.reload();
-                    continue;
-                } catch (IllegalArgumentException e) {
-
-                }
+    public static List<FakereplaceEntityManagerFactoryProxy> getEMFForEntities(final Set<Class<?>> changedClasses) {
+        final List<FakereplaceEntityManagerFactoryProxy> ret = new ArrayList<FakereplaceEntityManagerFactoryProxy>();
+        for (FakereplaceEntityManagerFactoryProxy entityManagerFactory : ENTITY_MANAGERS) {
+            if(entityManagerFactory.containsEntity(changedClasses)) {
+                ret.add(entityManagerFactory);
             }
         }
-
+        return ret;
     }
 }

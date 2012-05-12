@@ -66,9 +66,9 @@ public class Transformer implements FakereplaceTransformer {
         ReflectionInstrumentationSetup.setup(manipulator);
         for (Extension i : extension) {
             trackedInstances.addAll(i.getTrackedInstanceClassNames());
-            FakereplaceTransformer t = i.getTransformer();
+            List<FakereplaceTransformer> t = i.getTransformers();
             if (t != null) {
-                integrationTransformers.add(t);
+                integrationTransformers.addAll(t);
             }
         }
     }

@@ -26,6 +26,7 @@ import java.util.Set;
 
 import org.fakereplace.api.ChangedClass;
 import org.fakereplace.api.ClassChangeAware;
+import org.fakereplace.api.CurrentEnvironment;
 import org.fakereplace.classloading.ClassIdentifier;
 
 /**
@@ -43,6 +44,23 @@ public class Hibernate4ClassChangeAware implements ClassChangeAware {
         for(ChangedClass changedClass : changed) {
             changedClasses.add(changedClass.getChangedClass());
         }
-        CurrentEntityManagerFactories.handleChangedClasses(changedClasses);
+        final List<FakereplaceEntityManagerFactoryProxy> entityManagers = CurrentEntityManagerFactories.getEMFForEntities(changedClasses);
+
+
+        final HibernateEnvironment hibEnv = CurrentEnvironment.getEnvironment().getService(HibernateEnvironment.class);
+        final boolean replaceContainerManaged;
+        if (hibEnv != null) {
+            replaceContainerManaged = hibEnv.replaceContainerManagedEntityManagers();
+        } else {
+            replaceContainerManaged = true;
+        }
+
+        for(FakereplaceEntityManagerFactoryProxy entityManager :entityManagers) {
+            if(!entityManager.isContainerManaged() ||
+                    replaceContainerManaged) {
+                entityManager.reload();
+            }
+        }
     }
+
 }

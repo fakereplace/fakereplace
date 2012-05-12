@@ -21,6 +21,7 @@
 package org.fakereplace.integration.hibernate4;
 
 import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.Cache;
 import javax.persistence.EntityManager;
@@ -73,7 +74,7 @@ public class FakereplaceEntityManagerFactoryProxy implements EntityManagerFactor
         } else {
             delegate = hibernatePersistence.createEntityManagerFactory(properties);
         }
-        //TODO: should we actually clode this here?
+        //TODO: should we actually close this here?
         old.close();
     }
 
@@ -125,5 +126,21 @@ public class FakereplaceEntityManagerFactoryProxy implements EntityManagerFactor
     @Override
     public SessionFactory getSessionFactory() {
         return ((HibernateEntityManagerFactory)delegate).getSessionFactory();
+    }
+
+    public boolean isContainerManaged() {
+        return persistenceUnitInfo != null;
+    }
+
+    public boolean containsEntity(final Set<Class<?>> classes) {
+        for (Class<?> clazz : classes) {
+            try {
+                delegate.getMetamodel().entity(clazz);
+                return true;
+            } catch (IllegalArgumentException e) {
+
+            }
+        }
+        return false;
     }
 }

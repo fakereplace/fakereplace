@@ -22,6 +22,7 @@ package org.fakereplace.integration.seam;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.fakereplace.api.Extension;
@@ -43,7 +44,7 @@ public class SeamExtension implements Extension {
         return ret;
     }
 
-    public FakereplaceTransformer getTransformer() {
-        return null;
+    public List<FakereplaceTransformer> getTransformers() {
+        return Collections.emptyList();
     }
 }

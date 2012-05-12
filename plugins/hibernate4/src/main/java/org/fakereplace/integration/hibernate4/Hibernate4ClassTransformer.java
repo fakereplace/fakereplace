@@ -33,7 +33,7 @@ import javassist.bytecode.Opcode;
 import org.fakereplace.transformation.FakereplaceTransformer;
 
 /**
- * Class transformer that replaces invocations of the
+ * Class transformer that intercepts invocations of the HibernatePersistence create* methods.
  *
  * @author Stuart Douglas
  */
@@ -45,10 +45,10 @@ public class Hibernate4ClassTransformer implements FakereplaceTransformer {
     public boolean transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final ClassFile file) throws IllegalClassFormatException, BadBytecode {
         if (file.getName().equals("org.hibernate.ejb.HibernatePersistence")) {
             for (MethodInfo method : (List<MethodInfo>) file.getMethods()) {
-                if(method.getName().equals("createContainerEntityManagerFactory")) {
+                if (method.getName().equals("createContainerEntityManagerFactory")) {
 
                     //need to save the method params so we can re-use them when we re-create our EMF
-                    final int oldMax =  method.getCodeAttribute().getMaxLocals();
+                    final int oldMax = method.getCodeAttribute().getMaxLocals();
                     method.getCodeAttribute().setMaxLocals(oldMax + 2);
                     Bytecode s = new Bytecode(file.getConstPool());
                     s.addAload(1);
@@ -73,7 +73,7 @@ public class Hibernate4ClassTransformer implements FakereplaceTransformer {
                         method.getDescriptor().equals("(Ljava/lang/String;Ljava/util/Map;)Ljavax/persistence/EntityManagerFactory;")) {
 
                     //need to save the method params so we can re-use them when we re-create our EMF
-                    final int oldMax =  method.getCodeAttribute().getMaxLocals();
+                    final int oldMax = method.getCodeAttribute().getMaxLocals();
                     method.getCodeAttribute().setMaxLocals(oldMax + 2);
                     Bytecode s = new Bytecode(file.getConstPool());
                     s.addAload(1);
@@ -98,7 +98,7 @@ public class Hibernate4ClassTransformer implements FakereplaceTransformer {
                         method.getDescriptor().equals("(Ljava/util/Map;)Ljavax/persistence/EntityManagerFactory;")) {
 
                     //need to save the method params so we can re-use them when we re-create our EMF
-                    final int oldMax =  method.getCodeAttribute().getMaxLocals();
+                    final int oldMax = method.getCodeAttribute().getMaxLocals();
                     method.getCodeAttribute().setMaxLocals(oldMax + 1);
                     Bytecode s = new Bytecode(file.getConstPool());
                     s.addAload(1);
@@ -131,7 +131,7 @@ public class Hibernate4ClassTransformer implements FakereplaceTransformer {
         while (itr.hasNext()) {
             final int pos = itr.next();
             int opcode = itr.byteAt(pos);
-            if(opcode == Opcode.ARETURN) {
+            if (opcode == Opcode.ARETURN) {
                 itr.insert(pos, b.get());
             }
         }

@@ -24,12 +24,15 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.fakereplace.api.Environment;
+import org.fakereplace.integration.hibernate4.HibernateEnvironment;
+import org.fakereplace.integration.jbossas.hibernate4.JBossASHibernateEnvironment;
 import org.fakereplace.logging.Logger;
 import org.jboss.as.server.CurrentServiceContainer;
 import org.jboss.as.server.deployment.Attachments;
@@ -51,6 +54,14 @@ public class JBossAsEnvironment implements Environment {
     private final Map<ModuleClassLoader, Map<String, Long>> timestamps = new ConcurrentHashMap<ModuleClassLoader, Map<String, Long>>();
 
     private final Logger log = Logger.getLogger(JBossAsEnvironment.class);
+
+    private static final Map<Class<?>, Object> SERVICES;
+
+    static {
+        final Map<Class<?>, Object> services = new HashMap<Class<?>, Object>();
+        services.put(HibernateEnvironment.class, new JBossASHibernateEnvironment());
+        SERVICES = Collections.unmodifiableMap(services);
+    }
 
     @Override
     public boolean isClassReplaceable(final String className, final ClassLoader loader) {
@@ -223,6 +234,11 @@ public class JBossAsEnvironment implements Environment {
                 e.printStackTrace();
             }
         }
+    }
+
+    @Override
+    public <T> T getService(final Class<T> clazz) {
+        return (T) SERVICES.get(clazz);
     }
 
     private ModuleIdentifier getModuleIdentifier(final ServiceController<DeploymentUnit> deploymentArchive) {

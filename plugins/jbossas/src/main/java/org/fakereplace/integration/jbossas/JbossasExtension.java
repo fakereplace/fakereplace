@@ -20,7 +20,10 @@
 
 package org.fakereplace.integration.jbossas;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.fakereplace.api.Extension;
@@ -29,6 +32,8 @@ import org.fakereplace.transformation.FakereplaceTransformer;
 public class JbossasExtension implements Extension {
 
     public static final String RESOURCE_CACHE_CLASS = "org.apache.naming.resources.ResourceCache";
+    public static final String PERSISTENCE_UNIT_SERVICE = "org.jboss.as.jpa.service.PersistenceUnitServiceImpl";
+
     private static final String CLASS_CHANGE_AWARE = "org.fakereplace.integration.jbossas.JBossASClassChangeAware";
 
     public String getClassChangeAwareName() {
@@ -40,11 +45,11 @@ public class JbossasExtension implements Extension {
     }
 
     public Set<String> getTrackedInstanceClassNames() {
-        return Collections.singleton(RESOURCE_CACHE_CLASS);
+        return new HashSet<String>(Arrays.asList(new String[]{RESOURCE_CACHE_CLASS, PERSISTENCE_UNIT_SERVICE}));
     }
 
-    public FakereplaceTransformer getTransformer() {
-        return null;
+    public List<FakereplaceTransformer> getTransformers() {
+        return Collections.emptyList();
     }
 
 }

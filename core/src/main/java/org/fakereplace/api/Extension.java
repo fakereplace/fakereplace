@@ -20,6 +20,7 @@
 
 package org.fakereplace.api;
 
+import java.util.List;
 import java.util.Set;
 
 import org.fakereplace.transformation.FakereplaceTransformer;
@@ -44,7 +45,7 @@ public interface Extension {
      *
      * @return
      */
-    FakereplaceTransformer getTransformer();
+    List<FakereplaceTransformer> getTransformers();
 
     /**
      * returns the name of the ClassChangeAware object

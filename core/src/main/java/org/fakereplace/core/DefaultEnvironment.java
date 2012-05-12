@@ -121,4 +121,9 @@ public class DefaultEnvironment implements Environment {
     public void updateResource(final String archiveName, final Map<String, byte[]> replacedResources) {
 
     }
+
+    @Override
+    public <T> T getService(final Class<T> clazz) {
+        return null;
+    }
 }

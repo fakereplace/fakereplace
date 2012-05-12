@@ -23,6 +23,7 @@ package org.fakereplace.integration.weld;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.fakereplace.api.Extension;
@@ -43,7 +44,7 @@ public class WeldExtension implements Extension {
         return ret;
     }
 
-    public FakereplaceTransformer getTransformer() {
-        return new WeldClassTransformer();
+    public List<FakereplaceTransformer> getTransformers() {
+        return Collections.<FakereplaceTransformer>singletonList(new WeldClassTransformer());
     }
 }

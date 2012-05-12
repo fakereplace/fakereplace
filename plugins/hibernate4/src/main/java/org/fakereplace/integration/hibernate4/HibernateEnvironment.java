@@ -18,30 +18,13 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.fakereplace.integration.jsf;
+package org.fakereplace.integration.hibernate4;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+/**
+ * @author Stuart Douglas
+ */
+public interface HibernateEnvironment {
 
-import org.fakereplace.api.Extension;
-import org.fakereplace.transformation.FakereplaceTransformer;
+    boolean replaceContainerManagedEntityManagers();
 
-public class JsfExtension implements Extension {
-
-    public String getClassChangeAwareName() {
-        return "org.fakereplace.integration.jsf.ClassRedefinitionPlugin";
-    }
-
-    public Set<String> getIntegrationTriggerClassNames() {
-        return Collections.singleton("javax.faces.webapp.FacesServlet");
-    }
-
-    public Set<String> getTrackedInstanceClassNames() {
-        return Collections.singleton("javax.el.BeanELResolver");
-    }
-
-    public List<FakereplaceTransformer> getTransformers() {
-        return Collections.emptyList();
-    }
 }

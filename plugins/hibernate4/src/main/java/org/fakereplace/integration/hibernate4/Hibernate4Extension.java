@@ -21,6 +21,7 @@
 package org.fakereplace.integration.hibernate4;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import org.fakereplace.api.Extension;
@@ -32,8 +33,8 @@ import org.fakereplace.transformation.FakereplaceTransformer;
 public class Hibernate4Extension implements Extension {
 
     @Override
-    public FakereplaceTransformer getTransformer() {
-        return new Hibernate4ClassTransformer();
+    public List<FakereplaceTransformer> getTransformers() {
+        return Collections.<FakereplaceTransformer>singletonList(new Hibernate4ClassTransformer());
     }
 
     @Override

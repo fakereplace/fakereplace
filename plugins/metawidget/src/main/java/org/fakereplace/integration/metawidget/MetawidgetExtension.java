@@ -22,6 +22,7 @@ package org.fakereplace.integration.metawidget;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.fakereplace.api.Extension;
@@ -54,8 +55,8 @@ public class MetawidgetExtension implements Extension {
         return classNames;
     }
 
-    public FakereplaceTransformer getTransformer() {
-        return null;
+    public List<FakereplaceTransformer> getTransformers() {
+        return Collections.emptyList();
     }
 
 }
