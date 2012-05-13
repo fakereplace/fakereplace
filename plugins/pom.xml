@@ -44,6 +44,7 @@
         <module>jbossas</module>
         <module>weld</module>
         <module>hibernate4</module>
+        <module>resteasy</module>
     </modules>
 
 </project>

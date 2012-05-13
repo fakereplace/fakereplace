@@ -4,29 +4,29 @@ Basic Architecture
 
 
 Fakereplace registers a Java Agent that allows it to transform classes as
-they are loaded and swap the bytecode of a method. The agent entry point 
-is org.fakereplace.Agent, and it registers an instance of 
-org.fakereplace.Transformer to transform loaded classes. 
+they are loaded and swap the bytecode of a method. The agent entry point
+is org.fakereplace.Agent, and it registers an instance of
+org.fakereplace.Transformer to transform loaded classes.
 
 
 
 General Javaagent tips
 ------------------------
-Any class loaded by the javaagent will not be transformed. Also, there is no 
-guarentee that when a class comes through the transformer that its superclass
-has been loaded. 
-If you really need to force a class to be loaded but still have it transformed 
-you can use ThreadLoader which spawns another thread and loads the class. It is 
-not possible to wait for this thread to finish however, as class loading is a 
-syncronsised process, so a deadlock would result. 
+Any class loaded by the javaagent will not be transformed. Also, there is no
+guarantee that when a class comes through the transformer that its superclass
+has been loaded.
+If you really need to force a class to be loaded but still have it transformed
+you can use ThreadLoader which spawns another thread and loads the class. It is
+not possible to wait for this thread to finish however, as class loading is a
+syncronsised process, so a deadlock would result.
 
 The Default Transformations
 -------------------------
 All classes that are loaded undergo some transformations, these are:
 
-- Reflection calls are replaced with INVOKESTATIC calls on ReflectionDelegate 
+- Reflection calls are replaced with INVOKESTATIC calls on ReflectionDelegate
   and friends
-- Final methods have the final modifier removed (this is hidden by the 
+- Final methods have the final modifier removed (this is hidden by the
   reflection API)
 
 Classes that are replaceable have more changes made:
@@ -34,14 +34,14 @@ Classes that are replaceable have more changes made:
 - An Object[] field is added
 - Two methods are added with the signature Object __ADDED_METHOD(int, Object[])
    a static version, and a non static version
-- A constructor with the signature Constructor(int,Object[],ConstructorArgument) 
+- A constructor with the signature Constructor(int,Object[],ConstructorArgument)
   is added to the class
-- A static constructor is added if it is missing. 
+- A static constructor is added if it is missing.
 - As far as the objects type hierarchy is known virtual methods are added that call
   the corresponding superclass method
 for example the class
 
-class SomeClass {} 
+class SomeClass {}
 
 would be modified to:
 
@@ -59,35 +59,35 @@ class SomeClass
 
 when the type hierarchy becomes undefined (due to a superclass not being loaded yet)
 then only the methods from java/lang/Object are added.
-This is why all methods have the final modifier removed (not just replaceable classes). 
-If the superclass is loaded and it has declared say a final equals() method, then 
+This is why all methods have the final modifier removed (not just replaceable classes).
+If the superclass is loaded and it has declared say a final equals() method, then
 the class would not load.
 
 How classes are replaced
 ---------------------------
 Every type of modification requires a different approach. The most important thing is
-to change the class schema back to an exact match with the original schema, including 
-all annotations. In most cases there are two parts to it, the modification of the 
+to change the class schema back to an exact match with the original schema, including
+all annotations. In most cases there are two parts to it, the modification of the
 replaced class, and registering a transformation with a Manipulator. This transformation
-is then applied to all classes are they are loaded. 
+is then applied to all classes are they are loaded.
 
 Replacing a static field is the simplest example of this:
 
-The static field is removed from the class definition. A new class is created to hold the 
-static field. A transformation is registered with StaticFieldManipulator. No bytecode 
-rewriting occurs at this stage. 
+The static field is removed from the class definition. A new class is created to hold the
+static field. A transformation is registered with StaticFieldManipulator. No bytecode
+rewriting occurs at this stage.
 
-Now the classes are passed through the manipulators, including StaticFieldManipulator. 
+Now the classes are passed through the manipulators, including StaticFieldManipulator.
 The StaticFieldManipulator replaces all references to the added field with references
-to the new field on the other class. This happens to all classes from now on, so 
+to the new field on the other class. This happens to all classes from now on, so
 if other classes are loaded that reference this field, it will be re-written to access
-the field on the generated class. 
+the field on the generated class.
 
 Testing
 ------------------------------
-You have to write tests for any changes (if only to save you from having to fire up an 
+You have to write tests for any changes (if only to save you from having to fire up an
 app server and start modifying classes to test your changes).
-Testing a change is quite simple, you create a before and an after class, and use 
+Testing a change is quite simple, you create a before and an after class, and use
 ClassReplacer to write the contents of one class over the other. Have a look at the
 existing tests for more details.
 

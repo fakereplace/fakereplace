@@ -24,6 +24,11 @@
 
         <dependency>
             <groupId>org.fakereplace</groupId>
+            <artifactId>fakereplace-resteasy</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.fakereplace</groupId>
             <artifactId>fakereplace-seam</artifactId>
         </dependency>
 

@@ -51,6 +51,7 @@
         <hibernate-entitymanager.version>4.1.2.Final</hibernate-entitymanager.version>
         <hibernate-jpa-2.0-api.version>1.0.1.Final</hibernate-jpa-2.0-api.version>
         <derby.version>10.8.2.2</derby.version>
+        <resteasy-jaxrs.version>2.3.2.Final</resteasy-jaxrs.version>
     </properties>
 
 
@@ -117,6 +118,12 @@
             <dependency>
                 <groupId>org.fakereplace</groupId>
                 <artifactId>fakereplace-hibernate4</artifactId>
+                <version>${fakereplace.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.fakereplace</groupId>
+                <artifactId>fakereplace-resteasy</artifactId>
                 <version>${fakereplace.version}</version>
             </dependency>
 
@@ -295,6 +302,18 @@
                 <groupId>org.jboss.modules</groupId>
                 <artifactId>jboss-modules</artifactId>
                 <version>${jboss.modules.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>resteasy-jaxrs</artifactId>
+                <version>${resteasy-jaxrs.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>async-http-servlet-3.0</artifactId>
+                <version>${resteasy-jaxrs.version}</version>
             </dependency>
 
             <dependency>
