@@ -25,8 +25,8 @@ import java.net.URL;
 
 import javax.naming.NamingException;
 
-import a.org.fakereplace.integration.jbossas.util.RemoteClassReplacer;
-import a.org.fakereplace.integration.jbossas.util.HttpUtils;
+import a.org.fakereplace.testsuite.shared.HttpUtils;
+import a.org.fakereplace.testsuite.shared.RemoteClassReplacer;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;

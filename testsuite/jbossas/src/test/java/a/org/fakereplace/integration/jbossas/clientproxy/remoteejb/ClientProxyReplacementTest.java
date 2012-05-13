@@ -23,7 +23,7 @@ package a.org.fakereplace.integration.jbossas.clientproxy.remoteejb;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import a.org.fakereplace.integration.jbossas.util.RemoteClassReplacer;
+import a.org.fakereplace.testsuite.shared.RemoteClassReplacer;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
