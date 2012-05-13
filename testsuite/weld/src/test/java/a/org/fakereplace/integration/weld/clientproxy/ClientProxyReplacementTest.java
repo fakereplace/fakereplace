@@ -22,7 +22,7 @@ package a.org.fakereplace.integration.weld.clientproxy;
 
 import javax.inject.Inject;
 
-import a.org.fakereplace.integration.weld.util.ClassReplacer;
+import a.org.fakereplace.testsuite.shared.ClassReplacer;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
