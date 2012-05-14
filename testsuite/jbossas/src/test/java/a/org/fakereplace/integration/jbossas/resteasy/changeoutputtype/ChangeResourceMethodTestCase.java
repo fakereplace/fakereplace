@@ -40,27 +40,20 @@ import org.junit.runner.RunWith;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Tests a JAX-RS deployment with an application bundled, that has no @ApplicationPath annotation.
- * <p/>
- * The container should register a servlet with the name that matches the application name
- * <p/>
- * It is the app providers responsibility to provide a mapping for the servlet
- * <p/>
- * JAX-RS 1.1 2.3.2 bullet point 3
+ * Tests changing a JAX-RS method from a String to a JAXB object
  *
  * @author Stuart Douglas
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-public class ApplicationPathIntegrationTestCase {
+public class ChangeResourceMethodTestCase {
 
     public static final String DEPLOYMENT_NAME = "jaxrsapp.war";
 
     @Deployment(testable = false)
     public static Archive<?> deploy() {
         WebArchive war = ShrinkWrap.create(WebArchive.class, DEPLOYMENT_NAME);
-        war.addClasses(ApplicationPathIntegrationTestCase.class, HelloWorldResource.class, HelloWorldPathApplication.class, JaxbModel.class);
-
+        war.addClasses(ChangeResourceMethodTestCase.class, HelloWorldResource.class, HelloWorldPathApplication.class, JaxbModel.class);
         return war;
     }
 

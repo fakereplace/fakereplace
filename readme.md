@@ -20,6 +20,7 @@ pickup on these changes and re-load its metadata. To this end Fakereplace integr
 * **JSF**
 * **Metawidget**
 * **Hibernate** (This restarts the EMF if an entity is modified, this is still experimental)
+* **Resteasy**
 
 It also provides JBoss AS7 integration, and a maven plugin to allow maven to automatically replace classes after it has
 compiled them.
