@@ -18,17 +18,28 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package a.org.fakereplace.integration.jbossas.resteasy.changeoutputtype;
+package org.fakereplace.integration.resteasy;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Set;
 
-@Path("helloworld")
-@Produces({"application/xml"})
-public class HelloWorldResource1 {
-    @GET
-    public JaxbModel get() {
-        return new JaxbModel("John","Citizen");
+import javax.servlet.ServletContext;
+
+/**
+ * @author Stuart Douglas
+ */
+public class ResteasyContextParams {
+
+    public static Set<String> init(final ServletContext context, final Set<String> existing) {
+        if(existing != null) {
+            return existing;
+        }
+        final Set<String> ret = new HashSet<String>();
+        Enumeration names = context.getAttributeNames();
+        while (names.hasMoreElements()) {
+            ret.add((String) names.nextElement());
+        }
+        return ret;
     }
 }

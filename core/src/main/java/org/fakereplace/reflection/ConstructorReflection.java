@@ -28,8 +28,8 @@ import java.util.List;
 
 import javassist.bytecode.AccessFlag;
 import javassist.bytecode.Descriptor;
-import org.fakereplace.core.ConstructorArgument;
 import org.fakereplace.core.Constants;
+import org.fakereplace.core.ConstructorArgument;
 import org.fakereplace.data.ClassData;
 import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.data.MemberType;
@@ -116,12 +116,14 @@ public class ConstructorReflection {
             ClassData cta = cd;
             while (cta != null) {
                 for (MethodData i : cta.getMethods()) {
-                    if (i.getType() == MemberType.FAKE_CONSTRUCTOR && AccessFlag.isPublic(i.getAccessFlags())) {
-                        Class<?> c = clazz.getClassLoader().loadClass(i.getClassName());
-                        visible.add(i.getConstructor(c));
-                    } else if (i.getType() == MemberType.REMOVED) {
-                        Class<?> c = clazz.getClassLoader().loadClass(i.getClassName());
-                        visible.remove(i.getConstructor(c));
+                    if (i.isConstructor()) {
+                        if (i.getType() == MemberType.FAKE_CONSTRUCTOR && AccessFlag.isPublic(i.getAccessFlags())) {
+                            Class<?> c = clazz.getClassLoader().loadClass(i.getClassName());
+                            visible.add(i.getConstructor(c));
+                        } else if (i.getType() == MemberType.REMOVED) {
+                            Class<?> c = clazz.getClassLoader().loadClass(i.getClassName());
+                            visible.remove(i.getConstructor(c));
+                        }
                     }
                 }
                 cta = cta.getSuperClassInformation();

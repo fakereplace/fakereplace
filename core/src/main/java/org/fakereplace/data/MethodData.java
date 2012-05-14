@@ -183,4 +183,7 @@ public class MethodData {
         return finalMethod;
     }
 
+    public boolean isConstructor() {
+        return methodName.equals("<init>");
+    }
 }

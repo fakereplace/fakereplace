@@ -31,6 +31,7 @@ import javassist.bytecode.ClassFile;
 import javassist.bytecode.DuplicateMemberException;
 import javassist.bytecode.FieldInfo;
 import javassist.bytecode.MethodInfo;
+import javassist.bytecode.Opcode;
 import org.fakereplace.transformation.FakereplaceTransformer;
 
 /**
@@ -39,8 +40,12 @@ import org.fakereplace.transformation.FakereplaceTransformer;
 public class ResteasyTransformer implements FakereplaceTransformer {
 
     public static final String FIELD_NAME = "__CONFIG";
+    public static final String PARAMETER_FIELD_NAME = "__PARAMS";
     public static final String FILTER_FIELD_TYPE = "Ljavax/servlet/FilterConfig;";
     public static final String SERVLET_FIELD_TYPE = "Ljavax/servlet/ServletConfig;";
+    public static final String CONTEXT_PARAMS = "org.fakereplace.integration.resteasy.ResteasyContextParams";
+    public static final String SET_TYPE = "Ljava/util/Set;";
+    public static final String INIT_METHOD_DESC = "(Ljavax/servlet/ServletContext;Ljava/util/Set;)Ljava/util/Set;";
 
     @Override
     public boolean transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final ClassFile file) throws IllegalClassFormatException, BadBytecode {
@@ -52,7 +57,10 @@ public class ResteasyTransformer implements FakereplaceTransformer {
 
         try {
             if (file.getName().equals(ResteasyExtension.FILTER_DISPATCHER)) {
-                final FieldInfo field = new FieldInfo(file.getConstPool(), FIELD_NAME, FILTER_FIELD_TYPE);
+                FieldInfo field = new FieldInfo(file.getConstPool(), FIELD_NAME, FILTER_FIELD_TYPE);
+                field.setAccessFlags(Modifier.PUBLIC);
+                file.addField(field);
+                field = new FieldInfo(file.getConstPool(), PARAMETER_FIELD_NAME, SET_TYPE);
                 field.setAccessFlags(Modifier.PUBLIC);
                 file.addField(field);
                 for (final MethodInfo method : (List<MethodInfo>) file.getMethods()) {
@@ -62,6 +70,14 @@ public class ResteasyTransformer implements FakereplaceTransformer {
                         b.addAload(0);
                         b.addAload(1);
                         b.addPutfield(ResteasyExtension.FILTER_DISPATCHER, FIELD_NAME, FILTER_FIELD_TYPE);
+                        b.addAload(1);
+                        b.addInvokeinterface("javax/servlet/FilterConfig", "getServletContext", "()Ljavax/servlet/ServletContext;", 1);
+                        b.addAload(0);
+                        b.addGetfield(ResteasyExtension.FILTER_DISPATCHER, PARAMETER_FIELD_NAME, SET_TYPE);
+                        b.addInvokestatic(CONTEXT_PARAMS, "init", INIT_METHOD_DESC);
+                        b.addAload(0);
+                        b.add(Opcode.SWAP);
+                        b.addPutfield(ResteasyExtension.FILTER_DISPATCHER, PARAMETER_FIELD_NAME, SET_TYPE);
                         method.getCodeAttribute().iterator().insert(b.get());
                         method.getCodeAttribute().computeMaxStack();
                     } else if(method.getName().equals("<init>")) {
@@ -71,7 +87,10 @@ public class ResteasyTransformer implements FakereplaceTransformer {
                 }
                 return true;
             } else if (file.getName().equals(ResteasyExtension.SERVLET_DISPATCHER)) {
-                final FieldInfo field = new FieldInfo(file.getConstPool(), FIELD_NAME, SERVLET_FIELD_TYPE);
+                FieldInfo field = new FieldInfo(file.getConstPool(), FIELD_NAME, SERVLET_FIELD_TYPE);
+                field.setAccessFlags(Modifier.PUBLIC);
+                file.addField(field);
+                field = new FieldInfo(file.getConstPool(), PARAMETER_FIELD_NAME, SET_TYPE);
                 field.setAccessFlags(Modifier.PUBLIC);
                 file.addField(field);
                 for (final MethodInfo method : (List<MethodInfo>) file.getMethods()) {
@@ -81,10 +100,14 @@ public class ResteasyTransformer implements FakereplaceTransformer {
                         b.addAload(0);
                         b.addAload(1);
                         b.addPutfield(ResteasyExtension.SERVLET_DISPATCHER, FIELD_NAME, SERVLET_FIELD_TYPE);
-                        b.addAload(0);
                         b.addAload(1);
-                        b.addInvokevirtual("javax/servlet/ServletConfig", "getServletContext", "()Ljavax/servlet/ServletContext;");
-                        b.addInvokevirtual(ResteasyExtension.SERVLET_DISPATCHER, "markInitialAttributes", "(javax/servlet/ServletContext)V");
+                        b.addInvokeinterface("javax/servlet/ServletConfig", "getServletContext", "()Ljavax/servlet/ServletContext;", 1);
+                        b.addAload(0);
+                        b.addGetfield(ResteasyExtension.SERVLET_DISPATCHER, PARAMETER_FIELD_NAME, SET_TYPE);
+                        b.addInvokestatic(CONTEXT_PARAMS, "init", INIT_METHOD_DESC);
+                        b.addAload(0);
+                        b.add(Opcode.SWAP);
+                        b.addPutfield(ResteasyExtension.SERVLET_DISPATCHER, PARAMETER_FIELD_NAME, SET_TYPE);
                         method.getCodeAttribute().iterator().insert(b.get());
                         method.getCodeAttribute().computeMaxStack();
                     } else if(method.getName().equals("<init>")) {

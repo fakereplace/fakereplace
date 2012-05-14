@@ -59,7 +59,7 @@ public class ApplicationPathIntegrationTestCase {
     @Deployment(testable = false)
     public static Archive<?> deploy() {
         WebArchive war = ShrinkWrap.create(WebArchive.class, DEPLOYMENT_NAME);
-        war.addClasses(ApplicationPathIntegrationTestCase.class, HelloWorldResource.class, HelloWorldPathApplication.class);
+        war.addClasses(ApplicationPathIntegrationTestCase.class, HelloWorldResource.class, HelloWorldPathApplication.class, JaxbModel.class);
 
         return war;
     }
@@ -80,6 +80,7 @@ public class ApplicationPathIntegrationTestCase {
         RemoteClassReplacer r = new RemoteClassReplacer();
         r.queueClassForReplacement(HelloWorldResource.class, HelloWorldResource1.class);
         r.replaceQueuedClasses(DEPLOYMENT_NAME);
+        result = performCall("hellopath/helloworld");
         Assert.assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><jaxbModel><first>John</first><last>Citizen</last></jaxbModel>", result);
     }
 }

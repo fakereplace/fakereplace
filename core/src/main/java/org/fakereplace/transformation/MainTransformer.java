@@ -34,14 +34,15 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javassist.bytecode.ClassFile;
-import org.fakereplace.core.AgentOption;
-import org.fakereplace.core.AgentOptions;
 import org.fakereplace.api.ClassChangeAware;
-import org.fakereplace.core.ClassChangeNotifier;
 import org.fakereplace.api.Extension;
 import org.fakereplace.com.google.common.collect.MapMaker;
+import org.fakereplace.core.AgentOption;
+import org.fakereplace.core.AgentOptions;
+import org.fakereplace.core.ClassChangeNotifier;
 
 /**
  * @author Stuart Douglas
@@ -51,6 +52,8 @@ public class MainTransformer implements ClassFileTransformer {
     private volatile FakereplaceTransformer[] transformers = {};
 
     private final Map<String, Extension> integrationClassTriggers;
+
+    private final Set<String> loadedClassChangeAwares = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
 
     private static final Set<ClassLoader> integrationClassloader = Collections.newSetFromMap(new MapMaker().weakKeys().<ClassLoader, Boolean>makeMap());
 
@@ -71,14 +74,18 @@ public class MainTransformer implements ClassFileTransformer {
             integrationClassloader.add(loader);
             // we need to load the class in another thread
             // otherwise it will not go through the javaagent
-            try {
-                Class<?> clazz = Class.forName(integrationClassTriggers.get(className).getClassChangeAwareName(), true, loader);
-                final Object intance = clazz.newInstance();
-                if(intance instanceof ClassChangeAware) {
-                    ClassChangeNotifier.instance().add((ClassChangeAware) intance);
+            final Extension extension = integrationClassTriggers.get(className);
+            if (!loadedClassChangeAwares.contains(extension.getClassChangeAwareName())) {
+                loadedClassChangeAwares.add(extension.getClassChangeAwareName());
+                try {
+                    Class<?> clazz = Class.forName(extension.getClassChangeAwareName(), true, loader);
+                    final Object intance = clazz.newInstance();
+                    if (intance instanceof ClassChangeAware) {
+                        ClassChangeNotifier.instance().add((ClassChangeAware) intance);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
             }
         }
 

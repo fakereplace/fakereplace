@@ -23,6 +23,7 @@ package org.fakereplace.integration.resteasy;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletConfig;
@@ -44,10 +45,12 @@ public class ResteasyClassChangeAware implements ClassChangeAware {
     @Override
     public void afterChange(final List<ChangedClass> changed, final List<ClassIdentifier> added) {
         boolean requiresRestart = false;
+        ClassLoader classLoader = null;
         for (final ChangedClass c : changed) {
             if (!c.getChangedAnnotationsByType(Path.class).isEmpty() ||
                     c.getChangedClass().isAnnotationPresent(Path.class)) {
                 requiresRestart = true;
+                classLoader = c.getChangedClass().getClassLoader();
                 break;
             }
         }
@@ -57,15 +60,29 @@ public class ResteasyClassChangeAware implements ClassChangeAware {
             try {
                 for (final Object servlet : InstanceTracker.get(ResteasyExtension.SERVLET_DISPATCHER)) {
                     final ServletConfig config = (ServletConfig) servlet.getClass().getField(ResteasyTransformer.FIELD_NAME).get(servlet);
-                    clearContext(config.getServletContext());
-                    servlet.getClass().getMethod("destroy").invoke(servlet);
-                    servlet.getClass().getMethod("init", ServletConfig.class).invoke(servlet, config);
+                    final Set<String> doNoyClear = (Set<String>) servlet.getClass().getField(ResteasyTransformer.PARAMETER_FIELD_NAME).get(servlet);
+                    clearContext(config.getServletContext(), doNoyClear);
+                    final ClassLoader old = Thread.currentThread().getContextClassLoader();
+                    Thread.currentThread().setContextClassLoader(classLoader);
+                    try {
+                        servlet.getClass().getMethod("destroy").invoke(servlet);
+                        servlet.getClass().getMethod("init", ServletConfig.class).invoke(servlet, config);
+                    } finally {
+                        Thread.currentThread().setContextClassLoader(old);
+                    }
                 }
                 for (final Object filter : InstanceTracker.get(ResteasyExtension.FILTER_DISPATCHER)) {
                     final FilterConfig config = (FilterConfig) filter.getClass().getField(ResteasyTransformer.FIELD_NAME).get(filter);
-                    clearContext(config.getServletContext());
-                    filter.getClass().getMethod("destroy").invoke(filter);
-                    filter.getClass().getMethod("init", FilterConfig.class).invoke(filter, config);
+                    final Set<String> doNoyClear = (Set<String>) filter.getClass().getField(ResteasyTransformer.PARAMETER_FIELD_NAME).get(filter);
+                    clearContext(config.getServletContext(), doNoyClear);
+                    final ClassLoader old = Thread.currentThread().getContextClassLoader();
+                    Thread.currentThread().setContextClassLoader(classLoader);
+                    try {
+                        filter.getClass().getMethod("destroy").invoke(filter);
+                        filter.getClass().getMethod("init", FilterConfig.class).invoke(filter, config);
+                    } finally {
+                        Thread.currentThread().setContextClassLoader(old);
+                    }
                 }
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
@@ -82,13 +99,14 @@ public class ResteasyClassChangeAware implements ClassChangeAware {
 
     /**
      * Clear any resteasy stuff from the context
+     *
      * @param servletContext
      */
-    private void clearContext(final ServletContext servletContext) {
+    private void clearContext(final ServletContext servletContext, final Set<String> doNotClear) {
         final Enumeration names = servletContext.getAttributeNames();
         while (names.hasMoreElements()) {
             final String name = names.nextElement().toString();
-            if(name.startsWith("org.jboss.resteasy")) {
+            if (name.startsWith("org.jboss.resteasy") && !doNotClear.contains(name)) {
                 servletContext.removeAttribute(name);
             }
         }
