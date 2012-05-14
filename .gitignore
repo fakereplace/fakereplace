@@ -6,3 +6,4 @@
 *.iml
 .idea
 fakereplace.index
+.DS_Store
