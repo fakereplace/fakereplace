@@ -105,7 +105,7 @@ public class MainTransformer implements ClassFileTransformer {
                 file.write(new DataOutputStream(bs));
                 // dump the class for debugging purposes
                 final String dumpDir = AgentOptions.getOption(AgentOption.DUMP_DIR);
-                if (dumpDir != null && classBeingRedefined != null) {
+                if (dumpDir != null) {
                     FileOutputStream s = new FileOutputStream(dumpDir + '/' + file.getName() + ".class");
                     DataOutputStream dos = new DataOutputStream(s);
                     file.write(dos);

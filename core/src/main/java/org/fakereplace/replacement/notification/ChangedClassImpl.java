@@ -20,18 +20,18 @@
 
 package org.fakereplace.replacement.notification;
 
-import org.fakereplace.api.Changed;
-import org.fakereplace.api.ChangedAnnotation;
-import org.fakereplace.api.ChangedClass;
-import org.fakereplace.api.ChangedField;
-import org.fakereplace.api.ChangedMethod;
-
 import java.lang.annotation.Annotation;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import org.fakereplace.api.Changed;
+import org.fakereplace.api.ChangedAnnotation;
+import org.fakereplace.api.ChangedClass;
+import org.fakereplace.api.ChangedField;
+import org.fakereplace.api.ChangedMethod;
 
 /**
  * @author Stuart Douglas
@@ -65,7 +65,11 @@ public class ChangedClassImpl implements ChangedClass {
      */
     @Override
     public Set<ChangedAnnotation> getChangedAnnotationsByType(final Class<? extends Annotation> annotationType) {
-        return Collections.unmodifiableSet(changedAnnotationsByType.get(annotationType));
+        final Set<ChangedAnnotation> changedAnnotations = changedAnnotationsByType.get(annotationType);
+        if(changedAnnotations == null) {
+            return Collections.emptySet();
+        }
+        return Collections.unmodifiableSet(changedAnnotations);
     }
 
     @Override

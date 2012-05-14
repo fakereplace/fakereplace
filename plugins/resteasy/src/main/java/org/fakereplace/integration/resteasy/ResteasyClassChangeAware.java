@@ -20,11 +20,19 @@
 
 package org.fakereplace.integration.resteasy;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.Enumeration;
 import java.util.List;
+
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import javax.ws.rs.Path;
 
 import org.fakereplace.api.ChangedClass;
 import org.fakereplace.api.ClassChangeAware;
 import org.fakereplace.classloading.ClassIdentifier;
+import org.fakereplace.data.InstanceTracker;
 
 public class ResteasyClassChangeAware implements ClassChangeAware {
 
@@ -35,6 +43,54 @@ public class ResteasyClassChangeAware implements ClassChangeAware {
 
     @Override
     public void afterChange(final List<ChangedClass> changed, final List<ClassIdentifier> added) {
+        boolean requiresRestart = false;
+        for (final ChangedClass c : changed) {
+            if (!c.getChangedAnnotationsByType(Path.class).isEmpty() ||
+                    c.getChangedClass().isAnnotationPresent(Path.class)) {
+                requiresRestart = true;
+                break;
+            }
+        }
 
+        if (requiresRestart) {
+
+            try {
+                for (final Object servlet : InstanceTracker.get(ResteasyExtension.SERVLET_DISPATCHER)) {
+                    final ServletConfig config = (ServletConfig) servlet.getClass().getField(ResteasyTransformer.FIELD_NAME).get(servlet);
+                    clearContext(config.getServletContext());
+                    servlet.getClass().getMethod("destroy").invoke(servlet);
+                    servlet.getClass().getMethod("init", ServletConfig.class).invoke(servlet, config);
+                }
+                for (final Object filter : InstanceTracker.get(ResteasyExtension.FILTER_DISPATCHER)) {
+                    final FilterConfig config = (FilterConfig) filter.getClass().getField(ResteasyTransformer.FIELD_NAME).get(filter);
+                    clearContext(config.getServletContext());
+                    filter.getClass().getMethod("destroy").invoke(filter);
+                    filter.getClass().getMethod("init", FilterConfig.class).invoke(filter, config);
+                }
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            } catch (NoSuchFieldException e) {
+                throw new RuntimeException(e);
+            } catch (NoSuchMethodException e) {
+                throw new RuntimeException(e);
+            } catch (InvocationTargetException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+    }
+
+    /**
+     * Clear any resteasy stuff from the context
+     * @param servletContext
+     */
+    private void clearContext(final ServletContext servletContext) {
+        final Enumeration names = servletContext.getAttributeNames();
+        while (names.hasMoreElements()) {
+            final String name = names.nextElement().toString();
+            if(name.startsWith("org.jboss.resteasy")) {
+                servletContext.removeAttribute(name);
+            }
+        }
     }
 }

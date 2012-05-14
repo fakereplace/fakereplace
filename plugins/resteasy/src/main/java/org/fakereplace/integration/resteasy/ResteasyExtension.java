@@ -50,6 +50,6 @@ public class ResteasyExtension implements Extension {
     }
 
     public List<FakereplaceTransformer> getTransformers() {
-        return Collections.emptyList();
+        return Collections.<FakereplaceTransformer>singletonList(new ResteasyTransformer());
     }
 }

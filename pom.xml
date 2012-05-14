@@ -52,6 +52,7 @@
         <hibernate-jpa-2.0-api.version>1.0.1.Final</hibernate-jpa-2.0-api.version>
         <derby.version>10.8.2.2</derby.version>
         <resteasy-jaxrs.version>2.3.2.Final</resteasy-jaxrs.version>
+        <jboss-jaxrs-api_1.1_spec.version>1.0.0.Final</jboss-jaxrs-api_1.1_spec.version>
     </properties>
 
 
@@ -326,6 +327,12 @@
                 <groupId>org.jboss.spec.javax.ejb</groupId>
                 <artifactId>jboss-ejb-api_3.1_spec</artifactId>
                 <version>${jboss-ejb-api_3.1_spec.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.spec.javax.ws.rs</groupId>
+                <artifactId>jboss-jaxrs-api_1.1_spec</artifactId>
+                <version>${jboss-jaxrs-api_1.1_spec.version}</version>
             </dependency>
 
             <dependency>

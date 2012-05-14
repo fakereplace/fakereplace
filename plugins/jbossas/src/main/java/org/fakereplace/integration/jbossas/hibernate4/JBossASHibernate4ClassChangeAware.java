@@ -27,6 +27,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.Entity;
+
 import org.fakereplace.api.ChangedClass;
 import org.fakereplace.api.ClassChangeAware;
 import org.fakereplace.classloading.ClassIdentifier;
@@ -50,9 +52,18 @@ public class JBossASHibernate4ClassChangeAware implements ClassChangeAware {
     @Override
     public void afterChange(final List<ChangedClass> changed, final List<ClassIdentifier> added) {
         final Set<Class<?>> changedClasses = new HashSet<Class<?>>();
+        boolean replace = false;
         for (ChangedClass changedClass : changed) {
+            if (changedClass.getChangedClass().isAnnotationPresent(Entity.class) ||
+                    !changedClass.getChangedAnnotationsByType(Entity.class).isEmpty()) {
+                replace = true;
+            }
             changedClasses.add(changedClass.getChangedClass());
         }
+        if (!replace) {
+            return;
+        }
+
         final Set<PersistenceUnitServiceImpl> puServices = (Set<PersistenceUnitServiceImpl>) InstanceTracker.get(JBossASHibernate4Extension.PERSISTENCE_UNIT_SERVICE);
 
         try {
@@ -67,13 +78,15 @@ public class JBossASHibernate4ClassChangeAware implements ClassChangeAware {
                 for (PersistenceUnitServiceImpl puService : puServices) {
                     final Object proxy = puService.getEntityManagerFactory();
                     final PersistenceProviderAdaptor adaptor = (PersistenceProviderAdaptor) persistenceProviderAdaptorField.get(puService);
-                    final PersistenceUnitMetadata pu = (PersistenceUnitMetadata) puField.get(puService);
-                    adaptor.beforeCreateContainerEntityManagerFactory(pu);
-                    try {
-                        Method method = proxy.getClass().getDeclaredMethod("reload");
-                        method.invoke(proxy);
-                    } finally {
-                        adaptor.afterCreateContainerEntityManagerFactory(pu);
+                    if (adaptor != null) {
+                        final PersistenceUnitMetadata pu = (PersistenceUnitMetadata) puField.get(puService);
+                        adaptor.beforeCreateContainerEntityManagerFactory(pu);
+                        try {
+                            Method method = proxy.getClass().getDeclaredMethod("reload");
+                            method.invoke(proxy);
+                        } finally {
+                            adaptor.afterCreateContainerEntityManagerFactory(pu);
+                        }
                     }
 
                 }

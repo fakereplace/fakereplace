@@ -249,8 +249,7 @@ public class Transformer implements FakereplaceTransformer {
      * @throws BadBytecode
      */
     public void makeTrackedInstance(ClassFile file) throws BadBytecode {
-        for (Object mo : file.getMethods()) {
-            MethodInfo m = (MethodInfo) mo;
+        for (MethodInfo m : (List<MethodInfo>)file.getMethods()) {
             if (m.getName().equals("<init>")) {
                 Bytecode code = new Bytecode(file.getConstPool());
                 code.addLdc(file.getName());
@@ -259,6 +258,7 @@ public class Transformer implements FakereplaceTransformer {
                 CodeIterator it = m.getCodeAttribute().iterator();
                 it.skipConstructor();
                 it.insert(code.get());
+                m.getCodeAttribute().computeMaxStack();
             }
         }
     }
