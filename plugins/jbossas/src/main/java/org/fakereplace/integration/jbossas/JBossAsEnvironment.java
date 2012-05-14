@@ -109,7 +109,6 @@ public class JBossAsEnvironment implements Environment {
         }
     }
 
-
     public Set<Class> getUpdatedClasses(final String deploymentName, Map<String, Long> updatedClasses) {
         log.info("Finding classes for " + deploymentName);
         log.trace("Server time stamps: " + timestamps);

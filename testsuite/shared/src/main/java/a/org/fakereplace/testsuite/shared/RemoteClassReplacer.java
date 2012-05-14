@@ -25,8 +25,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Set;
 
 import javassist.ClassPool;
 import javassist.CtClass;
@@ -41,7 +42,7 @@ public class RemoteClassReplacer {
 
     private final Map<Class<?>, Class<?>> queuedClassReplacements = new HashMap<Class<?>, Class<?>>();
 
-    private final Map<Class<?>, String> addedClasses = new HashMap<Class<?>, String>();
+    private final Set<Class<?>> addedClasses = new HashSet<Class<?>>();
 
     private final Map<String, ResourceData> replacedResources = new HashMap<String, ResourceData>();
 
@@ -76,8 +77,8 @@ public class RemoteClassReplacer {
         }));
     }
 
-    public void addNewClass(Class<?> definition, String name) {
-        addedClasses.put(definition, name);
+    public void addNewClass(Class<?> definition) {
+        addedClasses.add(definition);
     }
 
 
@@ -89,10 +90,6 @@ public class RemoteClassReplacer {
                 String newName = o.getName();
                 String oldName = n.getName();
                 nameReplacements.put(oldName, newName);
-            }
-
-            for (Entry<Class<?>, String> o : addedClasses.entrySet()) {
-                nameReplacements.put(o.getKey().getName(), o.getValue());
             }
 
             for (Class<?> o : queuedClassReplacements.keySet()) {
@@ -116,8 +113,8 @@ public class RemoteClassReplacer {
                     }
                 }));
             }
-            for (Entry<Class<?>, String> o : addedClasses.entrySet()) {
-                CtClass nc = pool.get(o.getKey().getName());
+            for (Class<?> o : addedClasses) {
+                CtClass nc = pool.get(o.getName());
 
                 if (nc.isFrozen()) {
                     nc.defrost();
@@ -128,7 +125,7 @@ public class RemoteClassReplacer {
                     nc.replaceClassName(newName, oldName);
                 }
                 final byte[] data = nc.toBytecode();
-                classes.put(o.getKey().getName(), new ClassData(o.getKey().getName(), new Date().getTime(), new ContentSource() {
+                classes.put(o.getName(), new ClassData(o.getName(), new Date().getTime(), new ContentSource() {
                     @Override
                     public byte[] getData() throws IOException {
                         return data;
