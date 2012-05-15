@@ -46,22 +46,21 @@ import javassist.bytecode.MethodInfo;
 import javassist.bytecode.Opcode;
 import javassist.bytecode.ParameterAnnotationsAttribute;
 import javassist.bytecode.SignatureAttribute;
-import org.fakereplace.core.BuiltinClassData;
-import org.fakereplace.core.Transformer;
-import org.fakereplace.core.Constants;
-import org.fakereplace.logging.Logger;
 import org.fakereplace.classloading.ProxyDefinitionStore;
+import org.fakereplace.core.BuiltinClassData;
+import org.fakereplace.core.Constants;
+import org.fakereplace.core.Transformer;
 import org.fakereplace.data.AnnotationDataStore;
 import org.fakereplace.data.BaseClassData;
 import org.fakereplace.data.ClassDataBuilder;
 import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.data.MemberType;
 import org.fakereplace.data.MethodData;
-import org.fakereplace.runtime.MethodIdentifierStore;
+import org.fakereplace.logging.Logger;
 import org.fakereplace.manip.util.Boxing;
 import org.fakereplace.manip.util.ManipulationUtils;
 import org.fakereplace.manip.util.ManipulationUtils.MethodReturnRewriter;
-import org.fakereplace.manip.util.ParameterRewriter;
+import org.fakereplace.runtime.MethodIdentifierStore;
 import org.fakereplace.util.AccessFlagUtils;
 import org.fakereplace.util.DescriptorUtils;
 
@@ -248,7 +247,7 @@ public class MethodReplacer {
         }
     }
 
-    private static String generateProxyInvocationBytecode(MethodInfo mInfo, ConstPool constPool, int methodNumber, String className, ClassLoader loader, boolean staticMethod, boolean isInterface)
+    private static String generateProxyInvocationBytecode(MethodInfo mInfo, int methodNumber, String className, ClassLoader loader, boolean staticMethod, boolean isInterface)
             throws BadBytecode {
         String proxyName = ProxyDefinitionStore.getProxyName();
         ClassFile proxy = new ClassFile(false, proxyName, "java.lang.Object");
@@ -420,7 +419,7 @@ public class MethodReplacer {
                 // abstract methods don't get a body
                 generateBoxedConditionalCodeBlock(methodCount, mInfo, file.getConstPool(), bytecode, staticMethod, false);
             }
-            String proxyName = generateProxyInvocationBytecode(mInfo, file.getConstPool(), methodCount, file.getName(), loader, staticMethod, file.isInterface());
+            String proxyName = generateProxyInvocationBytecode(mInfo, methodCount, file.getName(), loader, staticMethod, file.isInterface());
             ClassDataStore.instance().registerProxyName(oldClass, proxyName);
             String newMethodDesc = mInfo.getDescriptor();
             if (!staticMethod) {
@@ -480,7 +479,7 @@ public class MethodReplacer {
         bc.addOpcode(Opcode.IF_ICMPNE);
 
         // now we need to fix local variables and unbox parameters etc
-        int addedCodeLength = ParameterRewriter.mangleParameters(staticMethod, constructor, ca, mInfo.getDescriptor(), ca.getMaxLocals());
+        int addedCodeLength = mangleParameters(staticMethod, constructor, ca, mInfo.getDescriptor(), ca.getMaxLocals());
         int newMax = ca.getMaxLocals() + 2;
         if (constructor) {
             // for the extra
@@ -664,6 +663,115 @@ public class MethodReplacer {
             AttributeInfo newAnnotations = exAt.copy(newMethod.getConstPool(), Collections.EMPTY_MAP);
             newMethod.addAttribute(newAnnotations);
         }
+    }
+
+    /**
+     * Takes method parameters out of an array and puts them into local variables in the correct location. Also
+     * deals with unboxing if necessary
+     *
+     * @return the length of the added code
+     */
+    public static int mangleParameters(boolean staticMethod, boolean constructor, CodeAttribute attribute, String methodSigniture, int existingLocalVaraiables) {
+        try {
+            int offset = 0;
+            String[] data = DescriptorUtils.descriptorStringToParameterArray(methodSigniture);
+            if (!staticMethod) {
+                // non static methods have a this pointer as the first argument
+                // which should not be mangled
+                offset = 1;
+            }
+
+            // insert two new local variables, these are the fake method parameters
+            attribute.insertLocalVar(offset, 1);
+            attribute.insertLocalVar(offset, 1);
+            if (constructor) {
+                // constructors have an extra one
+                attribute.insertLocalVar(offset, 1);
+            }
+            Bytecode code = new Bytecode(attribute.getConstPool());
+            int varpos = offset + 2;
+            if (constructor) {
+                varpos++;
+            }
+            for (int i = 0; i < data.length; ++i) {
+                // push the parameter array onto the stack
+                if (staticMethod) {
+                    code.add(Opcode.ALOAD_1);
+                } else {
+                    code.add(Opcode.ALOAD_2);
+                }
+                int index = attribute.getConstPool().addIntegerInfo(i);
+                code.addLdc(index);
+                code.add(Opcode.AALOAD);
+                // now we have the parameter on the stack.
+                // what happens next depends on the type
+                switch (data[i].charAt(0)) {
+                    case 'L':
+                        // add a checkcast substring is to get rid of the L
+                        code.addCheckcast(data[i].substring(1));
+                        // now stick it into its proper local variable
+                        code.addAstore(varpos);
+                        varpos++;
+                        break;
+                    case '[':
+                        code.addCheckcast(data[i]);
+                        // now stick it into its proper local variable
+                        code.addAstore(varpos);
+                        varpos++;
+                        break;
+                    case 'I':
+                        // integer, we need to unbox it
+                        Boxing.unboxInt(code);
+                        code.addIstore(varpos);
+                        varpos++;
+                        break;
+                    case 'S':
+                        // short, we need to unbox it
+                        Boxing.unboxShort(code);
+                        code.addIstore(varpos);
+                        varpos++;
+                        break;
+                    case 'B':
+                        // short, we need to unbox it
+                        Boxing.unboxByte(code);
+                        code.addIstore(varpos);
+                        varpos++;
+                        break;
+                    case 'J':
+                        // long, we need to unbox it
+                        Boxing.unboxLong(code);
+                        code.addLstore(varpos);
+                        varpos = varpos + 2;
+                        break;
+                    case 'F':
+                        Boxing.unboxFloat(code);
+                        code.addFstore(varpos);
+                        varpos++;
+                        break;
+                    case 'D':
+                        Boxing.unboxDouble(code);
+                        code.addDstore(varpos);
+                        varpos++;
+                        break;
+                    case 'C':
+                        Boxing.unboxChar(code);
+                        code.addIstore(varpos);
+                        varpos++;
+                        break;
+                    case 'Z':
+                        Boxing.unboxBoolean(code);
+                        code.addIstore(varpos);
+                        varpos++;
+                        break;
+                }
+
+            }
+            attribute.iterator().insert(0, code.get());
+            return code.length();
+        } catch (BadBytecode e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
 }

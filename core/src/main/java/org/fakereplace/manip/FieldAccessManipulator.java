@@ -20,6 +20,7 @@
 
 package org.fakereplace.manip;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +32,6 @@ import javassist.bytecode.CodeIterator;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.Opcode;
-import org.fakereplace.core.Constants;
 import org.fakereplace.logging.Logger;
 import org.fakereplace.util.JumpMarker;
 import org.fakereplace.util.JumpUtils;
@@ -107,7 +107,7 @@ public class FieldAccessManipulator implements ClassManipulator {
                     methodName = pool.getInterfaceMethodrefName(i);
                 }
 
-                if (className.equals(Constants.FIELD_NAME)) {
+                if (className.equals(Field.class.getName())) {
                     RewriteData data = manipulationData.get(methodName);
                     if (data != null) {
                         // store the location in the const pool of the method ref
@@ -160,7 +160,7 @@ public class FieldAccessManipulator implements ClassManipulator {
                                 b.add(Opcode.GOTO);
                                 JumpMarker finish = JumpUtils.addJumpInstruction(b);
                                 performRealCall.mark();
-                                b.addInvokevirtual(Constants.FIELD_NAME, data.getMethodName(), data.getMethodDescriptor());
+                                b.addInvokevirtual(Field.class.getName(), data.getMethodName(), data.getMethodDescriptor());
                                 finish.mark();
                                 it.writeByte(CodeIterator.NOP, index);
                                 it.writeByte(CodeIterator.NOP, index + 1);

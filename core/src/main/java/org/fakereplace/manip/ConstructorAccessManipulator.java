@@ -20,6 +20,7 @@
 
 package org.fakereplace.manip;
 
+import java.lang.reflect.Constructor;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -30,7 +31,6 @@ import javassist.bytecode.CodeIterator;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.Opcode;
-import org.fakereplace.core.Constants;
 import org.fakereplace.logging.Logger;
 import org.fakereplace.reflection.ConstructorReflection;
 import org.fakereplace.util.JumpMarker;
@@ -72,7 +72,7 @@ public class ConstructorAccessManipulator implements ClassManipulator {
                 String className = pool.getMethodrefClassName(i);
                 String methodName = pool.getMethodrefName(i);
 
-                if (className.equals(Constants.CONSTRUCTOR_NAME)) {
+                if (className.equals(Constructor.class.getName())) {
                     if (methodName.equals(METHOD_NAME)) {
                         // store the location in the const pool of the method ref
                         methodCallLocations.add(i);
@@ -122,7 +122,7 @@ public class ConstructorAccessManipulator implements ClassManipulator {
                                 b.add(Opcode.GOTO);
                                 JumpMarker finish = JumpUtils.addJumpInstruction(b);
                                 performRealCall.mark();
-                                b.addInvokevirtual(Constants.CONSTRUCTOR_NAME, METHOD_NAME, METHOD_DESCRIPTOR);
+                                b.addInvokevirtual(Constructor.class.getName(), METHOD_NAME, METHOD_DESCRIPTOR);
                                 finish.mark();
                                 it.writeByte(CodeIterator.NOP, index);
                                 it.writeByte(CodeIterator.NOP, index + 1);
