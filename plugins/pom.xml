@@ -37,7 +37,7 @@
     <name>Fakereplace Integration Parent</name>
 
     <modules>
-        <module>seam</module>
+        <module>seam2</module>
         <module>jsf</module>
         <module>metawidget</module>
         <module>maven</module>

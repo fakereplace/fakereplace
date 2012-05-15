@@ -29,7 +29,7 @@
 
         <dependency>
             <groupId>org.fakereplace</groupId>
-            <artifactId>fakereplace-seam</artifactId>
+            <artifactId>fakereplace-seam2</artifactId>
         </dependency>
 
         <dependency>
