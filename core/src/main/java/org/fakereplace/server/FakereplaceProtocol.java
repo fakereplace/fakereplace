@@ -25,14 +25,15 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.instrument.ClassDefinition;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.fakereplace.api.ChangedClasses;
 import org.fakereplace.api.CurrentEnvironment;
-import org.fakereplace.classloading.ClassLookupManager;
 import org.fakereplace.core.Agent;
 import org.fakereplace.logging.Logger;
 import org.fakereplace.replacement.AddedClass;
@@ -115,6 +116,7 @@ public class FakereplaceProtocol {
 
             final Set<ClassDefinition> classDefinitions = new HashSet<ClassDefinition>();
             final Set<Class<?>> replacedClasses = new HashSet<Class<?>>();
+            final List<AddedClass> addedClassList = new ArrayList<AddedClass>();
             int noClasses = input.readInt();
             for (int i = 0; i < noClasses; ++i) {
                 final String className = readString(input);
@@ -128,7 +130,7 @@ public class FakereplaceProtocol {
                     classDefinitions.add(new ClassDefinition(theClass, buffer));
                     replacedClasses.add(theClass);
                 } else {
-                    ClassLookupManager.addClassInfo(className, classesToReplace.getClassLoader(), buffer);
+                    addedClassList.add(new AddedClass(className, buffer, classesToReplace.getClassLoader()));
                 }
             }
 
@@ -145,7 +147,7 @@ public class FakereplaceProtocol {
                 replacedResources.put(resourceName, buffer);
             }
 
-            Agent.redefine(classDefinitions.toArray(new ClassDefinition[classDefinitions.size()]), new AddedClass[0]);
+            Agent.redefine(classDefinitions.toArray(new ClassDefinition[classDefinitions.size()]), addedClassList.toArray(new AddedClass[addedClassList.size()]));
             CurrentEnvironment.getEnvironment().updateResource(archiveName, replacedResources);
             output.writeInt(0);
         } catch (Exception e) {
