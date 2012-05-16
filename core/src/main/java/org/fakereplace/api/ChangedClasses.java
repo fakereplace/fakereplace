@@ -17,26 +17,41 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+
 package org.fakereplace.api;
 
-import java.util.Map;
+import java.util.Collections;
 import java.util.Set;
 
 /**
  * @author Stuart Douglas
  */
-public interface Environment {
+public class ChangedClasses {
 
-    boolean isClassReplaceable(final String className, final ClassLoader loader);
+    public static final ChangedClasses EMPTY = new ChangedClasses(Collections.<Class<?>>emptySet(), Collections.<String>emptySet(), null);
 
-    void recordTimestamp(final String className, final ClassLoader loader);
+    private final Set<Class<?>> changed;
+    private final Set<String> newClasses;
+    /**
+     * The class loader to use for new classes
+     */
+    private final ClassLoader classLoader;
 
-    ChangedClasses getUpdatedClasses(final String deploymentName, final Map<String, Long> updatedClasses);
+    public ChangedClasses(final Set<Class<?>> changed, final Set<String> newClasses, final ClassLoader classLoader) {
+        this.changed = changed;
+        this.newClasses = newClasses;
+        this.classLoader = classLoader;
+    }
 
-    Set<String> getUpdatedResources(final String deploymentName, final Map<String, Long> updatedResources);
+    public Set<Class<?>> getChanged() {
+        return changed;
+    }
 
-    void updateResource(final String archiveName, Map<String, byte[]> replacedResources);
+    public Set<String> getNewClasses() {
+        return newClasses;
+    }
 
-    <T> T getService(Class<T> clazz);
-
+    public ClassLoader getClassLoader() {
+        return classLoader;
+    }
 }

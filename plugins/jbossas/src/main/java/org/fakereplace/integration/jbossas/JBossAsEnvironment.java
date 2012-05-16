@@ -28,8 +28,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.WeakHashMap;
 
+import org.fakereplace.api.ChangedClasses;
 import org.fakereplace.api.Environment;
 import org.fakereplace.hibernate4.HibernateEnvironment;
 import org.fakereplace.integration.jbossas.hibernate4.JBossASHibernateEnvironment;
@@ -50,12 +51,15 @@ import org.jboss.vfs.VirtualFile;
  */
 public class JBossAsEnvironment implements Environment {
 
-    private final Map<ModuleIdentifier, ModuleClassLoader> loadersByModuleIdentifier = new ConcurrentHashMap<ModuleIdentifier, ModuleClassLoader>();
-    private final Map<ModuleClassLoader, Map<String, Long>> timestamps = new ConcurrentHashMap<ModuleClassLoader, Map<String, Long>>();
-
     private final Logger log = Logger.getLogger(JBossAsEnvironment.class);
 
     private static final Map<Class<?>, Object> SERVICES;
+
+    /**
+     * When classes are replaced we need to update their timestamps, otherwise they will be replaced on every subsequent
+     * invocation.
+     */
+    private final Map<Class<?>, Long> replacedClassTimestamps = Collections.synchronizedMap(new WeakHashMap<Class<?>, Long>());
 
     static {
         final Map<Class<?>, Object> services = new HashMap<Class<?>, Object>();
@@ -74,59 +78,26 @@ public class JBossAsEnvironment implements Environment {
     }
 
     public void recordTimestamp(String className, ClassLoader loader) {
-        log.trace("Recording timestamp for " + className);
 
-        if (!(loader instanceof ModuleClassLoader)) {
-            return;
-        }
-        Map<String, Long> stamps = null;
-        final ModuleClassLoader moduleClassLoader = (ModuleClassLoader) loader;
-        final ModuleIdentifier moduleIdentifier = moduleClassLoader.getModule().getIdentifier();
-        if (loadersByModuleIdentifier.containsKey(moduleIdentifier)) {
-            final ModuleClassLoader oldLoader = loadersByModuleIdentifier.get(moduleIdentifier);
-            if (oldLoader != moduleClassLoader) {
-                loadersByModuleIdentifier.put(moduleIdentifier, moduleClassLoader);
-                timestamps.put(moduleClassLoader, stamps = new ConcurrentHashMap<String, Long>());
-            } else {
-                stamps = timestamps.get(moduleClassLoader);
-            }
-        } else {
-            loadersByModuleIdentifier.put(moduleIdentifier, moduleClassLoader);
-            timestamps.put(moduleClassLoader, stamps = new ConcurrentHashMap<String, Long>());
-        }
-
-        final URL file = loader.getResource(className.replace(".", "/") + ".class");
-        className = className.replace("/", ".");
-        if (file != null) {
-            try {
-                final URLConnection connection = file.openConnection();
-                final long lastModified = connection.getLastModified();
-                stamps.put(className, lastModified);
-                log.trace("Timestamp for " + className + " is " + lastModified);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
-    public Set<Class> getUpdatedClasses(final String deploymentName, Map<String, Long> updatedClasses) {
+    public ChangedClasses getUpdatedClasses(final String deploymentName, Map<String, Long> updatedClasses) {
         log.info("Finding classes for " + deploymentName);
-        log.trace("Server time stamps: " + timestamps);
         ServiceController<DeploymentUnit> deploymentService = deploymentService(deploymentName);
         if (deploymentService == null) {
             log.error("Could not find deployment " + deploymentName);
-            return Collections.emptySet();
+            return ChangedClasses.EMPTY;
         }
 
         final ModuleIdentifier moduleId = getModuleIdentifier(deploymentService);
-        final ModuleClassLoader loader = loadersByModuleIdentifier.get(moduleId);
+        final ModuleClassLoader loader = deploymentService.getValue().getAttachment(Attachments.MODULE).getClassLoader();
         if (loader == null) {
             log.error("Could not find module " + moduleId);
-            return Collections.emptySet();
+            return ChangedClasses.EMPTY;
         }
-        final Map<String, Long> timestamps = this.timestamps.get(loader);
 
-        final Set<Class> ret = new HashSet<Class>();
+        final Set<Class<?>> ret = new HashSet<Class<?>>();
+        final Set<String> newClasses = new HashSet<String>();
         for (Map.Entry<String, Long> entry : updatedClasses.entrySet()) {
             StringBuilder traceString = new StringBuilder();
             traceString.append("Comparing class ");
@@ -134,28 +105,39 @@ public class JBossAsEnvironment implements Environment {
             traceString.append(" TS: ");
             traceString.append(entry.getValue());
 
-            if (timestamps.containsKey(entry.getKey())) {
-                traceString.append(" Server TS: ");
-                final Long timestamp = timestamps.get(entry.getKey());
-                traceString.append(timestamp);
-                if (timestamp < entry.getValue()) {
-                    traceString.append(" replacing");
-                    try {
-                        ret.add(loader.loadClass(entry.getKey()));
-                        timestamps.put(entry.getKey(), entry.getValue());
-                    } catch (ClassNotFoundException e) {
-                        System.err.println("Could not load class " + entry);
-                    }
-                } else {
-                    traceString.append(" not replacing");
-                }
+            final String resourceName = entry.getKey().replace(".", "/") + ".class";
+            final URL resource = loader.getResource(resourceName);
+            if (resource == null) {
+                //new class
+                newClasses.add(entry.getKey());
+                traceString.append(" not found on server, adding as new class");
             } else {
-                traceString.append(" Server TS not found");
-            }
+                try {
+                    final URLConnection urlConnection = resource.openConnection();
+                    Long timeStamp = urlConnection.getLastModified();
+                    final Class<?> clazz = loader.loadClass(entry.getKey());
+                    Long replacedTs = replacedClassTimestamps.get(clazz);
+                    if (replacedTs != null) {
+                        timeStamp = replacedTs;
+                    }
+                    if (timeStamp < entry.getValue()) {
+                        traceString.append(" replacing");
+                        ret.add(clazz);
+                        replacedClassTimestamps.put(clazz, entry.getValue());
+                    } else {
+                        traceString.append(" not replacing");
+                    }
+                } catch (IOException e) {
+                    log.error("Could not open connection for " + resourceName, e);
+                } catch (ClassNotFoundException e) {
+                    log.debug("Could not load class " + entry.getKey(), e);
+                }
 
-            log.trace(traceString.toString());
+                log.trace(traceString.toString());
+
+            }
         }
-        return ret;
+        return new ChangedClasses(ret, newClasses, loader);
     }
 
     @Override
@@ -165,8 +147,7 @@ public class JBossAsEnvironment implements Environment {
             return Collections.emptySet();
         }
 
-        final ModuleIdentifier moduleId = getModuleIdentifier(deploymentService);
-        final ModuleClassLoader loader = loadersByModuleIdentifier.get(moduleId);
+        final ModuleClassLoader loader = deploymentService.getValue().getAttachment(Attachments.MODULE).getClassLoader();
         if (loader == null) {
             return Collections.emptySet();
         }
@@ -207,11 +188,10 @@ public class JBossAsEnvironment implements Environment {
     @Override
     public void updateResource(final String archiveName, final Map<String, byte[]> replacedResources) {
         ServiceController<DeploymentUnit> deploymentService = deploymentService(archiveName);
-        if(deploymentService == null) {
+        if (deploymentService == null) {
             return;
         }
-        final ModuleIdentifier moduleId = getModuleIdentifier(deploymentService);
-        final ModuleClassLoader loader = loadersByModuleIdentifier.get(moduleId);
+        final ModuleClassLoader loader = deploymentService.getValue().getAttachment(Attachments.MODULE).getClassLoader();
         if (loader == null) {
             return;
         }

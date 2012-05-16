@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.fakereplace.api.ChangedClasses;
 import org.fakereplace.api.Environment;
 import org.fakereplace.logging.Logger;
 
@@ -96,11 +97,12 @@ public class DefaultEnvironment implements Environment {
     }
 
 
-    public Set<Class> getUpdatedClasses(final String deploymentName, Map<String, Long> updatedClasses) {
-        final Set<Class> ret = new HashSet<Class>();
+    public ChangedClasses getUpdatedClasses(final String deploymentName, Map<String, Long> updatedClasses) {
+        final Set<Class<?>> ret = new HashSet<Class<?>>();
+        ClassLoader loader = null;
         for (Map.Entry<String, Long> entry : updatedClasses.entrySet()) {
             if (timestamps.containsKey(entry.getKey()) && timestamps.get(entry.getKey()) < entry.getValue()) {
-                ClassLoader loader = loaders.get(entry.getKey());
+                loader = loaders.get(entry.getKey());
                 try {
                     ret.add(loader.loadClass(entry.getKey()));
                     timestamps.put(entry.getKey(), entry.getValue());
@@ -109,7 +111,7 @@ public class DefaultEnvironment implements Environment {
                 }
             }
         }
-        return ret;
+        return new ChangedClasses(ret, Collections.<String>emptySet(), loader);
     }
 
     @Override

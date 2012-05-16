@@ -30,7 +30,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.fakereplace.api.ChangedClasses;
 import org.fakereplace.api.CurrentEnvironment;
+import org.fakereplace.classloading.ClassLookupManager;
 import org.fakereplace.core.Agent;
 import org.fakereplace.logging.Logger;
 import org.fakereplace.replacement.AddedClass;
@@ -89,14 +91,18 @@ public class FakereplaceProtocol {
             log.info("Fakereplace is checking for updates classes. Client sent " + classes.size() + "classes");
 
 
-            final Set<Class> classesToReplace = CurrentEnvironment.getEnvironment().getUpdatedClasses(archiveName, classes);
+            final ChangedClasses classesToReplace = CurrentEnvironment.getEnvironment().getUpdatedClasses(archiveName, classes);
             final Map<String, Class> classMap = new HashMap<String, Class>();
-            output.writeInt(classesToReplace.size());
-            for (Class clazz : classesToReplace) {
+            output.writeInt(classesToReplace.getChanged().size() + classesToReplace.getNewClasses().size());
+            for (Class clazz : classesToReplace.getChanged()) {
                 final String cname = clazz.getName();
                 output.writeInt(cname.length());
                 output.write(cname.getBytes());
                 classMap.put(cname, clazz);
+            }
+            for (String cname : classesToReplace.getNewClasses()) {
+                output.writeInt(cname.length());
+                output.write(cname.getBytes());
             }
             final Set<String> resourcesToReplace = CurrentEnvironment.getEnvironment().getUpdatedResources(archiveName, resources);
             output.writeInt(resourcesToReplace.size());
@@ -117,8 +123,13 @@ public class FakereplaceProtocol {
                 for (int j = 0; j < length; ++j) {
                     buffer[j] = (byte) input.read();
                 }
-                classDefinitions.add(new ClassDefinition(classMap.get(className), buffer));
-                replacedClasses.add(classMap.get(className));
+                final Class theClass = classMap.get(className);
+                if (theClass != null) {
+                    classDefinitions.add(new ClassDefinition(theClass, buffer));
+                    replacedClasses.add(theClass);
+                } else {
+                    ClassLookupManager.addClassInfo(className, classesToReplace.getClassLoader(), buffer);
+                }
             }
 
             final Map<String, byte[]> replacedResources = new HashMap<String, byte[]>();
@@ -165,7 +176,7 @@ public class FakereplaceProtocol {
 
     private static String readString(final DataInputStream input) throws IOException {
         int toread = input.readInt();
-        byte [] buf = new byte[toread];
+        byte[] buf = new byte[toread];
         int read = 0;
         while (toread > 0 && (read = input.read(buf, read, toread)) != -1) {
             toread -= read;
