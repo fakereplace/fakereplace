@@ -26,7 +26,6 @@ import java.util.Set;
 
 import org.fakereplace.api.ChangedClass;
 import org.fakereplace.api.ClassChangeAware;
-import org.fakereplace.api.CurrentEnvironment;
 import org.fakereplace.classloading.ClassIdentifier;
 import org.fakereplace.data.InstanceTracker;
 import org.fakereplace.logging.Logger;
@@ -37,10 +36,6 @@ import org.fakereplace.logging.Logger;
 public class JBossASClassChangeAware implements ClassChangeAware {
 
     private static final Logger log = Logger.getLogger(JBossASClassChangeAware.class);
-
-    public JBossASClassChangeAware() {
-        CurrentEnvironment.setEnvironment(new JBossAsEnvironment());
-    }
 
     @Override
     public void beforeChange(final List<Class<?>> changed, final List<ClassIdentifier> added) {

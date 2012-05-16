@@ -43,18 +43,27 @@ public class MetawidgetExtension implements Extension {
         classNames = Collections.unmodifiableSet(ret);
     }
 
+    @Override
     public String getClassChangeAwareName() {
         return "org.fakereplace.integration.metawidget.ClassRedefinitionPlugin";
     }
 
+    @Override
     public Set<String> getIntegrationTriggerClassNames() {
         return classNames;
     }
 
+    @Override
+    public String getEnvironment() {
+        return null;
+    }
+
+    @Override
     public Set<String> getTrackedInstanceClassNames() {
         return classNames;
     }
 
+    @Override
     public List<FakereplaceTransformer> getTransformers() {
         return Collections.emptyList();
     }

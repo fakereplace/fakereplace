@@ -39,10 +39,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import javassist.bytecode.ClassFile;
 import org.fakereplace.api.ClassChangeAware;
 import org.fakereplace.api.Extension;
+import org.fakereplace.api.environment.CurrentEnvironment;
+import org.fakereplace.api.environment.Environment;
 import org.fakereplace.com.google.common.collect.MapMaker;
 import org.fakereplace.core.AgentOption;
 import org.fakereplace.core.AgentOptions;
 import org.fakereplace.core.ClassChangeNotifier;
+import org.fakereplace.core.DefaultEnvironment;
+import org.fakereplace.logging.Logger;
 
 /**
  * @author Stuart Douglas
@@ -70,6 +74,7 @@ public class MainTransformer implements ClassFileTransformer {
     @Override
     public byte[] transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final byte[] classfileBuffer) throws IllegalClassFormatException {
 
+        final Environment environment = CurrentEnvironment.getEnvironment();
         if (integrationClassTriggers.containsKey(className)) {
             integrationClassloader.add(loader);
             // we need to load the class in another thread
@@ -82,6 +87,16 @@ public class MainTransformer implements ClassFileTransformer {
                     final Object intance = clazz.newInstance();
                     if (intance instanceof ClassChangeAware) {
                         ClassChangeNotifier.instance().add((ClassChangeAware) intance);
+                    }
+                    final String newEnv = extension.getEnvironment();
+                    if (newEnv != null) {
+                        final Class<?> envClass = Class.forName(newEnv, true, loader);
+                        final Environment newEnvironment = (Environment) envClass.newInstance();
+                        if (environment instanceof DefaultEnvironment) {
+                            CurrentEnvironment.setEnvironment(newEnvironment);
+                        } else {
+                            Logger.getLogger(MainTransformer.class).error("Could not set environment to " + newEnvironment + " it has already been changed to " + environment);
+                        }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

@@ -29,8 +29,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.fakereplace.api.ChangedClasses;
-import org.fakereplace.api.Environment;
+import org.fakereplace.api.environment.ChangedClasses;
+import org.fakereplace.api.environment.Environment;
 import org.fakereplace.logging.Logger;
 
 /**

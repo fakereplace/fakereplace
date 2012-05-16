@@ -26,7 +26,7 @@ import java.util.Set;
 
 import org.fakereplace.api.ChangedClass;
 import org.fakereplace.api.ClassChangeAware;
-import org.fakereplace.api.CurrentEnvironment;
+import org.fakereplace.api.environment.CurrentEnvironment;
 import org.fakereplace.classloading.ClassIdentifier;
 import org.fakereplace.hibernate4.HibernateEnvironment;
 

@@ -30,20 +30,29 @@ import org.fakereplace.transformation.FakereplaceTransformer;
 
 public class SeamExtension implements Extension {
 
+    @Override
     public String getClassChangeAwareName() {
         return "org.fakereplace.integration.seam.ClassRedefinitionPlugin";
     }
 
+    @Override
     public Set<String> getIntegrationTriggerClassNames() {
         return Collections.singleton("org.jboss.seam.servlet.SeamFilter");
     }
 
+    @Override
+    public String getEnvironment() {
+        return null;
+    }
+
+    @Override
     public Set<String> getTrackedInstanceClassNames() {
         Set<String> ret = new HashSet<String>();
         ret.add("org.jboss.seam.servlet.SeamFilter");
         return ret;
     }
 
+    @Override
     public List<FakereplaceTransformer> getTransformers() {
         return Collections.emptyList();
     }

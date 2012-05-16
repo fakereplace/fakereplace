@@ -25,7 +25,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import org.fakereplace.api.CurrentEnvironment;
+import org.fakereplace.api.environment.CurrentEnvironment;
 import org.fakereplace.core.Constants;
 
 public class VirtualDelegator {

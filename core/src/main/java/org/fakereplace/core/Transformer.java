@@ -37,7 +37,7 @@ import javassist.bytecode.CodeIterator;
 import javassist.bytecode.DuplicateMemberException;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.Opcode;
-import org.fakereplace.api.CurrentEnvironment;
+import org.fakereplace.api.environment.CurrentEnvironment;
 import org.fakereplace.api.Extension;
 import org.fakereplace.data.BaseClassData;
 import org.fakereplace.data.ClassDataStore;

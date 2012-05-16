@@ -31,19 +31,28 @@ import org.fakereplace.transformation.FakereplaceTransformer;
 
 public class WeldExtension implements Extension {
 
+    @Override
     public String getClassChangeAwareName() {
         return WeldClassChangeAware.class.getName();
     }
 
+    @Override
     public Set<String> getIntegrationTriggerClassNames() {
         return Collections.singleton("org.jboss.weld.bootstrap.WeldBootstrap");
     }
 
+    @Override
+    public String getEnvironment() {
+        return null;
+    }
+
+    @Override
     public Set<String> getTrackedInstanceClassNames() {
         Set<String> ret = new HashSet<String>();
         return ret;
     }
 
+    @Override
     public List<FakereplaceTransformer> getTransformers() {
         return Collections.<FakereplaceTransformer>singletonList(new WeldClassTransformer());
     }

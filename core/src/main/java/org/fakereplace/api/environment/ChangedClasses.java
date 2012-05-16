@@ -18,28 +18,40 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.fakereplace.api;
+package org.fakereplace.api.environment;
 
-import org.fakereplace.core.DefaultEnvironment;
+import java.util.Collections;
+import java.util.Set;
 
 /**
- * Holds the current environment.
- *
  * @author Stuart Douglas
  */
-public class CurrentEnvironment {
+public class ChangedClasses {
 
-    protected static volatile Environment environment = new DefaultEnvironment();
+    public static final ChangedClasses EMPTY = new ChangedClasses(Collections.<Class<?>>emptySet(), Collections.<String>emptySet(), null);
 
+    private final Set<Class<?>> changed;
+    private final Set<String> newClasses;
     /**
-     *
-     * @return The current environment
+     * The class loader to use for new classes
      */
-    public static Environment getEnvironment() {
-        return environment;
+    private final ClassLoader classLoader;
+
+    public ChangedClasses(final Set<Class<?>> changed, final Set<String> newClasses, final ClassLoader classLoader) {
+        this.changed = changed;
+        this.newClasses = newClasses;
+        this.classLoader = classLoader;
     }
 
-    public static void setEnvironment(final Environment environment) {
-        CurrentEnvironment.environment = environment;
+    public Set<Class<?>> getChanged() {
+        return changed;
+    }
+
+    public Set<String> getNewClasses() {
+        return newClasses;
+    }
+
+    public ClassLoader getClassLoader() {
+        return classLoader;
     }
 }

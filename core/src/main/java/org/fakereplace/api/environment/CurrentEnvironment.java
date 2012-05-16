@@ -17,26 +17,29 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.fakereplace.api;
 
-import java.util.Map;
-import java.util.Set;
+package org.fakereplace.api.environment;
+
+import org.fakereplace.core.DefaultEnvironment;
 
 /**
+ * Holds the current environment.
+ *
  * @author Stuart Douglas
  */
-public interface Environment {
+public class CurrentEnvironment {
 
-    boolean isClassReplaceable(final String className, final ClassLoader loader);
+    protected static volatile Environment environment = new DefaultEnvironment();
 
-    void recordTimestamp(final String className, final ClassLoader loader);
+    /**
+     *
+     * @return The current environment
+     */
+    public static Environment getEnvironment() {
+        return environment;
+    }
 
-    ChangedClasses getUpdatedClasses(final String deploymentName, final Map<String, Long> updatedClasses);
-
-    Set<String> getUpdatedResources(final String deploymentName, final Map<String, Long> updatedResources);
-
-    void updateResource(final String archiveName, Map<String, byte[]> replacedResources);
-
-    <T> T getService(Class<T> clazz);
-
+    public static void setEnvironment(final Environment environment) {
+        CurrentEnvironment.environment = environment;
+    }
 }

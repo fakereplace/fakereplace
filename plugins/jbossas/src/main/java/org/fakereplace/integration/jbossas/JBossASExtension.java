@@ -34,19 +34,29 @@ public class JBossASExtension implements Extension {
     public static final String RESOURCE_CACHE_CLASS = "org.apache.naming.resources.ResourceCache";
 
     private static final String CLASS_CHANGE_AWARE = "org.fakereplace.integration.jbossas.JBossASClassChangeAware";
+    public static final String JBOSSAS_ENVIRONMENT = "org.fakereplace.integration.jbossas.JBossAsEnvironment";
 
+    @Override
     public String getClassChangeAwareName() {
         return CLASS_CHANGE_AWARE;
     }
 
+    @Override
     public Set<String> getIntegrationTriggerClassNames() {
         return Collections.singleton("org.jboss.as.server.ApplicationServerService");
     }
 
+    @Override
+    public String getEnvironment() {
+        return JBOSSAS_ENVIRONMENT;
+    }
+
+    @Override
     public Set<String> getTrackedInstanceClassNames() {
         return new HashSet<String>(Arrays.asList(new String[]{RESOURCE_CACHE_CLASS}));
     }
 
+    @Override
     public List<FakereplaceTransformer> getTransformers() {
         return Collections.emptyList();
     }

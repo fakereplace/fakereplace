@@ -29,18 +29,27 @@ import org.fakereplace.transformation.FakereplaceTransformer;
 
 public class JsfExtension implements Extension {
 
+    @Override
     public String getClassChangeAwareName() {
         return "org.fakereplace.integration.jsf.ClassRedefinitionPlugin";
     }
 
+    @Override
     public Set<String> getIntegrationTriggerClassNames() {
         return Collections.singleton("javax.faces.webapp.FacesServlet");
     }
 
+    @Override
+    public String getEnvironment() {
+        return null;
+    }
+
+    @Override
     public Set<String> getTrackedInstanceClassNames() {
         return Collections.singleton("javax.el.BeanELResolver");
     }
 
+    @Override
     public List<FakereplaceTransformer> getTransformers() {
         return Collections.emptyList();
     }

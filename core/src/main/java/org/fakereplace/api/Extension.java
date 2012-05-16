@@ -23,6 +23,7 @@ package org.fakereplace.api;
 import java.util.List;
 import java.util.Set;
 
+import org.fakereplace.api.environment.Environment;
 import org.fakereplace.transformation.FakereplaceTransformer;
 
 /**
@@ -69,6 +70,14 @@ public interface Extension {
      * the class will be intrumented to load classes from the integration.
      */
     Set<String> getIntegrationTriggerClassNames();
+
+    /**
+     * Gets the {@link Environment} this extension provides, or null if it does
+     * not override the environment.
+     *
+     * Only one active extension can override the environment.
+     */
+    String getEnvironment();
 
     /**
      * get a list of classes that should be turned into tracked instances.

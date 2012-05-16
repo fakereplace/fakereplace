@@ -35,18 +35,27 @@ public class JBossASHibernate4Extension implements Extension {
 
     private static final String CLASS_CHANGE_AWARE = "org.fakereplace.integration.jbossas.hibernate4.JBossASHibernate4ClassChangeAware";
 
+    @Override
     public String getClassChangeAwareName() {
         return CLASS_CHANGE_AWARE;
     }
 
+    @Override
     public Set<String> getIntegrationTriggerClassNames() {
         return Collections.singleton(PERSISTENCE_UNIT_SERVICE);
     }
 
+    @Override
+    public String getEnvironment() {
+        return null;
+    }
+
+    @Override
     public Set<String> getTrackedInstanceClassNames() {
         return new HashSet<String>(Arrays.asList(new String[]{PERSISTENCE_UNIT_SERVICE}));
     }
 
+    @Override
     public List<FakereplaceTransformer> getTransformers() {
         return Collections.emptyList();
     }

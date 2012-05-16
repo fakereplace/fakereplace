@@ -32,8 +32,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.fakereplace.api.ChangedClasses;
-import org.fakereplace.api.CurrentEnvironment;
+import org.fakereplace.api.environment.ChangedClasses;
+import org.fakereplace.api.environment.CurrentEnvironment;
 import org.fakereplace.core.Agent;
 import org.fakereplace.logging.Logger;
 import org.fakereplace.replacement.AddedClass;

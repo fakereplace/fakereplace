@@ -48,6 +48,11 @@ public class Hibernate4Extension implements Extension {
     }
 
     @Override
+    public String getEnvironment() {
+        return null;
+    }
+
+    @Override
     public Set<String> getTrackedInstanceClassNames() {
         return Collections.emptySet();
     }

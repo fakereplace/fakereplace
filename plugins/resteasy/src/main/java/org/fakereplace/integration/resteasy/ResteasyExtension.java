@@ -34,14 +34,22 @@ public class ResteasyExtension implements Extension {
     public static final String FILTER_DISPATCHER = "org.jboss.resteasy.plugins.server.servlet.FilterDispatcher";
     public static final String SERVLET_DISPATCHER = "org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher";
 
+    @Override
     public String getClassChangeAwareName() {
         return "org.fakereplace.integration.resteasy.ResteasyClassChangeAware";
     }
 
+    @Override
     public Set<String> getIntegrationTriggerClassNames() {
         return new HashSet<String>(Arrays.asList(new String[] {FILTER_DISPATCHER, SERVLET_DISPATCHER}));
     }
 
+    @Override
+    public String getEnvironment() {
+        return null;
+    }
+
+    @Override
     public Set<String> getTrackedInstanceClassNames() {
         Set<String> ret = new HashSet<String>();
         ret.add(FILTER_DISPATCHER);
@@ -49,6 +57,7 @@ public class ResteasyExtension implements Extension {
         return ret;
     }
 
+    @Override
     public List<FakereplaceTransformer> getTransformers() {
         return Collections.<FakereplaceTransformer>singletonList(new ResteasyTransformer());
     }
