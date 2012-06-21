@@ -24,6 +24,7 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Set;
 
+import org.fakereplace.api.Attachments;
 import org.fakereplace.api.ChangedClass;
 import org.fakereplace.api.ClassChangeAware;
 import org.fakereplace.classloading.ClassIdentifier;
@@ -38,12 +39,12 @@ public class JBossASClassChangeAware implements ClassChangeAware {
     private static final Logger log = Logger.getLogger(JBossASClassChangeAware.class);
 
     @Override
-    public void beforeChange(final List<Class<?>> changed, final List<ClassIdentifier> added) {
+    public void beforeChange(final List<Class<?>> changed, final List<ClassIdentifier> added, final Attachments attachments) {
 
     }
 
     @Override
-    public void afterChange(List<ChangedClass> changed, List<ClassIdentifier> added) {
+    public void afterChange(List<ChangedClass> changed, List<ClassIdentifier> added, final Attachments attachments) {
         clearJSRResourceCache();
         //JBossASHibernate4Replacer.handleHibernateReplacement(changed, added);
     }

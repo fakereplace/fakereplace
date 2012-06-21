@@ -18,22 +18,16 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.fakereplace.api;
+package a.org.fakereplace.integration.jbossas.hibernate4.basic.addentity;
 
-import java.util.List;
-
-import org.fakereplace.classloading.ClassIdentifier;
+import javax.ejb.Remote;
 
 /**
- * interface that should be implemented by classes that with to be notified of
- * class changes.
- *
- *
- * @author stuart
+ * @author Stuart Douglas
  */
-public interface ClassChangeAware {
+@Remote
+public interface RemoteEmployee {
+    void saveEntity(int id);
 
-    void beforeChange(List<Class<?>> changed, List<ClassIdentifier> added, Attachments attachments);
-
-    void afterChange(List<ChangedClass> changed, List<ClassIdentifier> added, Attachments attachments);
+    String getEntityDesc(int id);
 }

@@ -28,6 +28,7 @@ import java.util.Set;
 
 import javax.enterprise.inject.spi.Bean;
 
+import org.fakereplace.api.Attachments;
 import org.fakereplace.api.ChangedClass;
 import org.fakereplace.api.ClassChangeAware;
 import org.fakereplace.classloading.ClassIdentifier;
@@ -54,12 +55,12 @@ public class WeldClassChangeAware implements ClassChangeAware {
     }
 
     @Override
-    public void beforeChange(final List<Class<?>> changed, final List<ClassIdentifier> added) {
+    public void beforeChange(final List<Class<?>> changed, final List<ClassIdentifier> added, final Attachments attachments) {
 
     }
 
     @Override
-    public void afterChange(List<ChangedClass> changed, List<ClassIdentifier> added) {
+    public void afterChange(List<ChangedClass> changed, List<ClassIdentifier> added, final Attachments attachments) {
         ClassLoader oldCl = null;
         WeldProxyClassLoadingDelegate.beginProxyRegeneration();
         try {

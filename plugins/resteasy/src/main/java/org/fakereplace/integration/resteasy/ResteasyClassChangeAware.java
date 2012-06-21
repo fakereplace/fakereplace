@@ -30,6 +30,7 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.ws.rs.Path;
 
+import org.fakereplace.api.Attachments;
 import org.fakereplace.api.ChangedClass;
 import org.fakereplace.api.ClassChangeAware;
 import org.fakereplace.classloading.ClassIdentifier;
@@ -38,12 +39,12 @@ import org.fakereplace.data.InstanceTracker;
 public class ResteasyClassChangeAware implements ClassChangeAware {
 
     @Override
-    public void beforeChange(final List<Class<?>> changed, final List<ClassIdentifier> added) {
+    public void beforeChange(final List<Class<?>> changed, final List<ClassIdentifier> added, final Attachments attachments) {
 
     }
 
     @Override
-    public void afterChange(final List<ChangedClass> changed, final List<ClassIdentifier> added) {
+    public void afterChange(final List<ChangedClass> changed, final List<ClassIdentifier> added, final Attachments attachments) {
         boolean requiresRestart = false;
         ClassLoader classLoader = null;
         for (final ChangedClass c : changed) {

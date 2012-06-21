@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.fakereplace.api.Attachments;
 import org.fakereplace.api.ChangedClass;
 import org.fakereplace.api.ClassChangeAware;
 import org.fakereplace.api.environment.CurrentEnvironment;
@@ -35,12 +36,12 @@ import org.fakereplace.hibernate4.HibernateEnvironment;
  */
 public class Hibernate4ClassChangeAware implements ClassChangeAware {
     @Override
-    public void beforeChange(final List<Class<?>> changed, final List<ClassIdentifier> added) {
+    public void beforeChange(final List<Class<?>> changed, final List<ClassIdentifier> added, final Attachments attachments) {
 
     }
 
     @Override
-    public void afterChange(final List<ChangedClass> changed, final List<ClassIdentifier> added) {
+    public void afterChange(final List<ChangedClass> changed, final List<ClassIdentifier> added, final Attachments attachments) {
         final Set<Class<?>> changedClasses = new HashSet<Class<?>>();
         for(ChangedClass changedClass : changed) {
             changedClasses.add(changedClass.getChangedClass());

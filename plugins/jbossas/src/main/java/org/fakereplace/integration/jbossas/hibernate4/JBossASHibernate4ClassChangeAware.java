@@ -20,15 +20,20 @@
 
 package org.fakereplace.integration.jbossas.hibernate4;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.Entity;
 
+import org.fakereplace.api.AttachmentKeys;
+import org.fakereplace.api.Attachments;
 import org.fakereplace.api.ChangedClass;
 import org.fakereplace.api.ClassChangeAware;
 import org.fakereplace.classloading.ClassIdentifier;
@@ -38,6 +43,9 @@ import org.jboss.as.jpa.spi.PersistenceProviderAdaptor;
 import org.jboss.as.jpa.spi.PersistenceUnitMetadata;
 import org.jboss.as.naming.WritableServiceBasedNamingStore;
 import org.jboss.as.server.CurrentServiceContainer;
+import org.jboss.modules.Module;
+import org.jboss.modules.ModuleIdentifier;
+import org.jboss.modules.ModuleLoadException;
 
 /**
  * @author Stuart Douglas
@@ -45,12 +53,12 @@ import org.jboss.as.server.CurrentServiceContainer;
 public class JBossASHibernate4ClassChangeAware implements ClassChangeAware {
 
     @Override
-    public void beforeChange(final List<Class<?>> changed, final List<ClassIdentifier> added) {
+    public void beforeChange(final List<Class<?>> changed, final List<ClassIdentifier> added, Attachments attachments) {
 
     }
 
     @Override
-    public void afterChange(final List<ChangedClass> changed, final List<ClassIdentifier> added) {
+    public void afterChange(final List<ChangedClass> changed, final List<ClassIdentifier> added, Attachments attachments) {
         final Set<Class<?>> changedClasses = new HashSet<Class<?>>();
         boolean replace = false;
         for (ChangedClass changedClass : changed) {
@@ -64,9 +72,19 @@ public class JBossASHibernate4ClassChangeAware implements ClassChangeAware {
             return;
         }
 
+        final String deploymentName = attachments.get(AttachmentKeys.DEPLOYMENT_NAME);
+
         final Set<PersistenceUnitServiceImpl> puServices = (Set<PersistenceUnitServiceImpl>) InstanceTracker.get(JBossASHibernate4Extension.PERSISTENCE_UNIT_SERVICE);
 
+        //AS7 caches annotations so it does not have to hang onto the Jandex index
+        //we need to update this index
         try {
+            final Module hib4Module = Module.getBootModuleLoader().loadModule(ModuleIdentifier.create("org.jboss.as.jpa.hibernate", "4"));
+            final Class<?> annotationScanner = hib4Module.getClassLoader().loadClass("org.jboss.as.jpa.hibernate4.HibernateAnnotationScanner");
+            final Field classesInJar = annotationScanner.getDeclaredField("CLASSES_IN_JAR_CACHE");
+            classesInJar.setAccessible(true);
+            final Map<PersistenceUnitMetadata, Map<URL, Map<Class<? extends Annotation>, Set<Class<?>>>>> cache = (Map<PersistenceUnitMetadata, Map<URL, Map<Class<? extends Annotation>, Set<Class<?>>>>>) classesInJar.get(null);
+
             final Field puField = PersistenceUnitServiceImpl.class.getDeclaredField("pu");
             puField.setAccessible(true);
             final Field persistenceProviderAdaptorField = PersistenceUnitServiceImpl.class.getDeclaredField("persistenceProviderAdaptor");
@@ -76,10 +94,16 @@ public class JBossASHibernate4ClassChangeAware implements ClassChangeAware {
             WritableServiceBasedNamingStore.pushOwner(CurrentServiceContainer.getServiceContainer());
             try {
                 for (PersistenceUnitServiceImpl puService : puServices) {
+
                     final Object proxy = puService.getEntityManagerFactory();
                     final PersistenceProviderAdaptor adaptor = (PersistenceProviderAdaptor) persistenceProviderAdaptorField.get(puService);
-                    if (adaptor != null) {
+                    if (adaptor != null && proxy != null) {
                         final PersistenceUnitMetadata pu = (PersistenceUnitMetadata) puField.get(puService);
+
+                        final Map<URL, Map<Class<? extends Annotation>, Set<Class<?>>>> urlAnnotations = cache.get(pu);
+
+                        //TODO: handle new entities
+
                         adaptor.beforeCreateContainerEntityManagerFactory(pu);
                         try {
                             Method method = proxy.getClass().getDeclaredMethod("reload");
@@ -100,6 +124,10 @@ public class JBossASHibernate4ClassChangeAware implements ClassChangeAware {
         } catch (NoSuchMethodException e) {
             throw new RuntimeException(e);
         } catch (InvocationTargetException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (ModuleLoadException e) {
             throw new RuntimeException(e);
         }
     }

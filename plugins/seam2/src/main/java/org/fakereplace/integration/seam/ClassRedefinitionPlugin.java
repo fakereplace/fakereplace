@@ -32,6 +32,7 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.fakereplace.api.Attachments;
 import org.fakereplace.api.ChangedClass;
 import org.fakereplace.api.ClassChangeAware;
 import org.fakereplace.classloading.ClassIdentifier;
@@ -94,7 +95,7 @@ public class ClassRedefinitionPlugin implements ClassChangeAware {
         return getField(clazz.getSuperclass(), name);
     }
 
-    public void beforeChange(List<Class<?>> changed, List<ClassIdentifier> added) {
+    public void beforeChange(List<Class<?>> changed, List<ClassIdentifier> added, final Attachments attachments) {
         disableHotDeployFilter();
         if (!Lifecycle.isApplicationInitialized()) {
             return;
@@ -127,7 +128,7 @@ public class ClassRedefinitionPlugin implements ClassChangeAware {
         }
     }
 
-    public void afterChange(List<ChangedClass> changed, List<ClassIdentifier> added) {
+    public void afterChange(List<ChangedClass> changed, List<ClassIdentifier> added, final Attachments attachments) {
         if (!Lifecycle.isApplicationInitialized()) {
             return;
         }

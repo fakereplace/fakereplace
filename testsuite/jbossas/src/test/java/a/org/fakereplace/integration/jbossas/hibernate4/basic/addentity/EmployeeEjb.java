@@ -18,22 +18,31 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.fakereplace.api;
+package a.org.fakereplace.integration.jbossas.hibernate4.basic.addentity;
 
-import java.util.List;
-
-import org.fakereplace.classloading.ClassIdentifier;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 /**
- * interface that should be implemented by classes that with to be notified of
- * class changes.
- *
- *
- * @author stuart
+ * @author Stuart Douglas
  */
-public interface ClassChangeAware {
+@Stateless
+public class EmployeeEjb implements RemoteEmployee {
 
-    void beforeChange(List<Class<?>> changed, List<ClassIdentifier> added, Attachments attachments);
+    @PersistenceContext
+    private EntityManager entityManager;
 
-    void afterChange(List<ChangedClass> changed, List<ClassIdentifier> added, Attachments attachments);
+    public void saveEntity(int id) {
+        final Employee employee = new Employee();
+        employee.setId(id);
+        employee.setName("name");
+        entityManager.persist(employee);
+    }
+
+    @Override
+    public String getEntityDesc(final int id) {
+        return entityManager.find(Employee.class, id).toString();
+    }
+
 }

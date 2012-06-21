@@ -38,14 +38,15 @@ import java.util.ServiceLoader;
 import java.util.Set;
 
 import javassist.bytecode.ClassFile;
+import org.fakereplace.api.Attachments;
 import org.fakereplace.api.Extension;
 import org.fakereplace.classloading.ClassIdentifier;
 import org.fakereplace.classloading.ClassLookupManager;
 import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.replacement.AddedClass;
 import org.fakereplace.replacement.ClassRedefiner;
-import org.fakereplace.replacement.notification.CurrentChangedClasses;
 import org.fakereplace.replacement.ReplacementResult;
+import org.fakereplace.replacement.notification.CurrentChangedClasses;
 import org.fakereplace.server.FakereplaceServer;
 import org.fakereplace.transformation.ClassLoaderTransformer;
 import org.fakereplace.transformation.MainTransformer;
@@ -109,6 +110,10 @@ public class Agent {
     }
 
     public static void redefine(ClassDefinition[] classes, AddedClass[] addedData) throws UnmodifiableClassException, ClassNotFoundException {
+        redefine(classes, addedData, new Attachments());
+    }
+
+    public static void redefine(ClassDefinition[] classes, AddedClass[] addedData, final Attachments attachments) throws UnmodifiableClassException, ClassNotFoundException {
         final List<ClassIdentifier> addedClass = new ArrayList<ClassIdentifier>();
         for (AddedClass i : addedData) {
             addedClass.add(i.getClassIdentifier());
@@ -121,7 +126,7 @@ public class Agent {
             ClassDataStore.instance().markClassReplaced(i.getClass());
         }
         // notify the integration classes that stuff is about to change
-        ClassChangeNotifier.instance().beforeChange(Collections.unmodifiableList(changedClasses), Collections.unmodifiableList(addedClass));
+        ClassChangeNotifier.instance().beforeChange(Collections.unmodifiableList(changedClasses), Collections.unmodifiableList(addedClass), attachments);
         CurrentChangedClasses.prepareClasses(changedClasses);
         // re-write the classes so their field
         ReplacementResult result = ClassRedefiner.rewriteLoadedClasses(classes);
@@ -135,7 +140,7 @@ public class Agent {
             }
             Introspector.flushCaches();
 
-            ClassChangeNotifier.instance().afterChange(Collections.unmodifiableList(CurrentChangedClasses.getChanged()), Collections.unmodifiableList(addedClass));
+            ClassChangeNotifier.instance().afterChange(Collections.unmodifiableList(CurrentChangedClasses.getChanged()), Collections.unmodifiableList(addedClass), attachments);
         } catch (Throwable e) {
             try {
                 // dump the classes to /tmp so we can look at them

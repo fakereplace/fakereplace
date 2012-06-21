@@ -20,20 +20,22 @@
 
 package org.fakereplace.api;
 
-import java.util.List;
-
-import org.fakereplace.classloading.ClassIdentifier;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * interface that should be implemented by classes that with to be notified of
- * class changes.
- *
- *
- * @author stuart
+ * @author Stuart Douglas
  */
-public interface ClassChangeAware {
+public class Attachments {
 
-    void beforeChange(List<Class<?>> changed, List<ClassIdentifier> added, Attachments attachments);
+    private final Map<AttachmentKey<?>, Object> attachments = new HashMap<AttachmentKey<?>, Object>();
 
-    void afterChange(List<ChangedClass> changed, List<ClassIdentifier> added, Attachments attachments);
+    public <T> T get(final AttachmentKey<T> key) {
+        return (T) attachments.get(key);
+    }
+
+    public <T> void set(final AttachmentKey<T> key, T attachment) {
+        attachments.put(key, attachment);
+    }
+
 }

@@ -18,22 +18,39 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.fakereplace.api;
+package a.org.fakereplace.integration.jbossas.hibernate4.basic.addentity;
 
-import java.util.List;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
-import org.fakereplace.classloading.ClassIdentifier;
+@Entity
+public class Employee {
 
-/**
- * interface that should be implemented by classes that with to be notified of
- * class changes.
- *
- *
- * @author stuart
- */
-public interface ClassChangeAware {
+    @Id
+    private int id;
 
-    void beforeChange(List<Class<?>> changed, List<ClassIdentifier> added, Attachments attachments);
+    private String name;
 
-    void afterChange(List<ChangedClass> changed, List<ClassIdentifier> added, Attachments attachments);
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getId() {
+
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    @Override
+    public String toString() {
+        return id + "-" + name;
+    }
 }
