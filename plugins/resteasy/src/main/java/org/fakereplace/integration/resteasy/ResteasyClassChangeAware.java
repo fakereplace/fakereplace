@@ -20,7 +20,6 @@
 
 package org.fakereplace.integration.resteasy;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Set;
@@ -35,8 +34,11 @@ import org.fakereplace.api.ChangedClass;
 import org.fakereplace.api.ClassChangeAware;
 import org.fakereplace.classloading.ClassIdentifier;
 import org.fakereplace.data.InstanceTracker;
+import org.fakereplace.logging.Logger;
 
 public class ResteasyClassChangeAware implements ClassChangeAware {
+
+    final Logger logger = Logger.getLogger(ResteasyClassChangeAware.class);
 
     @Override
     public void beforeChange(final List<Class<?>> changed, final List<ClassIdentifier> added, final Attachments attachments) {
@@ -58,8 +60,8 @@ public class ResteasyClassChangeAware implements ClassChangeAware {
 
         if (requiresRestart) {
 
-            try {
-                for (final Object servlet : InstanceTracker.get(ResteasyExtension.SERVLET_DISPATCHER)) {
+            for (final Object servlet : InstanceTracker.get(ResteasyExtension.SERVLET_DISPATCHER)) {
+                try {
                     final ServletConfig config = (ServletConfig) servlet.getClass().getField(ResteasyTransformer.FIELD_NAME).get(servlet);
                     final Set<String> doNoyClear = (Set<String>) servlet.getClass().getField(ResteasyTransformer.PARAMETER_FIELD_NAME).get(servlet);
                     clearContext(config.getServletContext(), doNoyClear);
@@ -71,8 +73,12 @@ public class ResteasyClassChangeAware implements ClassChangeAware {
                     } finally {
                         Thread.currentThread().setContextClassLoader(old);
                     }
+                } catch (Exception e) {
+                    logger.debug("Could not restart RESTeasy", e);
                 }
-                for (final Object filter : InstanceTracker.get(ResteasyExtension.FILTER_DISPATCHER)) {
+            }
+            for (final Object filter : InstanceTracker.get(ResteasyExtension.FILTER_DISPATCHER)) {
+                try {
                     final FilterConfig config = (FilterConfig) filter.getClass().getField(ResteasyTransformer.FIELD_NAME).get(filter);
                     final Set<String> doNoyClear = (Set<String>) filter.getClass().getField(ResteasyTransformer.PARAMETER_FIELD_NAME).get(filter);
                     clearContext(config.getServletContext(), doNoyClear);
@@ -84,16 +90,11 @@ public class ResteasyClassChangeAware implements ClassChangeAware {
                     } finally {
                         Thread.currentThread().setContextClassLoader(old);
                     }
+                } catch (Exception e) {
+                    logger.debug("Could not restart RESTeasy", e);
                 }
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            } catch (NoSuchFieldException e) {
-                throw new RuntimeException(e);
-            } catch (NoSuchMethodException e) {
-                throw new RuntimeException(e);
-            } catch (InvocationTargetException e) {
-                throw new RuntimeException(e);
             }
+
         }
 
     }
