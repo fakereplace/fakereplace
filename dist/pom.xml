@@ -128,7 +128,7 @@
                             <Premain-Class>org.fakereplace.core.Agent</Premain-Class>
                             <Can-Redefine-Classes>true</Can-Redefine-Classes>
                             <Can-Retransform-Classes>true</Can-Retransform-Classes>
-                            <Boot-Class-Path>${project.build.finalName}.jar</Boot-Class-Path>
+                            <Boot-Class-Path>${project.build.finalName}.jar ${project.build.finalName}-dist-${project.version}.jar</Boot-Class-Path>
                         </manifestEntries>
                     </archive>
                 </configuration>
