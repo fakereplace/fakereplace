@@ -73,10 +73,6 @@ public class Agent {
 
         final Set<Extension> extension = getIntegrationInfo(ClassLoader.getSystemClassLoader());
 
-        for (final Extension info : extension) {
-
-        }
-
         //initialise the unmodified file index
         UnmodifiedFileIndex.loadIndex();
 
@@ -114,23 +110,23 @@ public class Agent {
     }
 
     public static void redefine(ClassDefinition[] classes, AddedClass[] addedData, final Attachments attachments) throws UnmodifiableClassException, ClassNotFoundException {
-        final List<ClassIdentifier> addedClass = new ArrayList<ClassIdentifier>();
-        for (AddedClass i : addedData) {
-            addedClass.add(i.getClassIdentifier());
-        }
-
-        final List<Class<?>> changedClasses = new ArrayList<Class<?>>();
-        for (ClassDefinition i : classes) {
-            System.out.println("Fakereplace is replacing class " + i.getDefinitionClass());
-            changedClasses.add(i.getDefinitionClass());
-            ClassDataStore.instance().markClassReplaced(i.getClass());
-        }
-        // notify the integration classes that stuff is about to change
-        ClassChangeNotifier.instance().beforeChange(Collections.unmodifiableList(changedClasses), Collections.unmodifiableList(addedClass), attachments);
-        CurrentChangedClasses.prepareClasses(changedClasses);
-        // re-write the classes so their field
-        ReplacementResult result = ClassRedefiner.rewriteLoadedClasses(classes);
         try {
+            final List<ClassIdentifier> addedClass = new ArrayList<ClassIdentifier>();
+            for (AddedClass i : addedData) {
+                addedClass.add(i.getClassIdentifier());
+            }
+
+            final List<Class<?>> changedClasses = new ArrayList<Class<?>>();
+            for (ClassDefinition i : classes) {
+                System.out.println("Fakereplace is replacing class " + i.getDefinitionClass());
+                changedClasses.add(i.getDefinitionClass());
+                ClassDataStore.instance().markClassReplaced(i.getClass());
+            }
+            // notify the integration classes that stuff is about to change
+            ClassChangeNotifier.instance().beforeChange(Collections.unmodifiableList(changedClasses), Collections.unmodifiableList(addedClass), attachments);
+            CurrentChangedClasses.prepareClasses(changedClasses);
+            // re-write the classes so their field
+            ReplacementResult result = ClassRedefiner.rewriteLoadedClasses(classes);
             for (AddedClass c : addedData) {
                 ClassLookupManager.addClassInfo(c.getClassName(), c.getLoader(), c.getData());
             }

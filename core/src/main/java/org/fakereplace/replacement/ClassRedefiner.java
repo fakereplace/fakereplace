@@ -24,17 +24,25 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.instrument.ClassDefinition;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import javassist.ClassPool;
+import javassist.bytecode.BadBytecode;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.Descriptor;
-import org.fakereplace.logging.Logger;
+import javassist.bytecode.MethodInfo;
+import org.fakereplace.core.AgentOption;
+import org.fakereplace.core.AgentOptions;
+import org.fakereplace.core.Transformer;
 import org.fakereplace.data.BaseClassData;
 import org.fakereplace.data.ClassDataBuilder;
 import org.fakereplace.data.ClassDataStore;
+import org.fakereplace.logging.Logger;
 
 public class ClassRedefiner {
 
@@ -82,6 +90,28 @@ public class ClassRedefiner {
         AnnotationReplacer.processAnnotations(file, oldClass);
         FieldReplacer.handleFieldReplacement(file, loader, oldClass, builder);
         MethodReplacer.handleMethodReplacement(file, loader, oldClass, builder, classToReload);
+        try {
+            for (MethodInfo method : (List<MethodInfo>) file.getMethods()) {
+                method.rebuildStackMap(ClassPool.getDefault());
+            }
+        } catch (BadBytecode e) {
+            try {
+            String dumpDir = AgentOptions.getOption(AgentOption.DUMP_DIR);
+            if (dumpDir != null) {
+                FileOutputStream s = new FileOutputStream(dumpDir + '/' + file.getName() + "-stackmap.class");
+                DataOutputStream dos = new DataOutputStream(s);
+                file.write(dos);
+                dos.flush();
+                dos.close();
+                // s.write(d.getDefinitionClassFile());
+                s.close();
+            }
+            } catch (Exception ex) {
+                e.printStackTrace();
+                ex.printStackTrace();
+            }
+        }
+
         ClassDataStore.instance().saveClassData(loader, file.getName(), builder);
     }
 

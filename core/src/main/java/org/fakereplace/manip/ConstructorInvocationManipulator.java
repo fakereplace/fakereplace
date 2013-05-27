@@ -56,7 +56,7 @@ public class ConstructorInvocationManipulator implements ClassManipulator {
         data.add(clazz, d);
     }
 
-    public boolean transformClass(ClassFile file, ClassLoader loader, boolean modifiableClass) {
+    public boolean transformClass(ClassFile file, ClassLoader loader, boolean modifiableClass, final Set<MethodInfo> modifiedMethods) {
         Map<String, Set<ConstructorRewriteData>> constructorRewrites = data.getManipulationData(loader);
         if (constructorRewrites.isEmpty()) {
             return false;
@@ -143,6 +143,7 @@ public class ConstructorInvocationManipulator implements ClassManipulator {
                             }
                         }
                     }
+                    modifiedMethods.add(m);
                     m.getCodeAttribute().computeMaxStack();
                 } catch (Exception e) {
                     log.error("Bad byte code transforming " + file.getName(), e);

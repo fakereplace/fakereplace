@@ -20,6 +20,8 @@
 
 package org.fakereplace.manip;
 
+import java.util.Set;
+
 import javassist.bytecode.AccessFlag;
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.AttributeInfo;
@@ -40,7 +42,7 @@ public class FinalMethodManipulator implements ClassManipulator {
 
     }
 
-    public boolean transformClass(ClassFile file, ClassLoader loader, boolean modifiableClass) {
+    public boolean transformClass(ClassFile file, ClassLoader loader, boolean modifiableClass, final Set<MethodInfo> modifiedMethods) {
         if (!modifiableClass) {
             return false;
         }

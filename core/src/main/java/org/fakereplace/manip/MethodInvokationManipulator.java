@@ -65,7 +65,7 @@ public class MethodInvokationManipulator implements ClassManipulator {
         data.add(oldClass, d);
     }
 
-    public boolean transformClass(ClassFile file, ClassLoader loader, boolean modifiableClass) {
+    public boolean transformClass(ClassFile file, ClassLoader loader, boolean modifiableClass, final Set<MethodInfo> modifiedMethods) {
         final Map<String, Set<VirtualToStaticData>> virtualToStaticMethod = data.getManipulationData(loader);
         final Map<Integer, VirtualToStaticData> methodCallLocations = new HashMap<Integer, VirtualToStaticData>();
         final Map<VirtualToStaticData, Integer> newClassPoolLocations = new HashMap<VirtualToStaticData, Integer>();
@@ -151,10 +151,12 @@ public class MethodInvokationManipulator implements ClassManipulator {
                                     it.writeByte(CodeIterator.NOP, index + 3);
                                     it.writeByte(CodeIterator.NOP, index + 4);
                                 }
+                                modifiedMethods.add(m);
                             }
                         }
 
                     }
+                    modifiedMethods.add(m);
                     m.getCodeAttribute().computeMaxStack();
                 } catch (Exception e) {
                     log.error("Bad byte code transforming " + file.getName(), e);

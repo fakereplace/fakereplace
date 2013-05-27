@@ -60,7 +60,7 @@ public class ConstructorAccessManipulator implements ClassManipulator {
 
     }
 
-    public boolean transformClass(ClassFile file, ClassLoader loader, boolean modifiableClass) {
+    public boolean transformClass(ClassFile file, ClassLoader loader, boolean modifiableClass, final Set<MethodInfo> modifiedMethods) {
         Set<Integer> methodCallLocations = new HashSet<Integer>();
         Integer constructorReflectionLocation = null;
         // first we need to scan the constant pool looking for
@@ -132,6 +132,7 @@ public class ConstructorAccessManipulator implements ClassManipulator {
                         }
 
                     }
+                    modifiedMethods.add(m);
                     m.getCodeAttribute().computeMaxStack();
                 } catch (Exception e) {
                     log.error("Bad byte code transforming " + file.getName(), e);

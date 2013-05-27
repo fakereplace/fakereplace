@@ -20,10 +20,13 @@
 
 package org.fakereplace.manip;
 
+import java.util.Set;
+
 import javassist.bytecode.ClassFile;
+import javassist.bytecode.MethodInfo;
 
 public interface ClassManipulator {
     void clearRewrites(String className, ClassLoader classLoader);
 
-    boolean transformClass(ClassFile file, ClassLoader loader, boolean modifiableClass);
+    boolean transformClass(ClassFile file, ClassLoader loader, boolean modifiableClass, final Set<MethodInfo> modifiedMethods);
 }

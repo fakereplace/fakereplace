@@ -59,7 +59,7 @@ public class MethodAccessManipulator implements ClassManipulator {
 
     }
 
-    public boolean transformClass(ClassFile file, ClassLoader loader, boolean modifiableClass) {
+    public boolean transformClass(ClassFile file, ClassLoader loader, boolean modifiableClass, final Set<MethodInfo> modifiedMethods) {
         Set<Integer> methodCallLocations = new HashSet<Integer>();
         Integer newCallLocation = null;
         Integer methodReflectionLocation = null;
@@ -137,6 +137,7 @@ public class MethodAccessManipulator implements ClassManipulator {
 
                     }
                     m.getCodeAttribute().computeMaxStack();
+                    modifiedMethods.add(m);
                 } catch (Exception e) {
                     log.error("Bad byte code transforming " + file.getName(), e);
                 }

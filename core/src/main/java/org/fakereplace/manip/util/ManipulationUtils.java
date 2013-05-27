@@ -56,8 +56,6 @@ public class ManipulationUtils {
             if (ret.length() != 1) {
                 return;
             }
-            byte ar = (byte) Opcode.ARETURN;
-            byte[] areturn = {ar};
             // void methods are special
             if (ret.equals("V")) {
 
@@ -71,8 +69,8 @@ public class ManipulationUtils {
                         // to return a null value
                         if (opcode == Opcode.RETURN) {
                             Bytecode code = new Bytecode(methodBody.get().getConstPool());
+                            methodBody.writeByte(Opcode.ARETURN, index);
                             code.add(Opcode.ACONST_NULL);
-                            code.add(Opcode.ARETURN);
                             methodBody.insertAt(index, code.get());
 
                         }
@@ -93,9 +91,9 @@ public class ManipulationUtils {
                             case Opcode.FRETURN:
                                 // write a NOP over the old return instruction
                                 // insert the boxing code to get an object on the stack
+                                methodBody.writeByte(Opcode.ARETURN, index);
                                 Bytecode b = new Bytecode(methodBody.get().getConstPool());
                                 Boxing.box(b, ret.charAt(0));
-                                b.addOpcode(Opcode.ARETURN);
                                 methodBody.insertAt(index, b.get());
 
                         }
@@ -109,7 +107,6 @@ public class ManipulationUtils {
         /**
          * Gets the correct return instruction for a proxy method
          *
-         * @param pool
          * @param methodDescriptor
          */
         public static void addReturnProxyMethod(String methodDescriptor, Bytecode b) {
@@ -148,7 +145,6 @@ public class ManipulationUtils {
      * add a bogus constructor call to a bytecode sequence so a constructor can
      * pass bytecode validation
      *
-     * @param bytecode
      */
     public static boolean addBogusConstructorCall(ClassFile file, Bytecode code) {
         MethodInfo constructorToCall = null;
@@ -205,83 +201,6 @@ public class ManipulationUtils {
         value = value % 65536;
         b.add(value >> 8);
         b.add(value % 256);
-    }
-
-    /**
-     * Add a method to a class that simply delegates to the parent implementation
-     * of the method
-     */
-    public static void addDelegatingMethod(ClassFile file, MethodData mData) throws BadBytecode, DuplicateMemberException {
-        MethodInfo m = new MethodInfo(file.getConstPool(), mData.getMethodName(), mData.getDescriptor());
-        m.setAccessFlags(mData.getAccessFlags());
-        Bytecode code = new Bytecode(file.getConstPool());
-
-        String[] params = DescriptorUtils.descriptorStringToParameterArray(mData.getDescriptor());
-        code.add(Opcode.ALOAD_0); // push this
-        int count = 1; // zero is the this pointer
-        int maxLocals = 1;
-        for (String p : params) {
-            // int char short boolean byte
-            if (p.equals("I") || p.equals("C") || p.equals("S") || p.equals("Z") || p.equals("B")) {
-                // push integer 0
-                code.addIload(count);
-                maxLocals++;
-            }
-            // long
-            else if (p.equals("J")) {
-                code.addLload(count);
-                maxLocals += 2;
-                count++;
-            }
-            // double
-            else if (p.equals("D")) {
-                code.addDload(count);
-                maxLocals += 2;
-                count++;
-            }
-            // float
-            else if (p.equals("F")) {
-                code.addFload(count);
-                maxLocals++;
-            }
-            // arrays and reference types
-            else {
-                code.addAload(count);
-                maxLocals++;
-            }
-            count++;
-        }
-        code.addInvokespecial(file.getSuperclass(), mData.getMethodName(), mData.getDescriptor());
-        String p = DescriptorUtils.getReturnTypeInJvmFormat(mData.getDescriptor());
-        // int char short boolean byte
-        if (p.equals("I") || p.equals("C") || p.equals("S") || p.equals("Z") || p.equals("B")) {
-            code.add(Opcode.IRETURN);
-        }
-        // long
-        else if (p.equals("J")) {
-            code.add(Opcode.LRETURN);
-        }
-        // double
-        else if (p.equals("D")) {
-            code.add(Opcode.DRETURN);
-        }
-        // float
-        else if (p.equals("F")) {
-            code.add(Opcode.FRETURN);
-        }
-        // void
-        else if (p.equals("V")) {
-            code.add(Opcode.RETURN);
-        }
-        // arrays and reference types
-        else {
-            code.add(Opcode.ARETURN);
-        }
-        CodeAttribute ca = code.toCodeAttribute();
-        ca.computeMaxStack();
-        ca.setMaxLocals(maxLocals);
-        m.setCodeAttribute(ca);
-        file.addMethod(m);
     }
 
     public static void pushParametersIntoArray(Bytecode bc, String methodDescriptor) {

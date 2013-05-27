@@ -20,10 +20,14 @@
 
 package org.fakereplace.manip;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import javassist.ClassPool;
+import javassist.bytecode.BadBytecode;
 import javassist.bytecode.ClassFile;
+import javassist.bytecode.MethodInfo;
 import org.fakereplace.manip.data.AddedFieldData;
 
 /**
@@ -104,14 +108,18 @@ public class Manipulator {
         methodInvokationManipulator.replaceVirtualMethodInvokationWithLocal(oldClass, methodName, newMethodName, methodDesc, newStaticMethodDesc, classLoader);
     }
 
-    public boolean transformClass(ClassFile file, ClassLoader classLoader, boolean modifiable) {
+    public boolean transformClass(ClassFile file, ClassLoader classLoader, boolean modifiable) throws BadBytecode {
         boolean modified = false;
 
+        final Set<MethodInfo> modifiedMethods = new HashSet<MethodInfo>();
         // first we are going to transform virtual method calls to static ones
         for (ClassManipulator m : manipulators) {
-            if (m.transformClass(file, classLoader, modifiable)) {
+            if (m.transformClass(file, classLoader, modifiable, modifiedMethods)) {
                 modified = true;
             }
+        }
+        for (MethodInfo m : modifiedMethods) {
+            m.rebuildStackMap(ClassPool.getDefault());
         }
         return modified;
     }

@@ -32,11 +32,15 @@ import java.net.URL;
 import java.security.ProtectionDomain;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javassist.ClassPool;
+import javassist.bytecode.BadBytecode;
 import javassist.bytecode.ClassFile;
+import javassist.bytecode.MethodInfo;
 import org.fakereplace.api.ClassChangeAware;
 import org.fakereplace.api.Extension;
 import org.fakereplace.api.environment.CurrentEnvironment;
@@ -123,6 +127,13 @@ public class MainTransformer implements ClassFileTransformer {
                 UnmodifiedFileIndex.markClassUnmodified(className);
                 return null;
             } else {
+                try {
+                    for (MethodInfo method : (List<MethodInfo>) file.getMethods()) {
+                        method.rebuildStackMap(ClassPool.getDefault());
+                    }
+                } catch (BadBytecode e) {
+                    throw new RuntimeException(e);
+                }
                 ByteArrayOutputStream bs = new ByteArrayOutputStream();
                 file.write(new DataOutputStream(bs));
                 // dump the class for debugging purposes

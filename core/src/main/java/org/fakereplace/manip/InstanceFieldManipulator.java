@@ -53,7 +53,7 @@ public class InstanceFieldManipulator implements ClassManipulator {
         data.add(dt.getClassName(), dt);
     }
 
-    public boolean transformClass(ClassFile file, ClassLoader loader, boolean modifiableClass) {
+    public boolean transformClass(ClassFile file, ClassLoader loader, boolean modifiableClass, final Set<MethodInfo> modifiedMethods) {
 
         Map<String, Set<AddedFieldData>> addedFieldData = data.getManipulationData(loader);
         if (addedFieldData.isEmpty()) {
@@ -130,6 +130,7 @@ public class InstanceFieldManipulator implements ClassManipulator {
                             }
                         }
                     }
+                    modifiedMethods.add(m);
                     m.getCodeAttribute().computeMaxStack();
                 } catch (Exception e) {
                     log.error("Bad byte code transforming " + file.getName(), e);

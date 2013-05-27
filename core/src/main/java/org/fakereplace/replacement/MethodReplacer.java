@@ -27,9 +27,11 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
 
+import javassist.ClassPool;
 import javassist.bytecode.AccessFlag;
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.AttributeInfo;
@@ -230,16 +232,13 @@ public class MethodReplacer {
         // the method declaration to propagate the call to the parent
         if (!file.isInterface()) {
             try {
-                Bytecode rcode = new Bytecode(staticCodeAttribute.getConstPool());
-                rcode.add(Opcode.ACONST_NULL);
-                rcode.add(Opcode.ARETURN);
-                CodeIterator cit = staticCodeAttribute.iterator();
-                cit.append(rcode.get());
-
                 staticCodeAttribute.computeMaxStack();
                 virtualCodeAttribute.computeMaxStack();
                 if (constructorCodeAttribute != null) {
                     constructorCodeAttribute.computeMaxStack();
+                }
+                for(MethodInfo method : (List<MethodInfo>)file.getMethods()) {
+                    method.rebuildStackMap(ClassPool.getDefault());
                 }
             } catch (BadBytecode e) {
                 e.printStackTrace();

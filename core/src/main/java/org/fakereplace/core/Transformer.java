@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import javassist.ClassPool;
 import javassist.bytecode.AccessFlag;
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.BadBytecode;
@@ -37,8 +38,8 @@ import javassist.bytecode.CodeIterator;
 import javassist.bytecode.DuplicateMemberException;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.Opcode;
-import org.fakereplace.api.environment.CurrentEnvironment;
 import org.fakereplace.api.Extension;
+import org.fakereplace.api.environment.CurrentEnvironment;
 import org.fakereplace.data.BaseClassData;
 import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.data.InstanceTracker;
@@ -75,68 +76,79 @@ public class Transformer implements FakereplaceTransformer {
 
     public boolean transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, ClassFile file) throws IllegalClassFormatException, BadBytecode {
         boolean modified = false;
+        try {
+            if (classBeingRedefined != null) {
+                ClassDataStore.instance().markClassReplaced(classBeingRedefined);
+            }
+            for (FakereplaceTransformer i : integrationTransformers) {
+                if (i.transform(loader, className, classBeingRedefined, protectionDomain, file)) {
+                    modified = true;
+                }
+            }
+            // we do not instrument any classes from fakereplace
+            // if we did we get an endless loop
+            // we also avoid instrumenting much of the java/lang and
+            // java/io namespace except for java/lang/reflect/Proxy
+            if (BuiltinClassData.skipInstrumentation(className)) {
+                if (classBeingRedefined != null && manipulator.transformClass(file, loader, false)) {
+                    modified = true;
+                }
+                return modified;
+            }
 
-        if (classBeingRedefined != null) {
-            ClassDataStore.instance().markClassReplaced(classBeingRedefined);
-        }
-        for (FakereplaceTransformer i : integrationTransformers) {
-            if (i.transform(loader, className, classBeingRedefined, protectionDomain, file)) {
+
+            if (classBeingRedefined == null) {
+                AnnotationsAttribute at = (AnnotationsAttribute) file.getAttribute(AnnotationsAttribute.invisibleTag);
+                if (at != null) {
+                    // NoInstrument is used for testing or by integration modules
+                    Object an = at.getAnnotation(NoInstrument.class.getName());
+                    if (an != null) {
+                        return modified;
+                    }
+                }
+            }
+
+            if (trackedInstances.contains(file.getName())) {
+                makeTrackedInstance(file);
                 modified = true;
             }
-        }
-        // we do not instrument any classes from fakereplace
-        // if we did we get an endless loop
-        // we also avoid instrumenting much of the java/lang and
-        // java/io namespace except for java/lang/reflect/Proxy
-        if (BuiltinClassData.skipInstrumentation(className)) {
-            if (classBeingRedefined != null && manipulator.transformClass(file, loader, false)) {
+
+            final boolean replaceable = CurrentEnvironment.getEnvironment().isClassReplaceable(className, loader);
+            if (manipulator.transformClass(file, loader, replaceable)) {
                 modified = true;
             }
+
+            if (replaceable) {
+                if ((AccessFlag.ENUM & file.getAccessFlags()) == 0 && (AccessFlag.ANNOTATION & file.getAccessFlags()) == 0) {
+                    modified = true;
+
+                    CurrentEnvironment.getEnvironment().recordTimestamp(className, loader);
+                    if (file.isInterface()) {
+                        addAbstractMethodForInstrumentation(file);
+                    } else {
+                        addMethodForInstrumentation(file);
+                        addConstructorForInstrumentation(file);
+                        addStaticConstructorForInstrumentation(file);
+                    }
+                }
+
+                BaseClassData baseData = new BaseClassData(file, loader, replaceable);
+                ClassDataStore.instance().saveClassData(loader, baseData.getInternalName(), baseData);
+            }
+            // SerialVersionUIDChecker.testReflectionInfo(loader, file.getName(),
+            // file.getSuperclass(), classfileBuffer);
             return modified;
-        }
-
-
-        if (classBeingRedefined == null) {
-            AnnotationsAttribute at = (AnnotationsAttribute) file.getAttribute(AnnotationsAttribute.invisibleTag);
-            if (at != null) {
-                // NoInstrument is used for testing or by integration modules
-                Object an = at.getAnnotation(NoInstrument.class.getName());
-                if (an != null) {
-                    return modified;
+        } finally {
+            if (modified) {
+                try {
+                    for (MethodInfo method : (List<MethodInfo>) file.getMethods()) {
+                        method.rebuildStackMap(ClassPool.getDefault());
+                    }
+                } catch (BadBytecode e) {
+                    throw new RuntimeException(e);
                 }
             }
         }
-
-        if (trackedInstances.contains(file.getName())) {
-            makeTrackedInstance(file);
-            modified = true;
-        }
-
-        final boolean replaceable = CurrentEnvironment.getEnvironment().isClassReplaceable(className, loader);
-        if (manipulator.transformClass(file, loader, replaceable)) {
-            modified = true;
-        }
-
-        if (replaceable) {
-            if ((AccessFlag.ENUM & file.getAccessFlags()) == 0 && (AccessFlag.ANNOTATION & file.getAccessFlags()) == 0) {
-                modified = true;
-
-                CurrentEnvironment.getEnvironment().recordTimestamp(className, loader);
-                if (file.isInterface()) {
-                    addAbstractMethodForInstrumentation(file);
-                } else {
-                    addMethodForInstrumentation(file);
-                    addConstructorForInstrumentation(file);
-                    addStaticConstructorForInstrumentation(file);
-                }
-            }
-
-            BaseClassData baseData = new BaseClassData(file, loader, replaceable);
-            ClassDataStore.instance().saveClassData(loader, baseData.getInternalName(), baseData);
-        }
-        // SerialVersionUIDChecker.testReflectionInfo(loader, file.getName(),
-        // file.getSuperclass(), classfileBuffer);
-        return modified;
 
     }
 
@@ -249,7 +261,7 @@ public class Transformer implements FakereplaceTransformer {
      * @throws BadBytecode
      */
     public void makeTrackedInstance(ClassFile file) throws BadBytecode {
-        for (MethodInfo m : (List<MethodInfo>)file.getMethods()) {
+        for (MethodInfo m : (List<MethodInfo>) file.getMethods()) {
             if (m.getName().equals("<init>")) {
                 Bytecode code = new Bytecode(file.getConstPool());
                 code.addLdc(file.getName());

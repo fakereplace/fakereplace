@@ -22,8 +22,10 @@ package org.fakereplace.integration.weld;
 
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
+import java.util.HashSet;
 import java.util.List;
 
+import javassist.ClassPool;
 import javassist.bytecode.BadBytecode;
 import javassist.bytecode.Bytecode;
 import javassist.bytecode.ClassFile;
@@ -54,7 +56,11 @@ public class WeldClassTransformer implements FakereplaceTransformer {
                     final MethodInvokationManipulator methodInvokationManipulator = new MethodInvokationManipulator();
                     methodInvokationManipulator.replaceVirtualMethodInvokationWithStatic(ClassLoader.class.getName(), WeldProxyClassLoadingDelegate.class.getName(), "loadClass", "(Ljava/lang/String;)Ljava/lang/Class;", "(Ljava/lang/ClassLoader;Ljava/lang/String;)Ljava/lang/Class;", loader);
                     methodInvokationManipulator.replaceVirtualMethodInvokationWithStatic("org.jboss.weld.util.bytecode.ClassFileUtils", WeldProxyClassLoadingDelegate.class.getName(), "toClass", "(Ljavassist/bytecode/ClassFile;Ljava/lang/ClassLoader;Ljava/security/ProtectionDomain;)Ljava/lang/Class;", "(Ljavassist/bytecode/ClassFile;Ljava/lang/ClassLoader;Ljava/security/ProtectionDomain;)Ljava/lang/Class;", loader);
-                    methodInvokationManipulator.transformClass(file, loader, true);
+                    HashSet<MethodInfo> modifiedMethods = new HashSet<MethodInfo>();
+                    methodInvokationManipulator.transformClass(file, loader, true, modifiedMethods);
+                    for(MethodInfo m : modifiedMethods) {
+                        m.rebuildStackMap(ClassPool.getDefault());
+                    }
                     return true;
                 } else if (method.getName().equals("<init>")) {
 

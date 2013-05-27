@@ -24,6 +24,7 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javassist.bytecode.Bytecode;
@@ -88,7 +89,7 @@ public class FieldAccessManipulator implements ClassManipulator {
         manipulationData.put(methodName, data);
     }
 
-    public boolean transformClass(ClassFile file, ClassLoader loader, boolean modifiableClass) {
+    public boolean transformClass(ClassFile file, ClassLoader loader, boolean modifiableClass, final Set<MethodInfo> modifiedMethods) {
         Map<Integer, RewriteData> methodCallLocations = new HashMap<Integer, RewriteData>();
         Map<RewriteData, Integer> newClassPoolLocations = new HashMap<RewriteData, Integer>();
         Integer fieldAccessLocation = null;
@@ -175,6 +176,7 @@ public class FieldAccessManipulator implements ClassManipulator {
                         }
 
                     }
+                    modifiedMethods.add(m);
                     m.getCodeAttribute().computeMaxStack();
                 } catch (Exception e) {
                     log.error("Bad byte code transforming " + file.getName() + "." + m.getName(), e);
