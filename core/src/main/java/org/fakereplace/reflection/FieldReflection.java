@@ -203,7 +203,7 @@ public class FieldReflection {
     public static void set(Field f, Object object, Object val) throws IllegalAccessException {
         FieldAccessor accessor = ClassDataStore.instance().getFieldAccessor(f.getDeclaringClass().getName());
         if (!Modifier.isPublic(f.getModifiers()) && !f.isAccessible()) {
-            Class<?> caller = sun.reflect.Reflection.getCallerClass(2);
+            Class<?> caller = findCallerClass();
             Reflection.ensureMemberAccess(caller, accessor.getDeclaringClass(), null, f.getModifiers());
         }
         accessor.set(object, val);
@@ -212,7 +212,7 @@ public class FieldReflection {
     public static void setBoolean(Field f, Object object, boolean val) throws IllegalAccessException {
         FieldAccessor accessor = ClassDataStore.instance().getFieldAccessor(f.getDeclaringClass().getName());
         if (!Modifier.isPublic(f.getModifiers()) && !f.isAccessible()) {
-            Class<?> caller = sun.reflect.Reflection.getCallerClass(2);
+            Class<?> caller = findCallerClass();
             Reflection.ensureMemberAccess(caller, accessor.getDeclaringClass(), null, f.getModifiers());
         }
         accessor.set(object, val);
@@ -221,7 +221,7 @@ public class FieldReflection {
     public static void setByte(Field f, Object object, byte val) throws IllegalAccessException {
         FieldAccessor accessor = ClassDataStore.instance().getFieldAccessor(f.getDeclaringClass().getName());
         if (!Modifier.isPublic(f.getModifiers()) && !f.isAccessible()) {
-            Class<?> caller = sun.reflect.Reflection.getCallerClass(2);
+            Class<?> caller = findCallerClass();
             Reflection.ensureMemberAccess(caller, accessor.getDeclaringClass(), null, f.getModifiers());
         }
         accessor.set(object, val);
@@ -230,7 +230,7 @@ public class FieldReflection {
     public static void setChar(Field f, Object object, char val) throws IllegalAccessException {
         FieldAccessor accessor = ClassDataStore.instance().getFieldAccessor(f.getDeclaringClass().getName());
         if (!Modifier.isPublic(f.getModifiers()) && !f.isAccessible()) {
-            Class<?> caller = sun.reflect.Reflection.getCallerClass(2);
+            Class<?> caller = findCallerClass();
             Reflection.ensureMemberAccess(caller, accessor.getDeclaringClass(), null, f.getModifiers());
         }
         accessor.set(object, val);
@@ -239,7 +239,7 @@ public class FieldReflection {
     public static void setDouble(Field f, Object object, double val) throws IllegalAccessException {
         FieldAccessor accessor = ClassDataStore.instance().getFieldAccessor(f.getDeclaringClass().getName());
         if (!Modifier.isPublic(f.getModifiers()) && !f.isAccessible()) {
-            Class<?> caller = sun.reflect.Reflection.getCallerClass(2);
+            Class<?> caller = findCallerClass();
             Reflection.ensureMemberAccess(caller, accessor.getDeclaringClass(), null, f.getModifiers());
         }
         accessor.set(object, val);
@@ -248,7 +248,7 @@ public class FieldReflection {
     public static void setFloat(Field f, Object object, float val) throws IllegalAccessException {
         FieldAccessor accessor = ClassDataStore.instance().getFieldAccessor(f.getDeclaringClass().getName());
         if (!Modifier.isPublic(f.getModifiers()) && !f.isAccessible()) {
-            Class<?> caller = sun.reflect.Reflection.getCallerClass(2);
+            Class<?> caller = findCallerClass();
             Reflection.ensureMemberAccess(caller, accessor.getDeclaringClass(), null, f.getModifiers());
         }
         accessor.set(object, val);
@@ -257,7 +257,7 @@ public class FieldReflection {
     public static void setInt(Field f, Object object, int val) throws IllegalAccessException {
         FieldAccessor accessor = ClassDataStore.instance().getFieldAccessor(f.getDeclaringClass().getName());
         if (!Modifier.isPublic(f.getModifiers()) && !f.isAccessible()) {
-            Class<?> caller = sun.reflect.Reflection.getCallerClass(2);
+            Class<?> caller = findCallerClass();
             Reflection.ensureMemberAccess(caller, accessor.getDeclaringClass(), null, f.getModifiers());
         }
         accessor.set(object, val);
@@ -266,7 +266,7 @@ public class FieldReflection {
     public static void setLong(Field f, Object object, long val) throws IllegalAccessException {
         FieldAccessor accessor = ClassDataStore.instance().getFieldAccessor(f.getDeclaringClass().getName());
         if (!Modifier.isPublic(f.getModifiers()) && !f.isAccessible()) {
-            Class<?> caller = sun.reflect.Reflection.getCallerClass(2);
+            Class<?> caller = findCallerClass();
             Reflection.ensureMemberAccess(caller, accessor.getDeclaringClass(), null, f.getModifiers());
         }
         accessor.set(object, val);
@@ -275,7 +275,7 @@ public class FieldReflection {
     public static void setShort(Field f, Object object, short val) throws IllegalAccessException {
         FieldAccessor accessor = ClassDataStore.instance().getFieldAccessor(f.getDeclaringClass().getName());
         if (!Modifier.isPublic(f.getModifiers()) && !f.isAccessible()) {
-            Class<?> caller = sun.reflect.Reflection.getCallerClass(2);
+            Class<?> caller = findCallerClass();
             Reflection.ensureMemberAccess(caller, accessor.getDeclaringClass(), null, f.getModifiers());
         }
         accessor.set(object, val);
@@ -284,7 +284,7 @@ public class FieldReflection {
     public static Object get(Field f, Object object) throws IllegalAccessException {
         FieldAccessor accessor = ClassDataStore.instance().getFieldAccessor(f.getDeclaringClass().getName());
         if (!Modifier.isPublic(f.getModifiers()) && !f.isAccessible()) {
-            Class<?> caller = sun.reflect.Reflection.getCallerClass(2);
+            Class<?> caller = findCallerClass();
             Reflection.ensureMemberAccess(caller, accessor.getDeclaringClass(), null, f.getModifiers());
         }
         return accessor.get(object);
@@ -293,7 +293,7 @@ public class FieldReflection {
     public static boolean getBoolean(Field f, Object object) throws IllegalAccessException {
         FieldAccessor accessor = ClassDataStore.instance().getFieldAccessor(f.getDeclaringClass().getName());
         if (!Modifier.isPublic(f.getModifiers()) && !f.isAccessible()) {
-            Class<?> caller = sun.reflect.Reflection.getCallerClass(2);
+            Class<?> caller = findCallerClass();
             Reflection.ensureMemberAccess(caller, accessor.getDeclaringClass(), null, f.getModifiers());
         }
         return (Boolean) accessor.get(object);
@@ -302,7 +302,7 @@ public class FieldReflection {
     public static byte getByte(Field f, Object object) throws IllegalAccessException {
         FieldAccessor accessor = ClassDataStore.instance().getFieldAccessor(f.getDeclaringClass().getName());
         if (!Modifier.isPublic(f.getModifiers()) && !f.isAccessible()) {
-            Class<?> caller = sun.reflect.Reflection.getCallerClass(2);
+            Class<?> caller = findCallerClass();
             Reflection.ensureMemberAccess(caller, accessor.getDeclaringClass(), null, f.getModifiers());
         }
         return (Byte) accessor.get(object);
@@ -312,7 +312,7 @@ public class FieldReflection {
     public static char getChar(Field f, Object object) throws IllegalAccessException {
         FieldAccessor accessor = ClassDataStore.instance().getFieldAccessor(f.getDeclaringClass().getName());
         if (!Modifier.isPublic(f.getModifiers()) && !f.isAccessible()) {
-            Class<?> caller = sun.reflect.Reflection.getCallerClass(2);
+            Class<?> caller = findCallerClass();
             Reflection.ensureMemberAccess(caller, accessor.getDeclaringClass(), null, f.getModifiers());
         }
         return (Character) accessor.get(object);
@@ -322,7 +322,7 @@ public class FieldReflection {
     public static Double getDouble(Field f, Object object) throws IllegalAccessException {
         FieldAccessor accessor = ClassDataStore.instance().getFieldAccessor(f.getDeclaringClass().getName());
         if (!Modifier.isPublic(f.getModifiers()) && !f.isAccessible()) {
-            Class<?> caller = sun.reflect.Reflection.getCallerClass(2);
+            Class<?> caller = findCallerClass();
             Reflection.ensureMemberAccess(caller, accessor.getDeclaringClass(), null, f.getModifiers());
         }
         return (Double) accessor.get(object);
@@ -331,7 +331,7 @@ public class FieldReflection {
     public static float getFloat(Field f, Object object) throws IllegalAccessException {
         FieldAccessor accessor = ClassDataStore.instance().getFieldAccessor(f.getDeclaringClass().getName());
         if (!Modifier.isPublic(f.getModifiers()) && !f.isAccessible()) {
-            Class<?> caller = sun.reflect.Reflection.getCallerClass(2);
+            Class<?> caller = findCallerClass();
             Reflection.ensureMemberAccess(caller, accessor.getDeclaringClass(), null, f.getModifiers());
         }
         return (Float) accessor.get(object);
@@ -340,7 +340,7 @@ public class FieldReflection {
     public static int getInt(Field f, Object object) throws IllegalAccessException {
         FieldAccessor accessor = ClassDataStore.instance().getFieldAccessor(f.getDeclaringClass().getName());
         if (!Modifier.isPublic(f.getModifiers()) && !f.isAccessible()) {
-            Class<?> caller = sun.reflect.Reflection.getCallerClass(2);
+            Class<?> caller = findCallerClass();
             Reflection.ensureMemberAccess(caller, accessor.getDeclaringClass(), null, f.getModifiers());
         }
         return (Integer) accessor.get(object);
@@ -349,7 +349,7 @@ public class FieldReflection {
     public static long getLong(Field f, Object object) throws IllegalAccessException {
         FieldAccessor accessor = ClassDataStore.instance().getFieldAccessor(f.getDeclaringClass().getName());
         if (!Modifier.isPublic(f.getModifiers()) && !f.isAccessible()) {
-            Class<?> caller = sun.reflect.Reflection.getCallerClass(2);
+            Class<?> caller = findCallerClass();
             Reflection.ensureMemberAccess(caller, accessor.getDeclaringClass(), null, f.getModifiers());
         }
         return (Long) accessor.get(object);
@@ -358,10 +358,19 @@ public class FieldReflection {
     public static Object getShort(Field f, Object object) throws IllegalAccessException {
         FieldAccessor accessor = ClassDataStore.instance().getFieldAccessor(f.getDeclaringClass().getName());
         if (!Modifier.isPublic(f.getModifiers()) && !f.isAccessible()) {
-            Class<?> caller = sun.reflect.Reflection.getCallerClass(2);
+            Class<?> caller = findCallerClass();
             Reflection.ensureMemberAccess(caller, accessor.getDeclaringClass(), null, f.getModifiers());
         }
         return (Short) accessor.get(object);
+    }
+
+
+    private static Class findCallerClass() {
+        Class<?> c =  Reflection.getCallerClass(3);
+        if(c == FieldReflection.class) {
+            return Reflection.getCallerClass(4);
+        }
+        return c;
     }
 
     public static boolean isFakeField(Field f) {
