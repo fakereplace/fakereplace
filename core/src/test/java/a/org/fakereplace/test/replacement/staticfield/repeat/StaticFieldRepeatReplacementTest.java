@@ -19,16 +19,14 @@
 
 package a.org.fakereplace.test.replacement.staticfield.repeat;
 
-import java.lang.reflect.Field;
-
 import a.org.fakereplace.test.util.ClassReplacer;
-import org.jboss.arquillian.junit.InSequence;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.lang.reflect.Field;
+
 public class StaticFieldRepeatReplacementTest {
     @Test
-    @InSequence(1)
     public void firstReplacement() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         ClassReplacer r = new ClassReplacer();
         r.queueClassForReplacement(StaticFieldRepeatClass.class, StaticFieldRepeatClass1.class);
@@ -40,22 +38,19 @@ public class StaticFieldRepeatReplacementTest {
         Field otherField = StaticFieldRepeatClass.class.getDeclaredField("otherField");
         otherField.set(null, this);
         Field removedField = StaticFieldRepeatClass.class.getDeclaredField("removedField");
-    }
 
-    @InSequence(2)
-    public void secondReplacement() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
-        ClassReplacer r = new ClassReplacer();
+        r = new ClassReplacer();
         r.queueClassForReplacement(StaticFieldRepeatClass.class, StaticFieldRepeatClass2.class);
         r.replaceQueuedClasses();
 
-        Field someField = StaticFieldRepeatClass.class.getDeclaredField("someField");
+        someField = StaticFieldRepeatClass.class.getDeclaredField("someField");
         someField.setAccessible(true);
         Assert.assertEquals(10, someField.get(null));
-        Field otherField = StaticFieldRepeatClass.class.getDeclaredField("otherField");
+        otherField = StaticFieldRepeatClass.class.getDeclaredField("otherField");
         otherField.setAccessible(true);
         Assert.assertEquals(this,  otherField.get(null));
         try {
-            Field removedField = StaticFieldRepeatClass.class.getDeclaredField("removedField");
+            removedField = StaticFieldRepeatClass.class.getDeclaredField("removedField");
             Assert.fail();
         } catch (NoSuchFieldException e) {
 

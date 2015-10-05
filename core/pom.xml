@@ -26,11 +26,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.jboss.arquillian.junit</groupId>
-            <artifactId>arquillian-junit-container</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>org.fakereplace.fakereplace-google-collections</groupId>
             <artifactId>fakereplace-google-collections</artifactId>
         </dependency>
@@ -103,6 +98,7 @@
                             <goal>test</goal>
                         </goals>
                         <configuration>
+                            <redirectTestOutputToFile>true</redirectTestOutputToFile>
                             <skipTests>false</skipTests>
                             <skip>false</skip>
                             <excludes>
