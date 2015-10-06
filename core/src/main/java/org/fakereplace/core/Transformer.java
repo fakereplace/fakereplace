@@ -28,6 +28,7 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javassist.ClassPool;
+import javassist.LoaderClassPath;
 import javassist.bytecode.AccessFlag;
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.BadBytecode;
@@ -141,8 +142,11 @@ public class Transformer implements FakereplaceTransformer {
         } finally {
             if (modified) {
                 try {
+                    ClassPool classPool = new ClassPool(ClassPool.getDefault());
+                    classPool.appendSystemPath();
+                    classPool.appendClassPath(new LoaderClassPath(loader));
                     for (MethodInfo method : (List<MethodInfo>) file.getMethods()) {
-                        method.rebuildStackMap(ClassPool.getDefault());
+                        method.rebuildStackMap(classPool);
                     }
                 } catch (BadBytecode e) {
                     throw new RuntimeException(e);

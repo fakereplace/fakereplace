@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import javassist.ClassPool;
+import javassist.LoaderClassPath;
 import javassist.bytecode.BadBytecode;
 import javassist.bytecode.Bytecode;
 import javassist.bytecode.ClassFile;
@@ -58,8 +59,13 @@ public class WeldClassTransformer implements FakereplaceTransformer {
                     methodInvokationManipulator.replaceVirtualMethodInvokationWithStatic("org.jboss.weld.util.bytecode.ClassFileUtils", WeldProxyClassLoadingDelegate.class.getName(), "toClass", "(Ljavassist/bytecode/ClassFile;Ljava/lang/ClassLoader;Ljava/security/ProtectionDomain;)Ljava/lang/Class;", "(Ljavassist/bytecode/ClassFile;Ljava/lang/ClassLoader;Ljava/security/ProtectionDomain;)Ljava/lang/Class;", loader);
                     HashSet<MethodInfo> modifiedMethods = new HashSet<MethodInfo>();
                     methodInvokationManipulator.transformClass(file, loader, true, modifiedMethods);
-                    for(MethodInfo m : modifiedMethods) {
-                        m.rebuildStackMap(ClassPool.getDefault());
+                    if(!modifiedMethods.isEmpty()) {
+                        ClassPool classPool = new ClassPool();
+                        classPool.appendSystemPath();
+                        classPool.appendClassPath(new LoaderClassPath(loader));
+                        for (MethodInfo m : modifiedMethods) {
+                            m.rebuildStackMap(classPool);
+                        }
                     }
                     return true;
                 } else if (method.getName().equals("<init>")) {

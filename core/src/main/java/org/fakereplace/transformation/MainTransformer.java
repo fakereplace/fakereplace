@@ -38,6 +38,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javassist.ClassPool;
+import javassist.LoaderClassPath;
 import javassist.bytecode.BadBytecode;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.MethodInfo;
@@ -128,8 +129,12 @@ public class MainTransformer implements ClassFileTransformer {
                 return null;
             } else {
                 try {
+
+                    ClassPool classPool = new ClassPool();
+                    classPool.appendClassPath(new LoaderClassPath(loader));
+                    classPool.appendSystemPath();
                     for (MethodInfo method : (List<MethodInfo>) file.getMethods()) {
-                        method.rebuildStackMap(ClassPool.getDefault());
+                        method.rebuildStackMap(classPool);
                     }
                 } catch (BadBytecode e) {
                     throw new RuntimeException(e);

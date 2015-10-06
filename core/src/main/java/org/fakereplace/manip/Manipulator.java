@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import javassist.ClassPool;
+import javassist.LoaderClassPath;
 import javassist.bytecode.BadBytecode;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.MethodInfo;
@@ -118,8 +119,13 @@ public class Manipulator {
                 modified = true;
             }
         }
-        for (MethodInfo m : modifiedMethods) {
-            m.rebuildStackMap(ClassPool.getDefault());
+        if(!modifiedMethods.isEmpty()) {
+            ClassPool classPool = new ClassPool();
+            classPool.appendSystemPath();
+            classPool.appendClassPath(new LoaderClassPath(classLoader));
+            for (MethodInfo m : modifiedMethods) {
+                m.rebuildStackMap(classPool);
+            }
         }
         return modified;
     }

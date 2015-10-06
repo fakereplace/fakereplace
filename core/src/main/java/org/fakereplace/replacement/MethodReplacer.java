@@ -32,6 +32,7 @@ import java.util.ListIterator;
 import java.util.Set;
 
 import javassist.ClassPool;
+import javassist.LoaderClassPath;
 import javassist.bytecode.AccessFlag;
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.AttributeInfo;
@@ -237,8 +238,12 @@ public class MethodReplacer {
                 if (constructorCodeAttribute != null) {
                     constructorCodeAttribute.computeMaxStack();
                 }
+
+                ClassPool classPool = new ClassPool();
+                classPool.appendClassPath(new LoaderClassPath(loader));
+                classPool.appendSystemPath();
                 for(MethodInfo method : (List<MethodInfo>)file.getMethods()) {
-                    method.rebuildStackMap(ClassPool.getDefault());
+                    method.rebuildStackMap(classPool);
                 }
             } catch (BadBytecode e) {
                 e.printStackTrace();

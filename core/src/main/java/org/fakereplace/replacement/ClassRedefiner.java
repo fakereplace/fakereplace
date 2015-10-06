@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Set;
 
 import javassist.ClassPool;
+import javassist.LoaderClassPath;
 import javassist.bytecode.BadBytecode;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.Descriptor;
@@ -91,8 +92,12 @@ public class ClassRedefiner {
         FieldReplacer.handleFieldReplacement(file, loader, oldClass, builder);
         MethodReplacer.handleMethodReplacement(file, loader, oldClass, builder, classToReload);
         try {
+
+            ClassPool classPool = new ClassPool();
+            classPool.appendClassPath(new LoaderClassPath(loader));
+            classPool.appendSystemPath();
             for (MethodInfo method : (List<MethodInfo>) file.getMethods()) {
-                method.rebuildStackMap(ClassPool.getDefault());
+                method.rebuildStackMap(classPool);
             }
         } catch (BadBytecode e) {
             try {
