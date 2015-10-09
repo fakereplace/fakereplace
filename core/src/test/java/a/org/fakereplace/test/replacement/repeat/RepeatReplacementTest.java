@@ -24,7 +24,6 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
-@Ignore("there seems to be an issue with hot replacing classes with multiple fields")
 public class RepeatReplacementTest {
 
     @Test
