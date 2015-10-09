@@ -125,34 +125,6 @@ public class MainTransformer implements ClassFileTransformer {
                     changed = true;
                 }
             }
-
-            if(classBeingRedefined != null) {
-                final Set<String> originalNames = new HashSet<String>();
-                final Set<String> newNames = new HashSet<String>();
-                System.out.println("ORIGINAL2 " + className);
-                for(Field field : classBeingRedefined.getDeclaredFields()) {
-                    System.out.println(field);
-                    originalNames.add(field.getName());
-                    System.out.println(field.getModifiers());
-                    System.out.println(field.getType());
-                }
-                System.out.println("NEW2 " + className);
-                for(Object field : file.getFields()) {
-                    System.out.println(field);
-                    FieldInfo field1 = (FieldInfo) field;
-                    newNames.add(field1.getName());
-                    System.out.println(field1.getAccessFlags());
-                    System.out.println(field1.getDescriptor());
-                }
-                System.out.print("----ONE----");
-                HashSet<String> one = new HashSet<String>(originalNames);
-                one.removeAll(newNames);
-                System.out.println(one);
-                System.out.print("----TWO----");
-                HashSet<String> two = new HashSet<String>(newNames);
-                two.removeAll(originalNames);
-                System.out.println(two);
-            }
             if (!changed) {
                 UnmodifiedFileIndex.markClassUnmodified(className);
                 return null;
