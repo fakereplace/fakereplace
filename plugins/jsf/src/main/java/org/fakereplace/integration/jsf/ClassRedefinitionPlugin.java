@@ -24,6 +24,7 @@ import java.beans.Introspector;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.nio.file.NoSuchFileException;
 import java.util.List;
 import java.util.Set;
 
@@ -87,11 +88,15 @@ public class ClassRedefinitionPlugin implements ClassChangeAware {
                 }
 
             } catch (NoSuchFieldException ee) {
-                Field props = getField(r.getClass(), "properties");
-                props.setAccessible(true);
-                Object cache = props.get(r);
-                Method m = cache.getClass().getMethod("clear");
-                m.invoke(cache);
+                try {
+                    Field props = getField(r.getClass(), "properties");
+                    props.setAccessible(true);
+                    Object cache = props.get(r);
+                    Method m = cache.getClass().getMethod("clear");
+                    m.invoke(cache);
+                } catch (NoSuchFieldException eee) {
+                    //ignore
+                }
             }
         } catch (Exception e) {
             log.error("Could not clear EL cache:", e);
