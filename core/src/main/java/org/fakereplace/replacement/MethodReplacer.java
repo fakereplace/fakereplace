@@ -159,6 +159,7 @@ public class MethodReplacer {
                         try {
                             Constructor<?> meth = i.getConstructor(oldClass);
                             AnnotationDataStore.recordConstructorAnnotations(meth, (AnnotationsAttribute) m.getAttribute(AnnotationsAttribute.visibleTag));
+                            AnnotationDataStore.recordConstructorParameterAnnotations(meth, (ParameterAnnotationsAttribute) m.getAttribute(ParameterAnnotationsAttribute.visibleTag));
                             // now revert the annotations:
                             m.addAttribute(AnnotationReplacer.duplicateAnnotationsAttribute(file.getConstPool(), meth));
                             m.addAttribute(AnnotationReplacer.duplicateParameterAnnotationsAttribute(file.getConstPool(), meth));
