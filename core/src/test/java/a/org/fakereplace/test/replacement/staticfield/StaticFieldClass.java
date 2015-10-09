@@ -22,6 +22,7 @@ package a.org.fakereplace.test.replacement.staticfield;
 public class StaticFieldClass {
 
     public int removedField;
+    public Object ssdafadsfm;
 
     public static long incAndGet() {
         return 0;

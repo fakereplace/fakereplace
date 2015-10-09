@@ -44,6 +44,7 @@ import org.fakereplace.util.DescriptorUtils;
 public class WeldClassTransformer implements FakereplaceTransformer {
 
     private static final Logger log = Logger.getLogger(WeldClassTransformer.class);
+    public static final String ORG_JBOSS_WELD_BEAN_PROXY_PROXY_FACTORY = "org.jboss.weld.bean.proxy.ProxyFactory";
 
     @Override
     public boolean transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, ClassFile file) throws IllegalClassFormatException, BadBytecode {
@@ -51,12 +52,12 @@ public class WeldClassTransformer implements FakereplaceTransformer {
         /**
          * Hack up the proxy factory so it stores the proxy ClassFile. We need this to regenerate proxies.
          */
-        if (file.getName().equals("org.jboss.weld.bean.proxy.ProxyFactory")) {
+        if (file.getName().equals(ORG_JBOSS_WELD_BEAN_PROXY_PROXY_FACTORY)) {
             for (final MethodInfo method : (List<MethodInfo>) file.getMethods()) {
                 if (method.getName().equals("createProxyClass")) {
                     final MethodInvokationManipulator methodInvokationManipulator = new MethodInvokationManipulator();
                     methodInvokationManipulator.replaceVirtualMethodInvokationWithStatic(ClassLoader.class.getName(), WeldProxyClassLoadingDelegate.class.getName(), "loadClass", "(Ljava/lang/String;)Ljava/lang/Class;", "(Ljava/lang/ClassLoader;Ljava/lang/String;)Ljava/lang/Class;", loader);
-                    methodInvokationManipulator.replaceVirtualMethodInvokationWithStatic("org.jboss.weld.util.bytecode.ClassFileUtils", WeldProxyClassLoadingDelegate.class.getName(), "toClass", "(Ljavassist/bytecode/ClassFile;Ljava/lang/ClassLoader;Ljava/security/ProtectionDomain;)Ljava/lang/Class;", "(Ljavassist/bytecode/ClassFile;Ljava/lang/ClassLoader;Ljava/security/ProtectionDomain;)Ljava/lang/Class;", loader);
+                    methodInvokationManipulator.replaceVirtualMethodInvokationWithStatic("org.jboss.weld.util.bytecode.ClassFileUtils", WeldProxyClassLoadingDelegate.class.getName(), "toClass", "(Lorg/jboss/classfilewriter/ClassFile;Ljava/lang/ClassLoader;Ljava/security/ProtectionDomain;)Ljava/lang/Class;", "(Lorg/jboss/classfilewriter/ClassFile;Ljava/lang/ClassLoader;Ljava/security/ProtectionDomain;)Ljava/lang/Class;", loader);
                     HashSet<MethodInfo> modifiedMethods = new HashSet<MethodInfo>();
                     methodInvokationManipulator.transformClass(file, loader, true, modifiedMethods);
                     if(!modifiedMethods.isEmpty()) {
@@ -71,9 +72,9 @@ public class WeldClassTransformer implements FakereplaceTransformer {
                 } else if (method.getName().equals("<init>")) {
 
                     Integer beanArgument = null;
-                    int count = 0;
+                    int count = 1;
                     for (final String paramType : DescriptorUtils.descriptorStringToParameterArray(method.getDescriptor())) {
-                        if (paramType.equals("javax/enterprise/inject/spi/Bean")) {
+                        if (paramType.equals("Ljavax/enterprise/inject/spi/Bean")) {
                             beanArgument = count;
                             break;
                         } else if (paramType.equals("D") || paramType.equals("J")) {
@@ -92,7 +93,7 @@ public class WeldClassTransformer implements FakereplaceTransformer {
                     Bytecode code = new Bytecode(file.getConstPool());
                     code.addAload(0);
                     code.addAload(beanArgument);
-                    code.addInvokestatic(WeldClassChangeAware.class.getName(), "addProxyFactory", "(Lorg/jboss/weld/bean/proxy/ProxyFactory;)V");
+                    code.addInvokestatic(WeldClassChangeAware.class.getName(), "addProxyFactory", "(Ljava/lang/Object;Ljava/lang/Object;)V");
                     CodeIterator it = method.getCodeAttribute().iterator();
                     it.skipConstructor();
                     it.insert(code.get());

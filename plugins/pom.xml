@@ -41,7 +41,7 @@
         <module>jsf</module>
         <module>metawidget</module>
         <module>maven</module>
-        <module>jbossas</module>
+        <module>wildfly</module>
         <module>weld</module>
         <module>hibernate4</module>
         <module>resteasy</module>

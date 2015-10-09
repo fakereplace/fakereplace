@@ -28,10 +28,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
+import java.lang.reflect.Field;
 import java.net.URL;
 import java.security.ProtectionDomain;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -41,6 +43,7 @@ import javassist.ClassPool;
 import javassist.LoaderClassPath;
 import javassist.bytecode.BadBytecode;
 import javassist.bytecode.ClassFile;
+import javassist.bytecode.FieldInfo;
 import javassist.bytecode.MethodInfo;
 import org.fakereplace.api.ClassChangeAware;
 import org.fakereplace.api.Extension;
@@ -111,7 +114,6 @@ public class MainTransformer implements ClassFileTransformer {
 
         boolean changed = false;
         if (UnmodifiedFileIndex.isClassUnmodified(className)) {
-            //TODO: enable this
             return null;
         }
 
@@ -124,6 +126,33 @@ public class MainTransformer implements ClassFileTransformer {
                 }
             }
 
+            if(classBeingRedefined != null) {
+                final Set<String> originalNames = new HashSet<String>();
+                final Set<String> newNames = new HashSet<String>();
+                System.out.println("ORIGINAL2 " + className);
+                for(Field field : classBeingRedefined.getDeclaredFields()) {
+                    System.out.println(field);
+                    originalNames.add(field.getName());
+                    System.out.println(field.getModifiers());
+                    System.out.println(field.getType());
+                }
+                System.out.println("NEW2 " + className);
+                for(Object field : file.getFields()) {
+                    System.out.println(field);
+                    FieldInfo field1 = (FieldInfo) field;
+                    newNames.add(field1.getName());
+                    System.out.println(field1.getAccessFlags());
+                    System.out.println(field1.getDescriptor());
+                }
+                System.out.print("----ONE----");
+                HashSet<String> one = new HashSet<String>(originalNames);
+                one.removeAll(newNames);
+                System.out.println(one);
+                System.out.print("----TWO----");
+                HashSet<String> two = new HashSet<String>(newNames);
+                two.removeAll(originalNames);
+                System.out.println(two);
+            }
             if (!changed) {
                 UnmodifiedFileIndex.markClassUnmodified(className);
                 return null;

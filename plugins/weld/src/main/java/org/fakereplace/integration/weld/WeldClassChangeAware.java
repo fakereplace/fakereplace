@@ -21,6 +21,7 @@
 package org.fakereplace.integration.weld;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -34,25 +35,13 @@ import org.fakereplace.api.ClassChangeAware;
 import org.fakereplace.classloading.ClassIdentifier;
 import org.fakereplace.com.google.common.collect.MapMaker;
 import org.fakereplace.integration.weld.javassist.WeldProxyClassLoadingDelegate;
-import org.jboss.weld.bean.proxy.ProxyFactory;
 
 public class WeldClassChangeAware implements ClassChangeAware {
-
-    private static final Field beanField;
 
     /**
      * proxy factories, key by by a weak reference to their bean object to prevent a memory leak.
      */
-    private static final Map<Object, ProxyFactory<?>> proxyFactories = new MapMaker().weakKeys().makeMap();
-
-    static {
-        try {
-            beanField = ProxyFactory.class.getDeclaredField("bean");
-            beanField.setAccessible(true);
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        }
-    }
+    private static final Map<Object, Object> proxyFactories = new MapMaker().weakKeys().makeMap();
 
     @Override
     public void beforeChange(final List<Class<?>> changed, final List<ClassIdentifier> added, final Attachments attachments) {
@@ -67,16 +56,25 @@ public class WeldClassChangeAware implements ClassChangeAware {
             final Set<ChangedClass> changedClasses = new HashSet<ChangedClass>(changed);
 
             //Hack to re-generate the weld client proxies
-            for (final ProxyFactory instance : proxyFactories.values()) {
+            for (final Object instance : proxyFactories.values()) {
                 try {
+                    Class cp = instance.getClass();
+                    while(!cp.getName().equals(WeldClassTransformer.ORG_JBOSS_WELD_BEAN_PROXY_PROXY_FACTORY)) {
+                        cp = cp.getSuperclass();
+                    }
+
+                    Field beanField = cp.getDeclaredField("bean");
+                    beanField.setAccessible(true);
+                    Method getProxy = instance.getClass().getMethod("getProxyClass");
+                    getProxy.setAccessible(true);
                     final Bean<?> bean = (Bean<?>) beanField.get(instance);
                     for(final ChangedClass clazz: changedClasses) {
                         if(bean.getTypes().contains(clazz.getChangedClass())) {
                             Thread.currentThread().setContextClassLoader(bean.getBeanClass().getClassLoader());
-                            instance.getProxyClass();
+                            getProxy.invoke(instance);
                         }
                     }
-                } catch (IllegalAccessException e) {
+                } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             }
@@ -86,7 +84,7 @@ public class WeldClassChangeAware implements ClassChangeAware {
         }
     }
 
-    public static void addProxyFactory(final ProxyFactory<?> factory, final Object bean) {
+    public static void addProxyFactory(final Object factory, final Object bean) {
         proxyFactories.put(bean, factory);
     }
 }

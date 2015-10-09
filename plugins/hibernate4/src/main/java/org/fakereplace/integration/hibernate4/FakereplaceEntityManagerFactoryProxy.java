@@ -24,9 +24,12 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.Cache;
+import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnitUtil;
+import javax.persistence.Query;
+import javax.persistence.SynchronizationType;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.metamodel.Metamodel;
 import javax.persistence.spi.PersistenceUnitInfo;
@@ -87,6 +90,16 @@ public class FakereplaceEntityManagerFactoryProxy implements EntityManagerFactor
     }
 
     @Override
+    public EntityManager createEntityManager(SynchronizationType synchronizationType) {
+        return delegate.createEntityManager(synchronizationType);
+    }
+
+    @Override
+    public EntityManager createEntityManager(SynchronizationType synchronizationType, Map map) {
+        return delegate.createEntityManager(synchronizationType, map);
+    }
+
+    @Override
     public CriteriaBuilder getCriteriaBuilder() {
         return delegate.getCriteriaBuilder();
     }
@@ -119,6 +132,21 @@ public class FakereplaceEntityManagerFactoryProxy implements EntityManagerFactor
     @Override
     public PersistenceUnitUtil getPersistenceUnitUtil() {
         return delegate.getPersistenceUnitUtil();
+    }
+
+    @Override
+    public void addNamedQuery(String name, Query query) {
+        delegate.addNamedQuery(name, query);
+    }
+
+    @Override
+    public <T> T unwrap(Class<T> cls) {
+        return delegate.unwrap(cls);
+    }
+
+    @Override
+    public <T> void addNamedEntityGraph(String graphName, EntityGraph<T> entityGraph) {
+        delegate.addNamedEntityGraph(graphName, entityGraph);
     }
 
     @Override

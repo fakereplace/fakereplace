@@ -37,8 +37,12 @@
 
     <dependencies>
         <dependency>
+            <groupId>javax.enterprise</groupId>
+            <artifactId>cdi-api</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.jboss.weld</groupId>
-            <artifactId>weld-core</artifactId>
+            <artifactId>weld-core-impl</artifactId>
             <scope>compile</scope>
         </dependency>
         <dependency>

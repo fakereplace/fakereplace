@@ -23,9 +23,11 @@ package org.fakereplace.data;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javassist.bytecode.ClassFile;
@@ -47,7 +49,7 @@ public class BaseClassData {
     private final String className;
     private final String internalName;
     private final Set<MethodData> methods;
-    private final Set<FieldData> fields;
+    private final List<FieldData> fields;
     private final ClassLoader loader;
     private final String superClassName;
     private final boolean replaceable;
@@ -76,13 +78,13 @@ public class BaseClassData {
             meths.add(md);
         }
         this.methods = Collections.unmodifiableSet(meths);
-        Set<FieldData> fieldData = new HashSet<FieldData>();
+        List<FieldData> fieldData = new ArrayList<>();
         for (Object o : file.getFields()) {
             FieldInfo m = (FieldInfo) o;
             MemberType mt = MemberType.NORMAL;
             fieldData.add(new FieldData(m, mt, className, m.getAccessFlags()));
         }
-        this.fields = Collections.unmodifiableSet(fieldData);
+        this.fields = Collections.unmodifiableList(fieldData);
     }
 
     public BaseClassData(Class<?> cls) {
@@ -117,11 +119,11 @@ public class BaseClassData {
         }
 
         this.methods = Collections.unmodifiableSet(meths);
-        Set<FieldData> fieldData = new HashSet<FieldData>();
+        List<FieldData> fieldData = new ArrayList<FieldData>();
         for (Field m : cls.getDeclaredFields()) {
             fieldData.add(new FieldData(m));
         }
-        this.fields = Collections.unmodifiableSet(fieldData);
+        this.fields = Collections.unmodifiableList(fieldData);
     }
 
     public String getSuperClassName() {

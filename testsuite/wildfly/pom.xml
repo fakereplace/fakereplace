@@ -30,8 +30,8 @@
     </parent>
 
     <groupId>org.fakereplace</groupId>
-    <artifactId>fakereplace-jbossas-tests</artifactId>
-    <name>Fakereplace Jboss AS Integration Tests</name>
+    <artifactId>fakereplace-wildfly-tests</artifactId>
+    <name>Fakereplace Wildfly Integration Tests</name>
     <version>1.0.0.Alpha3-SNAPSHOT</version>
 
     <properties>
@@ -44,8 +44,8 @@
             <artifactId>fakereplace-weld</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.jboss.as</groupId>
-            <artifactId>jboss-as-arquillian-container-managed</artifactId>
+            <groupId>org.wildfly.arquillian</groupId>
+            <artifactId>wildfly-arquillian-container-managed</artifactId>
         </dependency>
         <dependency>
             <groupId>org.fakereplace</groupId>
@@ -57,11 +57,11 @@
         </dependency>
         <dependency>
             <groupId>org.jboss.spec.javax.ejb</groupId>
-            <artifactId>jboss-ejb-api_3.1_spec</artifactId>
+            <artifactId>jboss-ejb-api_3.2_spec</artifactId>
         </dependency>
         <dependency>
             <groupId>org.jboss.spec.javax.ws.rs</groupId>
-            <artifactId>jboss-jaxrs-api_1.1_spec</artifactId>
+            <artifactId>jboss-jaxrs-api_2.0_spec</artifactId>
         </dependency>
         <dependency>
             <groupId>org.hibernate.javax.persistence</groupId>

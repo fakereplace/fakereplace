@@ -105,14 +105,14 @@
 
     <profiles>
         <profile>
-            <id>jbossas</id>
+            <id>wildfly</id>
             <activation>
                 <property>
-                    <name>jbossas</name>
+                    <name>wildfly</name>
                 </property>
             </activation>
             <modules>
-                <module>jbossas</module>
+                <module>wildfly</module>
             </modules>
         </profile>
     </profiles>

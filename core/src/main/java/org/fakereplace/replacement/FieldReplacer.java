@@ -27,6 +27,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
@@ -57,7 +58,7 @@ public class FieldReplacer {
 
         BaseClassData data = builder.getBaseData();
 
-        Set<FieldData> fields = new HashSet<FieldData>();
+        Set<FieldData> fields = new LinkedHashSet<>();
         fields.addAll(data.getFields());
 
         ListIterator<?> it = file.getFields().listIterator();
@@ -113,26 +114,29 @@ public class FieldReplacer {
                 FieldInfo old = new FieldInfo(file.getConstPool(), md.getName(), md.getType());
                 old.setAccessFlags(md.getAccessFlags());
                 builder.removeField(md);
+            }
+        }
+        //clear all the fields and re-add them in the correct order
+        //turns out order is important
+        file.getFields().clear();
+        for (FieldData md : data.getFields()) {
+            if (md.getMemberType() == MemberType.NORMAL) {
                 try {
                     Field field = md.getField(oldClass);
+                    FieldInfo old = new FieldInfo(file.getConstPool(), md.getName(), md.getType());
+                    old.setAccessFlags(md.getAccessFlags());
                     file.addField(old);
                     old.addAttribute(AnnotationReplacer.duplicateAnnotationsAttribute(file.getConstPool(), field));
-                } catch (DuplicateMemberException e) {
+                } catch (DuplicateMemberException | SecurityException | ClassNotFoundException | NoSuchFieldException e) {
                     // this should not happen
-                    throw new RuntimeException(e);
-                } catch (SecurityException e) {
-                    throw new RuntimeException(e);
-                } catch (ClassNotFoundException e) {
-                    throw new RuntimeException(e);
-                } catch (NoSuchFieldException e) {
                     throw new RuntimeException(e);
                 }
             }
         }
-
         for (AddedFieldData a : addedFields) {
             Transformer.getManipulator().rewriteInstanceFieldAccess(a);
         }
+
     }
 
     /**
