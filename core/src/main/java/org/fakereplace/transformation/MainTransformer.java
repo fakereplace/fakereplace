@@ -107,7 +107,7 @@ public class MainTransformer implements ClassFileTransformer {
                             Logger.getLogger(MainTransformer.class).error("Could not set environment to " + newEnvironment + " it has already been changed to " + environment);
                         }
                     }
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     e.printStackTrace();
                 }
             }
