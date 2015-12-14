@@ -20,20 +20,21 @@
 
 package org.fakereplace.integration.jsf;
 
-import java.beans.Introspector;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.nio.file.NoSuchFileException;
-import java.util.List;
-import java.util.Set;
-
 import org.fakereplace.api.Attachments;
 import org.fakereplace.api.ChangedClass;
 import org.fakereplace.api.ClassChangeAware;
 import org.fakereplace.classloading.ClassIdentifier;
 import org.fakereplace.data.InstanceTracker;
 import org.fakereplace.logging.Logger;
+import org.jboss.el.cache.BeanPropertiesCache;
+
+import java.beans.Introspector;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class ClassRedefinitionPlugin implements ClassChangeAware {
 
@@ -66,6 +67,20 @@ public class ClassRedefinitionPlugin implements ClassChangeAware {
         Set<?> data = InstanceTracker.get("javax.el.BeanELResolver");
         for (Object i : data) {
             clearBeanElResolver(i);
+        }
+        clearPropertiesCache(changed);
+    }
+
+    private void clearPropertiesCache(List<ChangedClass> changed) {
+        try {
+            BeanPropertiesCache.SoftConcurrentHashMap properties = BeanPropertiesCache.getProperties();
+            properties.clear();
+            Field mapField = properties.getClass().getDeclaredField("map");
+            mapField.setAccessible(true);
+            Map map = (Map) mapField.get(properties);
+            map.clear();
+        } catch (Throwable e) {
+            //class does not existing in older WF
         }
     }
 
