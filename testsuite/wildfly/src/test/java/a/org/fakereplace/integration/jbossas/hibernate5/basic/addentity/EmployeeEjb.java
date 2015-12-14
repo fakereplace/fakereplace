@@ -18,39 +18,31 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package a.org.fakereplace.integration.jbossas.hibernate4.basic.addentity;
+package a.org.fakereplace.integration.jbossas.hibernate5.basic.addentity;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
-@Entity
-public class Employee {
+/**
+ * @author Stuart Douglas
+ */
+@Stateless
+public class EmployeeEjb implements RemoteEmployee {
 
-    @Id
-    private int id;
+    @PersistenceContext
+    private EntityManager entityManager;
 
-    private String name;
-
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getId() {
-
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
+    public void saveEntity(int id) {
+        final Employee employee = new Employee();
+        employee.setId(id);
+        employee.setName("name");
+        entityManager.persist(employee);
     }
 
     @Override
-    public String toString() {
-        return id + "-" + name;
+    public String getEntityDesc(final int id) {
+        return entityManager.find(Employee.class, id).toString();
     }
+
 }

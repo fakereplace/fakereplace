@@ -30,8 +30,8 @@
     </parent>
 
     <groupId>org.fakereplace</groupId>
-    <artifactId>fakereplace-hibernate4</artifactId>
-    <name>Fakereplace Hibernate 4 Integration</name>
+    <artifactId>fakereplace-hibernate5</artifactId>
+    <name>Fakereplace Hibernate 5 Integration</name>
     <version>1.0.0.Alpha3-SNAPSHOT</version>
 
     <dependencies>

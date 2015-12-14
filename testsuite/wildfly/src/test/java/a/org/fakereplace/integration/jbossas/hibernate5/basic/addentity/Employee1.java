@@ -18,42 +18,61 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package a.org.fakereplace.integration.jbossas.hibernate4.basic.addentity;
+package a.org.fakereplace.integration.jbossas.hibernate5.basic.addentity;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 
-/**
- * @author Stuart Douglas
- */
 @Entity
-public class AddedEntity {
-
+public class Employee1 {
     @Id
     private int id;
 
     private String name;
 
-    public int getId() {
-        return id;
-    }
+    private String address;
 
-    public void setId(final int id) {
-        this.id = id;
-    }
+    @OneToOne(cascade = CascadeType.ALL)
+    private AddedEntity addedEntity;
+
 
     public String getName() {
         return name;
     }
 
-    public void setName(final String name) {
+    public void setName(String name) {
         this.name = name;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(final String address) {
+        this.address = address;
+    }
+
+    public int getId() {
+
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public AddedEntity getAddedEntity() {
+        return addedEntity;
+    }
+
+    public void setAddedEntity(final AddedEntity addedEntity) {
+        this.addedEntity = addedEntity;
     }
 
     @Override
     public String toString() {
-        return "AddedEntity{" +
-                "name='" + name + '\'' +
-                '}';
+        return id + "-" + name + "-" + address + "-" + addedEntity;
     }
 }

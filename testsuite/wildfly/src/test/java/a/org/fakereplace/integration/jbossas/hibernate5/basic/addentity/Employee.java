@@ -18,19 +18,18 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package a.org.fakereplace.integration.jbossas.hibernate4.basic.addcolumn;
+package a.org.fakereplace.integration.jbossas.hibernate5.basic.addentity;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
 @Entity
-public class Employee1 {
+public class Employee {
+
     @Id
     private int id;
 
     private String name;
-
-    private String address;
 
 
     public String getName() {
@@ -39,14 +38,6 @@ public class Employee1 {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(final String address) {
-        this.address = address;
     }
 
     public int getId() {
@@ -60,6 +51,6 @@ public class Employee1 {
 
     @Override
     public String toString() {
-        return id + "-" + name + "-" + address;
+        return id + "-" + name;
     }
 }

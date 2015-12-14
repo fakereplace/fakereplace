@@ -18,7 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package a.org.fakereplace.integration.jbossas.hibernate4.basic.addentity;
+package a.org.fakereplace.integration.jbossas.hibernate5.basic.addentity;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -42,7 +42,7 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 @RunAsClient
 @Ignore
-public class Hibernate4AddEntityTestCase {
+public class Hibernate5AddEntityTestCase {
 
     public static final String DEPLOYMENT_NAME = "Hibernate4AddColumnTestCase.jar";
 
@@ -50,7 +50,7 @@ public class Hibernate4AddEntityTestCase {
     public static Archive deploy() {
         return ShrinkWrap.create(JavaArchive.class, DEPLOYMENT_NAME)
                 .addClasses(Employee.class, EmployeeEjb.class, RemoteEmployee.class)
-                .addAsManifestResource(Hibernate4AddEntityTestCase.class.getPackage(), "persistence.xml", "persistence.xml");
+                .addAsManifestResource(Hibernate5AddEntityTestCase.class.getPackage(), "persistence.xml", "persistence.xml");
     }
 
     @ArquillianResource

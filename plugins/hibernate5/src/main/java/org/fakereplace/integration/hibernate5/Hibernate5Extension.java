@@ -39,7 +39,7 @@ public class Hibernate5Extension implements Extension {
 
     @Override
     public String getClassChangeAwareName() {
-        return "org.fakereplace.integration.hibernate4.Hibernate5ClassChangeAware";
+        return "org.fakereplace.integration.hibernate5.Hibernate5ClassChangeAware";
     }
 
     @Override

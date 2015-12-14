@@ -18,7 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.fakereplace.integration.jbossas.hibernate4;
+package org.fakereplace.integration.jbossas.hibernate5;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -50,7 +50,7 @@ import org.jboss.modules.ModuleLoadException;
 /**
  * @author Stuart Douglas
  */
-public class JBossASHibernate4ClassChangeAware implements ClassChangeAware {
+public class JBossASHibernate5ClassChangeAware implements ClassChangeAware {
 
     @Override
     public void beforeChange(final List<Class<?>> changed, final List<ClassIdentifier> added, Attachments attachments) {
@@ -74,13 +74,13 @@ public class JBossASHibernate4ClassChangeAware implements ClassChangeAware {
 
         final String deploymentName = attachments.get(AttachmentKeys.DEPLOYMENT_NAME);
 
-        final Set<PersistenceUnitServiceImpl> puServices = (Set<PersistenceUnitServiceImpl>) InstanceTracker.get(JBossASHibernate4Extension.PERSISTENCE_UNIT_SERVICE);
+        final Set<PersistenceUnitServiceImpl> puServices = (Set<PersistenceUnitServiceImpl>) InstanceTracker.get(JBossASHibernate5Extension.PERSISTENCE_UNIT_SERVICE);
 
         //AS7 caches annotations so it does not have to hang onto the Jandex index
         //we need to update this index
         try {
-            final Module hib4Module = Module.getBootModuleLoader().loadModule(ModuleIdentifier.create("org.jboss.as.jpa.hibernate", "4"));
-            final Class<?> annotationScanner = hib4Module.getClassLoader().loadClass("org.jboss.as.jpa.hibernate4.HibernateAnnotationScanner");
+            final Module hib4Module = Module.getBootModuleLoader().loadModule(ModuleIdentifier.create("org.jboss.as.jpa.hibernate", "5"));
+            final Class<?> annotationScanner = hib4Module.getClassLoader().loadClass("org.jboss.as.jpa.hibernate5.HibernateAnnotationScanner");
             final Field classesInJar = annotationScanner.getDeclaredField("CLASSES_IN_JAR_CACHE");
             classesInJar.setAccessible(true);
             final Map<PersistenceUnitMetadata, Map<URL, Map<Class<? extends Annotation>, Set<Class<?>>>>> cache = (Map<PersistenceUnitMetadata, Map<URL, Map<Class<? extends Annotation>, Set<Class<?>>>>>) classesInJar.get(null);

@@ -39,7 +39,7 @@ import org.fakereplace.transformation.FakereplaceTransformer;
  */
 public class Hibernate5ClassTransformer implements FakereplaceTransformer {
 
-    public static final String PROXY_NAME = "org.fakereplace.integration.hibernate4.FakereplaceEntityManagerFactoryProxy";
+    public static final String PROXY_NAME = "org.fakereplace.integration.hibernate5.FakereplaceEntityManagerFactoryProxy";
 
     @Override
     public boolean transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final ClassFile file) throws IllegalClassFormatException, BadBytecode {

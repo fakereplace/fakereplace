@@ -46,7 +46,7 @@ public class JBossASClassChangeAware implements ClassChangeAware {
     @Override
     public void afterChange(List<ChangedClass> changed, List<ClassIdentifier> added, final Attachments attachments) {
         clearJSRResourceCache();
-        //JBossASHibernate4Replacer.handleHibernateReplacement(changed, added);
+        //JBossASHibernate5Replacer.handleHibernateReplacement(changed, added);
     }
 
     private void clearJSRResourceCache() {

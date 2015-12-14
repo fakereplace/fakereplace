@@ -18,7 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.fakereplace.integration.jbossas.hibernate4;
+package org.fakereplace.integration.jbossas.hibernate5;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -29,11 +29,11 @@ import java.util.Set;
 import org.fakereplace.api.Extension;
 import org.fakereplace.transformation.FakereplaceTransformer;
 
-public class JBossASHibernate4Extension implements Extension {
+public class JBossASHibernate5Extension implements Extension {
 
     public static final String PERSISTENCE_UNIT_SERVICE = "org.jboss.as.jpa.service.PersistenceUnitServiceImpl";
 
-    private static final String CLASS_CHANGE_AWARE = "org.fakereplace.integration.jbossas.hibernate4.JBossASHibernate4ClassChangeAware";
+    private static final String CLASS_CHANGE_AWARE = "org.fakereplace.integration.jbossas.hibernate5.JBossASHibernate5ClassChangeAware";
 
     @Override
     public String getClassChangeAwareName() {

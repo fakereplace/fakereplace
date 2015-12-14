@@ -117,7 +117,7 @@
 
             <dependency>
                 <groupId>org.fakereplace</groupId>
-                <artifactId>fakereplace-hibernate4</artifactId>
+                <artifactId>fakereplace-hibernate5</artifactId>
                 <version>${fakereplace.version}</version>
             </dependency>
 

@@ -1,1 +1,1 @@
-hibernate5.Hibernate4Extension
+org.fakereplace.integration.hibernate5.Hibernate5Extension

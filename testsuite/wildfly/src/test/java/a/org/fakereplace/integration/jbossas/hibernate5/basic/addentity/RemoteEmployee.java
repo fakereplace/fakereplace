@@ -18,7 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package a.org.fakereplace.integration.jbossas.hibernate4.basic.addcolumn;
+package a.org.fakereplace.integration.jbossas.hibernate5.basic.addentity;
 
 import javax.ejb.Remote;
 

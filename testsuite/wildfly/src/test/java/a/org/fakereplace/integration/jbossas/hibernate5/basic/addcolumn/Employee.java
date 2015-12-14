@@ -18,24 +18,18 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package a.org.fakereplace.integration.jbossas.hibernate4.basic.addentity;
+package a.org.fakereplace.integration.jbossas.hibernate5.basic.addcolumn;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
 
 @Entity
-public class Employee1 {
+public class Employee {
+
     @Id
     private int id;
 
     private String name;
-
-    private String address;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    private AddedEntity addedEntity;
 
 
     public String getName() {
@@ -44,14 +38,6 @@ public class Employee1 {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(final String address) {
-        this.address = address;
     }
 
     public int getId() {
@@ -63,16 +49,8 @@ public class Employee1 {
         this.id = id;
     }
 
-    public AddedEntity getAddedEntity() {
-        return addedEntity;
-    }
-
-    public void setAddedEntity(final AddedEntity addedEntity) {
-        this.addedEntity = addedEntity;
-    }
-
     @Override
     public String toString() {
-        return id + "-" + name + "-" + address + "-" + addedEntity;
+        return id + "-" + name;
     }
 }

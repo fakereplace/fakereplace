@@ -18,17 +18,42 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.fakereplace.integration.jbossas.hibernate4;
+package a.org.fakereplace.integration.jbossas.hibernate5.basic.addentity;
 
-import org.fakereplace.hibernate5.HibernateEnvironment;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
 /**
  * @author Stuart Douglas
  */
-public class JBossASHibernateEnvironment implements HibernateEnvironment {
+@Entity
+public class AddedEntity {
+
+    @Id
+    private int id;
+
+    private String name;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(final int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(final String name) {
+        this.name = name;
+    }
 
     @Override
-    public boolean replaceContainerManagedEntityManagers() {
-        return false;
+    public String toString() {
+        return "AddedEntity{" +
+                "name='" + name + '\'' +
+                '}';
     }
 }

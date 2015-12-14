@@ -18,39 +18,16 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package a.org.fakereplace.integration.jbossas.hibernate4.basic.addcolumn;
+package a.org.fakereplace.integration.jbossas.hibernate5.basic.addcolumn;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.ejb.Remote;
 
-@Entity
-public class Employee {
+/**
+ * @author Stuart Douglas
+ */
+@Remote
+public interface RemoteEmployee {
+    void saveEntity(int id);
 
-    @Id
-    private int id;
-
-    private String name;
-
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getId() {
-
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    @Override
-    public String toString() {
-        return id + "-" + name;
-    }
+    String getEntityDesc(int id);
 }
