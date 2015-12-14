@@ -20,6 +20,7 @@
 
 package a.org.fakereplace.integration.wildfly.hibernate5.basic.addcolumn;
 
+import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
@@ -31,10 +32,13 @@ import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import java.util.Properties;
 
 /**
  * @author Stuart Douglas
@@ -44,20 +48,21 @@ import org.junit.runner.RunWith;
 @Ignore
 public class Hibernate5AddColumnTestCase {
 
-    public static final String DEPLOYMENT_NAME = "Hibernate5AddColumnTestCase.jar";
+    public static final String DEPLOYMENT_NAME = "Hibernate5AddColumnTestCase.war";
 
     @Deployment
     public static Archive deploy() {
-        return ShrinkWrap.create(JavaArchive.class, DEPLOYMENT_NAME)
+        return ShrinkWrap.create(WebArchive.class, DEPLOYMENT_NAME)
                 .addClasses(Employee.class, EmployeeEjb.class, RemoteEmployee.class)
-                .addAsManifestResource(Hibernate5AddColumnTestCase.class.getPackage(), "persistence.xml", "persistence.xml");
+                .addAsResource(Hibernate5AddColumnTestCase.class.getPackage(),  "persistence.xml", "META-INF/persistence.xml");
     }
-
-    @ArquillianResource
-    private InitialContext initialContext;
 
     @Test
     public void testAddingColumn() throws NamingException {
+
+        Properties prop = new Properties();
+        prop.put(Context.URL_PKG_PREFIXES, "org.jboss.ejb.client.naming");
+        InitialContext initialContext = new InitialContext(prop);
         RemoteEmployee ejb = (RemoteEmployee)initialContext.lookup("ejb:/Hibernate5AddColumnTestCase/" + EmployeeEjb.class.getSimpleName() + "!" + RemoteEmployee.class.getName());
         ejb.saveEntity(1);
         Assert.assertEquals("1-name", ejb.getEntityDesc(1));

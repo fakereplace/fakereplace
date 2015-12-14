@@ -107,6 +107,7 @@
         <profile>
             <id>wildfly</id>
             <activation>
+                <activeByDefault>true</activeByDefault>
                 <property>
                     <name>wildfly</name>
                 </property>
