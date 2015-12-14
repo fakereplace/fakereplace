@@ -64,6 +64,11 @@ public class Transformer implements FakereplaceTransformer {
 
     private final List<FakereplaceTransformer> integrationTransformers = new CopyOnWriteArrayList<FakereplaceTransformer>();
 
+    /**
+     * TODO: Move this elsewhere
+     */
+    private final FileSystemWatcher watcher = new FileSystemWatcher();
+
     Transformer(Set<Extension> extension) {
         ReflectionInstrumentationSetup.setup(manipulator);
         for (Extension i : extension) {
@@ -124,6 +129,7 @@ public class Transformer implements FakereplaceTransformer {
                     modified = true;
 
                     CurrentEnvironment.getEnvironment().recordTimestamp(className, loader);
+                    watcher.addClassFile(className, loader);
                     if (file.isInterface()) {
                         addAbstractMethodForInstrumentation(file);
                     } else {

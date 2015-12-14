@@ -23,6 +23,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -145,10 +146,16 @@ public class MainTransformer implements ClassFileTransformer {
                 // dump the class for debugging purposes
                 final String dumpDir = AgentOptions.getOption(AgentOption.DUMP_DIR);
                 if (dumpDir != null) {
-                    FileOutputStream s = new FileOutputStream(dumpDir + '/' + file.getName() + ".class");
-                    DataOutputStream dos = new DataOutputStream(s);
-                    file.write(dos);
-                    s.close();
+                    try {
+                        File dump = new File(dumpDir + '/' + file.getName() + ".class");
+                        dump.getParentFile().mkdirs();
+                        FileOutputStream s = new FileOutputStream(dump);
+                        DataOutputStream dos = new DataOutputStream(s);
+                        file.write(dos);
+                        s.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
                 return bs.toByteArray();
             }
