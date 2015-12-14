@@ -52,6 +52,7 @@
         <derby.version>10.8.2.2</derby.version>
         <resteasy-jaxrs.version>3.0.12.Final</resteasy-jaxrs.version>
         <jboss-jaxrs-api_2.0_spec.version>1.0.0.Final</jboss-jaxrs-api_2.0_spec.version>
+        <javax.transaction.api.version>1.2</javax.transaction.api.version>
     </properties>
 
 
@@ -316,6 +317,11 @@
                 <artifactId>slf4j-simple</artifactId>
                 <version>${slf4j-simple.version}</version>
                 <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>javax.transaction</groupId>
+                <artifactId>javax.transaction-api</artifactId>
+                <version>${javax.transaction.api.version}</version>
             </dependency>
 
         </dependencies>

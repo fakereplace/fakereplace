@@ -48,8 +48,16 @@
             <artifactId>wildfly-arquillian-container-managed</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.jboss</groupId>
+            <artifactId>jboss-ejb-client</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.fakereplace</groupId>
             <artifactId>fakereplace-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.transaction</groupId>
+            <artifactId>javax.transaction-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.fakereplace</groupId>
@@ -89,6 +97,7 @@
                             <goal>test</goal>
                         </goals>
                         <configuration>
+                            <redirectTestOutputToFile>true</redirectTestOutputToFile>
                             <skip>false</skip>
                             <excludes>
                                 <exclude>none</exclude>
@@ -98,9 +107,27 @@
                             </includes>
                             <forkMode>once</forkMode>
                             <systemPropertyVariables>
+                                <jboss.home>${project.build.directory}/wildfly</jboss.home>
                                 <project.build.directory>${project.build.directory}</project.build.directory>
                                 <jboss.vm.args>${jboss.vm.args}</jboss.vm.args>
                             </systemPropertyVariables>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.wildfly.build</groupId>
+                <artifactId>wildfly-server-provisioning-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>server-provisioning</id>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                        <phase>process-test-resources</phase>
+                        <configuration>
+                            <config-file>server-provisioning.xml</config-file>
+                            <server-name>wildfly</server-name>
                         </configuration>
                     </execution>
                 </executions>
