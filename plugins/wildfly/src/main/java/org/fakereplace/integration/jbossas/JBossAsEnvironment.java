@@ -32,7 +32,7 @@ import java.util.WeakHashMap;
 
 import org.fakereplace.api.environment.ChangedClasses;
 import org.fakereplace.api.environment.Environment;
-import org.fakereplace.hibernate4.HibernateEnvironment;
+import org.fakereplace.hibernate5.HibernateEnvironment;
 import org.fakereplace.integration.jbossas.hibernate4.JBossASHibernateEnvironment;
 import org.fakereplace.logging.Logger;
 import org.jboss.as.server.CurrentServiceContainer;

@@ -18,7 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.fakereplace.hibernate4;
+package org.fakereplace.hibernate5;
 
 /**
  * @author Stuart Douglas

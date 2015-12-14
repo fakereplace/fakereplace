@@ -18,7 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.fakereplace.integration.hibernate4;
+package org.fakereplace.integration.hibernate5;
 
 import java.util.Collections;
 import java.util.List;
@@ -30,16 +30,16 @@ import org.fakereplace.transformation.FakereplaceTransformer;
 /**
  * @author Stuart Douglas
  */
-public class Hibernate4Extension implements Extension {
+public class Hibernate5Extension implements Extension {
 
     @Override
     public List<FakereplaceTransformer> getTransformers() {
-        return Collections.<FakereplaceTransformer>singletonList(new Hibernate4ClassTransformer());
+        return Collections.<FakereplaceTransformer>singletonList(new Hibernate5ClassTransformer());
     }
 
     @Override
     public String getClassChangeAwareName() {
-        return "org.fakereplace.integration.hibernate4.Hibernate4ClassChangeAware";
+        return "org.fakereplace.integration.hibernate4.Hibernate5ClassChangeAware";
     }
 
     @Override

@@ -18,7 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.fakereplace.integration.hibernate4;
+package org.fakereplace.integration.hibernate5;
 
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
@@ -37,7 +37,7 @@ import org.fakereplace.transformation.FakereplaceTransformer;
  *
  * @author Stuart Douglas
  */
-public class Hibernate4ClassTransformer implements FakereplaceTransformer {
+public class Hibernate5ClassTransformer implements FakereplaceTransformer {
 
     public static final String PROXY_NAME = "org.fakereplace.integration.hibernate4.FakereplaceEntityManagerFactoryProxy";
 

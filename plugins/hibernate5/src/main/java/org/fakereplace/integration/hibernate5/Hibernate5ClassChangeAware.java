@@ -18,7 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.fakereplace.integration.hibernate4;
+package org.fakereplace.integration.hibernate5;
 
 import java.util.HashSet;
 import java.util.List;
@@ -29,12 +29,12 @@ import org.fakereplace.api.ChangedClass;
 import org.fakereplace.api.ClassChangeAware;
 import org.fakereplace.api.environment.CurrentEnvironment;
 import org.fakereplace.classloading.ClassIdentifier;
-import org.fakereplace.hibernate4.HibernateEnvironment;
+import org.fakereplace.hibernate5.HibernateEnvironment;
 
 /**
  * @author Stuart Douglas
  */
-public class Hibernate4ClassChangeAware implements ClassChangeAware {
+public class Hibernate5ClassChangeAware implements ClassChangeAware {
     @Override
     public void beforeChange(final List<Class<?>> changed, final List<ClassIdentifier> added, final Attachments attachments) {
 

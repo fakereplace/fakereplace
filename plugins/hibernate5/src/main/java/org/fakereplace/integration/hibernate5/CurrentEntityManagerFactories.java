@@ -18,7 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.fakereplace.integration.hibernate4;
+package org.fakereplace.integration.hibernate5;
 
 import java.util.ArrayList;
 import java.util.Collections;
