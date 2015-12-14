@@ -79,7 +79,7 @@ public class JBossASHibernate5ClassChangeAware implements ClassChangeAware {
         //AS7 caches annotations so it does not have to hang onto the Jandex index
         //we need to update this index
         try {
-            final Module hib4Module = Module.getBootModuleLoader().loadModule(ModuleIdentifier.create("org.jboss.as.jpa.hibernate", "5"));
+            final Module hib4Module = Module.getBootModuleLoader().loadModule(ModuleIdentifier.create("org.jboss.as.jpa.hibernate"));
             final Class<?> annotationScanner = hib4Module.getClassLoader().loadClass("org.jboss.as.jpa.hibernate5.HibernateAnnotationScanner");
             final Field classesInJar = annotationScanner.getDeclaredField("CLASSES_IN_JAR_CACHE");
             classesInJar.setAccessible(true);

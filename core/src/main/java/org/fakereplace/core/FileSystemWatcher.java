@@ -3,16 +3,20 @@ package org.fakereplace.core;
 import javassist.bytecode.ClassFile;
 import org.fakereplace.replacement.AddedClass;
 import org.fakereplace.util.FileReader;
+import org.fakereplace.util.MD5;
 import org.fakereplace.util.WatchServiceFileSystemWatcher;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.instrument.ClassDefinition;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +37,8 @@ public class FileSystemWatcher {
 
     private final Map<ClassLoader, Callback> callbacks = new WeakHashMap<>();
     private final Set<File> registered = new HashSet<>();
+
+    private final Map<String, String> hashes = new HashMap<>();
 
 
     private final class Callback implements WatchServiceFileSystemWatcher.FileChangeCallback  {
@@ -56,11 +62,17 @@ public class FileSystemWatcher {
                             addedClasses.add(new AddedClass(file.getName(), bytes, classLoader));
                         }
                     } else if(change.getType() == WatchServiceFileSystemWatcher.FileChangeEvent.Type.MODIFIED) {
-
+                        String hash = hashes.get(change.getFile().getCanonicalPath());
+                        if(hash == null) {
+                            //class is not loaded yet
+                            continue;
+                        }
                         try (FileInputStream in = new FileInputStream(change.getFile())) {
                             byte[] bytes = FileReader.readFileBytes(in);
-                            ClassFile file = new ClassFile(new DataInputStream(new ByteArrayInputStream(bytes)));
-                            changedClasses.add(new ClassDefinition(classLoader.loadClass(file.getName()), bytes));
+                            if(!hash.equals(MD5.md5(bytes))) {
+                                ClassFile file = new ClassFile(new DataInputStream(new ByteArrayInputStream(bytes)));
+                                changedClasses.add(new ClassDefinition(classLoader.loadClass(file.getName()), bytes));
+                            }
                         }
                     }
                 }
@@ -89,6 +101,12 @@ public class FileSystemWatcher {
             if(className.charAt(i) == '.' || className.charAt(i) == '/') {
                 parentCount++;
             }
+        }
+        try (InputStream in = resource.openStream()) {
+            hashes.put(file.getCanonicalPath(), MD5.md5(FileReader.readFileBytes(in)));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
         }
         for(int i = 0; i < parentCount; ++i) {
             file = file.getParentFile();

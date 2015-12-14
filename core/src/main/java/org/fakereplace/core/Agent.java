@@ -113,13 +113,14 @@ public class Agent {
 
     public static void redefine(ClassDefinition[] classes, AddedClass[] addedData, final Attachments attachments) throws UnmodifiableClassException, ClassNotFoundException {
         try {
-            final List<ClassIdentifier> addedClass = new ArrayList<ClassIdentifier>();
+            final List<ClassIdentifier> addedClass = new ArrayList<>();
             for (AddedClass i : addedData) {
                 addedClass.add(i.getClassIdentifier());
             }
 
-            final List<Class<?>> changedClasses = new ArrayList<Class<?>>();
+            final List<Class<?>> changedClasses = new ArrayList<>();
             for (ClassDefinition i : classes) {
+
                 System.out.println("Fakereplace is replacing class " + i.getDefinitionClass());
                 changedClasses.add(i.getDefinitionClass());
                 ClassDataStore.instance().markClassReplaced(i.getClass());

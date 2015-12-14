@@ -49,7 +49,7 @@
 
         <dependency>
             <groupId>org.fakereplace</groupId>
-            <artifactId>fakereplace-jbossas</artifactId>
+            <artifactId>fakereplace-wildfly</artifactId>
         </dependency>
 
         <dependency>
