@@ -49,7 +49,7 @@ public class Hibernate5AddColumnTestCase {
     public static Archive deploy() {
         return ShrinkWrap.create(WebArchive.class, DEPLOYMENT_NAME)
                 .addClasses(Employee.class, EmployeeEjb.class, RemoteEmployee.class)
-                .addAsResource(Hibernate5AddColumnTestCase.class.getPackage(),  "persistence.xml", "META-INF/persistence.xml");
+                .addAsResource(Hibernate5AddColumnTestCase.class.getPackage(), "persistence.xml", "META-INF/persistence.xml");
     }
 
     @Test
@@ -58,7 +58,7 @@ public class Hibernate5AddColumnTestCase {
         Properties prop = new Properties();
         prop.put(Context.URL_PKG_PREFIXES, "org.jboss.ejb.client.naming");
         InitialContext initialContext = new InitialContext(prop);
-        RemoteEmployee ejb = (RemoteEmployee)initialContext.lookup("ejb:/Hibernate5AddColumnTestCase/" + EmployeeEjb.class.getSimpleName() + "!" + RemoteEmployee.class.getName());
+        RemoteEmployee ejb = (RemoteEmployee) initialContext.lookup("ejb:/Hibernate5AddColumnTestCase/" + EmployeeEjb.class.getSimpleName() + "!" + RemoteEmployee.class.getName());
         ejb.saveEntity(1);
         Assert.assertEquals("1-name", ejb.getEntityDesc(1));
         final RemoteClassReplacer replacer = new RemoteClassReplacer();

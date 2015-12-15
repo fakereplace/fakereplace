@@ -58,13 +58,13 @@
         </dependency>
 
         <dependency>
-            <groupId>org.fakereplace</groupId>
-            <artifactId>fakereplace</artifactId>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
         </dependency>
 
         <dependency>
             <groupId>org.fakereplace</groupId>
-            <artifactId>fakereplace-hibernate5</artifactId>
+            <artifactId>fakereplace</artifactId>
         </dependency>
 
     </dependencies>

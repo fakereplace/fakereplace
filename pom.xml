@@ -118,12 +118,6 @@
 
             <dependency>
                 <groupId>org.fakereplace</groupId>
-                <artifactId>fakereplace-hibernate5</artifactId>
-                <version>${fakereplace.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.fakereplace</groupId>
                 <artifactId>fakereplace-resteasy</artifactId>
                 <version>${fakereplace.version}</version>
             </dependency>

@@ -48,7 +48,7 @@ import java.util.Properties;
 @Ignore
 public class Hibernate5AddEntityTestCase {
 
-    public static final String DEPLOYMENT_NAME = "Hibernate5AddColumnTestCase.war";
+    public static final String DEPLOYMENT_NAME = "Hibernate5AddEntityTestCase.war";
 
     @Deployment
     public static Archive deploy() {
@@ -60,11 +60,11 @@ public class Hibernate5AddEntityTestCase {
     }
 
     @Test
-    public void testAddingColumn() throws NamingException {
+    public void testAddingEntity() throws NamingException {
         Properties prop = new Properties();
         prop.put(Context.URL_PKG_PREFIXES, "org.jboss.ejb.client.naming");
         InitialContext initialContext = new InitialContext(prop);
-        RemoteEmployee ejb = (RemoteEmployee)initialContext.lookup("ejb:/Hibernate5AddColumnTestCase/" + EmployeeEjb.class.getSimpleName() + "!" + RemoteEmployee.class.getName());
+        RemoteEmployee ejb = (RemoteEmployee)initialContext.lookup("ejb:/Hibernate5AddEntityTestCase/" + EmployeeEjb.class.getSimpleName() + "!" + RemoteEmployee.class.getName());
         ejb.saveEntity(1);
         Assert.assertEquals("1-name", ejb.getEntityDesc(1));
         final RemoteClassReplacer replacer = new RemoteClassReplacer();

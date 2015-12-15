@@ -23,6 +23,7 @@ package a.org.fakereplace.integration.wildfly.hibernate5.basic.addentity;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
 @Entity
@@ -35,6 +36,7 @@ public class Employee1 {
     private String address;
 
     @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn
     private AddedEntity addedEntity;
 
 

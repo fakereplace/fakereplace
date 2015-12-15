@@ -43,7 +43,6 @@
         <module>maven</module>
         <module>wildfly</module>
         <module>weld</module>
-        <module>hibernate5</module>
         <module>resteasy</module>
     </modules>
 

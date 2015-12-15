@@ -74,8 +74,6 @@ public class WildflyHibernate5ClassChangeAware implements ClassChangeAware {
             return;
         }
 
-        final String deploymentName = attachments.get(AttachmentKeys.DEPLOYMENT_NAME);
-
         final Set<PersistenceUnitServiceImpl> puServices = (Set<PersistenceUnitServiceImpl>) InstanceTracker.get(WildflyHibernate5Extension.PERSISTENCE_UNIT_SERVICE);
         final Set<PhaseOnePersistenceUnitServiceImpl> phaseOneServices = (Set<PhaseOnePersistenceUnitServiceImpl>) InstanceTracker.get(WildflyHibernate5Extension.PERSISTENCE_PHASE_ONE_SERVICE);
 
@@ -87,14 +85,34 @@ public class WildflyHibernate5ClassChangeAware implements ClassChangeAware {
             WritableServiceBasedNamingStore.pushOwner(CurrentServiceContainer.getServiceContainer());
             try {
                 for (PersistenceUnitServiceImpl puService : puServices) {
-                    doServiceStop(puService);
+                    try {
+                        //make sure the service is started before stopping
+                        if(puService.getExecutorInjector().getOptionalValue() != null) {
+                            doServiceStop(puService);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
                 for (PhaseOnePersistenceUnitServiceImpl puService : phaseOneServices) {
-                    doServiceStop(puService);
-                    doServiceStart(puService);
+                    try {
+                        if (puService.getExecutorInjector().getOptionalValue() != null) {
+                            doServiceStop(puService);
+                            doServiceStart(puService);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
                 for (PersistenceUnitServiceImpl puService : puServices) {
-                    doServiceStart(puService);
+                    try {
+                        //make sure the service is started before stopping
+                        if(puService.getExecutorInjector().getOptionalValue() != null) {
+                            doServiceStart(puService);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             } finally {
                 WritableServiceBasedNamingStore.popOwner();
@@ -150,6 +168,7 @@ public class WildflyHibernate5ClassChangeAware implements ClassChangeAware {
 
             @Override
             public void failed(StartException reason) throws IllegalStateException {
+                reason.printStackTrace();
                 startLatch.countDown();
             }
 

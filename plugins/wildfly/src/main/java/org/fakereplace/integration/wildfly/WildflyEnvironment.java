@@ -19,21 +19,8 @@
  */
 package org.fakereplace.integration.wildfly;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.WeakHashMap;
-
 import org.fakereplace.api.environment.ChangedClasses;
 import org.fakereplace.api.environment.Environment;
-import org.fakereplace.hibernate5.HibernateEnvironment;
-import org.fakereplace.integration.wildfly.hibernate5.WildflyHibernateEnvironment;
 import org.fakereplace.logging.Logger;
 import org.jboss.as.server.CurrentServiceContainer;
 import org.jboss.as.server.deployment.Attachments;
@@ -46,6 +33,16 @@ import org.jboss.msc.service.ServiceController;
 import org.jboss.msc.service.ServiceName;
 import org.jboss.vfs.VirtualFile;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.WeakHashMap;
+
 /**
  * @author Stuart Douglas
  */
@@ -53,19 +50,11 @@ public class WildflyEnvironment implements Environment {
 
     private final Logger log = Logger.getLogger(WildflyEnvironment.class);
 
-    private static final Map<Class<?>, Object> SERVICES;
-
     /**
      * When classes are replaced we need to update their timestamps, otherwise they will be replaced on every subsequent
      * invocation.
      */
     private final Map<Class<?>, Long> replacedClassTimestamps = Collections.synchronizedMap(new WeakHashMap<Class<?>, Long>());
-
-    static {
-        final Map<Class<?>, Object> services = new HashMap<Class<?>, Object>();
-        services.put(HibernateEnvironment.class, new WildflyHibernateEnvironment());
-        SERVICES = Collections.unmodifiableMap(services);
-    }
 
     @Override
     public boolean isClassReplaceable(final String className, final ClassLoader loader) {
@@ -217,7 +206,7 @@ public class WildflyEnvironment implements Environment {
 
     @Override
     public <T> T getService(final Class<T> clazz) {
-        return (T) SERVICES.get(clazz);
+        return null;
     }
 
     private ModuleIdentifier getModuleIdentifier(final ServiceController<DeploymentUnit> deploymentArchive) {
