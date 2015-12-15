@@ -44,7 +44,7 @@ public class Hibernate5Extension implements Extension {
 
     @Override
     public Set<String> getIntegrationTriggerClassNames() {
-        return Collections.singleton("org.hibernate.ejb.EntityManagerFactoryImpl");
+        return Collections.singleton("org.hibernate.jpa.internal.EntityManagerFactoryImplsdfasdf");
     }
 
     @Override

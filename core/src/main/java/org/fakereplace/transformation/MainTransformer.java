@@ -195,6 +195,9 @@ public class MainTransformer implements ClassFileTransformer {
             return null;
         }
         URL resource = ClassLoader.getSystemClassLoader().getResource(name.replace('.', '/') + ".class");
+        if(resource == null) {
+            throw new RuntimeException("Could not load integration class " + name);
+        }
         InputStream in = null;
         try {
             in = resource.openStream();

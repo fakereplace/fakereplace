@@ -18,7 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.fakereplace.integration.jbossas.hibernate5;
+package org.fakereplace.integration.wildfly;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -29,11 +29,12 @@ import java.util.Set;
 import org.fakereplace.api.Extension;
 import org.fakereplace.transformation.FakereplaceTransformer;
 
-public class JBossASHibernate5Extension implements Extension {
+public class WildflyExtension implements Extension {
 
-    public static final String PERSISTENCE_UNIT_SERVICE = "org.jboss.as.jpa.service.PersistenceUnitServiceImpl";
+    public static final String RESOURCE_CACHE_CLASS = "org.apache.naming.resources.ResourceCache";
 
-    private static final String CLASS_CHANGE_AWARE = "org.fakereplace.integration.jbossas.hibernate5.JBossASHibernate5ClassChangeAware";
+    private static final String CLASS_CHANGE_AWARE = "org.fakereplace.integration.wildfly.WildflyClassChangeAware";
+    public static final String JBOSSAS_ENVIRONMENT = "org.fakereplace.integration.wildfly.WildflyEnvironment";
 
     @Override
     public String getClassChangeAwareName() {
@@ -42,17 +43,17 @@ public class JBossASHibernate5Extension implements Extension {
 
     @Override
     public Set<String> getIntegrationTriggerClassNames() {
-        return Collections.singleton(PERSISTENCE_UNIT_SERVICE);
+        return Collections.singleton("org.jboss.as.server.ApplicationServerService");
     }
 
     @Override
     public String getEnvironment() {
-        return null;
+        return JBOSSAS_ENVIRONMENT;
     }
 
     @Override
     public Set<String> getTrackedInstanceClassNames() {
-        return new HashSet<String>(Arrays.asList(new String[]{PERSISTENCE_UNIT_SERVICE}));
+        return new HashSet<String>(Arrays.asList(new String[]{RESOURCE_CACHE_CLASS}));
     }
 
     @Override

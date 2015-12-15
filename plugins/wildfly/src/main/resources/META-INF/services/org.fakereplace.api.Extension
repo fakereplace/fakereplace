@@ -1,2 +1,2 @@
-org.fakereplace.integration.jbossas.JBossASExtension
-org.fakereplace.integration.jbossas.hibernate5.JBossASHibernate5Extension
+org.fakereplace.integration.wildfly.WildflyExtension
+org.fakereplace.integration.wildfly.hibernate5.WildflyHibernate5Extension

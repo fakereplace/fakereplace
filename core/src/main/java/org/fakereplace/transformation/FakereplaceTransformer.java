@@ -24,6 +24,7 @@ import java.security.ProtectionDomain;
 
 import javassist.bytecode.BadBytecode;
 import javassist.bytecode.ClassFile;
+import javassist.bytecode.DuplicateMemberException;
 
 /**
  * @author Stuart Douglas
@@ -34,6 +35,6 @@ public interface FakereplaceTransformer {
     /**
      * Transforms a class, returning true if any modifications where made
      */
-    boolean transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final ClassFile file) throws IllegalClassFormatException, BadBytecode;
+    boolean transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final ClassFile file) throws IllegalClassFormatException, BadBytecode, DuplicateMemberException;
 
 }

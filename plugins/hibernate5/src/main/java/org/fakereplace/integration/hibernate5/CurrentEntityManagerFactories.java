@@ -31,7 +31,7 @@ import java.util.WeakHashMap;
  */
 public class CurrentEntityManagerFactories {
 
-    private static final Set<FakereplaceEntityManagerFactoryProxy> ENTITY_MANAGERS = Collections.newSetFromMap(Collections.synchronizedMap(new WeakHashMap<FakereplaceEntityManagerFactoryProxy, Boolean>()));
+    private static final Set<FakereplaceEntityManagerFactoryProxy> ENTITY_MANAGERS = Collections.newSetFromMap(Collections.synchronizedMap(new WeakHashMap<>()));
 
     public static void registerEntityManager(FakereplaceEntityManagerFactoryProxy proxy) {
         ENTITY_MANAGERS.add(proxy);
@@ -45,5 +45,9 @@ public class CurrentEntityManagerFactories {
             }
         }
         return ret;
+    }
+
+    public static void removeEmf(FakereplaceEntityManagerFactoryProxy build) {
+        ENTITY_MANAGERS.remove(build);
     }
 }

@@ -18,14 +18,14 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.fakereplace.integration.jbossas.hibernate5;
+package org.fakereplace.integration.wildfly.hibernate5;
 
 import org.fakereplace.hibernate5.HibernateEnvironment;
 
 /**
  * @author Stuart Douglas
  */
-public class JBossASHibernateEnvironment implements HibernateEnvironment {
+public class WildflyHibernateEnvironment implements HibernateEnvironment {
 
     @Override
     public boolean replaceContainerManagedEntityManagers() {

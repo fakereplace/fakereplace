@@ -58,8 +58,7 @@ public class Hibernate5ClassChangeAware implements ClassChangeAware {
         }
 
         for(FakereplaceEntityManagerFactoryProxy entityManager :entityManagers) {
-            if(!entityManager.isContainerManaged() ||
-                    replaceContainerManaged) {
+            if( replaceContainerManaged) {
                 entityManager.reload();
             }
         }

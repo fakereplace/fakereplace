@@ -80,7 +80,7 @@ public class Transformer implements FakereplaceTransformer {
         }
     }
 
-    public boolean transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, ClassFile file) throws IllegalClassFormatException, BadBytecode {
+    public boolean transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, ClassFile file) throws IllegalClassFormatException, BadBytecode, DuplicateMemberException {
         boolean modified = false;
         try {
             if (classBeingRedefined != null) {

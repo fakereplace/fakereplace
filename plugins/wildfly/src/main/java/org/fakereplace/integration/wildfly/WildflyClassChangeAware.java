@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.fakereplace.integration.jbossas;
+package org.fakereplace.integration.wildfly;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -34,9 +34,9 @@ import org.fakereplace.logging.Logger;
 /**
  * @author Stuart Douglas
  */
-public class JBossASClassChangeAware implements ClassChangeAware {
+public class WildflyClassChangeAware implements ClassChangeAware {
 
-    private static final Logger log = Logger.getLogger(JBossASClassChangeAware.class);
+    private static final Logger log = Logger.getLogger(WildflyClassChangeAware.class);
 
     @Override
     public void beforeChange(final List<Class<?>> changed, final List<ClassIdentifier> added, final Attachments attachments) {
@@ -46,11 +46,10 @@ public class JBossASClassChangeAware implements ClassChangeAware {
     @Override
     public void afterChange(List<ChangedClass> changed, List<ClassIdentifier> added, final Attachments attachments) {
         clearJSRResourceCache();
-        //JBossASHibernate5Replacer.handleHibernateReplacement(changed, added);
     }
 
     private void clearJSRResourceCache() {
-        final Set<?> caches = InstanceTracker.get(JBossASExtension.RESOURCE_CACHE_CLASS);
+        final Set<?> caches = InstanceTracker.get(WildflyExtension.RESOURCE_CACHE_CLASS);
         for(Object cache : caches) {
             try {
                 Field field = cache.getClass().getDeclaredField("cache");

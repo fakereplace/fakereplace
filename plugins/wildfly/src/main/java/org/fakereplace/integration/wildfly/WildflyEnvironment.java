@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.fakereplace.integration.jbossas;
+package org.fakereplace.integration.wildfly;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -33,7 +33,7 @@ import java.util.WeakHashMap;
 import org.fakereplace.api.environment.ChangedClasses;
 import org.fakereplace.api.environment.Environment;
 import org.fakereplace.hibernate5.HibernateEnvironment;
-import org.fakereplace.integration.jbossas.hibernate5.JBossASHibernateEnvironment;
+import org.fakereplace.integration.wildfly.hibernate5.WildflyHibernateEnvironment;
 import org.fakereplace.logging.Logger;
 import org.jboss.as.server.CurrentServiceContainer;
 import org.jboss.as.server.deployment.Attachments;
@@ -49,9 +49,9 @@ import org.jboss.vfs.VirtualFile;
 /**
  * @author Stuart Douglas
  */
-public class JBossAsEnvironment implements Environment {
+public class WildflyEnvironment implements Environment {
 
-    private final Logger log = Logger.getLogger(JBossAsEnvironment.class);
+    private final Logger log = Logger.getLogger(WildflyEnvironment.class);
 
     private static final Map<Class<?>, Object> SERVICES;
 
@@ -63,7 +63,7 @@ public class JBossAsEnvironment implements Environment {
 
     static {
         final Map<Class<?>, Object> services = new HashMap<Class<?>, Object>();
-        services.put(HibernateEnvironment.class, new JBossASHibernateEnvironment());
+        services.put(HibernateEnvironment.class, new WildflyHibernateEnvironment());
         SERVICES = Collections.unmodifiableMap(services);
     }
 

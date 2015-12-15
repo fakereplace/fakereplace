@@ -20,63 +20,45 @@
 
 package org.fakereplace.integration.hibernate5;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.Cache;
 import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnitUtil;
 import javax.persistence.Query;
 import javax.persistence.SynchronizationType;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.Metamodel;
-import javax.persistence.spi.PersistenceUnitInfo;
-
-import org.hibernate.SessionFactory;
-import org.hibernate.ejb.HibernateEntityManagerFactory;
-import org.hibernate.ejb.HibernatePersistence;
+import org.hibernate.engine.spi.SessionFactoryImplementor;
+import org.hibernate.jpa.HibernateEntityManagerFactory;
+import org.hibernate.jpa.boot.spi.EntityManagerFactoryBuilder;
 
 /**
  * @author Stuart Douglas
  */
-public class FakereplaceEntityManagerFactoryProxy implements EntityManagerFactory, HibernateEntityManagerFactory {
+public class FakereplaceEntityManagerFactoryProxy implements HibernateEntityManagerFactory {
 
-    private volatile EntityManagerFactory delegate;
+    private volatile HibernateEntityManagerFactory delegate;
+    private final EntityManagerFactoryBuilder builder;
 
-    private final HibernatePersistence hibernatePersistence;
-    private final String persistenceUnitName;
-    private final Map properties;
-    private final PersistenceUnitInfo persistenceUnitInfo;
-
-    public FakereplaceEntityManagerFactoryProxy(final EntityManagerFactory delegate, final HibernatePersistence hibernatePersistence, final PersistenceUnitInfo persistenceUnitInfo, final Map properties) {
+    public FakereplaceEntityManagerFactoryProxy(final HibernateEntityManagerFactory delegate, EntityManagerFactoryBuilder builder) {
         this.delegate = delegate;
-        this.hibernatePersistence = hibernatePersistence;
-        this.properties = properties;
-        this.persistenceUnitInfo = persistenceUnitInfo;
-        this.persistenceUnitName = null;
-        CurrentEntityManagerFactories.registerEntityManager(this);
-    }
-
-    public FakereplaceEntityManagerFactoryProxy(final EntityManagerFactory delegate, final HibernatePersistence hibernatePersistence, final String persistenceUnitName, final Map properties) {
-        this.delegate = delegate;
-        this.hibernatePersistence = hibernatePersistence;
-        this.properties = properties;
-        this.persistenceUnitName = persistenceUnitName;
-        this.persistenceUnitInfo = null;
+        this.builder = builder;
         CurrentEntityManagerFactories.registerEntityManager(this);
     }
 
     public void reload() {
-        delegate.close();
-        if (persistenceUnitInfo != null) {
-            delegate = hibernatePersistence.createContainerEntityManagerFactory(persistenceUnitInfo, properties);
-        } else if (persistenceUnitName != null) {
-            delegate = hibernatePersistence.createEntityManagerFactory(persistenceUnitName, properties);
-        } else {
-            delegate = hibernatePersistence.createEntityManagerFactory(properties);
-        }
+        FakereplaceEntityManagerFactoryProxy build = (FakereplaceEntityManagerFactoryProxy) builder.build();
+        CurrentEntityManagerFactories.removeEmf(build);
+        delegate = build.getDelegate();
+    }
+
+    public HibernateEntityManagerFactory getDelegate() {
+        return delegate;
     }
 
     @Override
@@ -149,15 +131,6 @@ public class FakereplaceEntityManagerFactoryProxy implements EntityManagerFactor
         delegate.addNamedEntityGraph(graphName, entityGraph);
     }
 
-    @Override
-    public SessionFactory getSessionFactory() {
-        return ((HibernateEntityManagerFactory)delegate).getSessionFactory();
-    }
-
-    public boolean isContainerManaged() {
-        return persistenceUnitInfo != null;
-    }
-
     public boolean containsEntity(final Set<Class<?>> classes) {
         for (Class<?> clazz : classes) {
             try {
@@ -168,5 +141,25 @@ public class FakereplaceEntityManagerFactoryProxy implements EntityManagerFactor
             }
         }
         return false;
+    }
+
+    @Override
+    public SessionFactoryImplementor getSessionFactory() {
+        return delegate.getSessionFactory();
+    }
+
+    @Override
+    public <T> List<EntityGraph<? super T>> findEntityGraphsByType(Class<T> entityClass) {
+        return delegate.findEntityGraphsByType(entityClass);
+    }
+
+    @Override
+    public String getEntityManagerFactoryName() {
+        return delegate.getEntityManagerFactoryName();
+    }
+
+    @Override
+    public EntityType getEntityTypeByName(String entityName) {
+        return delegate.getEntityTypeByName(entityName);
     }
 }

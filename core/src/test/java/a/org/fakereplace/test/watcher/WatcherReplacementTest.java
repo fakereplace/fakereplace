@@ -56,7 +56,8 @@ public class WatcherReplacementTest {
                 break;
             }
         } while (start + 5000 > System.currentTimeMillis());
-        Assert.assertEquals("WatcherRep was not replaced", 1, re.value()) ;
+        Assert.assertEquals("WatcherRep was not replaced", 1, re.value());
+        file.delete();
 
     }
 }

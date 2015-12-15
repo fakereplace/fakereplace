@@ -18,7 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.fakereplace.integration.jbossas;
+package org.fakereplace.integration.wildfly.hibernate5;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -29,12 +29,12 @@ import java.util.Set;
 import org.fakereplace.api.Extension;
 import org.fakereplace.transformation.FakereplaceTransformer;
 
-public class JBossASExtension implements Extension {
+public class WildflyHibernate5Extension implements Extension {
 
-    public static final String RESOURCE_CACHE_CLASS = "org.apache.naming.resources.ResourceCache";
+    public static final String PERSISTENCE_UNIT_SERVICE = "org.jboss.as.jpa.service.PersistenceUnitServiceImpl";
+    public static final String PERSISTENCE_PHASE_ONE_SERVICE = "org.jboss.as.jpa.service.PhaseOnePersistenceUnitServiceImpl";
 
-    private static final String CLASS_CHANGE_AWARE = "org.fakereplace.integration.jbossas.JBossASClassChangeAware";
-    public static final String JBOSSAS_ENVIRONMENT = "org.fakereplace.integration.jbossas.JBossAsEnvironment";
+    private static final String CLASS_CHANGE_AWARE = "org.fakereplace.integration.wildfly.hibernate5.WildflyHibernate5ClassChangeAware";
 
     @Override
     public String getClassChangeAwareName() {
@@ -43,22 +43,22 @@ public class JBossASExtension implements Extension {
 
     @Override
     public Set<String> getIntegrationTriggerClassNames() {
-        return Collections.singleton("org.jboss.as.server.ApplicationServerService");
+        return Collections.singleton(PERSISTENCE_UNIT_SERVICE);
     }
 
     @Override
     public String getEnvironment() {
-        return JBOSSAS_ENVIRONMENT;
+        return null;
     }
 
     @Override
     public Set<String> getTrackedInstanceClassNames() {
-        return new HashSet<String>(Arrays.asList(new String[]{RESOURCE_CACHE_CLASS}));
+        return new HashSet<>(Arrays.asList(new String[]{PERSISTENCE_UNIT_SERVICE, PERSISTENCE_PHASE_ONE_SERVICE}));
     }
 
     @Override
     public List<FakereplaceTransformer> getTransformers() {
-        return Collections.emptyList();
+        return Collections.singletonList(new WildflyHibernate5ClassTransformer());
     }
 
 }
