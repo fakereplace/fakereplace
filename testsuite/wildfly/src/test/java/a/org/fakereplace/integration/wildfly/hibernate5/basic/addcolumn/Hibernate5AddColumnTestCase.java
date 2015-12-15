@@ -20,24 +20,20 @@
 
 package a.org.fakereplace.integration.wildfly.hibernate5.basic.addcolumn;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-
 import a.org.fakereplace.testsuite.shared.RemoteClassReplacer;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import java.util.Properties;
 
 /**
@@ -45,7 +41,6 @@ import java.util.Properties;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-@Ignore
 public class Hibernate5AddColumnTestCase {
 
     public static final String DEPLOYMENT_NAME = "Hibernate5AddColumnTestCase.war";

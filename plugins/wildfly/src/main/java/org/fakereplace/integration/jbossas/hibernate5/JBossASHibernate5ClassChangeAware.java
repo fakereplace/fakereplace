@@ -20,18 +20,6 @@
 
 package org.fakereplace.integration.jbossas.hibernate5;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.persistence.Entity;
-
 import org.fakereplace.api.AttachmentKeys;
 import org.fakereplace.api.Attachments;
 import org.fakereplace.api.ChangedClass;
@@ -39,13 +27,18 @@ import org.fakereplace.api.ClassChangeAware;
 import org.fakereplace.classloading.ClassIdentifier;
 import org.fakereplace.data.InstanceTracker;
 import org.jboss.as.jpa.service.PersistenceUnitServiceImpl;
-import org.jboss.as.jpa.spi.PersistenceProviderAdaptor;
-import org.jboss.as.jpa.spi.PersistenceUnitMetadata;
 import org.jboss.as.naming.WritableServiceBasedNamingStore;
 import org.jboss.as.server.CurrentServiceContainer;
-import org.jboss.modules.Module;
-import org.jboss.modules.ModuleIdentifier;
-import org.jboss.modules.ModuleLoadException;
+import org.jipijapa.plugin.spi.PersistenceProviderAdaptor;
+import org.jipijapa.plugin.spi.PersistenceUnitMetadata;
+
+import javax.persistence.Entity;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author Stuart Douglas
@@ -79,11 +72,11 @@ public class JBossASHibernate5ClassChangeAware implements ClassChangeAware {
         //AS7 caches annotations so it does not have to hang onto the Jandex index
         //we need to update this index
         try {
-            final Module hib4Module = Module.getBootModuleLoader().loadModule(ModuleIdentifier.create("org.jboss.as.jpa.hibernate"));
-            final Class<?> annotationScanner = hib4Module.getClassLoader().loadClass("org.jboss.as.jpa.hibernate5.HibernateAnnotationScanner");
-            final Field classesInJar = annotationScanner.getDeclaredField("CLASSES_IN_JAR_CACHE");
-            classesInJar.setAccessible(true);
-            final Map<PersistenceUnitMetadata, Map<URL, Map<Class<? extends Annotation>, Set<Class<?>>>>> cache = (Map<PersistenceUnitMetadata, Map<URL, Map<Class<? extends Annotation>, Set<Class<?>>>>>) classesInJar.get(null);
+            //final Module hib4Module = Module.getBootModuleLoader().loadModule(ModuleIdentifier.create("org.jboss.as.jpa"));
+            //final Class<?> annotationScanner = hib4Module.getClassLoader().loadClass("org.jboss.as.jpa.hibernate5.HibernateAnnotationScanner");
+            //final Field classesInJar = annotationScanner.getDeclaredField("CLASSES_IN_JAR_CACHE");
+            //classesInJar.setAccessible(true);
+            //final Map<PersistenceUnitMetadata, Map<URL, Map<Class<? extends Annotation>, Set<Class<?>>>>> cache = (Map<PersistenceUnitMetadata, Map<URL, Map<Class<? extends Annotation>, Set<Class<?>>>>>) classesInJar.get(null);
 
             final Field puField = PersistenceUnitServiceImpl.class.getDeclaredField("pu");
             puField.setAccessible(true);
@@ -100,7 +93,7 @@ public class JBossASHibernate5ClassChangeAware implements ClassChangeAware {
                     if (adaptor != null && proxy != null) {
                         final PersistenceUnitMetadata pu = (PersistenceUnitMetadata) puField.get(puService);
 
-                        final Map<URL, Map<Class<? extends Annotation>, Set<Class<?>>>> urlAnnotations = cache.get(pu);
+                        //final Map<URL, Map<Class<? extends Annotation>, Set<Class<?>>>> urlAnnotations = cache.get(pu);
 
                         //TODO: handle new entities
 
@@ -124,10 +117,6 @@ public class JBossASHibernate5ClassChangeAware implements ClassChangeAware {
         } catch (NoSuchMethodException e) {
             throw new RuntimeException(e);
         } catch (InvocationTargetException e) {
-            throw new RuntimeException(e);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (ModuleLoadException e) {
             throw new RuntimeException(e);
         }
     }
