@@ -79,5 +79,19 @@ public class ChangeJAXRSPathTestCase {
         Assert.assertEquals(200, response.getStatusLine().getStatusCode());
         result = HttpUtils.getContent(response);
         Assert.assertEquals("sub", result);
+
+        r = new RemoteClassReplacer();
+        r.queueClassForReplacement(HelloWorldResource.class, HelloWorldResource2.class);
+        r.replaceQueuedClasses(DEPLOYMENT_NAME);
+
+        response = client.execute(new HttpGet(url + "hellopath/helloworld"));
+        Assert.assertEquals(200, response.getStatusLine().getStatusCode());
+        result = HttpUtils.getContent(response);
+        Assert.assertEquals("root", result);
+
+        response = client.execute(new HttpGet(url + "hellopath/helloworld/sub"));
+        Assert.assertEquals(200, response.getStatusLine().getStatusCode());
+        result = HttpUtils.getContent(response);
+        Assert.assertEquals("sub", result);
     }
 }

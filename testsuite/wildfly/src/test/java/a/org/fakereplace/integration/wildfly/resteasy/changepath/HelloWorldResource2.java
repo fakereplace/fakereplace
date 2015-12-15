@@ -26,9 +26,16 @@ import javax.ws.rs.Produces;
 
 @Path("helloworld")
 @Produces({"application/xml"})
-public class HelloWorldResource {
+public class HelloWorldResource2 {
+
     @GET
     public String root() {
         return "root";
+    }
+
+    @GET
+    @Path("/sub")
+    public String sub() {
+        return "sub";
     }
 }

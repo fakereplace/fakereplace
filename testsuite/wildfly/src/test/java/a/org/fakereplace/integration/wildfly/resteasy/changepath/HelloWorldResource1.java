@@ -29,7 +29,7 @@ import javax.ws.rs.Produces;
 public class HelloWorldResource1 {
     @GET
     @Path("/sub")
-    public String get() {
+    public String sub() {
         return "sub";
     }
 }
