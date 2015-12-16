@@ -23,7 +23,7 @@ package org.fakereplace.integration.jsf;
 import org.fakereplace.api.Attachments;
 import org.fakereplace.api.ChangedClass;
 import org.fakereplace.api.ClassChangeAware;
-import org.fakereplace.classloading.ClassIdentifier;
+import org.fakereplace.api.NewClassData;
 import org.fakereplace.data.InstanceTracker;
 import org.fakereplace.logging.Logger;
 import org.jboss.el.cache.BeanPropertiesCache;
@@ -53,12 +53,12 @@ public class ClassRedefinitionPlugin implements ClassChangeAware {
 
 
     @Override
-    public void beforeChange(final List<Class<?>> changed, final List<ClassIdentifier> added, final Attachments attachments) {
+    public void beforeChange(final List<Class<?>> changed, final List<NewClassData> added, final Attachments attachments) {
 
     }
 
     @Override
-    public void afterChange(List<ChangedClass> changed, List<ClassIdentifier> added, final Attachments attachments) {
+    public void afterChange(List<ChangedClass> changed, List<NewClassData> added, final Attachments attachments) {
         try {
             Introspector.flushCaches();
         } catch (Exception e) {

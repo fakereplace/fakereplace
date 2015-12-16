@@ -29,7 +29,7 @@ import java.util.Set;
 import org.fakereplace.api.Attachments;
 import org.fakereplace.api.ChangedClass;
 import org.fakereplace.api.ClassChangeAware;
-import org.fakereplace.classloading.ClassIdentifier;
+import org.fakereplace.api.NewClassData;
 import org.fakereplace.data.InstanceTracker;
 
 public class ClassRedefinitionPlugin implements ClassChangeAware {
@@ -57,7 +57,7 @@ public class ClassRedefinitionPlugin implements ClassChangeAware {
 
 
     @Override
-    public void beforeChange(final List<Class<?>> changed, final List<ClassIdentifier> added, final Attachments attachments) {
+    public void beforeChange(final List<Class<?>> changed, final List<NewClassData> added, final Attachments attachments) {
 
     }
 
@@ -65,7 +65,7 @@ public class ClassRedefinitionPlugin implements ClassChangeAware {
      * clear the action and properties caches
      */
     @Override
-    public void afterChange(List<ChangedClass> changed, List<ClassIdentifier> added, final Attachments attachments) {
+    public void afterChange(List<ChangedClass> changed, List<NewClassData> added, final Attachments attachments) {
         Set<?> data = InstanceTracker.get(MetawidgetExtension.BASE_ACTION_STYLE);
         for (Object i : data) {
             clearMap(changed, i, "mActionCache");

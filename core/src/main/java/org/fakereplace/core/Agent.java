@@ -42,6 +42,7 @@ import java.util.Set;
 import javassist.bytecode.ClassFile;
 import org.fakereplace.api.Attachments;
 import org.fakereplace.api.Extension;
+import org.fakereplace.api.NewClassData;
 import org.fakereplace.classloading.ClassIdentifier;
 import org.fakereplace.classloading.ClassLookupManager;
 import org.fakereplace.data.ClassDataStore;
@@ -113,9 +114,10 @@ public class Agent {
 
     public static void redefine(ClassDefinition[] classes, AddedClass[] addedData, final Attachments attachments) throws UnmodifiableClassException, ClassNotFoundException {
         try {
-            final List<ClassIdentifier> addedClass = new ArrayList<>();
+            final List<NewClassData> addedClass = new ArrayList<>();
             for (AddedClass i : addedData) {
-                addedClass.add(i.getClassIdentifier());
+                ClassFile cf = new ClassFile(new DataInputStream(new ByteArrayInputStream(i.getData())));
+                addedClass.add(new NewClassData(i.getClassName(), i.getLoader(), cf));
             }
 
             final List<Class<?>> changedClasses = new ArrayList<>();

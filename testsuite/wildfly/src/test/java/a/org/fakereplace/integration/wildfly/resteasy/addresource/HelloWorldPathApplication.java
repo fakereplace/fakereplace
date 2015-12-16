@@ -17,21 +17,15 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+package a.org.fakereplace.integration.wildfly.resteasy.addresource;
 
-package org.fakereplace.api;
-
-import java.util.List;
+import javax.ws.rs.ApplicationPath;
+import javax.ws.rs.core.Application;
 
 /**
- * interface that should be implemented by classes that with to be notified of
- * class changes.
- *
- *
- * @author stuart
+ * Application with a predefined path
+ *@author Stuart Douglas
  */
-public interface ClassChangeAware {
-
-    void beforeChange(List<Class<?>> changed, List<NewClassData> added, Attachments attachments);
-
-    void afterChange(List<ChangedClass> changed, List<NewClassData> added, Attachments attachments);
+@ApplicationPath("/hellopath")
+public class HelloWorldPathApplication extends Application {
 }

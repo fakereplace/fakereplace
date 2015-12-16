@@ -28,6 +28,7 @@ import java.util.Set;
 import org.fakereplace.api.Attachments;
 import org.fakereplace.api.ChangedClass;
 import org.fakereplace.api.ClassChangeAware;
+import org.fakereplace.api.NewClassData;
 import org.fakereplace.classloading.ClassIdentifier;
 import org.fakereplace.com.google.common.collect.MapMaker;
 
@@ -52,7 +53,7 @@ public class ClassChangeNotifier {
         classChangeAwares.get(aware.getClass().getClassLoader()).add(aware);
     }
 
-     public void afterChange(List<ChangedClass> changed, List<ClassIdentifier> newClasses, final Attachments attachments) {
+     public void afterChange(List<ChangedClass> changed, List<NewClassData> newClasses, final Attachments attachments) {
         if (!NOTIFICATION_IN_PROGRESS.get()) {
             NOTIFICATION_IN_PROGRESS.set(true);
             try {
@@ -72,7 +73,7 @@ public class ClassChangeNotifier {
         }
     }
 
-    public void beforeChange(List<Class<?>> changed, List<ClassIdentifier> newClasses, final Attachments attachments) {
+    public void beforeChange(List<Class<?>> changed, List<NewClassData> newClasses, final Attachments attachments) {
         Class<?>[] a = new Class[0];
         for (Set<ClassChangeAware> c : classChangeAwares.values()) {
             for (ClassChangeAware i : c) {

@@ -18,20 +18,17 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.fakereplace.api;
+package a.org.fakereplace.integration.wildfly.resteasy.addresource;
 
-import java.util.List;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 
-/**
- * interface that should be implemented by classes that with to be notified of
- * class changes.
- *
- *
- * @author stuart
- */
-public interface ClassChangeAware {
-
-    void beforeChange(List<Class<?>> changed, List<NewClassData> added, Attachments attachments);
-
-    void afterChange(List<ChangedClass> changed, List<NewClassData> added, Attachments attachments);
+@Path("helloworld")
+@Produces({"application/xml"})
+public class HelloWorldResource {
+    @GET
+    public String root() {
+        return "root";
+    }
 }

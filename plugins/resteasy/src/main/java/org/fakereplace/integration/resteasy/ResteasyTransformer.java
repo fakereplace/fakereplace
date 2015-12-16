@@ -46,6 +46,8 @@ public class ResteasyTransformer implements FakereplaceTransformer {
     public static final String CONTEXT_PARAMS = "org.fakereplace.integration.resteasy.ResteasyContextParams";
     public static final String SET_TYPE = "Ljava/util/Set;";
     public static final String INIT_METHOD_DESC = "(Ljavax/servlet/ServletContext;Ljava/util/Set;)Ljava/util/Set;";
+    public static final String RESTEASY_FILTER_CONFIG = "org.fakereplace.integration.resteasy.ResteasyFilterConfig";
+    public static final String RESTEASY_SERVLET_CONFIG = "org.fakereplace.integration.resteasy.ResteasyServletConfig";
 
     @Override
     public boolean transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final ClassFile file) throws IllegalClassFormatException, BadBytecode {
@@ -68,7 +70,10 @@ public class ResteasyTransformer implements FakereplaceTransformer {
                             method.getDescriptor().equals("(Ljavax/servlet/FilterConfig;)V")) {
                         final Bytecode b = new Bytecode(file.getConstPool());
                         b.addAload(0);
+                        b.addNew(RESTEASY_FILTER_CONFIG);
+                        b.add(Opcode.DUP);
                         b.addAload(1);
+                        b.addInvokespecial(RESTEASY_FILTER_CONFIG, "<init>", "(Ljavax/servlet/FilterConfig;)V");
                         b.addPutfield(ResteasyExtension.FILTER_DISPATCHER, FIELD_NAME, FILTER_FIELD_TYPE);
                         b.addAload(1);
                         b.addInvokeinterface("javax/servlet/FilterConfig", "getServletContext", "()Ljavax/servlet/ServletContext;", 1);
@@ -98,7 +103,10 @@ public class ResteasyTransformer implements FakereplaceTransformer {
                             method.getDescriptor().equals("(Ljavax/servlet/ServletConfig;)V")) {
                         final Bytecode b = new Bytecode(file.getConstPool());
                         b.addAload(0);
+                        b.addNew(RESTEASY_SERVLET_CONFIG);
+                        b.add(Opcode.DUP);
                         b.addAload(1);
+                        b.addInvokespecial(RESTEASY_SERVLET_CONFIG, "<init>", "(Ljavax/servlet/ServletConfig;)V");
                         b.addPutfield(ResteasyExtension.SERVLET_DISPATCHER, FIELD_NAME, SERVLET_FIELD_TYPE);
                         b.addAload(1);
                         b.addInvokeinterface("javax/servlet/ServletConfig", "getServletContext", "()Ljavax/servlet/ServletContext;", 1);

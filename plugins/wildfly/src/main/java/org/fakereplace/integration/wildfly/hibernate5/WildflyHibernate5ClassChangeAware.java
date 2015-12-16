@@ -20,11 +20,10 @@
 
 package org.fakereplace.integration.wildfly.hibernate5;
 
-import org.fakereplace.api.AttachmentKeys;
 import org.fakereplace.api.Attachments;
 import org.fakereplace.api.ChangedClass;
 import org.fakereplace.api.ClassChangeAware;
-import org.fakereplace.classloading.ClassIdentifier;
+import org.fakereplace.api.NewClassData;
 import org.fakereplace.data.InstanceTracker;
 import org.jboss.as.jpa.service.PersistenceUnitServiceImpl;
 import org.jboss.as.jpa.service.PhaseOnePersistenceUnitServiceImpl;
@@ -36,13 +35,8 @@ import org.jboss.msc.service.ServiceTarget;
 import org.jboss.msc.service.StartContext;
 import org.jboss.msc.service.StartException;
 import org.jboss.msc.service.StopContext;
-import org.jipijapa.plugin.spi.PersistenceProviderAdaptor;
-import org.jipijapa.plugin.spi.PersistenceUnitMetadata;
 
 import javax.persistence.Entity;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -55,12 +49,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class WildflyHibernate5ClassChangeAware implements ClassChangeAware {
 
     @Override
-    public void beforeChange(final List<Class<?>> changed, final List<ClassIdentifier> added, Attachments attachments) {
+    public void beforeChange(final List<Class<?>> changed, final List<NewClassData> added, Attachments attachments) {
 
     }
 
     @Override
-    public void afterChange(final List<ChangedClass> changed, final List<ClassIdentifier> added, Attachments attachments) {
+    public void afterChange(final List<ChangedClass> changed, final List<NewClassData> added, Attachments attachments) {
         final Set<Class<?>> changedClasses = new HashSet<Class<?>>();
         boolean replace = false;
         for (ChangedClass changedClass : changed) {
