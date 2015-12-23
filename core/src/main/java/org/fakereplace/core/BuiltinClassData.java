@@ -27,6 +27,9 @@ public class BuiltinClassData {
     private static final String[] exceptions = {"java/lang/reflect/Proxy",};
 
     public static boolean skipInstrumentation(String className) {
+        if(className == null) {
+            return false;
+        }
         className = className.replace('.', '/');
         for (String s : exceptions) {
             if (className.startsWith(s)) {

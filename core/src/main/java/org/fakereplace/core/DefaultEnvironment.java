@@ -58,6 +58,9 @@ public class DefaultEnvironment implements Environment {
 
     @Override
     public boolean isClassReplaceable(String className, ClassLoader loader) {
+        if(className == null) {
+            return false; //lambdas
+        }
         for (String i : replaceablePackages) {
             if (className.startsWith(i)) {
                 return true;

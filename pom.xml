@@ -33,7 +33,7 @@
         <arquillian.weld-se.version>1.0.0.CR9</arquillian.weld-se.version>
         <fakereplace.version>1.0.0.Alpha3-SNAPSHOT</fakereplace.version>
         <fakereplace.google.collections.version>1.0.1.Final</fakereplace.google.collections.version>
-        <javassist.version>3.19.0-GA</javassist.version>
+        <javassist.version>3.20.0-GA</javassist.version>
         <wildfly.version>9.0.0.Final</wildfly.version>
         <jsf-api.version>1.2_13</jsf-api.version>
         <seam.version>2.1.2</seam.version>
@@ -367,6 +367,12 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>2.18.1</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-shade-plugin</artifactId>
+                    <version>2.3</version>
                 </plugin>
             </plugins>
         </pluginManagement>

@@ -43,7 +43,7 @@ public class ClassLoaderTransformer implements FakereplaceTransformer {
     public boolean transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final ClassFile file) throws IllegalClassFormatException, BadBytecode {
         if (classBeingRedefined != null && ClassLoader.class.isAssignableFrom(classBeingRedefined)) {
             return ClassLoaderInstrumentation.redefineClassLoader(file);
-        } else if (classBeingRedefined == null && className.endsWith("ClassLoader")) {
+        } else if (classBeingRedefined == null && className != null && className.endsWith("ClassLoader")) {
             return ClassLoaderInstrumentation.redefineClassLoader(file);
         }
         return false;

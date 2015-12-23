@@ -49,7 +49,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>1.4</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -98,9 +97,8 @@
                             <goal>test</goal>
                         </goals>
                         <configuration>
-                            <redirectTestOutputToFile>true</redirectTestOutputToFile>
-                            <skipTests>false</skipTests>
                             <skip>false</skip>
+                            <redirectTestOutputToFile>true</redirectTestOutputToFile>
                             <excludes>
                                 <exclude>none</exclude>
                             </excludes>
