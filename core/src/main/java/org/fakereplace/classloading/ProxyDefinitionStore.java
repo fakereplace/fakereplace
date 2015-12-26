@@ -20,12 +20,13 @@
 
 package org.fakereplace.classloading;
 
+import java.util.Collections;
 import java.util.Map;
+import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.fakereplace.core.Constants;
-import org.fakereplace.com.google.common.collect.MapMaker;
-import org.fakereplace.manip.util.MapFunction;
 
 /**
  * This class holds proxy definitions, that are later loaded by the relevant ClassLoaders
@@ -33,17 +34,17 @@ import org.fakereplace.manip.util.MapFunction;
  * @author stuart
  */
 public class ProxyDefinitionStore {
-    private static Map<ClassLoader, Map<String, byte[]>> proxyDefinitions = new MapMaker().weakKeys().makeComputingMap(new MapFunction(false));
+    private static final Map<ClassLoader, Map<String, byte[]>> proxyDefinitions = Collections.synchronizedMap(new WeakHashMap<>());
 
-    private static AtomicLong proxyNo = new AtomicLong();
+    private static final AtomicLong proxyNo = new AtomicLong();
 
     public static byte[] getProxyDefinition(ClassLoader classLoader, String name) {
-        Map<String, byte[]> def = proxyDefinitions.get(classLoader);
+        Map<String, byte[]> def = proxyDefinitions.computeIfAbsent(classLoader, c -> new ConcurrentHashMap<>());
         return def.get(name);
     }
 
     public static void saveProxyDefinition(ClassLoader classLoader, String className, byte[] data) {
-        Map<String, byte[]> def = proxyDefinitions.get(classLoader);
+        Map<String, byte[]> def = proxyDefinitions.computeIfAbsent(classLoader, c -> new ConcurrentHashMap<>());
         def.put(className, data);
     }
 

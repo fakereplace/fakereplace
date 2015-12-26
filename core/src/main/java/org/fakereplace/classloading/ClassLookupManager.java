@@ -21,9 +21,9 @@
 package org.fakereplace.classloading;
 
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.fakereplace.core.Constants;
-import org.fakereplace.com.google.common.collect.MapMaker;
 import org.fakereplace.transformation.MainTransformer;
 
 /**
@@ -32,7 +32,7 @@ import org.fakereplace.transformation.MainTransformer;
  * @author stuart
  */
 public class ClassLookupManager {
-    private static Map<ClassIdentifier, byte[]> classData = new MapMaker().makeMap();
+    private static final Map<ClassIdentifier, byte[]> classData = new ConcurrentHashMap<>();
 
     public static byte[] getClassData(String className, Object cl) {
         //if is possible for this to be called by an object that is not a CL
