@@ -45,7 +45,7 @@ public class MetawidgetExtension implements Extension {
 
     @Override
     public String getClassChangeAwareName() {
-        return "org.fakereplace.integration.metawidget.ClassRedefinitionPlugin";
+        return "org.fakereplace.integration.metawidget.MetawidgetClassChangeAware";
     }
 
     @Override

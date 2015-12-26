@@ -32,8 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.fakereplace.api.AttachmentKeys;
-import org.fakereplace.api.Attachments;
 import org.fakereplace.api.environment.ChangedClasses;
 import org.fakereplace.api.environment.CurrentEnvironment;
 import org.fakereplace.core.Agent;
@@ -149,10 +147,7 @@ public class FakereplaceProtocol {
                 replacedResources.put(resourceName, buffer);
             }
 
-            final Attachments attachments = new Attachments();
-            attachments.set(AttachmentKeys.DEPLOYMENT_NAME, archiveName);
-
-            Agent.redefine(classDefinitions.toArray( new ClassDefinition[classDefinitions.size()]), addedClassList.toArray(new AddedClass[addedClassList.size()]), attachments);
+            Agent.redefine(classDefinitions.toArray( new ClassDefinition[classDefinitions.size()]), addedClassList.toArray(new AddedClass[addedClassList.size()]));
             CurrentEnvironment.getEnvironment().updateResource(archiveName, replacedResources);
             output.writeInt(0);
         } catch (Exception e) {

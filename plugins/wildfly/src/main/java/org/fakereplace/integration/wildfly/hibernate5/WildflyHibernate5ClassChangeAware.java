@@ -20,7 +20,6 @@
 
 package org.fakereplace.integration.wildfly.hibernate5;
 
-import org.fakereplace.api.Attachments;
 import org.fakereplace.api.ChangedClass;
 import org.fakereplace.api.ClassChangeAware;
 import org.fakereplace.api.NewClassData;
@@ -49,12 +48,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class WildflyHibernate5ClassChangeAware implements ClassChangeAware {
 
     @Override
-    public void beforeChange(final List<Class<?>> changed, final List<NewClassData> added, Attachments attachments) {
+    public void beforeChange(final List<Class<?>> changed, final List<NewClassData> added) {
 
     }
 
     @Override
-    public void afterChange(final List<ChangedClass> changed, final List<NewClassData> added, Attachments attachments) {
+    public void afterChange(final List<ChangedClass> changed, final List<NewClassData> added) {
         final Set<Class<?>> changedClasses = new HashSet<Class<?>>();
         boolean replace = false;
         for (ChangedClass changedClass : changed) {

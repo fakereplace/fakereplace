@@ -20,19 +20,18 @@
 
 package org.fakereplace.integration.metawidget;
 
+import org.fakereplace.api.ChangedClass;
+import org.fakereplace.api.ClassChangeAware;
+import org.fakereplace.api.NewClassData;
+import org.fakereplace.data.InstanceTracker;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.fakereplace.api.Attachments;
-import org.fakereplace.api.ChangedClass;
-import org.fakereplace.api.ClassChangeAware;
-import org.fakereplace.api.NewClassData;
-import org.fakereplace.data.InstanceTracker;
-
-public class ClassRedefinitionPlugin implements ClassChangeAware {
+public class MetawidgetClassChangeAware implements ClassChangeAware {
 
     private static Method remove;
 
@@ -57,7 +56,7 @@ public class ClassRedefinitionPlugin implements ClassChangeAware {
 
 
     @Override
-    public void beforeChange(final List<Class<?>> changed, final List<NewClassData> added, final Attachments attachments) {
+    public void beforeChange(final List<Class<?>> changed, final List<NewClassData> added) {
 
     }
 
@@ -65,7 +64,7 @@ public class ClassRedefinitionPlugin implements ClassChangeAware {
      * clear the action and properties caches
      */
     @Override
-    public void afterChange(List<ChangedClass> changed, List<NewClassData> added, final Attachments attachments) {
+    public void afterChange(List<ChangedClass> changed, List<NewClassData> added) {
         Set<?> data = InstanceTracker.get(MetawidgetExtension.BASE_ACTION_STYLE);
         for (Object i : data) {
             clearMap(changed, i, "mActionCache");

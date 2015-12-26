@@ -20,17 +20,15 @@
 
 package org.fakereplace.core;
 
+import org.fakereplace.api.ChangedClass;
+import org.fakereplace.api.ClassChangeAware;
+import org.fakereplace.api.NewClassData;
+import org.fakereplace.com.google.common.collect.MapMaker;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.fakereplace.api.Attachments;
-import org.fakereplace.api.ChangedClass;
-import org.fakereplace.api.ClassChangeAware;
-import org.fakereplace.api.NewClassData;
-import org.fakereplace.classloading.ClassIdentifier;
-import org.fakereplace.com.google.common.collect.MapMaker;
 
 public class ClassChangeNotifier {
 
@@ -53,7 +51,7 @@ public class ClassChangeNotifier {
         classChangeAwares.get(aware.getClass().getClassLoader()).add(aware);
     }
 
-     public void afterChange(List<ChangedClass> changed, List<NewClassData> newClasses, final Attachments attachments) {
+     public void afterChange(List<ChangedClass> changed, List<NewClassData> newClasses) {
         if (!NOTIFICATION_IN_PROGRESS.get()) {
             NOTIFICATION_IN_PROGRESS.set(true);
             try {
@@ -61,7 +59,7 @@ public class ClassChangeNotifier {
                 for (Set<ClassChangeAware> c : classChangeAwares.values()) {
                     for (ClassChangeAware i : c) {
                         try {
-                            i.afterChange(changed, newClasses, attachments);
+                            i.afterChange(changed, newClasses);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -73,12 +71,12 @@ public class ClassChangeNotifier {
         }
     }
 
-    public void beforeChange(List<Class<?>> changed, List<NewClassData> newClasses, final Attachments attachments) {
+    public void beforeChange(List<Class<?>> changed, List<NewClassData> newClasses) {
         Class<?>[] a = new Class[0];
         for (Set<ClassChangeAware> c : classChangeAwares.values()) {
             for (ClassChangeAware i : c) {
                 try {
-                    i.beforeChange(changed, newClasses, attachments);
+                    i.beforeChange(changed, newClasses);
                 } catch (Throwable t) {
                     t.printStackTrace();
                 }

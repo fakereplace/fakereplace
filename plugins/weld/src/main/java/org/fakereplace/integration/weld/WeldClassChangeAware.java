@@ -20,21 +20,19 @@
 
 package org.fakereplace.integration.weld;
 
+import org.fakereplace.api.ChangedClass;
+import org.fakereplace.api.ClassChangeAware;
+import org.fakereplace.api.NewClassData;
+import org.fakereplace.com.google.common.collect.MapMaker;
+import org.fakereplace.integration.weld.javassist.WeldProxyClassLoadingDelegate;
+
+import javax.enterprise.inject.spi.Bean;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import javax.enterprise.inject.spi.Bean;
-
-import org.fakereplace.api.Attachments;
-import org.fakereplace.api.ChangedClass;
-import org.fakereplace.api.ClassChangeAware;
-import org.fakereplace.api.NewClassData;
-import org.fakereplace.com.google.common.collect.MapMaker;
-import org.fakereplace.integration.weld.javassist.WeldProxyClassLoadingDelegate;
 
 public class WeldClassChangeAware implements ClassChangeAware {
 
@@ -44,12 +42,12 @@ public class WeldClassChangeAware implements ClassChangeAware {
     private static final Map<Object, Object> proxyFactories = new MapMaker().weakKeys().makeMap();
 
     @Override
-    public void beforeChange(final List<Class<?>> changed, final List<NewClassData> added, final Attachments attachments) {
+    public void beforeChange(final List<Class<?>> changed, final List<NewClassData> added) {
 
     }
 
     @Override
-    public void afterChange(List<ChangedClass> changed, List<NewClassData> added, final Attachments attachments) {
+    public void afterChange(List<ChangedClass> changed, List<NewClassData> added) {
         ClassLoader oldCl = null;
         WeldProxyClassLoadingDelegate.beginProxyRegeneration();
         try {

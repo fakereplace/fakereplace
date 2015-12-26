@@ -31,7 +31,7 @@ public class JsfExtension implements Extension {
 
     @Override
     public String getClassChangeAwareName() {
-        return "org.fakereplace.integration.jsf.ClassRedefinitionPlugin";
+        return "org.fakereplace.integration.jsf.JSFClassChangeAware";
     }
 
     @Override

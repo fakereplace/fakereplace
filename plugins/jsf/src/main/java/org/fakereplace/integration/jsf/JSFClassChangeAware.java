@@ -20,7 +20,6 @@
 
 package org.fakereplace.integration.jsf;
 
-import org.fakereplace.api.Attachments;
 import org.fakereplace.api.ChangedClass;
 import org.fakereplace.api.ClassChangeAware;
 import org.fakereplace.api.NewClassData;
@@ -36,9 +35,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class ClassRedefinitionPlugin implements ClassChangeAware {
+public class JSFClassChangeAware implements ClassChangeAware {
 
-    private static final Logger log = Logger.getLogger(ClassRedefinitionPlugin.class);
+    private static final Logger log = Logger.getLogger(JSFClassChangeAware.class);
 
     Field getField(Class<?> clazz, String name) throws NoSuchFieldException {
         if (clazz == Object.class)
@@ -53,12 +52,12 @@ public class ClassRedefinitionPlugin implements ClassChangeAware {
 
 
     @Override
-    public void beforeChange(final List<Class<?>> changed, final List<NewClassData> added, final Attachments attachments) {
+    public void beforeChange(final List<Class<?>> changed, final List<NewClassData> added) {
 
     }
 
     @Override
-    public void afterChange(List<ChangedClass> changed, List<NewClassData> added, final Attachments attachments) {
+    public void afterChange(List<ChangedClass> changed, List<NewClassData> addedOO) {
         try {
             Introspector.flushCaches();
         } catch (Exception e) {

@@ -32,7 +32,7 @@ public class SeamExtension implements Extension {
 
     @Override
     public String getClassChangeAwareName() {
-        return "org.fakereplace.integration.seam.ClassRedefinitionPlugin";
+        return "org.fakereplace.integration.seam.Seam2ClassChangeAware";
     }
 
     @Override

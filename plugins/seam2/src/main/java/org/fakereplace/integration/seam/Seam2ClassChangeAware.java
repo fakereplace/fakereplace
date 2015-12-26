@@ -20,19 +20,6 @@
 
 package org.fakereplace.integration.seam;
 
-import java.beans.Introspector;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.Set;
-
-import org.fakereplace.api.Attachments;
 import org.fakereplace.api.ChangedClass;
 import org.fakereplace.api.ClassChangeAware;
 import org.fakereplace.api.NewClassData;
@@ -52,11 +39,23 @@ import org.jboss.seam.util.ProxyFactory;
 import org.jboss.seam.web.AbstractFilter;
 import org.jboss.seam.web.HotDeployFilter;
 
-public class ClassRedefinitionPlugin implements ClassChangeAware {
+import java.beans.Introspector;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.Set;
 
-    private static final Logger log = Logger.getLogger(ClassRedefinitionPlugin.class);
+public class Seam2ClassChangeAware implements ClassChangeAware {
 
-    public ClassRedefinitionPlugin() {
+    private static final Logger log = Logger.getLogger(Seam2ClassChangeAware.class);
+
+    public Seam2ClassChangeAware() {
         try {
             Class<?> proxyFactory = getClass().getClassLoader().loadClass("org.jboss.seam.util.ProxyFactory");
             Field f = proxyFactory.getField("useCache");
@@ -95,7 +94,7 @@ public class ClassRedefinitionPlugin implements ClassChangeAware {
         return getField(clazz.getSuperclass(), name);
     }
 
-    public void beforeChange(List<Class<?>> changed, List<NewClassData> added, final Attachments attachments) {
+    public void beforeChange(List<Class<?>> changed, List<NewClassData> added) {
         disableHotDeployFilter();
         if (!Lifecycle.isApplicationInitialized()) {
             return;
@@ -128,7 +127,7 @@ public class ClassRedefinitionPlugin implements ClassChangeAware {
         }
     }
 
-    public void afterChange(List<ChangedClass> changed, List<NewClassData> added, final Attachments attachments) {
+    public void afterChange(List<ChangedClass> changed, List<NewClassData> added) {
         if (!Lifecycle.isApplicationInitialized()) {
             return;
         }

@@ -20,24 +20,21 @@
 
 package org.fakereplace.integration.resteasy;
 
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.ws.rs.Path;
-
 import javassist.bytecode.AnnotationsAttribute;
-import javassist.bytecode.AttributeInfo;
-import org.fakereplace.api.Attachments;
 import org.fakereplace.api.ChangedClass;
 import org.fakereplace.api.ClassChangeAware;
 import org.fakereplace.api.NewClassData;
 import org.fakereplace.data.InstanceTracker;
 import org.fakereplace.logging.Logger;
+
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import javax.ws.rs.Path;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class ResteasyClassChangeAware implements ClassChangeAware {
 
@@ -45,12 +42,12 @@ public class ResteasyClassChangeAware implements ClassChangeAware {
     final Logger logger = Logger.getLogger(ResteasyClassChangeAware.class);
 
     @Override
-    public void beforeChange(final List<Class<?>> changed, final List<NewClassData> added, final Attachments attachments) {
+    public void beforeChange(final List<Class<?>> changed, final List<NewClassData> added) {
 
     }
 
     @Override
-    public void afterChange(final List<ChangedClass> changed, final List<NewClassData> added, final Attachments attachments) {
+    public void afterChange(final List<ChangedClass> changed, final List<NewClassData> added) {
         boolean requiresRestart = false;
         ClassLoader classLoader = null;
         for (final ChangedClass c : changed) {

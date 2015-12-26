@@ -204,11 +204,6 @@ public class WildflyEnvironment implements Environment {
         }
     }
 
-    @Override
-    public <T> T getService(final Class<T> clazz) {
-        return null;
-    }
-
     private ModuleIdentifier getModuleIdentifier(final ServiceController<DeploymentUnit> deploymentArchive) {
         return deploymentArchive.getValue().getAttachment(Attachments.MODULE_IDENTIFIER);
     }

@@ -20,30 +20,9 @@
 
 package org.fakereplace.core;
 
-import java.beans.Introspector;
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.lang.instrument.ClassDefinition;
-import java.lang.instrument.Instrumentation;
-import java.lang.instrument.UnmodifiableClassException;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ServiceLoader;
-import java.util.Set;
-
 import javassist.bytecode.ClassFile;
-import org.fakereplace.api.Attachments;
 import org.fakereplace.api.Extension;
 import org.fakereplace.api.NewClassData;
-import org.fakereplace.classloading.ClassIdentifier;
 import org.fakereplace.classloading.ClassLookupManager;
 import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.replacement.AddedClass;
@@ -54,6 +33,23 @@ import org.fakereplace.server.FakereplaceServer;
 import org.fakereplace.transformation.ClassLoaderTransformer;
 import org.fakereplace.transformation.MainTransformer;
 import org.fakereplace.transformation.UnmodifiedFileIndex;
+
+import java.beans.Introspector;
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.lang.instrument.ClassDefinition;
+import java.lang.instrument.Instrumentation;
+import java.lang.instrument.UnmodifiableClassException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ServiceLoader;
+import java.util.Set;
 
 /**
  * The agent entry point.
@@ -109,10 +105,6 @@ public class Agent {
     }
 
     public static void redefine(ClassDefinition[] classes, AddedClass[] addedData) throws UnmodifiableClassException, ClassNotFoundException {
-        redefine(classes, addedData, new Attachments());
-    }
-
-    public static void redefine(ClassDefinition[] classes, AddedClass[] addedData, final Attachments attachments) throws UnmodifiableClassException, ClassNotFoundException {
         try {
             final List<NewClassData> addedClass = new ArrayList<>();
             for (AddedClass i : addedData) {
@@ -128,7 +120,7 @@ public class Agent {
                 ClassDataStore.instance().markClassReplaced(i.getClass());
             }
             // notify the integration classes that stuff is about to change
-            ClassChangeNotifier.instance().beforeChange(Collections.unmodifiableList(changedClasses), Collections.unmodifiableList(addedClass), attachments);
+            ClassChangeNotifier.instance().beforeChange(Collections.unmodifiableList(changedClasses), Collections.unmodifiableList(addedClass));
             CurrentChangedClasses.prepareClasses(changedClasses);
             // re-write the classes so their field
             ReplacementResult result = ClassRedefiner.rewriteLoadedClasses(classes);
@@ -141,7 +133,7 @@ public class Agent {
             }
             Introspector.flushCaches();
 
-            ClassChangeNotifier.instance().afterChange(Collections.unmodifiableList(CurrentChangedClasses.getChanged()), Collections.unmodifiableList(addedClass), attachments);
+            ClassChangeNotifier.instance().afterChange(Collections.unmodifiableList(CurrentChangedClasses.getChanged()), Collections.unmodifiableList(addedClass));
         } catch (Throwable e) {
             try {
                 // dump the classes to /tmp so we can look at them

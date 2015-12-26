@@ -19,17 +19,16 @@
  */
 package org.fakereplace.integration.wildfly;
 
-import java.lang.reflect.Array;
-import java.lang.reflect.Field;
-import java.util.List;
-import java.util.Set;
-
-import org.fakereplace.api.Attachments;
 import org.fakereplace.api.ChangedClass;
 import org.fakereplace.api.ClassChangeAware;
 import org.fakereplace.api.NewClassData;
 import org.fakereplace.data.InstanceTracker;
 import org.fakereplace.logging.Logger;
+
+import java.lang.reflect.Array;
+import java.lang.reflect.Field;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author Stuart Douglas
@@ -39,12 +38,12 @@ public class WildflyClassChangeAware implements ClassChangeAware {
     private static final Logger log = Logger.getLogger(WildflyClassChangeAware.class);
 
     @Override
-    public void beforeChange(final List<Class<?>> changed, final List<NewClassData> added, final Attachments attachments) {
+    public void beforeChange(final List<Class<?>> changed, final List<NewClassData> added) {
 
     }
 
     @Override
-    public void afterChange(List<ChangedClass> changed, List<NewClassData> added, final Attachments attachments) {
+    public void afterChange(List<ChangedClass> changed, List<NewClassData> added) {
         clearJSRResourceCache();
     }
 

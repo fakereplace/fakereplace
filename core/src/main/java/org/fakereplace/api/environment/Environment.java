@@ -37,6 +37,4 @@ public interface Environment {
 
     void updateResource(final String archiveName, Map<String, byte[]> replacedResources);
 
-    <T> T getService(Class<T> clazz);
-
 }
