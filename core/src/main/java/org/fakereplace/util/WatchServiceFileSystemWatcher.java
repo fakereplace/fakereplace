@@ -103,24 +103,28 @@ public class WatchServiceFileSystemWatcher implements Runnable, AutoCloseable {
                             //now we need to prune the results, to remove duplicates
                             //e.g. if the file is modified after creation we only want to
                             //show the create event
+                            final List<FileChangeEvent> newEvents = new ArrayList<>();
                             Iterator<FileChangeEvent> it = results.iterator();
                             while (it.hasNext()) {
                                 FileChangeEvent event = it.next();
+                                boolean added = addedFiles.contains(event.getFile());
+                                boolean deleted = deletedFiles.contains(event.getFile());
                                 if (event.getType() == FileChangeEvent.Type.MODIFIED) {
-                                    if (addedFiles.contains(event.getFile()) ||
-                                            deletedFiles.contains(event.getFile())) {
+                                    if (added || deleted) {
                                         it.remove();
                                     }
                                 } else if (event.getType() == FileChangeEvent.Type.ADDED) {
-                                    if (deletedFiles.contains(event.getFile())) {
+                                    if (deleted) {
                                         it.remove();
+                                        newEvents.add(new FileChangeEvent(event.getFile(), FileChangeEvent.Type.MODIFIED)); //if it was both deleted and added it was modified
                                     }
                                 } else if (event.getType() == FileChangeEvent.Type.REMOVED) {
-                                    if (addedFiles.contains(event.getFile())) {
+                                    if (added) {
                                         it.remove();
                                     }
                                 }
                             }
+                            results.addAll(newEvents);
 
                             if (!results.isEmpty()) {
                                 for (FileChangeCallback callback : pathData.callbacks) {
