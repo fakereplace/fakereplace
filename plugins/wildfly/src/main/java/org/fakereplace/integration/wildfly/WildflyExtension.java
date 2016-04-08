@@ -43,7 +43,7 @@ public class WildflyExtension implements Extension {
 
     @Override
     public Set<String> getIntegrationTriggerClassNames() {
-        return Collections.singleton("org.jboss.as.server.ApplicationServerService");
+        return new HashSet<>(Arrays.asList("org.jboss.as.server.ApplicationServerService", "org.wildfly.extension.undertow.deployment.UndertowDeploymentInfoService"));
     }
 
     @Override
@@ -58,7 +58,7 @@ public class WildflyExtension implements Extension {
 
     @Override
     public List<FakereplaceTransformer> getTransformers() {
-        return Collections.emptyList();
+        return Collections.singletonList(new WildflyClassTransformer());
     }
 
 }
