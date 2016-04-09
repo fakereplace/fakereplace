@@ -3,6 +3,7 @@ package org.fakereplace.integration.wildfly.autoupdate;
 import org.fakereplace.core.Agent;
 import org.fakereplace.replacement.AddedClass;
 import org.jboss.modules.Module;
+import org.jboss.modules.ModuleClassLoader;
 
 import java.io.IOException;
 import java.lang.instrument.ClassDefinition;
@@ -13,7 +14,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,22 +26,28 @@ import java.util.stream.Collectors;
  */
 public class WildflyAutoUpdate {
 
-    private static final List<Path> FILE_PATHS;
 
-    static {
-        String path = System.getProperty("fakereplace-paths");
-        if (path == null) {
-            FILE_PATHS = Collections.emptyList();
-        } else {
-            FILE_PATHS = Arrays.asList(path.split(",")).stream().map((s) -> Paths.get(s)).collect(Collectors.toList());
-        }
-    }
+    public static final String FAKEREPLACE_SOURCE_PATHS = "fakereplace.source-paths.";
+
 
     private static final Map<String, Long> replacedTimestamps = new HashMap<>();
+    public static final String DEPLOYMENT = "deployment.";
 
-    public static synchronized void runUpdate(ClassLoader classLoader) {
+    public static synchronized void runUpdate(ModuleClassLoader classLoader) {
+
+        String moduleName = classLoader.getModule().getIdentifier().getName();
+        if (moduleName.startsWith(DEPLOYMENT)) {
+            moduleName = moduleName.substring(DEPLOYMENT.length());
+        }
+
+        String sourcePaths = System.getProperty(FAKEREPLACE_SOURCE_PATHS + moduleName);
+        if (sourcePaths == null) {
+            return;
+        }
+        List<Path> paths = Arrays.asList(sourcePaths.split(",")).stream().map((s) -> Paths.get(s)).collect(Collectors.toList());
+
         try {
-            for (Path base : FILE_PATHS) {
+            for (Path base : paths) {
                 final Map<String, Long> timestamps = new HashMap<>();
                 scan(base, base, timestamps);
                 List<String> toUpdate = new ArrayList<>();
@@ -52,7 +58,7 @@ public class WildflyAutoUpdate {
                     if (name.endsWith(".java")) {
                         String baseName = name.substring(0, name.length() - 5);
                         Long last = replacedTimestamps.get(baseName);
-                        if(last != null) {
+                        if (last != null) {
                             if (last < entry.getValue()) {
                                 toUpdate.add(baseName);
                                 replacedTimestamps.put(baseName, entry.getValue());
@@ -77,21 +83,21 @@ public class WildflyAutoUpdate {
                     }
                 }
                 if (!toUpdate.isEmpty()) {
+                    System.out.println("Fakereplace detected the following source files have been changed: " + toUpdate);
                     ClassLoaderCompiler compiler = new ClassLoaderCompiler(classLoader, base, toUpdate);
                     compiler.compile();
                     AddedClass[] addedClass = new AddedClass[added.size()];
-                    for(int i = 0; i < added.size(); ++i) {
+                    for (int i = 0; i < added.size(); ++i) {
                         String className = added.get(i);
                         addedClass[i] = new AddedClass(className, compiler.getOutput().get(className).toByteArray(), classLoader);
                     }
                     ClassDefinition[] classDefinition = new ClassDefinition[replace.size()];
-                    for(int i = 0; i < replace.size(); ++i) {
+                    for (int i = 0; i < replace.size(); ++i) {
                         String className = replace.get(i);
                         classDefinition[i] = new ClassDefinition(classLoader.loadClass(className.replace("/", ".")), compiler.getOutput().get(className).toByteArray());
                     }
                     Agent.redefine(classDefinition, addedClass);
                 }
-                System.out.println("TO UPDATE " + toUpdate);
             }
         } catch (Exception e) {
             System.err.println("Check for updated classes failed");

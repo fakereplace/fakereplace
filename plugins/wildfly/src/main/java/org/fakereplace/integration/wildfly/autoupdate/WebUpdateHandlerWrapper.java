@@ -3,6 +3,7 @@ package org.fakereplace.integration.wildfly.autoupdate;
 import io.undertow.server.HandlerWrapper;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
+import org.jboss.modules.ModuleClassLoader;
 
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -33,7 +34,10 @@ public class WebUpdateHandlerWrapper implements HandlerWrapper {
             long next = nextUpdate.get();
             if (System.currentTimeMillis() > next) {
                 if (nextUpdate.compareAndSet(next, System.currentTimeMillis() + UPDATE_INTERVAL)) {
-                    WildflyAutoUpdate.runUpdate(Thread.currentThread().getContextClassLoader());
+                    ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+                    if(contextClassLoader instanceof ModuleClassLoader) {
+                        WildflyAutoUpdate.runUpdate((ModuleClassLoader) contextClassLoader);
+                    }
                 }
             }
 
