@@ -23,6 +23,7 @@ public class ClassLoaderCompilerTestCase {
             compiler.compile();
         } catch (Throwable e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 

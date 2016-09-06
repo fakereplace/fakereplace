@@ -37,6 +37,7 @@ import javassist.bytecode.BadBytecode;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.Descriptor;
 import javassist.bytecode.MethodInfo;
+import org.fakereplace.api.ChangedClass;
 import org.fakereplace.core.AgentOption;
 import org.fakereplace.core.AgentOptions;
 import org.fakereplace.core.Transformer;
@@ -44,12 +45,13 @@ import org.fakereplace.data.BaseClassData;
 import org.fakereplace.data.ClassDataBuilder;
 import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.logging.Logger;
+import org.fakereplace.replacement.notification.ChangedClassImpl;
 
 public class ClassRedefiner {
 
     private static final Logger log = new Logger(ClassRedefiner.class);
 
-    public static ReplacementResult rewriteLoadedClasses(ClassDefinition... classDefinitions) {
+    public static ReplacementResult rewriteLoadedClasses(ClassDefinition[] classDefinitions, ChangedClassImpl[] changedClassArray) {
         Set<ClassDefinition> defs = new HashSet<ClassDefinition>();
         Set<Class<?>> changedClasses = new HashSet<Class<?>>();
         Set<Class<?>> classesToReload = new HashSet<Class<?>>();
@@ -57,7 +59,7 @@ public class ClassRedefiner {
             try {
                 ClassDefinition d = classDefinitions[i];
                 ClassFile file = new ClassFile(new DataInputStream(new ByteArrayInputStream(d.getDefinitionClassFile())));
-                modifyReloadedClass(file, d.getDefinitionClass().getClassLoader(), d.getDefinitionClass(), classesToReload);
+                modifyReloadedClass(file, d.getDefinitionClass().getClassLoader(), d.getDefinitionClass(), classesToReload, changedClassArray[i]);
                 ByteArrayOutputStream bs = new ByteArrayOutputStream();
                 file.write(new DataOutputStream(bs));
                 changedClasses.add(d.getDefinitionClass());
@@ -77,7 +79,7 @@ public class ClassRedefiner {
 
     }
 
-    public static void modifyReloadedClass(ClassFile file, ClassLoader loader, Class<?> oldClass, Set<Class<?>> classToReload) {
+    public static void modifyReloadedClass(ClassFile file, ClassLoader loader, Class<?> oldClass, Set<Class<?>> classToReload, ChangedClassImpl changedClass) {
         BaseClassData b = ClassDataStore.instance().getBaseClassData(loader, Descriptor.toJvmName(file.getName()));
         if (b == null) {
             throw new RuntimeException("Could not find BaseClassData for " + file.getName());
@@ -88,7 +90,7 @@ public class ClassRedefiner {
         }
 
         ClassDataBuilder builder = new ClassDataBuilder(b);
-        AnnotationReplacer.processAnnotations(file, oldClass);
+        AnnotationReplacer.processAnnotations(file, oldClass, changedClass);
         FieldReplacer.handleFieldReplacement(file, loader, oldClass, builder);
         MethodReplacer.handleMethodReplacement(file, loader, oldClass, builder, classToReload);
         try {

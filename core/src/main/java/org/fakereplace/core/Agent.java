@@ -28,7 +28,7 @@ import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.replacement.AddedClass;
 import org.fakereplace.replacement.ClassRedefiner;
 import org.fakereplace.replacement.ReplacementResult;
-import org.fakereplace.replacement.notification.CurrentChangedClasses;
+import org.fakereplace.replacement.notification.ChangedClassImpl;
 import org.fakereplace.server.FakereplaceServer;
 import org.fakereplace.transformation.ClassLoaderTransformer;
 import org.fakereplace.transformation.MainTransformer;
@@ -44,6 +44,7 @@ import java.lang.instrument.ClassDefinition;
 import java.lang.instrument.Instrumentation;
 import java.lang.instrument.UnmodifiableClassException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -113,15 +114,17 @@ public class Agent {
             }
 
             final List<Class<?>> changedClasses = new ArrayList<>();
-            for (ClassDefinition i : classes) {
-
+            ChangedClassImpl[] changedClassList = new ChangedClassImpl[classes.length];
+            for (int j = 0; j < classes.length; ++j) {
+                ClassDefinition i = classes[j];
                 System.out.println("Fakereplace is replacing class " + i.getDefinitionClass());
                 changedClasses.add(i.getDefinitionClass());
                 ClassDataStore.instance().markClassReplaced(i.getClass());
+                changedClassList[j] = new ChangedClassImpl(i.getDefinitionClass());
             }
-            CurrentChangedClasses.prepareClasses(changedClasses);
+
             // re-write the classes so their field
-            ReplacementResult result = ClassRedefiner.rewriteLoadedClasses(classes);
+            ReplacementResult result = ClassRedefiner.rewriteLoadedClasses(classes, changedClassList);
             for (AddedClass c : addedData) {
                 ClassLookupManager.addClassInfo(c.getClassName(), c.getLoader(), c.getData());
             }
@@ -131,7 +134,7 @@ public class Agent {
             }
             Introspector.flushCaches();
 
-            ClassChangeNotifier.instance().afterChange(Collections.unmodifiableList(CurrentChangedClasses.getChanged()), Collections.unmodifiableList(addedClass));
+            ClassChangeNotifier.instance().afterChange(Collections.unmodifiableList(Arrays.asList(changedClassList)), Collections.unmodifiableList(addedClass));
         } catch (Throwable e) {
             try {
                 // dump the classes to /tmp so we can look at them

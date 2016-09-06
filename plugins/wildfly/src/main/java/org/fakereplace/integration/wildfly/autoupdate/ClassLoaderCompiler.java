@@ -241,44 +241,48 @@ public class ClassLoaderCompiler {
                         e.printStackTrace();
                     }
                 } else {
-                    URL res = classLoader.getResource(packageName.replace(".", "/"));
-                    if (res != null) {
-                        if (res.getProtocol().equals("file")) {
-                            Path dirPath = Paths.get(res.getFile());
-                            listDir(packageName, dirPath, recurse, ret);
-                        } else if (res.getProtocol().equals("jar")) {
-                            JarURLConnection connection = (JarURLConnection) res.openConnection();
-                            Enumeration<JarEntry> entryEnum = connection.getJarFile().entries();
-                            while (entryEnum.hasMoreElements()) {
-                                JarEntry entry = entryEnum.nextElement();
-                                String name = entry.getName();
-                                if (name.endsWith(".class") && !entry.isDirectory()) {
-                                    if (name.startsWith(packageName.replace(".", "/"))) {
-                                        String rem = name.substring(packageName.length());
-                                        if (rem.startsWith("/")) {
-                                            rem = rem.substring(1);
-                                        }
-                                        if (!recurse) {
-                                            if (rem.contains("/")) {
-                                                continue;
+                    Enumeration<URL> urls = classLoader.getResources(packageName.replace(".", "/"));
+                    while (urls.hasMoreElements()) {
+                        URL res = urls.nextElement();
+
+                        if (res != null) {
+                            if (res.getProtocol().equals("file")) {
+                                Path dirPath = Paths.get(res.getFile());
+                                listDir(packageName, dirPath, recurse, ret);
+                            } else if (res.getProtocol().equals("jar")) {
+                                JarURLConnection connection = (JarURLConnection) res.openConnection();
+                                Enumeration<JarEntry> entryEnum = connection.getJarFile().entries();
+                                while (entryEnum.hasMoreElements()) {
+                                    JarEntry entry = entryEnum.nextElement();
+                                    String name = entry.getName();
+                                    if (name.endsWith(".class") && !entry.isDirectory()) {
+                                        if (name.startsWith(packageName.replace(".", "/"))) {
+                                            String rem = name.substring(packageName.length());
+                                            if (rem.startsWith("/")) {
+                                                rem = rem.substring(1);
+                                            }
+                                            if (!recurse) {
+                                                if (rem.contains("/")) {
+                                                    continue;
+                                                }
+                                            }
+                                            String binaryName = entry.getName().replace("/", ".").substring(0, entry.getName().length() - 6);
+                                            try {
+                                                URI uri = new URI(res.toExternalForm() + "/" + rem);
+                                                ret.add(new ZipJavaFileObject(org.fakereplace.util.FileReader.readFileBytes(uri.toURL().openStream()), binaryName, uri));
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
                                             }
                                         }
-                                        String binaryName = entry.getName().replace("/", ".").substring(0, entry.getName().length() - 6);
-                                        try {
-                                            URI uri = new URI(res.toExternalForm() + "/" + rem);
-                                            ret.add(new ZipJavaFileObject(org.fakereplace.util.FileReader.readFileBytes(uri.toURL().openStream()), binaryName, uri));
-                                        } catch (Exception e) {
-                                            e.printStackTrace();
-                                        }
-                                    }
 
+                                    }
                                 }
+                            } else {
+                                System.err.println("Could not find package " + packageName + " in " + classLoader + " unknown protocol " + res.getProtocol());
                             }
                         } else {
-                            System.err.println("Could not find package " + packageName + " in " + classLoader + " unknown protocol " + res.getProtocol());
+                            return standardJavaFileManager.list(location, packageName, kinds, recurse);
                         }
-                    } else {
-                        return standardJavaFileManager.list(location, packageName, kinds, recurse);
                     }
                 }
             }
