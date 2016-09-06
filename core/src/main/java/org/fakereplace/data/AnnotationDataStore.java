@@ -32,6 +32,7 @@ import org.fakereplace.api.ChangeType;
 import org.fakereplace.replacement.notification.ChangedAnnotationImpl;
 import org.fakereplace.classloading.ProxyDefinitionStore;
 import org.fakereplace.replacement.notification.ChangedClassImpl;
+import org.fakereplace.replacement.notification.CurrentChangedClasses;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -209,8 +210,9 @@ public class AnnotationDataStore {
         }
     }
 
-    public static void recordClassAnnotations(Class<?> clazz, AnnotationsAttribute annotations, ChangedClassImpl changedClass) {
+    public static void recordClassAnnotations(Class<?> clazz, AnnotationsAttribute annotations) {
         // no annotations
+        ChangedClassImpl changedClass = CurrentChangedClasses.get(clazz);
         if (annotations == null) {
             Annotation[] ans = new Annotation[0];
             classAnnotations.put(clazz, ans);

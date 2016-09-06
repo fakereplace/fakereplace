@@ -29,10 +29,8 @@ import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.ParameterAnnotationsAttribute;
-import org.fakereplace.api.ChangedClass;
 import org.fakereplace.data.AnnotationBuilder;
 import org.fakereplace.data.AnnotationDataStore;
-import org.fakereplace.replacement.notification.ChangedClassImpl;
 
 public class AnnotationReplacer {
 
@@ -43,10 +41,10 @@ public class AnnotationReplacer {
      * @param file
      * @param old
      */
-    public static void processAnnotations(ClassFile file, Class old, ChangedClassImpl changedClass) {
+    public static void processAnnotations(ClassFile file, Class old) {
 
         AnnotationsAttribute newAns = (AnnotationsAttribute) file.getAttribute(AnnotationsAttribute.visibleTag);
-        AnnotationDataStore.recordClassAnnotations(old, newAns, changedClass);
+        AnnotationDataStore.recordClassAnnotations(old, newAns);
         file.addAttribute(duplicateAnnotationsAttribute(file.getConstPool(), old));
     }
 
