@@ -124,12 +124,6 @@
 
             <dependency>
                 <groupId>org.fakereplace</groupId>
-                <artifactId>fakereplace-seam2</artifactId>
-                <version>${fakereplace.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.fakereplace</groupId>
                 <artifactId>fakereplace-jsf</artifactId>
                 <version>${fakereplace.version}</version>
             </dependency>
