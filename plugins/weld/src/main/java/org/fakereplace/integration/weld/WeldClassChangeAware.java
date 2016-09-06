@@ -42,11 +42,6 @@ public class WeldClassChangeAware implements ClassChangeAware {
     private static final Map<Object, Object> proxyFactories = new MapMaker().weakKeys().makeMap();
 
     @Override
-    public void beforeChange(final List<Class<?>> changed, final List<NewClassData> added) {
-
-    }
-
-    @Override
     public void afterChange(List<ChangedClass> changed, List<NewClassData> added) {
         ClassLoader oldCl = null;
         WeldProxyClassLoadingDelegate.beginProxyRegeneration();

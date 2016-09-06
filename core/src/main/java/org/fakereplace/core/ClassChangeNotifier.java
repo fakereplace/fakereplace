@@ -71,19 +71,6 @@ public class ClassChangeNotifier {
         }
     }
 
-    public void beforeChange(List<Class<?>> changed, List<NewClassData> newClasses) {
-        Class<?>[] a = new Class[0];
-        for (Set<ClassChangeAware> c : classChangeAwares.values()) {
-            for (ClassChangeAware i : c) {
-                try {
-                    i.beforeChange(changed, newClasses);
-                } catch (Throwable t) {
-                    t.printStackTrace();
-                }
-            }
-        }
-    }
-
     public static ClassChangeNotifier instance() {
         return INSTANCE;
     }

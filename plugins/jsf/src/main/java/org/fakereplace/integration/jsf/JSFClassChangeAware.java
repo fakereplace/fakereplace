@@ -50,12 +50,6 @@ public class JSFClassChangeAware implements ClassChangeAware {
         return getField(clazz.getSuperclass(), name);
     }
 
-
-    @Override
-    public void beforeChange(final List<Class<?>> changed, final List<NewClassData> added) {
-
-    }
-
     @Override
     public void afterChange(List<ChangedClass> changed, List<NewClassData> addedOO) {
         try {

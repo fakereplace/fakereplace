@@ -48,11 +48,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class WildflyHibernate5ClassChangeAware implements ClassChangeAware {
 
     @Override
-    public void beforeChange(final List<Class<?>> changed, final List<NewClassData> added) {
-
-    }
-
-    @Override
     public void afterChange(final List<ChangedClass> changed, final List<NewClassData> added) {
         final Set<Class<?>> changedClasses = new HashSet<Class<?>>();
         boolean replace = false;

@@ -38,11 +38,6 @@ public class WildflyClassChangeAware implements ClassChangeAware {
     private static final Logger log = Logger.getLogger(WildflyClassChangeAware.class);
 
     @Override
-    public void beforeChange(final List<Class<?>> changed, final List<NewClassData> added) {
-
-    }
-
-    @Override
     public void afterChange(List<ChangedClass> changed, List<NewClassData> added) {
         clearJSRResourceCache();
     }

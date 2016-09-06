@@ -119,8 +119,6 @@ public class Agent {
                 changedClasses.add(i.getDefinitionClass());
                 ClassDataStore.instance().markClassReplaced(i.getClass());
             }
-            // notify the integration classes that stuff is about to change
-            ClassChangeNotifier.instance().beforeChange(Collections.unmodifiableList(changedClasses), Collections.unmodifiableList(addedClass));
             CurrentChangedClasses.prepareClasses(changedClasses);
             // re-write the classes so their field
             ReplacementResult result = ClassRedefiner.rewriteLoadedClasses(classes);

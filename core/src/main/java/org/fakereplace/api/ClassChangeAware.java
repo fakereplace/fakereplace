@@ -31,7 +31,5 @@ import java.util.List;
  */
 public interface ClassChangeAware {
 
-    void beforeChange(List<Class<?>> changed, List<NewClassData> added);
-
     void afterChange(List<ChangedClass> changed, List<NewClassData> added);
 }

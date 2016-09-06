@@ -54,12 +54,6 @@ public class MetawidgetClassChangeAware implements ClassChangeAware {
         return getField(clazz.getSuperclass(), name);
     }
 
-
-    @Override
-    public void beforeChange(final List<Class<?>> changed, final List<NewClassData> added) {
-
-    }
-
     /**
      * clear the action and properties caches
      */

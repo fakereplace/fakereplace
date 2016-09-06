@@ -42,11 +42,6 @@ public class ResteasyClassChangeAware implements ClassChangeAware {
     final Logger logger = Logger.getLogger(ResteasyClassChangeAware.class);
 
     @Override
-    public void beforeChange(final List<Class<?>> changed, final List<NewClassData> added) {
-
-    }
-
-    @Override
     public void afterChange(final List<ChangedClass> changed, final List<NewClassData> added) {
         boolean requiresRestart = false;
         ClassLoader classLoader = null;
