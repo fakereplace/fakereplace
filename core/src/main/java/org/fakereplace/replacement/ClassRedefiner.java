@@ -88,7 +88,6 @@ public class ClassRedefiner {
         }
 
         ClassDataBuilder builder = new ClassDataBuilder(b);
-        AnnotationReplacer.processAnnotations(file, oldClass);
         FieldReplacer.handleFieldReplacement(file, loader, oldClass, builder);
         MethodReplacer.handleMethodReplacement(file, loader, oldClass, builder, classToReload);
         try {

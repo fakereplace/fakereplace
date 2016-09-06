@@ -21,32 +21,23 @@
 package org.fakereplace.replacement;
 
 import java.lang.annotation.Annotation;
+import java.lang.instrument.IllegalClassFormatException;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.security.ProtectionDomain;
 
 import javassist.bytecode.AnnotationsAttribute;
+import javassist.bytecode.BadBytecode;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.ConstPool;
+import javassist.bytecode.DuplicateMemberException;
 import javassist.bytecode.ParameterAnnotationsAttribute;
 import org.fakereplace.data.AnnotationBuilder;
 import org.fakereplace.data.AnnotationDataStore;
+import org.fakereplace.transformation.FakereplaceTransformer;
 
-public class AnnotationReplacer {
-
-    /**
-     * Stores class file annotations changes and reverts the file annotations to
-     * the old annotations
-     *
-     * @param file
-     * @param old
-     */
-    public static void processAnnotations(ClassFile file, Class old) {
-
-        AnnotationsAttribute newAns = (AnnotationsAttribute) file.getAttribute(AnnotationsAttribute.visibleTag);
-        AnnotationDataStore.recordClassAnnotations(old, newAns);
-        file.addAttribute(duplicateAnnotationsAttribute(file.getConstPool(), old));
-    }
+public class AnnotationReplacer implements FakereplaceTransformer {
 
     public static AnnotationsAttribute duplicateAnnotationsAttribute(ConstPool cp, AnnotatedElement element) {
         AnnotationsAttribute oldAns = new AnnotationsAttribute(cp, AnnotationsAttribute.visibleTag);
@@ -80,5 +71,15 @@ public class AnnotationReplacer {
         }
         oldAns.setAnnotations(anAr);
         return oldAns;
+    }
+
+    @Override
+    public boolean transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, ClassFile file) throws IllegalClassFormatException, BadBytecode, DuplicateMemberException {
+        if(classBeingRedefined != null) {
+            AnnotationsAttribute newAns = (AnnotationsAttribute) file.getAttribute(AnnotationsAttribute.visibleTag);
+            AnnotationDataStore.recordClassAnnotations(classBeingRedefined, newAns);
+            file.addAttribute(duplicateAnnotationsAttribute(file.getConstPool(), classBeingRedefined));
+        }
+        return false;
     }
 }

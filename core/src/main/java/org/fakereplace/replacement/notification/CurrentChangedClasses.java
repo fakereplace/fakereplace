@@ -39,7 +39,11 @@ public class CurrentChangedClasses {
     private static final ThreadLocal<Map<Class<?>, ChangedClassImpl>> CHANGED = new ThreadLocal<Map<Class<?>, ChangedClassImpl>>();
 
     public static ChangedClassImpl get(final Class<?> clazz) {
-        return CHANGED.get().get(clazz);
+        Map<Class<?>, ChangedClassImpl> currentchanged = CHANGED.get();
+        if(currentchanged == null) {
+            return null;
+        }
+        return currentchanged.get(clazz);
     }
 
     public static void prepareClasses(final List<Class<?>> changed) {
