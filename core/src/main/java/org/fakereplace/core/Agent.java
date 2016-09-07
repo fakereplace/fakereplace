@@ -28,6 +28,7 @@ import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.replacement.AddedClass;
 import org.fakereplace.replacement.AnnotationTransformer;
 import org.fakereplace.replacement.ClassRedefiner;
+import org.fakereplace.replacement.FieldReplacementTransformer;
 import org.fakereplace.replacement.ReplacementResult;
 import org.fakereplace.replacement.notification.CurrentChangedClasses;
 import org.fakereplace.server.FakereplaceServer;
@@ -96,8 +97,9 @@ public class Agent {
         } catch (UnmodifiableClassException e) {
             e.printStackTrace();
         }
-        mainTransformer.addTransformer(new Transformer(extension));
         mainTransformer.addTransformer(new AnnotationTransformer());
+        mainTransformer.addTransformer(new FieldReplacementTransformer());
+        mainTransformer.addTransformer(new Transformer(extension));
 
         //start the server
         Thread thread = new Thread(new FakereplaceServer(Integer.parseInt(AgentOptions.getOption(AgentOption.PORT))));

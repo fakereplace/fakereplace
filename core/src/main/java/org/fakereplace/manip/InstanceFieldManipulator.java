@@ -25,18 +25,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.fakereplace.core.Transformer;
+import org.fakereplace.data.ClassData;
+import org.fakereplace.data.ClassDataStore;
+import org.fakereplace.data.FieldData;
+import org.fakereplace.logging.Logger;
+import org.fakereplace.manip.data.AddedFieldData;
+import org.fakereplace.manip.util.Boxing;
+import org.fakereplace.manip.util.ManipulationDataStore;
+import org.fakereplace.runtime.FieldDataStore;
+import org.fakereplace.runtime.FieldReferenceDataStore;
+import org.fakereplace.util.DescriptorUtils;
 import javassist.bytecode.Bytecode;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.CodeIterator;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.Opcode;
-import org.fakereplace.logging.Logger;
-import org.fakereplace.manip.data.AddedFieldData;
-import org.fakereplace.manip.util.Boxing;
-import org.fakereplace.manip.util.ManipulationDataStore;
-import org.fakereplace.runtime.FieldDataStore;
-import org.fakereplace.util.DescriptorUtils;
 
 public class InstanceFieldManipulator implements ClassManipulator {
 
@@ -54,7 +59,6 @@ public class InstanceFieldManipulator implements ClassManipulator {
     }
 
     public boolean transformClass(ClassFile file, ClassLoader loader, boolean modifiableClass, final Set<MethodInfo> modifiedMethods) {
-
         Map<String, Set<AddedFieldData>> addedFieldData = data.getManipulationData(loader);
         if (addedFieldData.isEmpty()) {
             return false;
@@ -66,14 +70,34 @@ public class InstanceFieldManipulator implements ClassManipulator {
         for (int i = 1; i < pool.getSize(); ++i) {
             // we have a field reference
             if (pool.getTag(i) == ConstPool.CONST_Fieldref) {
-                if (addedFieldData.containsKey(pool.getFieldrefClassName(i))) {
-                    for (AddedFieldData data : addedFieldData.get(pool.getFieldrefClassName(i))) {
-                        if (pool.getFieldrefName(i).equals(data.getName())) {
+                String className = pool.getFieldrefClassName(i);
+                String fieldName = pool.getFieldrefName(i);
+                String descriptor = pool.getFieldrefType(i);
+                boolean handled = false;
+                if (addedFieldData.containsKey(className)) {
+                    for (AddedFieldData data : addedFieldData.get(className)) {
+                        if (fieldName.equals(data.getName())) {
                             // store the location in the const pool of the method ref
                             fieldAccessLocations.put(i, data);
+                            handled = true;
                             break;
                         }
 
+                    }
+                }
+                if (!handled && ClassDataStore.instance().isClassReplaced(file.getName(), loader)) {
+                    //may be an added field
+                    //if the field does not actually exist yet we just assume it is about to come into existence
+                    //and rewrite it anyway
+                    ClassData data = ClassDataStore.instance().getModifiedClassData(loader, file.getName());
+                    FieldData field = data.getField(fieldName);
+                    if (field == null) {
+                        //this is a new field
+                        //lets deal with it
+                        int fieldNo = FieldReferenceDataStore.instance().getFieldNo(fieldName, descriptor);
+                        AddedFieldData fieldData = new AddedFieldData(fieldNo, fieldName, descriptor, className, loader);
+                        fieldAccessLocations.put(i, fieldData);
+                        Transformer.getManipulator().rewriteInstanceFieldAccess(fieldData);
                     }
                 }
             }

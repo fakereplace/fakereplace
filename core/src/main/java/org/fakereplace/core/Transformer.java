@@ -138,9 +138,10 @@ public class Transformer implements FakereplaceTransformer {
                         addStaticConstructorForInstrumentation(file);
                     }
                 }
-
-                BaseClassData baseData = new BaseClassData(file, loader, replaceable);
-                ClassDataStore.instance().saveClassData(loader, baseData.getInternalName(), baseData);
+                if(classBeingRedefined == null) {
+                    BaseClassData baseData = new BaseClassData(file, loader, replaceable);
+                    ClassDataStore.instance().saveClassData(loader, baseData.getInternalName(), baseData);
+                }
             }
             // SerialVersionUIDChecker.testReflectionInfo(loader, file.getName(),
             // file.getSuperclass(), classfileBuffer);

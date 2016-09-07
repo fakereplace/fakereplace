@@ -25,7 +25,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
+import org.fakereplace.classloading.ClassIdentifier;
 import org.fakereplace.core.BuiltinClassData;
 import org.fakereplace.com.google.common.collect.MapMaker;
 import org.fakereplace.manip.util.MapFunction;
@@ -40,7 +43,7 @@ public class ClassDataStore {
     private final Map<ClassLoader, ConcurrentMap<String, ClassData>> classData = new MapMaker().weakKeys().makeComputingMap(new MapFunction<ClassLoader, String, ClassData>(false));
     private final Map<ClassLoader, ConcurrentMap<String, BaseClassData>> baseClassData = new MapMaker().weakKeys().makeComputingMap(new MapFunction<ClassLoader, String, BaseClassData>(false));
     private final Map<String, MethodData> proxyNameToMethodData = new ConcurrentHashMap<String, MethodData>();
-    private final Set<Class<?>> replacedClasses = Collections.newSetFromMap(new MapMaker().weakKeys().<Class<?>, Boolean>makeMap());
+    private final Set<ClassIdentifier> replacedClasses = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
     /**
      * takes the place of the null key on ConcurrentHashMap
@@ -53,11 +56,15 @@ public class ClassDataStore {
     }
 
     public void markClassReplaced(Class<?> clazz) {
-        replacedClasses.add(clazz);
+        replacedClasses.add(new ClassIdentifier(clazz.getName(), clazz.getClassLoader()));
     }
 
     public boolean isClassReplaced(Class<?> clazz) {
-        return replacedClasses.contains(clazz);
+        return replacedClasses.contains(new ClassIdentifier(clazz.getName(), clazz.getClassLoader()));
+    }
+
+    public boolean isClassReplaced(String name, ClassLoader loader) {
+        return replacedClasses.contains(new ClassIdentifier(name, loader));
     }
 
     public void saveClassData(ClassLoader loader, String className, ClassDataBuilder data) {
@@ -157,4 +164,22 @@ public class ClassDataStore {
         return INSTANCE;
     }
 
+    /**
+     * THIS IS A TEMPORARY METHOD
+     *
+     * It should only exist during the transition phase, while all rewriting is being moved into the transformers.
+     *
+     * Once all processing is in the transformer chain then it should be removed, and a class data builder passed through
+     * all the transformers instead
+     *
+     * TODO: remove this method
+     * @param loader
+     * @param name
+     */
+    public void modifyCurrentData(ClassLoader loader, String name, Consumer<ClassDataBuilder> consumer) {
+        ClassData current = getModifiedClassData(loader, name);
+        ClassDataBuilder builder = new ClassDataBuilder(current, getBaseClassData(loader, name));
+        consumer.accept(builder);
+        ClassDataStore.instance().saveClassData(loader, name, builder);
+    }
 }

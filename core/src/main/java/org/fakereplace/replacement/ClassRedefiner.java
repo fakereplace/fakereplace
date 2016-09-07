@@ -39,7 +39,6 @@ import javassist.bytecode.Descriptor;
 import javassist.bytecode.MethodInfo;
 import org.fakereplace.core.AgentOption;
 import org.fakereplace.core.AgentOptions;
-import org.fakereplace.core.Transformer;
 import org.fakereplace.data.BaseClassData;
 import org.fakereplace.data.ClassDataBuilder;
 import org.fakereplace.data.ClassDataStore;
@@ -88,7 +87,6 @@ public class ClassRedefiner {
         }
 
         ClassDataBuilder builder = new ClassDataBuilder(b);
-        FieldReplacer.handleFieldReplacement(file, loader, oldClass, builder);
         MethodReplacer.handleMethodReplacement(file, loader, oldClass, builder, classToReload);
         try {
 

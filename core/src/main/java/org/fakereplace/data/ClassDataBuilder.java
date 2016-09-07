@@ -43,6 +43,26 @@ public class ClassDataBuilder {
         }
         baseData = b;
     }
+    public ClassDataBuilder(ClassData b, BaseClassData base) {
+        if (b == null) {
+            throw new RuntimeException("Attempted to created ClassDataBuilder with null BaseClassData");
+        }
+        baseData = base;
+        for(MethodData method : b.getMethods()) {
+            if(method.getType() == MemberType.FAKE || method.getType() == MemberType.FAKE_CONSTRUCTOR) {
+                fakeMethods.add(method);
+            } else if(method.getType() == MemberType.REMOVED) {
+                removedMethods.add(method);
+            }
+        }
+        for(FieldData field : b.getFields()) {
+            if(field.getMemberType() == MemberType.FAKE) {
+                fakeFields.add(field);
+            } else if(field.getMemberType() == MemberType.REMOVED) {
+                removedFields.add(field);
+            }
+        }
+    }
 
     public ClassData buildClassData() {
         return new ClassData(baseData, fakeMethods, removedMethods, fakeFields, removedFields);
@@ -70,7 +90,7 @@ public class ClassDataBuilder {
         return data;
     }
 
-    public void removeRethod(MethodData md) {
+    public void removeMethod(MethodData md) {
         MethodData nmd = new MethodData(md.getMethodName(), md.getDescriptor(), md.getClassName(), MemberType.REMOVED, md.getAccessFlags(), false);
         removedMethods.add(nmd);
     }

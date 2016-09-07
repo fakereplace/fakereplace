@@ -571,7 +571,7 @@ public class MethodReplacer {
         } catch (BadBytecode e) {
             logger.error("Bad bytecode", e);
         }
-        builder.removeRethod(md);
+        builder.removeMethod(md);
     }
 
     private static void addConstructor(ClassFile file, ClassLoader loader, MethodInfo mInfo, ClassDataBuilder builder, CodeAttribute bytecode, Class<?> oldClass) {
