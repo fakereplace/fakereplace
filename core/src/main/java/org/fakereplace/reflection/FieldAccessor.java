@@ -32,18 +32,28 @@ public class FieldAccessor {
 
     private final Class<?> declaringClass;
     private final Integer mapKey;
+    private final boolean staticField;
 
-    public FieldAccessor(Class<?> declaringClass, int mapKey) {
+    public FieldAccessor(Class<?> declaringClass, int mapKey, boolean staticField) {
         this.declaringClass = declaringClass;
         this.mapKey = mapKey;
+        this.staticField = staticField;
     }
 
     public void set(Object object, Object value) throws IllegalAccessException {
-        FieldDataStore.setValue(object, value, mapKey);
+        if(staticField) {
+            FieldDataStore.setValue(declaringClass, value, mapKey);
+        } else {
+            FieldDataStore.setValue(object, value, mapKey);
+        }
     }
 
     public Object get(Object object) throws IllegalAccessException {
-        return FieldDataStore.getValue(object, mapKey);
+        if(staticField) {
+            return FieldDataStore.getValue(declaringClass, mapKey);
+        } else {
+            return FieldDataStore.getValue(object, mapKey);
+        }
     }
 
     public Class<?> getDeclaringClass() {

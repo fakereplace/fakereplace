@@ -39,8 +39,7 @@ import org.fakereplace.manip.data.AddedFieldData;
 public class Manipulator {
 
     private final MethodInvokationManipulator methodInvokationManipulator = new MethodInvokationManipulator();
-    private final StaticFieldManipulator staticFieldManipulator = new StaticFieldManipulator();
-    private final InstanceFieldManipulator instanceFieldManapulator = new InstanceFieldManipulator();
+    private final FieldManipulator instanceFieldManapulator = new FieldManipulator();
     private final ConstructorInvocationManipulator constructorInvocationManipulator = new ConstructorInvocationManipulator();
     private final ConstructorAccessManipulator constructorAccessManipulator = new ConstructorAccessManipulator();
     private final SubclassVirtualCallManipulator subclassVirtualCallManilulator = new SubclassVirtualCallManipulator();
@@ -52,7 +51,6 @@ public class Manipulator {
 
     public Manipulator() {
         manipulators.add(methodInvokationManipulator);
-        manipulators.add(staticFieldManipulator);
         manipulators.add(instanceFieldManapulator);
         manipulators.add(constructorInvocationManipulator);
         manipulators.add(subclassVirtualCallManilulator);
@@ -66,17 +64,6 @@ public class Manipulator {
         for (ClassManipulator m : manipulators) {
             m.clearRewrites(className, classLoader);
         }
-    }
-
-    /**
-     * rewrites static field access to the same field on another class
-     *
-     * @param oldClass
-     * @param newClass
-     * @param fieldName
-     */
-    public void rewriteStaticFieldAccess(String oldClass, String newClass, String fieldName, ClassLoader classLoader) {
-        staticFieldManipulator.rewriteStaticFieldAccess(oldClass, newClass, fieldName, classLoader);
     }
 
     public void rewriteConstructorAccess(String clazz, String descriptor, int methodNo, ClassLoader classLoader) {

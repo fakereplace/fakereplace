@@ -41,7 +41,6 @@ import org.fakereplace.data.BaseClassData;
 import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.data.FieldData;
 import org.fakereplace.data.MemberType;
-import org.fakereplace.manip.StaticFieldClassFactory;
 import org.fakereplace.manip.data.AddedFieldData;
 import org.fakereplace.reflection.FieldAccessor;
 import org.fakereplace.runtime.FieldReferenceDataStore;
@@ -69,12 +68,12 @@ public class FieldReplacementTransformer implements FakereplaceTransformer {
      * @param m
      * @param builder
      */
-    private static int addInstanceField(ClassLoader loader, FieldInfo m, Set<FieldProxyInfo> builder, Class<?> oldClass) {
+    private static int addField(ClassLoader loader, FieldInfo m, Set<FieldProxyInfo> builder, Class<?> oldClass) {
         int fieldNo = FieldReferenceDataStore.instance().getFieldNo(m.getName(), m.getDescriptor());
         String proxyName = ProxyDefinitionStore.getProxyName();
         ClassFile proxy = new ClassFile(false, proxyName, "java.lang.Object");
         ClassDataStore.instance().registerProxyName(oldClass, proxyName);
-        FieldAccessor accessor = new FieldAccessor(oldClass, fieldNo);
+        FieldAccessor accessor = new FieldAccessor(oldClass, fieldNo, (m.getAccessFlags() & AccessFlag.STATIC) != 0);
         ClassDataStore.instance().registerFieldAccessor(proxyName, accessor);
         proxy.setAccessFlags(AccessFlag.PUBLIC);
         FieldInfo newField = new FieldInfo(proxy.getConstPool(), m.getName(), m.getDescriptor());
@@ -112,40 +111,6 @@ public class FieldReplacementTransformer implements FakereplaceTransformer {
             AttributeInfo newAnnotations = sigAt.copy(newField.getConstPool(), Collections.EMPTY_MAP);
             newField.addAttribute(newAnnotations);
         }
-
-    }
-
-
-    /**
-     * This will create a proxy with a static field, and all access to the static
-     * field is re-written to the proxy instead
-     *
-     * @param file
-     * @param loader
-     * @param m
-     * @param builder
-     */
-    private static void addStaticField(ClassFile file, ClassLoader loader, FieldInfo m, Set<FieldProxyInfo> builder, Class<?> oldClass) {
-        // this will generate the class holding the satic field if is does not
-        // already exist. This allows
-        // the static field to hold its value accross multiple replacements
-
-        String sig = null;
-        SignatureAttribute sat = (SignatureAttribute) m.getAttribute(SignatureAttribute.tag);
-        if (sat != null) {
-            sig = sat.getSignature();
-        }
-
-        String proxyName = StaticFieldClassFactory.getStaticFieldClass(oldClass, m.getName(), m.getDescriptor(), sig);
-        try {
-            Field fieldFromProxy = loader.loadClass(proxyName).getDeclaredField(m.getName());
-            AnnotationDataStore.recordFieldAnnotations(fieldFromProxy, (AnnotationsAttribute) m.getAttribute(AnnotationsAttribute.visibleTag));
-        } catch (Exception e) {
-            // should not happen
-            e.printStackTrace();
-        }
-        Transformer.getManipulator().rewriteStaticFieldAccess(file.getName(), proxyName, m.getName(), loader);
-        builder.add(new FieldProxyInfo(m, proxyName, m.getAccessFlags()));
 
     }
 
@@ -187,21 +152,12 @@ public class FieldReplacementTransformer implements FakereplaceTransformer {
                     }
                     md = i;
                     break;
-                } else if (i.getName().equals(m.getName()) && i.getType().equals(m.getDescriptor())) {
-                    // we have a field whoes access modifiers have changed.
-                    if ((i.getAccessFlags() | AccessFlag.STATIC) == (m.getAccessFlags() | AccessFlag.STATIC)) {
-                        // change from / to static can be handled fine
-                    }
                 }
             }
             // This is a newly added field.
             if (md == null) {
-                if ((m.getAccessFlags() & AccessFlag.STATIC) != 0) {
-                    addStaticField(file, loader, m, toAdd, oldClass);
-                } else {
-                    int fieldNo = addInstanceField(loader, m, toAdd, oldClass);
-                    addedFields.add(new AddedFieldData(fieldNo, m.getName(), m.getDescriptor(), file.getName(), loader));
-                }
+                int fieldNo = addField(loader, m, toAdd, oldClass);
+                addedFields.add(new AddedFieldData(fieldNo, m.getName(), m.getDescriptor(), file.getName(), loader));
                 it.remove();
             } else {
                 fields.remove(md);

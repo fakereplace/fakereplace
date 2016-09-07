@@ -374,7 +374,7 @@ public class FieldReflection {
     }
 
     public static boolean isFakeField(Field f) {
-        if ((f.getModifiers() & Modifier.STATIC) == 0 && f.getDeclaringClass().getName().startsWith(org.fakereplace.core.Constants.GENERATED_CLASS_PACKAGE)) {
+        if (f.getDeclaringClass().getName().startsWith(org.fakereplace.core.Constants.GENERATED_CLASS_PACKAGE)) {
             return true;
         }
         return false;
