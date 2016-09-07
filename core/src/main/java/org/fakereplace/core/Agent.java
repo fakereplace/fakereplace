@@ -26,7 +26,7 @@ import org.fakereplace.api.NewClassData;
 import org.fakereplace.classloading.ClassLookupManager;
 import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.replacement.AddedClass;
-import org.fakereplace.replacement.AnnotationReplacer;
+import org.fakereplace.replacement.AnnotationTransformer;
 import org.fakereplace.replacement.ClassRedefiner;
 import org.fakereplace.replacement.ReplacementResult;
 import org.fakereplace.replacement.notification.CurrentChangedClasses;
@@ -97,7 +97,7 @@ public class Agent {
             e.printStackTrace();
         }
         mainTransformer.addTransformer(new Transformer(extension));
-        mainTransformer.addTransformer(new AnnotationReplacer());
+        mainTransformer.addTransformer(new AnnotationTransformer());
 
         //start the server
         Thread thread = new Thread(new FakereplaceServer(Integer.parseInt(AgentOptions.getOption(AgentOption.PORT))));

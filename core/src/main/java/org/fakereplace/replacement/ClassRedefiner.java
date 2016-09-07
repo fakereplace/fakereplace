@@ -77,7 +77,7 @@ public class ClassRedefiner {
 
     }
 
-    public static void modifyReloadedClass(ClassFile file, ClassLoader loader, Class<?> oldClass, Set<Class<?>> classToReload) {
+    private static void modifyReloadedClass(ClassFile file, ClassLoader loader, Class<?> oldClass, Set<Class<?>> classToReload) {
         BaseClassData b = ClassDataStore.instance().getBaseClassData(loader, Descriptor.toJvmName(file.getName()));
         if (b == null) {
             throw new RuntimeException("Could not find BaseClassData for " + file.getName());

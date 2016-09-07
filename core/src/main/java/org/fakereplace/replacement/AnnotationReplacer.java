@@ -37,9 +37,9 @@ import org.fakereplace.data.AnnotationBuilder;
 import org.fakereplace.data.AnnotationDataStore;
 import org.fakereplace.transformation.FakereplaceTransformer;
 
-public class AnnotationReplacer implements FakereplaceTransformer {
+class AnnotationReplacer {
 
-    public static AnnotationsAttribute duplicateAnnotationsAttribute(ConstPool cp, AnnotatedElement element) {
+    static AnnotationsAttribute duplicateAnnotationsAttribute(ConstPool cp, AnnotatedElement element) {
         AnnotationsAttribute oldAns = new AnnotationsAttribute(cp, AnnotationsAttribute.visibleTag);
         for (Annotation a : element.getAnnotations()) {
             oldAns.addAnnotation(AnnotationBuilder.createJavassistAnnotation(a, cp));
@@ -47,7 +47,7 @@ public class AnnotationReplacer implements FakereplaceTransformer {
         return oldAns;
     }
 
-    public static ParameterAnnotationsAttribute duplicateParameterAnnotationsAttribute(ConstPool cp, Method method) {
+    static ParameterAnnotationsAttribute duplicateParameterAnnotationsAttribute(ConstPool cp, Method method) {
         ParameterAnnotationsAttribute oldAns = new ParameterAnnotationsAttribute(cp, ParameterAnnotationsAttribute.visibleTag);
         javassist.bytecode.annotation.Annotation[][] anAr = new javassist.bytecode.annotation.Annotation[method.getParameterAnnotations().length][];
         for (int i = 0; i < anAr.length; ++i) {
@@ -60,7 +60,7 @@ public class AnnotationReplacer implements FakereplaceTransformer {
         return oldAns;
     }
 
-    public static ParameterAnnotationsAttribute duplicateParameterAnnotationsAttribute(ConstPool cp, Constructor<?> method) {
+    static ParameterAnnotationsAttribute duplicateParameterAnnotationsAttribute(ConstPool cp, Constructor<?> method) {
         ParameterAnnotationsAttribute oldAns = new ParameterAnnotationsAttribute(cp, ParameterAnnotationsAttribute.visibleTag);
         javassist.bytecode.annotation.Annotation[][] anAr = new javassist.bytecode.annotation.Annotation[method.getParameterAnnotations().length][];
         for (int i = 0; i < anAr.length; ++i) {
@@ -73,13 +73,4 @@ public class AnnotationReplacer implements FakereplaceTransformer {
         return oldAns;
     }
 
-    @Override
-    public boolean transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, ClassFile file) throws IllegalClassFormatException, BadBytecode, DuplicateMemberException {
-        if(classBeingRedefined != null) {
-            AnnotationsAttribute newAns = (AnnotationsAttribute) file.getAttribute(AnnotationsAttribute.visibleTag);
-            AnnotationDataStore.recordClassAnnotations(classBeingRedefined, newAns);
-            file.addAttribute(duplicateAnnotationsAttribute(file.getConstPool(), classBeingRedefined));
-        }
-        return false;
-    }
 }
