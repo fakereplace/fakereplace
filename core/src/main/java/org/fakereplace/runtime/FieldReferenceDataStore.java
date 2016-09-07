@@ -48,8 +48,8 @@ public class FieldReferenceDataStore {
 
     }
 
-    public Integer getFieldNo(String fieldName, String desc, String sig) {
-        return addedFieldNumbers.get(new FieldReference(fieldName, desc, sig));
+    public Integer getFieldNo(String fieldName, String desc) {
+        return addedFieldNumbers.get(new FieldReference(fieldName, desc));
     }
 
     public static FieldReferenceDataStore instance() {
@@ -59,12 +59,10 @@ public class FieldReferenceDataStore {
     private static class FieldReference {
         private final String name;
         private final String descriptor;
-        private final String signiture;
 
-        public FieldReference(String name, String descriptor, String signiture) {
+        public FieldReference(String name, String descriptor) {
             this.name = name;
             this.descriptor = descriptor;
-            this.signiture = signiture;
         }
 
         @Override
@@ -73,7 +71,6 @@ public class FieldReferenceDataStore {
             int result = 1;
             result = prime * result + ((descriptor == null) ? 0 : descriptor.hashCode());
             result = prime * result + ((name == null) ? 0 : name.hashCode());
-            result = prime * result + ((signiture == null) ? 0 : signiture.hashCode());
             return result;
         }
 
@@ -95,11 +92,6 @@ public class FieldReferenceDataStore {
                 if (other.name != null)
                     return false;
             } else if (!name.equals(other.name))
-                return false;
-            if (signiture == null) {
-                if (other.signiture != null)
-                    return false;
-            } else if (!signiture.equals(other.signiture))
                 return false;
             return true;
         }

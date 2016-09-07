@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.ListIterator;
@@ -187,7 +186,7 @@ public class FieldReplacer {
         if (sigat != null) {
             sig = sigat.getSignature();
         }
-        int fieldNo = FieldReferenceDataStore.instance().getFieldNo(m.getName(), m.getDescriptor(), sig);
+        int fieldNo = FieldReferenceDataStore.instance().getFieldNo(m.getName(), m.getDescriptor());
         String proxyName = ProxyDefinitionStore.getProxyName();
         ClassFile proxy = new ClassFile(false, proxyName, "java.lang.Object");
         ClassDataStore.instance().registerProxyName(oldClass, proxyName);
