@@ -14,4 +14,12 @@ public class ReaderClass {
     void writeField(int value) {
 
     }
+
+    int readStaticField() {
+        return -1;
+    }
+
+    void writeStaticField(int value) {
+
+    }
 }

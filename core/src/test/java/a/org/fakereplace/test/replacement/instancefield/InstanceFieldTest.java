@@ -71,13 +71,17 @@ public class InstanceFieldTest {
         rep.rewriteNames(FieldClass.class, FieldClass1.class);
         rep.replaceQueuedClasses();
         Assert.assertEquals(0, readerClass.readField()); //by rights this should throw a NoSuchFieldError, but the test for this would be kinda slow, and I don't think it really hurts
+        Assert.assertEquals(0, readerClass.readStaticField());
 
         rep.queueClassForReplacement(FieldClass.class, FieldClass1.class);
         rep.replaceQueuedClasses();
 
         Assert.assertEquals(0, readerClass.readField());
+        Assert.assertEquals(0, readerClass.readStaticField());
         readerClass.writeField(1);
+        readerClass.writeStaticField(1);
         Assert.assertEquals(1, readerClass.readField());
+        Assert.assertEquals(1, readerClass.readStaticField());
 
     }
 }

@@ -6,4 +6,5 @@ package a.org.fakereplace.test.replacement.instancefield;
 public class FieldClass1 {
 
     int field;
+    static int staticField;
 }
