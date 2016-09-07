@@ -24,6 +24,7 @@ import java.lang.reflect.InvocationTargetException;
 import a.org.fakereplace.test.util.ClassReplacer;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class InstanceFieldTest {
@@ -59,5 +60,24 @@ public class InstanceFieldTest {
         InstanceFieldClass ns = new InstanceFieldClass();
         ns.setFa2(this);
         Assert.assertEquals(this, ns.getFa2());
+    }
+
+    @Test
+    public void testReplacementOrder() {
+        ReaderClass readerClass = new ReaderClass();
+        Assert.assertEquals(-1, readerClass.readField());
+        ClassReplacer rep = new ClassReplacer();
+        rep.queueClassForReplacement(ReaderClass.class, ReaderClass1.class);
+        rep.rewriteNames(FieldClass.class, FieldClass1.class);
+        rep.replaceQueuedClasses();
+        Assert.assertEquals(0, readerClass.readField()); //by rights this should throw a NoSuchFieldError, but the test for this would be kinda slow, and I don't think it really hurts
+
+        rep.queueClassForReplacement(FieldClass.class, FieldClass1.class);
+        rep.replaceQueuedClasses();
+
+        Assert.assertEquals(0, readerClass.readField());
+        readerClass.writeField(1);
+        Assert.assertEquals(1, readerClass.readField());
+
     }
 }

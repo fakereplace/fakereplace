@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import a.org.fakereplace.test.replacement.instancefield.FieldClass;
+import a.org.fakereplace.test.replacement.instancefield.FieldClass1;
 import javassist.ClassPool;
 import javassist.CtClass;
 import org.fakereplace.core.Agent;
@@ -111,8 +113,13 @@ public class ClassReplacer {
             } else {
                 Agent.getInstrumentation().redefineClasses(definitions);
             }
+            queuedClassReplacements.clear();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void rewriteNames(Class<?> to, Class<?> from) {
+        nameReplacements.put(from.getName(), to.getName());
     }
 }

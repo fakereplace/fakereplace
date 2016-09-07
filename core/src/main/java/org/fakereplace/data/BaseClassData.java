@@ -154,4 +154,12 @@ public class BaseClassData {
         return replaceable;
     }
 
+    public FieldData getField(String fieldName) {
+        for(FieldData field : fields) {
+            if(field.getName().equals(fieldName)) {
+                return field;
+            }
+        }
+        return null;
+    }
 }

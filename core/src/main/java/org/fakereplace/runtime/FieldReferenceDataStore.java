@@ -21,10 +21,7 @@
 package org.fakereplace.runtime;
 
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import org.fakereplace.com.google.common.base.Function;
-import org.fakereplace.com.google.common.collect.MapMaker;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Maps a unique field signature to an arbitrary number. This number will be the same for all fields with the
@@ -36,24 +33,37 @@ public class FieldReferenceDataStore {
 
     private static final FieldReferenceDataStore INSTANCE = new FieldReferenceDataStore();
 
-    private final AtomicInteger counter = new AtomicInteger();
+    private int counter = 0;
 
-    private final Map<FieldReference, Integer> addedFieldNumbers = new MapMaker().makeComputingMap(new Function<FieldReference, Integer>() {
-        public Integer apply(FieldReference from) {
-            return counter.incrementAndGet();
-        }
-    });
+    private final Map<FieldReference, Integer> addedFieldNumbers = new ConcurrentHashMap<>();
+    private final Map<Integer, FieldReference> fieldsByNumber = new ConcurrentHashMap<>();
 
     private FieldReferenceDataStore() {
 
     }
 
-    public Integer getFieldNo(String fieldName, String desc) {
-        return addedFieldNumbers.get(new FieldReference(fieldName, desc));
+    public synchronized Integer getFieldNo(String fieldName, String desc) {
+        FieldReference ref = new FieldReference(fieldName, desc);
+        Integer existing = addedFieldNumbers.get(ref);
+        if (existing != null) {
+            return existing;
+        }
+        int ret = counter++;
+        addedFieldNumbers.put(ref, ret);
+        fieldsByNumber.put(ret, ref);
+        return ret;
     }
 
     public static FieldReferenceDataStore instance() {
         return INSTANCE;
+    }
+
+    public String getFieldDescriptor(int field) {
+        FieldReference instance = fieldsByNumber.get(field);
+        if(instance == null) {
+            return null;
+        }
+        return instance.descriptor;
     }
 
     private static class FieldReference {

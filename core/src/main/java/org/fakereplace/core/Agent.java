@@ -121,7 +121,7 @@ public class Agent {
 
                 System.out.println("Fakereplace is replacing class " + i.getDefinitionClass());
                 changedClasses.add(i.getDefinitionClass());
-                ClassDataStore.instance().markClassReplaced(i.getClass());
+                ClassDataStore.instance().markClassReplaced(i.getDefinitionClass());
             }
             CurrentChangedClasses.prepareClasses(changedClasses);
             // re-write the classes so their field

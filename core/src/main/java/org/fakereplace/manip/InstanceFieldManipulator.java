@@ -25,7 +25,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.fakereplace.api.environment.CurrentEnvironment;
 import org.fakereplace.core.Transformer;
+import org.fakereplace.data.BaseClassData;
 import org.fakereplace.data.ClassData;
 import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.data.FieldData;
@@ -85,19 +87,23 @@ public class InstanceFieldManipulator implements ClassManipulator {
 
                     }
                 }
-                if (!handled && ClassDataStore.instance().isClassReplaced(file.getName(), loader)) {
+                if (!handled && CurrentEnvironment.getEnvironment().isClassReplaceable(className, loader)) {
                     //may be an added field
                     //if the field does not actually exist yet we just assume it is about to come into existence
                     //and rewrite it anyway
-                    ClassData data = ClassDataStore.instance().getModifiedClassData(loader, file.getName());
-                    FieldData field = data.getField(fieldName);
-                    if (field == null) {
-                        //this is a new field
-                        //lets deal with it
-                        int fieldNo = FieldReferenceDataStore.instance().getFieldNo(fieldName, descriptor);
-                        AddedFieldData fieldData = new AddedFieldData(fieldNo, fieldName, descriptor, className, loader);
-                        fieldAccessLocations.put(i, fieldData);
-                        Transformer.getManipulator().rewriteInstanceFieldAccess(fieldData);
+                    BaseClassData data = ClassDataStore.instance().getBaseClassData(loader, className);
+                    if(data != null) {
+                        FieldData field = data.getField(fieldName);
+                        if (field == null) {
+                            //this is a new field
+                            //lets deal with it
+                            int fieldNo = FieldReferenceDataStore.instance().getFieldNo(fieldName, descriptor);
+                            AddedFieldData fieldData = new AddedFieldData(fieldNo, fieldName, descriptor, className, loader);
+                            fieldAccessLocations.put(i, fieldData);
+                            Transformer.getManipulator().rewriteInstanceFieldAccess(fieldData);
+                            addedFieldData = this.data.getManipulationData(loader);
+
+                        }
                     }
                 }
             }

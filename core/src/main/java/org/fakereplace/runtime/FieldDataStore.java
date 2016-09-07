@@ -40,7 +40,17 @@ public class FieldDataStore {
     });
 
     public static Object getValue(Object instance, int field) {
-        return fieldData.get(instance).get(field);
+        Object ret = fieldData.get(instance).get(field);
+        if(ret != null) {
+            return ret;
+        } else {
+            String type = FieldReferenceDataStore.instance().getFieldDescriptor(field);
+            if(type.length() == 1) {
+                return 0;
+            } else {
+                return null;
+            }
+        }
     }
 
     public static void setValue(Object instance, Object value, int field) {
