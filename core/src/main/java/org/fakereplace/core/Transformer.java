@@ -22,11 +22,27 @@ package org.fakereplace.core;
 
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.fakereplace.api.ChangedClass;
+import org.fakereplace.api.Extension;
+import org.fakereplace.api.NewClassData;
+import org.fakereplace.api.environment.CurrentEnvironment;
+import org.fakereplace.data.BaseClassData;
+import org.fakereplace.data.ClassDataStore;
+import org.fakereplace.data.InstanceTracker;
+import org.fakereplace.manip.Manipulator;
+import org.fakereplace.manip.util.ManipulationUtils;
+import org.fakereplace.reflection.ReflectionInstrumentationSetup;
+import org.fakereplace.replacement.notification.ChangedClassImpl;
+import org.fakereplace.transformation.FakereplaceTransformer;
+import org.fakereplace.util.NoInstrument;
 import javassist.ClassPool;
 import javassist.LoaderClassPath;
 import javassist.bytecode.AccessFlag;
@@ -39,16 +55,6 @@ import javassist.bytecode.CodeIterator;
 import javassist.bytecode.DuplicateMemberException;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.Opcode;
-import org.fakereplace.api.Extension;
-import org.fakereplace.api.environment.CurrentEnvironment;
-import org.fakereplace.data.BaseClassData;
-import org.fakereplace.data.ClassDataStore;
-import org.fakereplace.data.InstanceTracker;
-import org.fakereplace.manip.Manipulator;
-import org.fakereplace.manip.util.ManipulationUtils;
-import org.fakereplace.reflection.ReflectionInstrumentationSetup;
-import org.fakereplace.transformation.FakereplaceTransformer;
-import org.fakereplace.util.NoInstrument;
 
 /**
  * This file is the transformer that instruments classes as they are added to
@@ -57,6 +63,7 @@ import org.fakereplace.util.NoInstrument;
  * @author stuart
  */
 public class Transformer implements FakereplaceTransformer {
+
 
     private static final Manipulator manipulator = new Manipulator();
 
@@ -69,6 +76,7 @@ public class Transformer implements FakereplaceTransformer {
      */
     private final FileSystemWatcher watcher = new FileSystemWatcher();
 
+
     Transformer(Set<Extension> extension) {
         ReflectionInstrumentationSetup.setup(manipulator);
         for (Extension i : extension) {
@@ -80,14 +88,14 @@ public class Transformer implements FakereplaceTransformer {
         }
     }
 
-    public boolean transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, ClassFile file, Set<Class<?>> classesToRetransform) throws IllegalClassFormatException, BadBytecode, DuplicateMemberException {
+    public boolean transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, ClassFile file, Set<Class<?>> classesToRetransform, ChangedClassImpl changedClass) throws IllegalClassFormatException, BadBytecode, DuplicateMemberException {
         boolean modified = false;
         try {
             if (classBeingRedefined != null) {
                 ClassDataStore.instance().markClassReplaced(classBeingRedefined);
             }
             for (FakereplaceTransformer i : integrationTransformers) {
-                if (i.transform(loader, className, classBeingRedefined, protectionDomain, file, classesToRetransform)) {
+                if (i.transform(loader, className, classBeingRedefined, protectionDomain, file, classesToRetransform, changedClass)) {
                     modified = true;
                 }
             }
@@ -138,7 +146,7 @@ public class Transformer implements FakereplaceTransformer {
                         addStaticConstructorForInstrumentation(file);
                     }
                 }
-                if(classBeingRedefined == null) {
+                if (classBeingRedefined == null) {
                     BaseClassData baseData = new BaseClassData(file, loader, replaceable);
                     ClassDataStore.instance().saveClassData(loader, baseData.getInternalName(), baseData);
                 }
@@ -172,7 +180,7 @@ public class Transformer implements FakereplaceTransformer {
     public void addMethodForInstrumentation(ClassFile file) {
         try {
             MethodInfo m = new MethodInfo(file.getConstPool(), Constants.ADDED_METHOD_NAME, Constants.ADDED_METHOD_DESCRIPTOR);
-            m.setAccessFlags(0 | AccessFlag.PUBLIC | AccessFlag.SYNTHETIC);
+            m.setAccessFlags(AccessFlag.PUBLIC | AccessFlag.SYNTHETIC);
 
             Bytecode b = new Bytecode(file.getConstPool(), 5, 3);
             if (BuiltinClassData.skipInstrumentation(file.getSuperclass())) {

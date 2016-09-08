@@ -43,6 +43,7 @@ import org.fakereplace.data.FieldData;
 import org.fakereplace.data.MemberType;
 import org.fakereplace.manip.data.AddedFieldData;
 import org.fakereplace.reflection.FieldAccessor;
+import org.fakereplace.replacement.notification.ChangedClassImpl;
 import org.fakereplace.runtime.FieldReferenceDataStore;
 import org.fakereplace.transformation.FakereplaceTransformer;
 import javassist.bytecode.AccessFlag;
@@ -115,7 +116,7 @@ public class FieldReplacementTransformer implements FakereplaceTransformer {
     }
 
     @Override
-    public boolean transform(ClassLoader loader, String className, Class<?> oldClass, ProtectionDomain protectionDomain, ClassFile file, Set<Class<?>> classesToRetransform) throws IllegalClassFormatException, BadBytecode, DuplicateMemberException {
+    public boolean transform(ClassLoader loader, String className, Class<?> oldClass, ProtectionDomain protectionDomain, ClassFile file, Set<Class<?>> classesToRetransform, ChangedClassImpl changedClass) throws IllegalClassFormatException, BadBytecode, DuplicateMemberException {
         if (oldClass == null || className == null) {
             return false;
         }

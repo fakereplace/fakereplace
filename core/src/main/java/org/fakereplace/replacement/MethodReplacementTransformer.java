@@ -64,6 +64,7 @@ import org.fakereplace.manip.data.FakeMethodCallData;
 import org.fakereplace.manip.util.Boxing;
 import org.fakereplace.manip.util.ManipulationUtils;
 import org.fakereplace.manip.util.ManipulationUtils.MethodReturnRewriter;
+import org.fakereplace.replacement.notification.ChangedClassImpl;
 import org.fakereplace.runtime.MethodIdentifierStore;
 import org.fakereplace.transformation.FakereplaceTransformer;
 import org.fakereplace.util.AccessFlagUtils;
@@ -593,7 +594,7 @@ public class MethodReplacementTransformer implements FakereplaceTransformer {
     }
 
     @Override
-    public boolean transform(ClassLoader loader, String className, Class<?> oldClass, ProtectionDomain protectionDomain, ClassFile file, Set<Class<?>> classesToRetransform) throws IllegalClassFormatException, BadBytecode, DuplicateMemberException {
+    public boolean transform(ClassLoader loader, String className, Class<?> oldClass, ProtectionDomain protectionDomain, ClassFile file, Set<Class<?>> classesToRetransform, ChangedClassImpl changedClass) throws IllegalClassFormatException, BadBytecode, DuplicateMemberException {
         if(oldClass == null || className == null) {
             return false;
         }

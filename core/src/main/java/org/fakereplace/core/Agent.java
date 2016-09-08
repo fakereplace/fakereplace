@@ -29,11 +29,8 @@ import java.io.IOException;
 import java.lang.instrument.ClassDefinition;
 import java.lang.instrument.Instrumentation;
 import java.lang.instrument.UnmodifiableClassException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.ServiceLoader;
 import java.util.Set;
 
@@ -47,7 +44,6 @@ import org.fakereplace.replacement.AddedClass;
 import org.fakereplace.replacement.AnnotationTransformer;
 import org.fakereplace.replacement.FieldReplacementTransformer;
 import org.fakereplace.replacement.MethodReplacementTransformer;
-import org.fakereplace.replacement.notification.CurrentChangedClasses;
 import org.fakereplace.server.FakereplaceServer;
 import org.fakereplace.transformation.ClassLoaderTransformer;
 import org.fakereplace.transformation.MainTransformer;
@@ -112,33 +108,25 @@ public class Agent {
 
     public static void redefine(ClassDefinition[] classes, AddedClass[] addedData) throws UnmodifiableClassException, ClassNotFoundException {
         try {
-            final List<NewClassData> addedClass = new ArrayList<>();
             for (AddedClass i : addedData) {
                 ClassFile cf = new ClassFile(new DataInputStream(new ByteArrayInputStream(i.getData())));
-                addedClass.add(new NewClassData(i.getClassName(), i.getLoader(), cf));
+                mainTransformer.addNewClass(new NewClassData(i.getClassName(), i.getLoader(), cf));
             }
-
-            final List<Class<?>> changedClasses = new ArrayList<>();
             for (ClassDefinition i : classes) {
-
                 System.out.println("Fakereplace is replacing class " + i.getDefinitionClass());
-
-                changedClasses.add(i.getDefinitionClass());
                 ClassDataStore.instance().markClassReplaced(i.getDefinitionClass());
                 BaseClassData baseClassData = ClassDataStore.instance().getBaseClassData(i.getDefinitionClass().getClassLoader(), i.getDefinitionClass().getName());
-                if(baseClassData != null) {
+                if (baseClassData != null) {
                     ClassDataStore.instance().saveClassData(i.getDefinitionClass().getClassLoader(), i.getDefinitionClass().getName(), new ClassDataBuilder(baseClassData));
                 }
             }
-            CurrentChangedClasses.prepareClasses(changedClasses);
             // re-write the classes so their field
             for (AddedClass c : addedData) {
                 ClassLookupManager.addClassInfo(c.getClassName(), c.getLoader(), c.getData());
             }
             inst.redefineClasses(classes);
             Introspector.flushCaches();
-
-            ClassChangeNotifier.instance().afterChange(Collections.unmodifiableList(CurrentChangedClasses.getChanged()), Collections.unmodifiableList(addedClass));
+            mainTransformer.runIntegration();
         } catch (Throwable e) {
             try {
                 // dump the classes to /tmp so we can look at them

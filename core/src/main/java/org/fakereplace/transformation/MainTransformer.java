@@ -32,21 +32,22 @@ import java.lang.instrument.IllegalClassFormatException;
 import java.lang.instrument.UnmodifiableClassException;
 import java.net.URL;
 import java.security.ProtectionDomain;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-import javassist.ClassPool;
-import javassist.LoaderClassPath;
-import javassist.bytecode.BadBytecode;
-import javassist.bytecode.ClassFile;
-import javassist.bytecode.MethodInfo;
+import org.fakereplace.api.ChangedClass;
 import org.fakereplace.api.ClassChangeAware;
 import org.fakereplace.api.Extension;
+import org.fakereplace.api.NewClassData;
 import org.fakereplace.api.environment.CurrentEnvironment;
 import org.fakereplace.api.environment.Environment;
 import org.fakereplace.com.google.common.collect.MapMaker;
@@ -56,11 +57,19 @@ import org.fakereplace.core.AgentOptions;
 import org.fakereplace.core.ClassChangeNotifier;
 import org.fakereplace.core.DefaultEnvironment;
 import org.fakereplace.logging.Logger;
+import org.fakereplace.replacement.notification.ChangedClassImpl;
+import javassist.ClassPool;
+import javassist.LoaderClassPath;
+import javassist.bytecode.BadBytecode;
+import javassist.bytecode.ClassFile;
+import javassist.bytecode.MethodInfo;
 
 /**
  * @author Stuart Douglas
  */
 public class MainTransformer implements ClassFileTransformer {
+
+    private static final long INTEGRATION_WAIT_TIME = Long.getLong("org.fakereplace.wait-time", 300);
 
     private static final Logger log = Logger.getLogger(MainTransformer.class);
 
@@ -71,6 +80,11 @@ public class MainTransformer implements ClassFileTransformer {
     private final Set<String> loadedClassChangeAwares = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
 
     private static final Set<ClassLoader> integrationClassloader = Collections.newSetFromMap(new MapMaker().weakKeys().<ClassLoader, Boolean>makeMap());
+
+    private final List<ChangedClass> changedClasses = new CopyOnWriteArrayList<>();
+    private final List<NewClassData> addedClasses = new CopyOnWriteArrayList<>();
+    private volatile long integrationTime;
+    private final Timer timer = new Timer("Fakereplace integration timer");
 
     public MainTransformer(Set<Extension> extension) {
         Map<String, Extension> integrationClassTriggers = new HashMap<String, Extension>();
@@ -84,9 +98,13 @@ public class MainTransformer implements ClassFileTransformer {
 
     @Override
     public byte[] transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final byte[] classfileBuffer) throws IllegalClassFormatException {
-        if(className == null) {
+        if (className == null) {
             //TODO: deal with lambdas
             return classfileBuffer;
+        }
+        ChangedClassImpl changedClass = null;
+        if (classBeingRedefined != null) {
+            changedClass = new ChangedClassImpl(classBeingRedefined);
         }
         final Environment environment = CurrentEnvironment.getEnvironment();
         if (integrationClassTriggers.containsKey(className)) {
@@ -127,7 +145,7 @@ public class MainTransformer implements ClassFileTransformer {
         try {
             file = new ClassFile(new DataInputStream(new ByteArrayInputStream(classfileBuffer)));
             for (final FakereplaceTransformer transformer : transformers) {
-                if (transformer.transform(loader, className, classBeingRedefined, protectionDomain, file, classesToRetransform)) {
+                if (transformer.transform(loader, className, classBeingRedefined, protectionDomain, file, classesToRetransform, changedClass)) {
                     changed = true;
                 }
             }
@@ -163,7 +181,7 @@ public class MainTransformer implements ClassFileTransformer {
                     }
                 }
 
-                if(!classesToRetransform.isEmpty()) {
+                if (!classesToRetransform.isEmpty()) {
                     //this kinda sucks, as it is a little bit racey
                     //TODO: need to figure put a test suite fix for this
                     Thread t = new Thread(() -> {
@@ -174,6 +192,12 @@ public class MainTransformer implements ClassFileTransformer {
                         }
                     });
                     t.start();
+                }
+
+                if (classBeingRedefined != null) {
+                    changedClasses.add(changedClass);
+                    integrationTime = System.currentTimeMillis() + INTEGRATION_WAIT_TIME;
+                    timer.schedule(new IntegrationTask(), INTEGRATION_WAIT_TIME);
                 }
                 return bs.toByteArray();
             }
@@ -213,7 +237,7 @@ public class MainTransformer implements ClassFileTransformer {
             return null;
         }
         URL resource = ClassLoader.getSystemClassLoader().getResource(name.replace('.', '/') + ".class");
-        if(resource == null) {
+        if (resource == null) {
             throw new RuntimeException("Could not load integration class " + name);
         }
         InputStream in = null;
@@ -231,4 +255,34 @@ public class MainTransformer implements ClassFileTransformer {
             }
         }
     }
+
+    public void runIntegration() {
+        List<ChangedClass> changes;
+        List<NewClassData> added;
+        synchronized (this) {
+            changes = new ArrayList<>(changedClasses);
+            changedClasses.clear();
+            added = new ArrayList<>(addedClasses);
+            addedClasses.clear();
+        }
+        if (!changes.isEmpty() || !added.isEmpty()) {
+            ClassChangeNotifier.instance().afterChange(changes, added);
+        }
+    }
+
+    public synchronized void addNewClass(NewClassData newClassData) {
+        addedClasses.add(newClassData);
+    }
+
+    private class IntegrationTask extends TimerTask {
+        @Override
+        public void run() {
+            if (System.currentTimeMillis() < integrationTime) {
+                return;
+            }
+            runIntegration();
+        }
+    }
+
+    ;
 }

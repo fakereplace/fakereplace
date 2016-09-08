@@ -7,6 +7,7 @@ import javassist.bytecode.CodeAttribute;
 import javassist.bytecode.CodeIterator;
 import javassist.bytecode.DuplicateMemberException;
 import javassist.bytecode.MethodInfo;
+import org.fakereplace.replacement.notification.ChangedClassImpl;
 import org.fakereplace.transformation.FakereplaceTransformer;
 
 import java.lang.instrument.IllegalClassFormatException;
@@ -19,7 +20,7 @@ import java.util.Set;
  */
 public class WildflyClassTransformer implements FakereplaceTransformer {
     @Override
-    public boolean transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, ClassFile file, Set<Class<?>> classesToRetransform) throws IllegalClassFormatException, BadBytecode, DuplicateMemberException {
+    public boolean transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, ClassFile file, Set<Class<?>> classesToRetransform, ChangedClassImpl changedClass) throws IllegalClassFormatException, BadBytecode, DuplicateMemberException {
         if(!file.getName().equals("org.wildfly.extension.undertow.deployment.UndertowDeploymentInfoService")) {
             return false;
         }

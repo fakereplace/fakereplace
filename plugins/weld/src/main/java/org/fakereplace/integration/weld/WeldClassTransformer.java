@@ -36,6 +36,7 @@ import javassist.bytecode.MethodInfo;
 import org.fakereplace.integration.weld.javassist.WeldProxyClassLoadingDelegate;
 import org.fakereplace.logging.Logger;
 import org.fakereplace.manip.VirtualToStaticManipulator;
+import org.fakereplace.replacement.notification.ChangedClassImpl;
 import org.fakereplace.transformation.FakereplaceTransformer;
 import org.fakereplace.util.DescriptorUtils;
 
@@ -48,7 +49,7 @@ public class WeldClassTransformer implements FakereplaceTransformer {
     public static final String ORG_JBOSS_WELD_BEAN_PROXY_PROXY_FACTORY = "org.jboss.weld.bean.proxy.ProxyFactory";
 
     @Override
-    public boolean transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, ClassFile file, Set<Class<?>> classesToRetransform) throws IllegalClassFormatException, BadBytecode {
+    public boolean transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, ClassFile file, Set<Class<?>> classesToRetransform, ChangedClassImpl changedClass) throws IllegalClassFormatException, BadBytecode {
 
         /**
          * Hack up the proxy factory so it stores the proxy ClassFile. We need this to regenerate proxies.
