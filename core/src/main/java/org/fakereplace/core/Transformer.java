@@ -80,14 +80,14 @@ public class Transformer implements FakereplaceTransformer {
         }
     }
 
-    public boolean transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, ClassFile file) throws IllegalClassFormatException, BadBytecode, DuplicateMemberException {
+    public boolean transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, ClassFile file, Set<Class<?>> classesToRetransform) throws IllegalClassFormatException, BadBytecode, DuplicateMemberException {
         boolean modified = false;
         try {
             if (classBeingRedefined != null) {
                 ClassDataStore.instance().markClassReplaced(classBeingRedefined);
             }
             for (FakereplaceTransformer i : integrationTransformers) {
-                if (i.transform(loader, className, classBeingRedefined, protectionDomain, file)) {
+                if (i.transform(loader, className, classBeingRedefined, protectionDomain, file, classesToRetransform)) {
                     modified = true;
                 }
             }
@@ -176,8 +176,10 @@ public class Transformer implements FakereplaceTransformer {
 
             Bytecode b = new Bytecode(file.getConstPool(), 5, 3);
             if (BuiltinClassData.skipInstrumentation(file.getSuperclass())) {
-                b.add(Bytecode.ACONST_NULL);
-                b.add(Bytecode.ARETURN);
+                b.addNew(NoSuchMethodError.class.getName());
+                b.add(Opcode.DUP);
+                b.addInvokespecial(NoSuchMethodError.class.getName(), "<init>", "()V");
+                b.add(Opcode.ATHROW);
             } else {
                 // delegate to the parent class
                 b.add(Bytecode.ALOAD_0);
@@ -197,8 +199,10 @@ public class Transformer implements FakereplaceTransformer {
             MethodInfo m = new MethodInfo(file.getConstPool(), Constants.ADDED_STATIC_METHOD_NAME, Constants.ADDED_STATIC_METHOD_DESCRIPTOR);
             m.setAccessFlags(AccessFlag.PUBLIC | AccessFlag.STATIC | AccessFlag.SYNTHETIC);
             Bytecode b = new Bytecode(file.getConstPool(), 5, 3);
-            b.add(Bytecode.ACONST_NULL);
-            b.add(Bytecode.ARETURN);
+            b.addNew(NoSuchMethodError.class.getName());
+            b.add(Opcode.DUP);
+            b.addInvokespecial(NoSuchMethodError.class.getName(), "<init>", "()V");
+            b.add(Opcode.ATHROW);
             CodeAttribute ca = b.toCodeAttribute();
             m.setCodeAttribute(ca);
             file.addMethod(m);

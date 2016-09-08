@@ -24,6 +24,7 @@ import java.lang.instrument.IllegalClassFormatException;
 import java.lang.reflect.Modifier;
 import java.security.ProtectionDomain;
 import java.util.List;
+import java.util.Set;
 
 import javassist.bytecode.BadBytecode;
 import javassist.bytecode.Bytecode;
@@ -50,7 +51,7 @@ public class ResteasyTransformer implements FakereplaceTransformer {
     public static final String RESTEASY_SERVLET_CONFIG = "org.fakereplace.integration.resteasy.ResteasyServletConfig";
 
     @Override
-    public boolean transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final ClassFile file) throws IllegalClassFormatException, BadBytecode {
+    public boolean transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final ClassFile file, Set<Class<?>> classesToRetransform) throws IllegalClassFormatException, BadBytecode {
 
         //we need to change the filter and servlet dispatchers to
         //capture the config they are initalized with.

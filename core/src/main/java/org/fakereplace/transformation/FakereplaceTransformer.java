@@ -21,6 +21,7 @@ package org.fakereplace.transformation;
 
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
+import java.util.Set;
 
 import javassist.bytecode.BadBytecode;
 import javassist.bytecode.ClassFile;
@@ -35,6 +36,6 @@ public interface FakereplaceTransformer {
     /**
      * Transforms a class, returning true if any modifications where made
      */
-    boolean transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final ClassFile file) throws IllegalClassFormatException, BadBytecode, DuplicateMemberException;
+    boolean transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final ClassFile file, Set<Class<?>> classesToRetransform) throws IllegalClassFormatException, BadBytecode, DuplicateMemberException;
 
 }

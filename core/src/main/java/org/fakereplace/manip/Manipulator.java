@@ -39,27 +39,27 @@ import org.fakereplace.manip.data.FakeMethodCallData;
  */
 public class Manipulator {
 
-    private final MethodInvokationManipulator methodInvokationManipulator = new MethodInvokationManipulator();
+    private final VirtualToStaticManipulator virtualToStaticManipulator = new VirtualToStaticManipulator();
     private final FieldManipulator instanceFieldManapulator = new FieldManipulator();
     private final ConstructorInvocationManipulator constructorInvocationManipulator = new ConstructorInvocationManipulator();
-    private final ConstructorAccessManipulator constructorAccessManipulator = new ConstructorAccessManipulator();
+    private final ReflectionConstructorAccessManipulator reflectionConstructorAccessManipulator = new ReflectionConstructorAccessManipulator();
     private final SubclassVirtualCallManipulator subclassVirtualCallManilulator = new SubclassVirtualCallManipulator();
     private final FinalMethodManipulator finalMethodManipulator = new FinalMethodManipulator();
-    private final FieldAccessManipulator fieldAccessManipulator = new FieldAccessManipulator();
-    private final MethodAccessManipulator methodAccessManipulator = new MethodAccessManipulator();
+    private final ReflectionFieldAccessManipulator reflectionFieldAccessManipulator = new ReflectionFieldAccessManipulator();
+    private final ReflectionMethodAccessManipulator reflectionMethodAccessManipulator = new ReflectionMethodAccessManipulator();
     private final FakeMethodCallManipulator fakeMethodCallManipulator = new FakeMethodCallManipulator();
 
     private final Set<ClassManipulator> manipulators = new CopyOnWriteArraySet<ClassManipulator>();
 
     public Manipulator() {
-        manipulators.add(methodInvokationManipulator);
+        manipulators.add(virtualToStaticManipulator);
         manipulators.add(instanceFieldManapulator);
         manipulators.add(constructorInvocationManipulator);
         manipulators.add(subclassVirtualCallManilulator);
         manipulators.add(finalMethodManipulator);
-        manipulators.add(fieldAccessManipulator);
-        manipulators.add(methodAccessManipulator);
-        manipulators.add(constructorAccessManipulator);
+        manipulators.add(reflectionFieldAccessManipulator);
+        manipulators.add(reflectionMethodAccessManipulator);
+        manipulators.add(reflectionConstructorAccessManipulator);
         manipulators.add(fakeMethodCallManipulator);
     }
 
@@ -92,11 +92,11 @@ public class Manipulator {
      * @param newStaticMethodDesc
      */
     public void replaceVirtualMethodInvokationWithStatic(String oldClass, String newClass, String methodName, String methodDesc, String newStaticMethodDesc, ClassLoader classLoader) {
-        methodInvokationManipulator.replaceVirtualMethodInvokationWithStatic(oldClass, newClass, methodName, methodDesc, newStaticMethodDesc, classLoader);
+        virtualToStaticManipulator.replaceVirtualMethodInvokationWithStatic(oldClass, newClass, methodName, methodDesc, newStaticMethodDesc, classLoader);
     }
 
     public void replaceVirtualMethodInvokationWithLocal(String oldClass, String methodName, String newMethodName, String methodDesc, String newStaticMethodDesc, ClassLoader classLoader) {
-        methodInvokationManipulator.replaceVirtualMethodInvokationWithLocal(oldClass, methodName, newMethodName, methodDesc, newStaticMethodDesc, classLoader);
+        virtualToStaticManipulator.replaceVirtualMethodInvokationWithLocal(oldClass, methodName, newMethodName, methodDesc, newStaticMethodDesc, classLoader);
     }
 
     public void addFakeMethodCallRewrite(FakeMethodCallData fakeMethodCallData) {
@@ -104,24 +104,29 @@ public class Manipulator {
     }
 
     public boolean transformClass(ClassFile file, ClassLoader classLoader, boolean modifiable) throws BadBytecode {
-        boolean modified = false;
+        try {
+            boolean modified = false;
 
-        final Set<MethodInfo> modifiedMethods = new HashSet<MethodInfo>();
-        // first we are going to transform virtual method calls to static ones
-        for (ClassManipulator m : manipulators) {
-            if (m.transformClass(file, classLoader, modifiable, modifiedMethods)) {
-                modified = true;
+            final Set<MethodInfo> modifiedMethods = new HashSet<MethodInfo>();
+            // first we are going to transform virtual method calls to static ones
+            for (ClassManipulator m : manipulators) {
+                if (m.transformClass(file, classLoader, modifiable, modifiedMethods)) {
+                    modified = true;
+                }
             }
-        }
-        if(!modifiedMethods.isEmpty()) {
-            ClassPool classPool = new ClassPool();
-            classPool.appendSystemPath();
-            classPool.appendClassPath(new LoaderClassPath(classLoader));
-            for (MethodInfo m : modifiedMethods) {
-                m.rebuildStackMap(classPool);
+            if (!modifiedMethods.isEmpty()) {
+                ClassPool classPool = new ClassPool();
+                classPool.appendSystemPath();
+                classPool.appendClassPath(new LoaderClassPath(classLoader));
+                for (MethodInfo m : modifiedMethods) {
+                    m.rebuildStackMap(classPool);
+                }
             }
+            return modified;
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            throw e;
         }
-        return modified;
     }
 
 }

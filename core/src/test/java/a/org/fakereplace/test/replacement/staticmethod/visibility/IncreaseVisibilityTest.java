@@ -29,7 +29,7 @@ import org.junit.Test;
 
 public class IncreaseVisibilityTest {
     @BeforeClass
-    public static void setup() {
+    public static void setup() throws InterruptedException {
         ClassReplacer r = new ClassReplacer();
         r.queueClassForReplacement(StaticMethodVisibilityCallingClass.class, StaticMethodVisibilityCallingClass1.class);
         r.queueClassForReplacement(StaticMethodVisibilityClass.class, StaticMethodVisibilityClass1.class);
@@ -38,16 +38,16 @@ public class IncreaseVisibilityTest {
 
     @Test
     public void testExistingMethod() {
-        Assert.assertEquals("helo world", StaticMethodVisibilityClass.callingMethod());
+        Assert.assertEquals("hello world", StaticMethodVisibilityClass.callingMethod());
     }
 
     @Test
     public void testNewExternalMethod() {
-        Assert.assertEquals("helo world", StaticMethodVisibilityCallingClass.callingClass());
+        Assert.assertEquals("hello world", StaticMethodVisibilityCallingClass.callingClass());
     }
 
     @Test
     public void testUnchangedClassCallingExternalMethod() {
-        Assert.assertEquals("helo world", UnchangedStaticMethodCallingClass.callingClass());
+        Assert.assertEquals("hello world", UnchangedStaticMethodCallingClass.callingClass());
     }
 }

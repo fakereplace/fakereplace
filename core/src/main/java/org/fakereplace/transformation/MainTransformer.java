@@ -29,7 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
-import java.lang.reflect.Field;
+import java.lang.instrument.UnmodifiableClassException;
 import java.net.URL;
 import java.security.ProtectionDomain;
 import java.util.Collections;
@@ -44,13 +44,13 @@ import javassist.ClassPool;
 import javassist.LoaderClassPath;
 import javassist.bytecode.BadBytecode;
 import javassist.bytecode.ClassFile;
-import javassist.bytecode.FieldInfo;
 import javassist.bytecode.MethodInfo;
 import org.fakereplace.api.ClassChangeAware;
 import org.fakereplace.api.Extension;
 import org.fakereplace.api.environment.CurrentEnvironment;
 import org.fakereplace.api.environment.Environment;
 import org.fakereplace.com.google.common.collect.MapMaker;
+import org.fakereplace.core.Agent;
 import org.fakereplace.core.AgentOption;
 import org.fakereplace.core.AgentOptions;
 import org.fakereplace.core.ClassChangeNotifier;
@@ -61,6 +61,8 @@ import org.fakereplace.logging.Logger;
  * @author Stuart Douglas
  */
 public class MainTransformer implements ClassFileTransformer {
+
+    private static final Logger log = Logger.getLogger(MainTransformer.class);
 
     private volatile FakereplaceTransformer[] transformers = {};
 
@@ -120,12 +122,12 @@ public class MainTransformer implements ClassFileTransformer {
         if (UnmodifiedFileIndex.isClassUnmodified(className)) {
             return null;
         }
-
+        Set<Class<?>> classesToRetransform = new HashSet<>();
         final ClassFile file;
         try {
             file = new ClassFile(new DataInputStream(new ByteArrayInputStream(classfileBuffer)));
             for (final FakereplaceTransformer transformer : transformers) {
-                if (transformer.transform(loader, className, classBeingRedefined, protectionDomain, file)) {
+                if (transformer.transform(loader, className, classBeingRedefined, protectionDomain, file, classesToRetransform)) {
                     changed = true;
                 }
             }
@@ -159,6 +161,19 @@ public class MainTransformer implements ClassFileTransformer {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+                }
+
+                if(!classesToRetransform.isEmpty()) {
+                    //this kinda sucks, as it is a little bit racey
+                    //TODO: need to figure put a test suite fix for this
+                    Thread t = new Thread(() -> {
+                        try {
+                            Agent.getInstrumentation().retransformClasses(classesToRetransform.toArray(new Class[classesToRetransform.size()]));
+                        } catch (UnmodifiableClassException e) {
+                            log.debug("Failed to retransform classes", e);
+                        }
+                    });
+                    t.start();
                 }
                 return bs.toByteArray();
             }

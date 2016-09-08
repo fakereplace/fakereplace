@@ -41,7 +41,9 @@ public class VirtualMethodTest {
     public static void setup() {
         ClassReplacer rep = new ClassReplacer();
         rep.queueClassForReplacement(VirtualClass.class, VirtualClass1.class);
+        rep.replaceQueuedClasses();
         rep.queueClassForReplacement(VirtualCaller.class, VirtualCaller1.class);
+        rep.replaceQueuedClasses();
         rep.queueClassForReplacement(NoSupChild.class, NoSupChild1.class);
         rep.replaceQueuedClasses();
     }
@@ -237,6 +239,23 @@ public class VirtualMethodTest {
     public void testOverrideWithSuperclassNotLoadedOtherChildNotChanged() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
         NoSupUnmodifiedChild c = new NoSupUnmodifiedChild();
         Assert.assertEquals("NoSupUnmodifiedChild", c.getStuff(0, 0, "", 0, 0));
+    }
+
+    @Test
+    public void testReplacementOrder() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+        ClassReplacer cr = new ClassReplacer();
+        OrderCaller orderCaller = new OrderCaller();
+        Assert.assertEquals("bye", orderCaller.getMessage());
+        cr.queueClassForReplacement(OrderCaller.class, OrderCaller1.class);
+        cr.rewriteNames(OrderClass.class, OrderClass1.class);
+        cr.replaceQueuedClasses();
+        try {
+            orderCaller.getMessage();
+            Assert.fail();
+        } catch (NoSuchMethodError expected) {}
+        cr.queueClassForReplacement(OrderClass.class, OrderClass1.class);
+        cr.replaceQueuedClasses();
+        Assert.assertEquals("hello", orderCaller.getMessage());
     }
 
     public String getString(Object o) {

@@ -21,6 +21,7 @@ package a.org.fakereplace.test.util;
 
 import java.lang.instrument.ClassDefinition;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -35,7 +36,7 @@ public class ClassReplacer {
 
     private final Map<String, String> nameReplacements = new HashMap<String, String>();
 
-    private final Map<Class<?>, Class<?>> queuedClassReplacements = new HashMap<Class<?>, Class<?>>();
+    private final Map<Class<?>, Class<?>> queuedClassReplacements = new LinkedHashMap<Class<?>, Class<?>>();
 
     private final Map<Class<?>, String> addedClasses = new HashMap<Class<?>, String>();
 

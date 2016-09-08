@@ -24,6 +24,7 @@ import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javassist.ClassPool;
 import javassist.LoaderClassPath;
@@ -34,7 +35,7 @@ import javassist.bytecode.CodeIterator;
 import javassist.bytecode.MethodInfo;
 import org.fakereplace.integration.weld.javassist.WeldProxyClassLoadingDelegate;
 import org.fakereplace.logging.Logger;
-import org.fakereplace.manip.MethodInvokationManipulator;
+import org.fakereplace.manip.VirtualToStaticManipulator;
 import org.fakereplace.transformation.FakereplaceTransformer;
 import org.fakereplace.util.DescriptorUtils;
 
@@ -47,7 +48,7 @@ public class WeldClassTransformer implements FakereplaceTransformer {
     public static final String ORG_JBOSS_WELD_BEAN_PROXY_PROXY_FACTORY = "org.jboss.weld.bean.proxy.ProxyFactory";
 
     @Override
-    public boolean transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, ClassFile file) throws IllegalClassFormatException, BadBytecode {
+    public boolean transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, ClassFile file, Set<Class<?>> classesToRetransform) throws IllegalClassFormatException, BadBytecode {
 
         /**
          * Hack up the proxy factory so it stores the proxy ClassFile. We need this to regenerate proxies.
@@ -55,11 +56,11 @@ public class WeldClassTransformer implements FakereplaceTransformer {
         if (file.getName().equals(ORG_JBOSS_WELD_BEAN_PROXY_PROXY_FACTORY)) {
             for (final MethodInfo method : (List<MethodInfo>) file.getMethods()) {
                 if (method.getName().equals("createProxyClass")) {
-                    final MethodInvokationManipulator methodInvokationManipulator = new MethodInvokationManipulator();
-                    methodInvokationManipulator.replaceVirtualMethodInvokationWithStatic(ClassLoader.class.getName(), WeldProxyClassLoadingDelegate.class.getName(), "loadClass", "(Ljava/lang/String;)Ljava/lang/Class;", "(Ljava/lang/ClassLoader;Ljava/lang/String;)Ljava/lang/Class;", loader);
-                    methodInvokationManipulator.replaceVirtualMethodInvokationWithStatic("org.jboss.weld.util.bytecode.ClassFileUtils", WeldProxyClassLoadingDelegate.class.getName(), "toClass", "(Lorg/jboss/classfilewriter/ClassFile;Ljava/lang/ClassLoader;Ljava/security/ProtectionDomain;)Ljava/lang/Class;", "(Lorg/jboss/classfilewriter/ClassFile;Ljava/lang/ClassLoader;Ljava/security/ProtectionDomain;)Ljava/lang/Class;", loader);
+                    final VirtualToStaticManipulator virtualToStaticManipulator = new VirtualToStaticManipulator();
+                    virtualToStaticManipulator.replaceVirtualMethodInvokationWithStatic(ClassLoader.class.getName(), WeldProxyClassLoadingDelegate.class.getName(), "loadClass", "(Ljava/lang/String;)Ljava/lang/Class;", "(Ljava/lang/ClassLoader;Ljava/lang/String;)Ljava/lang/Class;", loader);
+                    virtualToStaticManipulator.replaceVirtualMethodInvokationWithStatic("org.jboss.weld.util.bytecode.ClassFileUtils", WeldProxyClassLoadingDelegate.class.getName(), "toClass", "(Lorg/jboss/classfilewriter/ClassFile;Ljava/lang/ClassLoader;Ljava/security/ProtectionDomain;)Ljava/lang/Class;", "(Lorg/jboss/classfilewriter/ClassFile;Ljava/lang/ClassLoader;Ljava/security/ProtectionDomain;)Ljava/lang/Class;", loader);
                     HashSet<MethodInfo> modifiedMethods = new HashSet<MethodInfo>();
-                    methodInvokationManipulator.transformClass(file, loader, true, modifiedMethods);
+                    virtualToStaticManipulator.transformClass(file, loader, true, modifiedMethods);
                     if(!modifiedMethods.isEmpty()) {
                         ClassPool classPool = new ClassPool();
                         classPool.appendSystemPath();

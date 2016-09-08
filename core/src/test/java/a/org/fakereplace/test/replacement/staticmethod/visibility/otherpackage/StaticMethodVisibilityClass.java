@@ -21,7 +21,7 @@ package a.org.fakereplace.test.replacement.staticmethod.visibility.otherpackage;
 
 public class StaticMethodVisibilityClass {
     static String method() {
-        return "helo";
+        return "hello";
     }
 
     public static String callingMethod() {

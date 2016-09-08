@@ -12,13 +12,14 @@ import org.fakereplace.transformation.FakereplaceTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Stuart Douglas
  */
 public class WildflyClassTransformer implements FakereplaceTransformer {
     @Override
-    public boolean transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, ClassFile file) throws IllegalClassFormatException, BadBytecode, DuplicateMemberException {
+    public boolean transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, ClassFile file, Set<Class<?>> classesToRetransform) throws IllegalClassFormatException, BadBytecode, DuplicateMemberException {
         if(!file.getName().equals("org.wildfly.extension.undertow.deployment.UndertowDeploymentInfoService")) {
             return false;
         }

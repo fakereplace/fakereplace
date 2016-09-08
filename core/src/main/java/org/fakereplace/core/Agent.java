@@ -20,22 +20,6 @@
 
 package org.fakereplace.core;
 
-import javassist.bytecode.ClassFile;
-import org.fakereplace.api.Extension;
-import org.fakereplace.api.NewClassData;
-import org.fakereplace.classloading.ClassLookupManager;
-import org.fakereplace.data.ClassDataStore;
-import org.fakereplace.replacement.AddedClass;
-import org.fakereplace.replacement.AnnotationTransformer;
-import org.fakereplace.replacement.ClassRedefiner;
-import org.fakereplace.replacement.FieldReplacementTransformer;
-import org.fakereplace.replacement.ReplacementResult;
-import org.fakereplace.replacement.notification.CurrentChangedClasses;
-import org.fakereplace.server.FakereplaceServer;
-import org.fakereplace.transformation.ClassLoaderTransformer;
-import org.fakereplace.transformation.MainTransformer;
-import org.fakereplace.transformation.UnmodifiedFileIndex;
-
 import java.beans.Introspector;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
@@ -52,6 +36,23 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.Set;
+
+import org.fakereplace.api.Extension;
+import org.fakereplace.api.NewClassData;
+import org.fakereplace.classloading.ClassLookupManager;
+import org.fakereplace.data.BaseClassData;
+import org.fakereplace.data.ClassDataBuilder;
+import org.fakereplace.data.ClassDataStore;
+import org.fakereplace.replacement.AddedClass;
+import org.fakereplace.replacement.AnnotationTransformer;
+import org.fakereplace.replacement.FieldReplacementTransformer;
+import org.fakereplace.replacement.MethodReplacementTransformer;
+import org.fakereplace.replacement.notification.CurrentChangedClasses;
+import org.fakereplace.server.FakereplaceServer;
+import org.fakereplace.transformation.ClassLoaderTransformer;
+import org.fakereplace.transformation.MainTransformer;
+import org.fakereplace.transformation.UnmodifiedFileIndex;
+import javassist.bytecode.ClassFile;
 
 /**
  * The agent entry point.
@@ -99,6 +100,7 @@ public class Agent {
         }
         mainTransformer.addTransformer(new AnnotationTransformer());
         mainTransformer.addTransformer(new FieldReplacementTransformer());
+        mainTransformer.addTransformer(new MethodReplacementTransformer());
         mainTransformer.addTransformer(new Transformer(extension));
 
         //start the server
@@ -120,19 +122,20 @@ public class Agent {
             for (ClassDefinition i : classes) {
 
                 System.out.println("Fakereplace is replacing class " + i.getDefinitionClass());
+
                 changedClasses.add(i.getDefinitionClass());
                 ClassDataStore.instance().markClassReplaced(i.getDefinitionClass());
+                BaseClassData baseClassData = ClassDataStore.instance().getBaseClassData(i.getDefinitionClass().getClassLoader(), i.getDefinitionClass().getName());
+                if(baseClassData != null) {
+                    ClassDataStore.instance().saveClassData(i.getDefinitionClass().getClassLoader(), i.getDefinitionClass().getName(), new ClassDataBuilder(baseClassData));
+                }
             }
             CurrentChangedClasses.prepareClasses(changedClasses);
             // re-write the classes so their field
-            ReplacementResult result = ClassRedefiner.rewriteLoadedClasses(classes);
             for (AddedClass c : addedData) {
                 ClassLookupManager.addClassInfo(c.getClassName(), c.getLoader(), c.getData());
             }
-            inst.redefineClasses(result.getClasses());
-            if (!result.getClassesToRetransform().isEmpty()) {
-                inst.retransformClasses(result.getClassesToRetransform().toArray(new Class[result.getClassesToRetransform().size()]));
-            }
+            inst.redefineClasses(classes);
             Introspector.flushCaches();
 
             ClassChangeNotifier.instance().afterChange(Collections.unmodifiableList(CurrentChangedClasses.getChanged()), Collections.unmodifiableList(addedClass));

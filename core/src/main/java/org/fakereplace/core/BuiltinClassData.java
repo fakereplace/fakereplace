@@ -28,7 +28,7 @@ public class BuiltinClassData {
 
     public static boolean skipInstrumentation(String className) {
         if(className == null) {
-            return false;
+            return true;
         }
         className = className.replace('.', '/');
         for (String s : exceptions) {

@@ -107,4 +107,21 @@ public class ConstructorTest {
         Creator c = new Creator();
         c.doStuff();
     }
+
+    @Test
+    public void testReplacementOrder() throws SecurityException, IllegalArgumentException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+        Assert.assertEquals("old", new ConstructorOrderCaller().getOrder().getData());
+        ClassReplacer rep = new ClassReplacer();
+        rep.queueClassForReplacement(ConstructorOrderCaller.class, ConstructorOrderCaller1.class);
+        rep.rewriteNames(ConstructorOrderClass.class, ConstructorOrderClass1.class);
+        rep.replaceQueuedClasses();
+        try {
+            String res = new ConstructorOrderCaller().getOrder().getData();
+            Assert.fail(res);
+        } catch (NoSuchMethodError expected) {
+        }
+        rep.queueClassForReplacement(ConstructorOrderClass.class, ConstructorOrderClass1.class);
+        rep.replaceQueuedClasses();
+        Assert.assertEquals("new", new ConstructorOrderCaller().getOrder().getData());
+    }
 }

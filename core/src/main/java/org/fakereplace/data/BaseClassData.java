@@ -162,4 +162,13 @@ public class BaseClassData {
         }
         return null;
     }
+
+    public MethodData getMethodOrConstructor(String methodName, String methodDesc) {
+        for(MethodData method : methods) {
+            if(method.getMethodName().equals(methodName) && method.getDescriptor().equals(methodDesc)) {
+                return method;
+            }
+        }
+        return null;
+    }
 }

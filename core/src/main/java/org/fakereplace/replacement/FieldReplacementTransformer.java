@@ -115,8 +115,8 @@ public class FieldReplacementTransformer implements FakereplaceTransformer {
     }
 
     @Override
-    public boolean transform(ClassLoader loader, String className, Class<?> oldClass, ProtectionDomain protectionDomain, ClassFile file) throws IllegalClassFormatException, BadBytecode, DuplicateMemberException {
-        if (oldClass == null) {
+    public boolean transform(ClassLoader loader, String className, Class<?> oldClass, ProtectionDomain protectionDomain, ClassFile file, Set<Class<?>> classesToRetransform) throws IllegalClassFormatException, BadBytecode, DuplicateMemberException {
+        if (oldClass == null || className == null) {
             return false;
         }
 

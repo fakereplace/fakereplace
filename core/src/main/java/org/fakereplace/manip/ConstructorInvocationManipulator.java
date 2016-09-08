@@ -25,17 +25,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.fakereplace.api.environment.CurrentEnvironment;
+import org.fakereplace.core.Constants;
+import org.fakereplace.data.BaseClassData;
+import org.fakereplace.data.ClassDataStore;
+import org.fakereplace.data.MethodData;
+import org.fakereplace.logging.Logger;
+import org.fakereplace.manip.data.ConstructorRewriteData;
+import org.fakereplace.manip.util.ManipulationDataStore;
+import org.fakereplace.manip.util.ManipulationUtils;
+import org.fakereplace.runtime.MethodIdentifierStore;
 import javassist.bytecode.Bytecode;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.CodeIterator;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.Opcode;
-import org.fakereplace.core.Constants;
-import org.fakereplace.logging.Logger;
-import org.fakereplace.manip.data.ConstructorRewriteData;
-import org.fakereplace.manip.util.ManipulationDataStore;
-import org.fakereplace.manip.util.ManipulationUtils;
 
 public class ConstructorInvocationManipulator implements ClassManipulator {
 
@@ -57,40 +62,46 @@ public class ConstructorInvocationManipulator implements ClassManipulator {
     }
 
     public boolean transformClass(ClassFile file, ClassLoader loader, boolean modifiableClass, final Set<MethodInfo> modifiedMethods) {
-        Map<String, Set<ConstructorRewriteData>> constructorRewrites = data.getManipulationData(loader);
-        if (constructorRewrites.isEmpty()) {
-            return false;
-        }
+        Map<String, Set<ConstructorRewriteData>> constructorRewrites = new HashMap<>(data.getManipulationData(loader));
         Map<Integer, ConstructorRewriteData> methodCallLocations = new HashMap<Integer, ConstructorRewriteData>();
-        Integer newCallLocation = null;
         // first we need to scan the constant pool looking for
         // CONSTANT_method_info_ref structures
         ConstPool pool = file.getConstPool();
         for (int i = 1; i < pool.getSize(); ++i) {
             // we have a method call
             if (pool.getTag(i) == ConstPool.CONST_Methodref) {
-                if (constructorRewrites.containsKey(pool.getMethodrefClassName(i))) {
-                    for (ConstructorRewriteData data : constructorRewrites.get(pool.getMethodrefClassName(i))) {
-                        if (pool.getMethodrefName(i).equals("<init>") && pool.getMethodrefType(i).equals(data.getMethodDesc())) {
-                            // store the location in the const pool of the method ref
-                            methodCallLocations.put(i, data);
-                            // we have found a method call
-                            // now lets replace it
-
-                            // if we have not already stored a reference to the
-                            // refinied constructor
-                            // in the const pool
-                            if (newCallLocation == null) {
-                                // we have not added the new class reference or
-                                // the new call location to the class pool yet
-                                int classIndex = pool.getMethodrefClass(i);
-
-                                int newNameAndType = pool.addNameAndTypeInfo("<init>", Constants.ADDED_CONSTRUCTOR_DESCRIPTOR);
-                                newCallLocation = pool.addMethodrefInfo(classIndex, newNameAndType);
+                boolean handled = false;
+                String className = pool.getMethodrefClassName(i);
+                String methodDesc = pool.getMethodrefType(i);
+                String methodName = pool.getMethodrefName(i);
+                if(methodName.equals("<init>")) {
+                    if (constructorRewrites.containsKey(className)) {
+                        for (ConstructorRewriteData data : constructorRewrites.get(className)) {
+                            if (methodDesc.equals(data.getMethodDesc())) {
+                                // store the location in the const pool of the method ref
+                                methodCallLocations.put(i, data);
+                                // we have found a method call
+                                // now lets replace it
+                                handled = true;
+                                break;
                             }
-                            break;
                         }
+                    }
 
+                    if (!handled && CurrentEnvironment.getEnvironment().isClassReplaceable(className, loader)) {
+                        //may be an added field
+                        //if the field does not actually exist yet we just assume it is about to come into existence
+                        //and rewrite it anyway
+                        BaseClassData data = ClassDataStore.instance().getBaseClassData(loader, className);
+                        if (data != null) {
+                            MethodData method = data.getMethodOrConstructor("<init>", methodDesc);
+                            if (method == null) {
+                                //this is a new method
+                                //lets deal with it
+                                int methodNo = MethodIdentifierStore.instance().getMethodNumber("<init>", methodDesc);
+                                methodCallLocations.put(i, new ConstructorRewriteData(className, methodDesc, methodNo, loader));
+                            }
+                        }
                     }
                 }
             }
@@ -98,7 +109,7 @@ public class ConstructorInvocationManipulator implements ClassManipulator {
 
         // this means we found an instance of the call, now we have to iterate
         // through the methods and replace instances of the call
-        if (newCallLocation != null) {
+        if (!methodCallLocations.isEmpty()) {
             List<MethodInfo> methods = file.getMethods();
             for (MethodInfo m : methods) {
                 try {
@@ -130,8 +141,7 @@ public class ConstructorInvocationManipulator implements ClassManipulator {
 
                                 Bytecode bc = new Bytecode(file.getConstPool());
                                 ManipulationUtils.pushParametersIntoArray(bc, data.getMethodDesc());
-                                // so now our stack looks like unconstructed instance :
-                                // array
+                                // so now our stack looks like unconstructed instance : array
                                 // we need unconstructed instance : int : array : null
                                 bc.addIconst(data.getMethodNo());
                                 bc.add(Opcode.SWAP);

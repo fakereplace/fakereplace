@@ -187,7 +187,10 @@ public class ManipulationUtils {
         }
         // all our args should be pushed onto the stack, call the constructor
         code.addInvokespecial(file.getName(), "<init>", constructorToCall.getDescriptor());
-        code.add(Opcode.RETURN);
+        code.addNew(NoSuchMethodError.class.getName());
+        code.add(Opcode.DUP);
+        code.addInvokespecial(NoSuchMethodError.class.getName(), "<init>", "()V");
+        code.add(Opcode.ATHROW);
         return true;
     }
 

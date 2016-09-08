@@ -2,6 +2,7 @@ package org.fakereplace.replacement;
 
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
+import java.util.Set;
 
 import org.fakereplace.data.AnnotationDataStore;
 import org.fakereplace.transformation.FakereplaceTransformer;
@@ -16,7 +17,7 @@ import javassist.bytecode.DuplicateMemberException;
 public class AnnotationTransformer implements FakereplaceTransformer {
 
     @Override
-    public boolean transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, ClassFile file) throws IllegalClassFormatException, BadBytecode, DuplicateMemberException {
+    public boolean transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, ClassFile file, Set<Class<?>> classesToRetransform) throws IllegalClassFormatException, BadBytecode, DuplicateMemberException {
         if(classBeingRedefined != null) {
             AnnotationsAttribute newAns = (AnnotationsAttribute) file.getAttribute(AnnotationsAttribute.visibleTag);
             AnnotationDataStore.recordClassAnnotations(classBeingRedefined, newAns);
