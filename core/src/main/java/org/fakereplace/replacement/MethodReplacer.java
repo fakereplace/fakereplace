@@ -42,7 +42,6 @@ import javassist.bytecode.ClassFile;
 import javassist.bytecode.CodeAttribute;
 import javassist.bytecode.CodeIterator;
 import javassist.bytecode.ConstPool;
-import javassist.bytecode.Descriptor;
 import javassist.bytecode.DuplicateMemberException;
 import javassist.bytecode.ExceptionsAttribute;
 import javassist.bytecode.MethodInfo;
@@ -60,6 +59,7 @@ import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.data.MemberType;
 import org.fakereplace.data.MethodData;
 import org.fakereplace.logging.Logger;
+import org.fakereplace.manip.data.FakeMethodCallData;
 import org.fakereplace.manip.util.Boxing;
 import org.fakereplace.manip.util.ManipulationUtils;
 import org.fakereplace.manip.util.ManipulationUtils.MethodReturnRewriter;
@@ -426,11 +426,7 @@ public class MethodReplacer {
             }
             String proxyName = generateProxyInvocationBytecode(mInfo, methodCount, file.getName(), loader, staticMethod, file.isInterface());
             ClassDataStore.instance().registerProxyName(oldClass, proxyName);
-            String newMethodDesc = mInfo.getDescriptor();
-            if (!staticMethod) {
-                newMethodDesc = "(L" + Descriptor.toJvmName(file.getName()) + ";" + newMethodDesc.substring(1);
-            }
-            Transformer.getManipulator().replaceVirtualMethodInvokationWithStatic(file.getName(), proxyName, mInfo.getName(), mInfo.getDescriptor(), newMethodDesc, loader);
+            Transformer.getManipulator().addFakeMethodCallRewrite(new FakeMethodCallData(file.getName(), mInfo.getName(), mInfo.getDescriptor(), staticMethod ? FakeMethodCallData.Type.STATIC : file.isInterface() ? FakeMethodCallData.Type.INTERFACE : FakeMethodCallData.Type.VIRTUAL, loader, methodCount));
 
             MethodData md = builder.addFakeMethod(mInfo.getName(), mInfo.getDescriptor(), proxyName, mInfo.getAccessFlags());
             ClassDataStore.instance().registerReplacedMethod(proxyName, md);

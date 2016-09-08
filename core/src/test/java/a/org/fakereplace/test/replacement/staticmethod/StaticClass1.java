@@ -93,4 +93,7 @@ public class StaticClass1 {
         return ret;
     }
 
+    public static String getString() {
+        return "hello";
+    }
 }

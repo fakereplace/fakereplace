@@ -30,6 +30,7 @@ import javassist.bytecode.BadBytecode;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.MethodInfo;
 import org.fakereplace.manip.data.AddedFieldData;
+import org.fakereplace.manip.data.FakeMethodCallData;
 
 /**
  * Class that maintains a set of manipulations to apply to classes
@@ -46,6 +47,7 @@ public class Manipulator {
     private final FinalMethodManipulator finalMethodManipulator = new FinalMethodManipulator();
     private final FieldAccessManipulator fieldAccessManipulator = new FieldAccessManipulator();
     private final MethodAccessManipulator methodAccessManipulator = new MethodAccessManipulator();
+    private final FakeMethodCallManipulator fakeMethodCallManipulator = new FakeMethodCallManipulator();
 
     private final Set<ClassManipulator> manipulators = new CopyOnWriteArraySet<ClassManipulator>();
 
@@ -58,6 +60,7 @@ public class Manipulator {
         manipulators.add(fieldAccessManipulator);
         manipulators.add(methodAccessManipulator);
         manipulators.add(constructorAccessManipulator);
+        manipulators.add(fakeMethodCallManipulator);
     }
 
     public void removeRewrites(String className, ClassLoader classLoader) {
@@ -94,6 +97,10 @@ public class Manipulator {
 
     public void replaceVirtualMethodInvokationWithLocal(String oldClass, String methodName, String newMethodName, String methodDesc, String newStaticMethodDesc, ClassLoader classLoader) {
         methodInvokationManipulator.replaceVirtualMethodInvokationWithLocal(oldClass, methodName, newMethodName, methodDesc, newStaticMethodDesc, classLoader);
+    }
+
+    public void addFakeMethodCallRewrite(FakeMethodCallData fakeMethodCallData) {
+        fakeMethodCallManipulator.addFakeMethodCall(fakeMethodCallData);
     }
 
     public boolean transformClass(ClassFile file, ClassLoader classLoader, boolean modifiable) throws BadBytecode {

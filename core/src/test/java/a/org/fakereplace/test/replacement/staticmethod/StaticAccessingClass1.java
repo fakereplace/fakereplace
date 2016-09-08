@@ -24,6 +24,12 @@ import org.fakereplace.util.NoInstrument;
 @NoInstrument
 public class StaticAccessingClass1 {
 
+    String getString() {
+        String s = StaticClass1.getString();
+        System.out.println(s.length());
+        return s;
+    }
+
     public static int getInt() {
         return StaticClass1.getInt();
     }
