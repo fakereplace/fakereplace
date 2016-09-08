@@ -83,6 +83,12 @@ public class MainTransformer implements ClassFileTransformer {
     private volatile long integrationTime;
     private final Timer timer = new Timer("Fakereplace integration timer");
 
+    /**
+     * as some tasks are run asyncronously this allows external agents to wait for them to complete
+     */
+    private int outstandingCount;
+    private boolean waitingForIntegration;
+
     public MainTransformer(Set<Extension> extension) {
         Map<String, Extension> integrationClassTriggers = new HashMap<String, Extension>();
         for (Extension i : extension) {
@@ -179,6 +185,9 @@ public class MainTransformer implements ClassFileTransformer {
                 }
 
                 if (!classesToRetransform.isEmpty()) {
+                    synchronized (this) {
+                        outstandingCount++;
+                    }
                     //this kinda sucks, as it is a little bit racey
                     //TODO: need to figure put a test suite fix for this
                     Thread t = new Thread(() -> {
@@ -186,12 +195,23 @@ public class MainTransformer implements ClassFileTransformer {
                             Agent.getInstrumentation().retransformClasses(classesToRetransform.toArray(new Class[classesToRetransform.size()]));
                         } catch (UnmodifiableClassException e) {
                             log.debug("Failed to retransform classes", e);
+                        } finally {
+                            synchronized (MainTransformer.this) {
+                                outstandingCount--;
+                                notifyAll();
+                            }
                         }
                     });
                     t.start();
                 }
 
                 if (classBeingRedefined != null) {
+                    synchronized (this) {
+                        if (!waitingForIntegration) {
+                            waitingForIntegration = true;
+                            outstandingCount++;
+                        }
+                    }
                     changedClasses.add(changedClass);
                     integrationTime = System.currentTimeMillis() + INTEGRATION_WAIT_TIME;
                     timer.schedule(new IntegrationTask(), INTEGRATION_WAIT_TIME);
@@ -237,38 +257,51 @@ public class MainTransformer implements ClassFileTransformer {
         if (resource == null) {
             throw new RuntimeException("Could not load integration class " + name);
         }
-        InputStream in = null;
-        try {
-            in = resource.openStream();
+        try (InputStream in = resource.openStream()) {
             return org.fakereplace.util.FileReader.readFileBytes(resource.openStream());
         } catch (Exception e) {
             throw new RuntimeException(e);
-        } finally {
-            try {
-                if (in != null) {
-                    in.close();
-                }
-            } catch (IOException e) {
-            }
         }
     }
 
     public void runIntegration() {
-        List<ChangedClass> changes;
-        List<NewClassData> added;
-        synchronized (this) {
-            changes = new ArrayList<>(changedClasses);
-            changedClasses.clear();
-            added = new ArrayList<>(addedClasses);
-            addedClasses.clear();
-        }
-        if (!changes.isEmpty() || !added.isEmpty()) {
-            ClassChangeNotifier.instance().afterChange(changes, added);
+        try {
+            List<ChangedClass> changes;
+            List<NewClassData> added;
+            synchronized (this) {
+                changes = new ArrayList<>(changedClasses);
+                changedClasses.clear();
+                added = new ArrayList<>(addedClasses);
+                addedClasses.clear();
+            }
+            if (!changes.isEmpty() || !added.isEmpty()) {
+                ClassChangeNotifier.instance().afterChange(changes, added);
+            }
+        } finally {
+            synchronized (this) {
+                if (waitingForIntegration) {
+                    waitingForIntegration = false;
+                    outstandingCount--;
+                    notifyAll();
+                }
+            }
         }
     }
 
     public synchronized void addNewClass(NewClassData newClassData) {
         addedClasses.add(newClassData);
+    }
+
+    public void waitForTasks() {
+        synchronized (this) {
+            while (outstandingCount > 0) {
+                try {
+                    wait();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
     }
 
     private class IntegrationTask extends TimerTask {
@@ -280,6 +313,4 @@ public class MainTransformer implements ClassFileTransformer {
             runIntegration();
         }
     }
-
-    ;
 }

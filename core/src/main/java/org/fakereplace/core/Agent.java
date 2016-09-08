@@ -124,6 +124,7 @@ public class Agent {
             inst.redefineClasses(classes);
             Introspector.flushCaches();
             mainTransformer.runIntegration();
+            mainTransformer.waitForTasks();
         } catch (Throwable e) {
             try {
                 // dump the classes to /tmp so we can look at them
