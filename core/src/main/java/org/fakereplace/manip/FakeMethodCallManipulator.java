@@ -154,37 +154,7 @@ public class FakeMethodCallManipulator implements ClassManipulator {
                                 // stick the method number in the const pool then load it onto the
                                 // stack
 
-                                String[] types = DescriptorUtils.descriptorStringToParameterArray(data.getMethodDesc());
-                                // create a new array the same size as the parameter array
-                                int typesLength = byteCode.getConstPool().addIntegerInfo(types.length);
-                                byteCode.addLdc(typesLength);
-                                // create new array to use to pass our parameters
-                                byteCode.addAnewarray("java.lang.Object");
-                                for (int i = types.length - 1; i >= 0; --i) {
-                                    // duplicate the array reference on the stack
-                                    boolean wide = DescriptorUtils.isWide(types[i]);
-                                    if(wide) {
-                                        byteCode.add(Opcode.DUP_X2);
-                                        byteCode.add(Opcode.DUP_X2);
-                                        byteCode.add(Opcode.POP);
-                                        // load the array index into the stack
-                                        byteCode.addLdc(byteCode.getConstPool().addIntegerInfo(i));
-                                        byteCode.add(Opcode.DUP_X2);
-                                        byteCode.add(Opcode.POP);
-                                    } else {
-                                        byteCode.add(Opcode.DUP_X1);
-                                        byteCode.add(Opcode.SWAP);
-                                        // load the array index into the stack
-                                        byteCode.addLdc(byteCode.getConstPool().addIntegerInfo(i));
-                                        byteCode.add(Opcode.SWAP);
-                                    }
-
-                                    if(DescriptorUtils.isPrimitive(types[i])) {
-                                        Boxing.box(byteCode, types[i].charAt(0));
-                                    }
-                                    byteCode.add(Opcode.AASTORE);// store the value in the array
-                                }
-
+                                ManipulationUtils.pushParametersIntoArray(byteCode, data.getMethodDesc());
                                 int scind = file.getConstPool().addIntegerInfo(data.getMethodNumber());
                                 byteCode.addLdc(scind);
                                 byteCode.add(Opcode.SWAP);
