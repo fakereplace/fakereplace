@@ -15,7 +15,6 @@ Provided Integrations
 Being able to hot replace classes is one thing, but it is not very useful unless the framework you are using can also
 pickup on these changes and re-load its metadata. To this end Fakereplace integrates with the following frameworks:
 
-* **Seam 2**
 * **Weld** (Basic integration, it is still a work in progress)
 * **JSF**
 * **Metawidget**
