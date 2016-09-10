@@ -19,6 +19,7 @@ package org.fakereplace.core;
 
 import java.lang.reflect.Modifier;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 
 import javassist.bytecode.BadBytecode;
@@ -56,14 +57,14 @@ public class ClassLoaderInstrumentation {
      * classes.
      */
 
-    public static boolean redefineClassLoader(ClassFile classFile) throws BadBytecode {
+    public static boolean redefineClassLoader(ClassFile classFile, Set<MethodInfo> modifiedMethods) throws BadBytecode {
         boolean modified = false;
         for (MethodInfo method : (List<MethodInfo>) classFile.getMethods()) {
             if (Modifier.isStatic(method.getAccessFlags())) {
                 continue;
             }
             if (method.getName().equals("loadClass") && (method.getDescriptor().equals("(Ljava/lang/String;)Ljava/lang/Class;") || method.getDescriptor().equals("(Ljava/lang/String;Z)Ljava/lang/Class;"))) {
-
+                modifiedMethods.add(method);
                 modified = true;
 
                 if (method.getCodeAttribute().getMaxLocals() < 4) {

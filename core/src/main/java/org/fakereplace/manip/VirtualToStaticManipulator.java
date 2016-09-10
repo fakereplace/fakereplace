@@ -163,8 +163,6 @@ public class VirtualToStaticManipulator implements ClassManipulator {
                         }
 
                     }
-                    modifiedMethods.add(m);
-                    m.getCodeAttribute().computeMaxStack();
                 } catch (Exception e) {
                     log.error("Bad byte code transforming " + file.getName(), e);
                     e.printStackTrace();

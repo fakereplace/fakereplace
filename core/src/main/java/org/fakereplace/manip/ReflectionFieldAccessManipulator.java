@@ -169,12 +169,11 @@ public class ReflectionFieldAccessManipulator implements ClassManipulator {
                                     it.writeByte(CodeIterator.NOP, index + 4);
                                 }
                                 it.insertEx(b.get());
+                                modifiedMethods.add(m);
                             }
                         }
 
                     }
-                    modifiedMethods.add(m);
-                    m.getCodeAttribute().computeMaxStack();
                 } catch (Exception e) {
                     log.error("Bad byte code transforming " + file.getName() + "." + m.getName(), e);
                 }

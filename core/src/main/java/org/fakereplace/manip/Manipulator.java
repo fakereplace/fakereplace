@@ -100,23 +100,14 @@ public class Manipulator {
         fakeMethodCallManipulator.addFakeMethodCall(fakeMethodCallData);
     }
 
-    public boolean transformClass(ClassFile file, ClassLoader classLoader, boolean modifiable) throws BadBytecode {
+    public boolean transformClass(ClassFile file, ClassLoader classLoader, boolean modifiable, Set<MethodInfo> modifiedMethods) throws BadBytecode {
         try {
             boolean modified = false;
 
-            final Set<MethodInfo> modifiedMethods = new HashSet<MethodInfo>();
             // first we are going to transform virtual method calls to static ones
             for (ClassManipulator m : manipulators) {
                 if (m.transformClass(file, classLoader, modifiable, modifiedMethods)) {
                     modified = true;
-                }
-            }
-            if (!modifiedMethods.isEmpty()) {
-                ClassPool classPool = new ClassPool();
-                classPool.appendSystemPath();
-                classPool.appendClassPath(new LoaderClassPath(classLoader));
-                for (MethodInfo m : modifiedMethods) {
-                    m.rebuildStackMap(classPool);
                 }
             }
             return modified;

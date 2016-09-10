@@ -19,17 +19,12 @@ package org.fakereplace.core;
 
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.fakereplace.api.ChangedClass;
 import org.fakereplace.api.Extension;
-import org.fakereplace.api.NewClassData;
 import org.fakereplace.api.environment.CurrentEnvironment;
 import org.fakereplace.data.BaseClassData;
 import org.fakereplace.data.ClassDataStore;
@@ -40,8 +35,6 @@ import org.fakereplace.reflection.ReflectionInstrumentationSetup;
 import org.fakereplace.replacement.notification.ChangedClassImpl;
 import org.fakereplace.transformation.FakereplaceTransformer;
 import org.fakereplace.util.NoInstrument;
-import javassist.ClassPool;
-import javassist.LoaderClassPath;
 import javassist.bytecode.AccessFlag;
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.BadBytecode;
@@ -85,87 +78,71 @@ public class Transformer implements FakereplaceTransformer {
         }
     }
 
-    public boolean transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, ClassFile file, Set<Class<?>> classesToRetransform, ChangedClassImpl changedClass) throws IllegalClassFormatException, BadBytecode, DuplicateMemberException {
+    public boolean transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, ClassFile file, Set<Class<?>> classesToRetransform, ChangedClassImpl changedClass, Set<MethodInfo> modifiedMethods) throws IllegalClassFormatException, BadBytecode, DuplicateMemberException {
         boolean modified = false;
-        try {
-            if (classBeingRedefined != null) {
-                ClassDataStore.instance().markClassReplaced(classBeingRedefined);
-            }
-            for (FakereplaceTransformer i : integrationTransformers) {
-                if (i.transform(loader, className, classBeingRedefined, protectionDomain, file, classesToRetransform, changedClass)) {
-                    modified = true;
-                }
-            }
-            // we do not instrument any classes from fakereplace
-            // if we did we get an endless loop
-            // we also avoid instrumenting much of the java/lang and
-            // java/io namespace except for java/lang/reflect/Proxy
-            if (BuiltinClassData.skipInstrumentation(className)) {
-                if (classBeingRedefined != null && manipulator.transformClass(file, loader, false)) {
-                    modified = true;
-                }
-                return modified;
-            }
-
-
-            if (classBeingRedefined == null) {
-                AnnotationsAttribute at = (AnnotationsAttribute) file.getAttribute(AnnotationsAttribute.invisibleTag);
-                if (at != null) {
-                    // NoInstrument is used for testing or by integration modules
-                    Object an = at.getAnnotation(NoInstrument.class.getName());
-                    if (an != null) {
-                        return modified;
-                    }
-                }
-            }
-
-            if (trackedInstances.contains(file.getName())) {
-                makeTrackedInstance(file);
+        if (classBeingRedefined != null) {
+            ClassDataStore.instance().markClassReplaced(classBeingRedefined);
+        }
+        for (FakereplaceTransformer i : integrationTransformers) {
+            if (i.transform(loader, className, classBeingRedefined, protectionDomain, file, classesToRetransform, changedClass, modifiedMethods)) {
                 modified = true;
             }
-
-            final boolean replaceable = CurrentEnvironment.getEnvironment().isClassReplaceable(className, loader);
-            if (manipulator.transformClass(file, loader, replaceable)) {
+        }
+        // we do not instrument any classes from fakereplace
+        // if we did we get an endless loop
+        // we also avoid instrumenting much of the java/lang and
+        // java/io namespace except for java/lang/reflect/Proxy
+        if (BuiltinClassData.skipInstrumentation(className)) {
+            if (classBeingRedefined != null && manipulator.transformClass(file, loader, false, modifiedMethods)) {
                 modified = true;
             }
-
-            if (replaceable) {
-                if ((AccessFlag.ENUM & file.getAccessFlags()) == 0 && (AccessFlag.ANNOTATION & file.getAccessFlags()) == 0) {
-                    modified = true;
-
-                    CurrentEnvironment.getEnvironment().recordTimestamp(className, loader);
-                    watcher.addClassFile(className, loader);
-                    if (file.isInterface()) {
-                        addAbstractMethodForInstrumentation(file);
-                    } else {
-                        addMethodForInstrumentation(file);
-                        addConstructorForInstrumentation(file);
-                        addStaticConstructorForInstrumentation(file);
-                    }
-                }
-                if (classBeingRedefined == null) {
-                    BaseClassData baseData = new BaseClassData(file, loader, replaceable);
-                    ClassDataStore.instance().saveClassData(loader, baseData.getInternalName(), baseData);
-                }
-            }
-            // SerialVersionUIDChecker.testReflectionInfo(loader, file.getName(),
-            // file.getSuperclass(), classfileBuffer);
             return modified;
-        } finally {
-            if (modified) {
-                try {
-                    ClassPool classPool = new ClassPool(ClassPool.getDefault());
-                    classPool.appendSystemPath();
-                    classPool.appendClassPath(new LoaderClassPath(loader));
-                    for (MethodInfo method : (List<MethodInfo>) file.getMethods()) {
-                        method.rebuildStackMap(classPool);
-                    }
-                } catch (BadBytecode e) {
-                    throw new RuntimeException(e);
+        }
+
+
+        if (classBeingRedefined == null) {
+            AnnotationsAttribute at = (AnnotationsAttribute) file.getAttribute(AnnotationsAttribute.invisibleTag);
+            if (at != null) {
+                // NoInstrument is used for testing or by integration modules
+                Object an = at.getAnnotation(NoInstrument.class.getName());
+                if (an != null) {
+                    return modified;
                 }
             }
         }
 
+        if (trackedInstances.contains(file.getName())) {
+            makeTrackedInstance(file);
+            modified = true;
+        }
+
+        final boolean replaceable = CurrentEnvironment.getEnvironment().isClassReplaceable(className, loader);
+        if (manipulator.transformClass(file, loader, replaceable, modifiedMethods)) {
+            modified = true;
+        }
+
+        if (replaceable) {
+            if ((AccessFlag.ENUM & file.getAccessFlags()) == 0 && (AccessFlag.ANNOTATION & file.getAccessFlags()) == 0) {
+                modified = true;
+
+                CurrentEnvironment.getEnvironment().recordTimestamp(className, loader);
+                watcher.addClassFile(className, loader);
+                if (file.isInterface()) {
+                    addAbstractMethodForInstrumentation(file);
+                } else {
+                    addMethodForInstrumentation(file);
+                    addConstructorForInstrumentation(file);
+                    addStaticConstructorForInstrumentation(file);
+                }
+            }
+            if (classBeingRedefined == null) {
+                BaseClassData baseData = new BaseClassData(file, loader, replaceable);
+                ClassDataStore.instance().saveClassData(loader, baseData.getInternalName(), baseData);
+            }
+        }
+        // SerialVersionUIDChecker.testReflectionInfo(loader, file.getName(),
+        // file.getSuperclass(), classfileBuffer);
+        return modified;
     }
 
     /**

@@ -51,6 +51,7 @@ import javassist.bytecode.ClassFile;
 import javassist.bytecode.Descriptor;
 import javassist.bytecode.DuplicateMemberException;
 import javassist.bytecode.FieldInfo;
+import javassist.bytecode.MethodInfo;
 import javassist.bytecode.SignatureAttribute;
 
 public class FieldReplacementTransformer implements FakereplaceTransformer {
@@ -113,7 +114,7 @@ public class FieldReplacementTransformer implements FakereplaceTransformer {
     }
 
     @Override
-    public boolean transform(ClassLoader loader, String className, Class<?> oldClass, ProtectionDomain protectionDomain, ClassFile file, Set<Class<?>> classesToRetransform, ChangedClassImpl changedClass) throws IllegalClassFormatException, BadBytecode, DuplicateMemberException {
+    public boolean transform(ClassLoader loader, String className, Class<?> oldClass, ProtectionDomain protectionDomain, ClassFile file, Set<Class<?>> classesToRetransform, ChangedClassImpl changedClass, Set<MethodInfo> modifiedMethods) throws IllegalClassFormatException, BadBytecode, DuplicateMemberException {
         if (oldClass == null || className == null) {
             return false;
         }

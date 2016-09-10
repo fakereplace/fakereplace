@@ -174,12 +174,10 @@ public class FieldManipulator implements ClassManipulator {
                                     }
                                     it.insertEx(b.get());
                                 }
-
+                                modifiedMethods.add(m);
                             }
                         }
                     }
-                    modifiedMethods.add(m);
-                    m.getCodeAttribute().computeMaxStack();
                 } catch (Exception e) {
                     log.error("Bad byte code transforming " + file.getName(), e);
                     e.printStackTrace();

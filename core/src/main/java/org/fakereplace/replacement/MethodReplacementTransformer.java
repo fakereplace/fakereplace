@@ -298,7 +298,7 @@ public class MethodReplacementTransformer implements FakereplaceTransformer {
         bc.addOpcode(Opcode.IF_ICMPNE);
 
         // now we need to fix local variables and unbox parameters etc
-        int addedCodeLength = mangleParameters(staticMethod, constructor, ca, mInfo.getDescriptor(), ca.getMaxLocals());
+        int addedCodeLength = mangleParameters(staticMethod, constructor, ca, mInfo.getDescriptor());
         int newMax = ca.getMaxLocals() + 2;
         if (constructor) {
             // for the extra
@@ -340,9 +340,9 @@ public class MethodReplacementTransformer implements FakereplaceTransformer {
 
     }
 
-    private static void createRemovedMethod(ClassFile file, MethodData md, Class<?> oldClass, Set<MethodData> methodsToRemove) {
+    private static MethodInfo createRemovedMethod(ClassFile file, MethodData md, Class<?> oldClass, Set<MethodData> methodsToRemove) {
         if (md.getMethodName().equals("<clinit>")) {
-            return; // if the static constructor is removed it gets added later on
+            return null; // if the static constructor is removed it gets added later on
             // in the process
         }
 
@@ -386,6 +386,7 @@ public class MethodReplacementTransformer implements FakereplaceTransformer {
             logger.error("Bad bytecode", e);
         }
         methodsToRemove.add(md);
+        return m;
     }
 
     private static void addConstructor(ClassFile file, ClassLoader loader, MethodInfo mInfo, Set<FakeMethod> builder, CodeAttribute bytecode, Class<?> oldClass) {
@@ -487,7 +488,7 @@ public class MethodReplacementTransformer implements FakereplaceTransformer {
      *
      * @return the length of the added code
      */
-    private static int mangleParameters(boolean staticMethod, boolean constructor, CodeAttribute attribute, String methodSigniture, int existingLocalVaraiables) {
+    private static int mangleParameters(boolean staticMethod, boolean constructor, CodeAttribute attribute, String methodSigniture) {
         try {
             int offset = 0;
             String[] data = DescriptorUtils.descriptorStringToParameterArray(methodSigniture);
@@ -591,7 +592,7 @@ public class MethodReplacementTransformer implements FakereplaceTransformer {
     }
 
     @Override
-    public boolean transform(ClassLoader loader, String className, Class<?> oldClass, ProtectionDomain protectionDomain, ClassFile file, Set<Class<?>> classesToRetransform, ChangedClassImpl changedClass) throws IllegalClassFormatException, BadBytecode, DuplicateMemberException {
+    public boolean transform(ClassLoader loader, String className, Class<?> oldClass, ProtectionDomain protectionDomain, ClassFile file, Set<Class<?>> classesToRetransform, ChangedClassImpl changedClass, Set<MethodInfo> modifiedMethods) throws IllegalClassFormatException, BadBytecode, DuplicateMemberException {
         if(oldClass == null || className == null) {
             return false;
         }
@@ -606,6 +607,7 @@ public class MethodReplacementTransformer implements FakereplaceTransformer {
             // we can't finalise the code yet because we will probably need
             // the add stuff to them
             MethodInfo virtMethod = new MethodInfo(file.getConstPool(), Constants.ADDED_METHOD_NAME, Constants.ADDED_METHOD_DESCRIPTOR);
+            modifiedMethods.add(virtMethod);
             virtMethod.setAccessFlags(AccessFlag.PUBLIC);
             if (file.isInterface()) {
                 virtMethod.setAccessFlags(AccessFlag.PUBLIC | AccessFlag.ABSTRACT | AccessFlag.SYNTHETIC);
@@ -628,6 +630,7 @@ public class MethodReplacementTransformer implements FakereplaceTransformer {
                 virtMethod.setCodeAttribute(virtualCodeAttribute);
 
                 MethodInfo m = new MethodInfo(file.getConstPool(), Constants.ADDED_STATIC_METHOD_NAME, Constants.ADDED_STATIC_METHOD_DESCRIPTOR);
+                modifiedMethods.add(m);
                 m.setAccessFlags(AccessFlag.PUBLIC | AccessFlag.STATIC | AccessFlag.SYNTHETIC);
                 b = new Bytecode(file.getConstPool(), 0, 3);
                 b.addNew(NoSuchMethodError.class.getName());
@@ -639,6 +642,7 @@ public class MethodReplacementTransformer implements FakereplaceTransformer {
                 file.addMethod(m);
 
                 m = new MethodInfo(file.getConstPool(), "<init>", Constants.ADDED_CONSTRUCTOR_DESCRIPTOR);
+                modifiedMethods.add(m);
                 m.setAccessFlags(AccessFlag.PUBLIC | AccessFlag.SYNTHETIC);
                 b = new Bytecode(file.getConstPool(), 0, 4);
                 if (ManipulationUtils.addBogusConstructorCall(file, b)) {
@@ -755,7 +759,10 @@ public class MethodReplacementTransformer implements FakereplaceTransformer {
 
         for (MethodData md : methods) {
             if (md.getType() == MemberType.NORMAL) {
-                createRemovedMethod(file, md, oldClass, methodsToRemove);
+                MethodInfo removedMethod = createRemovedMethod(file, md, oldClass, methodsToRemove);
+                if(removedMethod != null) {
+                    modifiedMethods.add(removedMethod);
+                }
             }
         }
 
@@ -781,13 +788,6 @@ public class MethodReplacementTransformer implements FakereplaceTransformer {
                 virtualCodeAttribute.computeMaxStack();
                 if (constructorCodeAttribute != null) {
                     constructorCodeAttribute.computeMaxStack();
-                }
-
-                ClassPool classPool = new ClassPool();
-                classPool.appendClassPath(new LoaderClassPath(loader));
-                classPool.appendSystemPath();
-                for(MethodInfo method : (List<MethodInfo>)file.getMethods()) {
-                    method.rebuildStackMap(classPool);
                 }
             } catch (BadBytecode e) {
                 e.printStackTrace();

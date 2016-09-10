@@ -146,12 +146,11 @@ public class ConstructorInvocationManipulator implements ClassManipulator {
                                 bc.addInvokespecial(data.getClazz(), "<init>", Constants.ADDED_CONSTRUCTOR_DESCRIPTOR);
                                 // and we have our bytecode
                                 it.insert(bc.get());
+                                modifiedMethods.add(m);
 
                             }
                         }
                     }
-                    modifiedMethods.add(m);
-                    m.getCodeAttribute().computeMaxStack();
                 } catch (Exception e) {
                     log.error("Bad byte code transforming " + file.getName(), e);
                 }

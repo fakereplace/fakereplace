@@ -43,10 +43,11 @@ public class WildflyHibernate5ClassTransformer implements FakereplaceTransformer
     public static final String PROXY_NAME = "org.fakereplace.integration.wildfly.hibernate5.WildflyEntityManagerFactoryProxy";
 
     @Override
-    public boolean transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final ClassFile file, Set<Class<?>> classesToRetransform, ChangedClassImpl changedClass) throws IllegalClassFormatException, BadBytecode, DuplicateMemberException {
+    public boolean transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final ClassFile file, Set<Class<?>> classesToRetransform, ChangedClassImpl changedClass, Set<MethodInfo> modifiedMethods) throws IllegalClassFormatException, BadBytecode, DuplicateMemberException {
         if (file.getName().equals("org.jboss.as.jpa.service.PersistenceUnitServiceImpl")) {
             for (MethodInfo method : (List<MethodInfo>) file.getMethods()) {
                 if (method.getName().equals("getEntityManagerFactory")) {
+                    modifiedMethods.add(method);
 
                     //need to save the method params so we can re-use them when we re-create our EMF
                     Bytecode s = new Bytecode(file.getConstPool());
@@ -71,6 +72,7 @@ public class WildflyHibernate5ClassTransformer implements FakereplaceTransformer
             methodInfo.setAccessFlags(AccessFlag.PUBLIC);
             methodInfo.setCodeAttribute(bc.toCodeAttribute());
             file.addMethod(methodInfo);
+            modifiedMethods.add(methodInfo);
             return true;
         } else {
             return false;

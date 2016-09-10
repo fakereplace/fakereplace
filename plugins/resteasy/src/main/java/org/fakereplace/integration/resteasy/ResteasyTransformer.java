@@ -49,7 +49,7 @@ public class ResteasyTransformer implements FakereplaceTransformer {
     public static final String RESTEASY_SERVLET_CONFIG = "org.fakereplace.integration.resteasy.ResteasyServletConfig";
 
     @Override
-    public boolean transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final ClassFile file, Set<Class<?>> classesToRetransform, ChangedClassImpl changedClass) throws IllegalClassFormatException, BadBytecode {
+    public boolean transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final ClassFile file, Set<Class<?>> classesToRetransform, ChangedClassImpl changedClass, Set<MethodInfo> modifiedMethods) throws IllegalClassFormatException, BadBytecode {
 
         //we need to change the filter and servlet dispatchers to
         //capture the config they are initalized with.
@@ -67,6 +67,8 @@ public class ResteasyTransformer implements FakereplaceTransformer {
                 for (final MethodInfo method : (List<MethodInfo>) file.getMethods()) {
                     if (method.getName().equals("init") &&
                             method.getDescriptor().equals("(Ljavax/servlet/FilterConfig;)V")) {
+
+                        modifiedMethods.add(method);
                         final Bytecode b = new Bytecode(file.getConstPool());
                         b.addAload(0);
                         b.addNew(RESTEASY_FILTER_CONFIG);
@@ -100,6 +102,8 @@ public class ResteasyTransformer implements FakereplaceTransformer {
                 for (final MethodInfo method : (List<MethodInfo>) file.getMethods()) {
                     if (method.getName().equals("init") &&
                             method.getDescriptor().equals("(Ljavax/servlet/ServletConfig;)V")) {
+
+                        modifiedMethods.add(method);
                         final Bytecode b = new Bytecode(file.getConstPool());
                         b.addAload(0);
                         b.addNew(RESTEASY_SERVLET_CONFIG);

@@ -23,6 +23,7 @@ import java.util.Set;
 
 import javassist.bytecode.BadBytecode;
 import javassist.bytecode.ClassFile;
+import javassist.bytecode.MethodInfo;
 import org.fakereplace.core.ClassLoaderInstrumentation;
 import org.fakereplace.replacement.notification.ChangedClassImpl;
 
@@ -39,11 +40,11 @@ public class ClassLoaderTransformer implements FakereplaceTransformer {
     }
 
     @Override
-    public boolean transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final ClassFile file, Set<Class<?>> classesToRetransform, ChangedClassImpl changedClass) throws IllegalClassFormatException, BadBytecode {
+    public boolean transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final ClassFile file, Set<Class<?>> classesToRetransform, ChangedClassImpl changedClass, Set<MethodInfo> modifiedMethods) throws IllegalClassFormatException, BadBytecode {
         if (classBeingRedefined != null && ClassLoader.class.isAssignableFrom(classBeingRedefined)) {
-            return ClassLoaderInstrumentation.redefineClassLoader(file);
+            return ClassLoaderInstrumentation.redefineClassLoader(file, modifiedMethods);
         } else if (classBeingRedefined == null && className != null && className.endsWith("ClassLoader")) {
-            return ClassLoaderInstrumentation.redefineClassLoader(file);
+            return ClassLoaderInstrumentation.redefineClassLoader(file, modifiedMethods);
         }
         return false;
     }

@@ -19,11 +19,13 @@ package org.fakereplace.manip;
 
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.fakereplace.api.environment.CurrentEnvironment;
+import org.fakereplace.core.Agent;
 import org.fakereplace.core.Constants;
 import org.fakereplace.data.BaseClassData;
 import org.fakereplace.data.ClassDataStore;
@@ -61,6 +63,9 @@ public class FakeMethodCallManipulator implements ClassManipulator {
     }
 
     public boolean transformClass(ClassFile file, ClassLoader loader, boolean modifiableClass, final Set<MethodInfo> modifiedMethods) {
+        if(!Agent.isRetransformationStarted()) {
+            return false;
+        }
         final Map<String, Set<FakeMethodCallData>> virtualToStaticMethod = data.getManipulationData(loader);
         final Map<Integer, FakeMethodCallData> methodCallLocations = new HashMap<>();
         final Map<Integer, AddedMethodInfo> newMethodInfoMap = new HashMap<>();
@@ -80,6 +85,9 @@ public class FakeMethodCallManipulator implements ClassManipulator {
                     methodDesc = pool.getInterfaceMethodrefType(i);
                     methodName = pool.getInterfaceMethodrefName(i);
                 }
+                if(methodName.equals("<clinit>") || methodName.equals("<init>")) {
+                    continue;
+                }
                 boolean handled = false;
                 if (virtualToStaticMethod.containsKey(className)) {
                     for (FakeMethodCallData data : virtualToStaticMethod.get(className)) {
@@ -98,38 +106,61 @@ public class FakeMethodCallManipulator implements ClassManipulator {
                     //may be an added field
                     //if the field does not actually exist yet we just assume it is about to come into existence
                     //and rewrite it anyway
+
+
                     BaseClassData data = ClassDataStore.instance().getBaseClassData(loader, className);
                     if(data != null) {
-                        MethodData method = data.getMethodOrConstructor(methodName, methodDesc);
-                        if (method == null) {
-                            //this is a new method
-                            //lets deal with it
-                            int methodNo = MethodIdentifierStore.instance().getMethodNumber(methodName, methodDesc);
-                            newMethodInfoMap.put(i, new AddedMethodInfo(methodNo, className, methodName, methodDesc));
-                        } else if(!Modifier.isPublic(method.getAccessFlags())){
-                            boolean requiresVisibilityUpgrade = false;
-                            if(Modifier.isPrivate(method.getAccessFlags())) {
-                                requiresVisibilityUpgrade = true;
-                            } else if(!Modifier.isProtected(method.getAccessFlags())) {
-                                //we can't handle protected properly, because we need to know the class heirachy
-                                //this is package local, so we check the package names
-                                boolean thisDefault = !file.getName().contains(".");
-                                boolean thatDefault = !className.contains(".");
-                                if(thisDefault && !thatDefault) {
-                                    requiresVisibilityUpgrade = true;
-                                } else if(thatDefault && !thisDefault) {
-                                    requiresVisibilityUpgrade = true;
-                                } else if(!thatDefault) {
-                                    String thatPackage = className.substring(0, className.lastIndexOf("."));
-                                    String thisPackage = file.getName().substring(0, file.getName().lastIndexOf("."));
-                                    if (!thisPackage.equals(thatPackage)) {
-                                        requiresVisibilityUpgrade = true;
-                                    }
+                        boolean noClassData = false;
+                        MethodData method = null;
+                        try {
+                            Class<?> mainClass = loader.loadClass(className);
+                            Set<Class> allClasses = new HashSet<>();
+                            addToAllClasses(mainClass, allClasses);
+                            for(Class clazz : allClasses) {
+                                data = ClassDataStore.instance().getBaseClassData(clazz.getClassLoader(), clazz.getName());
+                                if(data == null) {
+                                    noClassData = true;
+                                    break;
+                                }
+                                method = data.getMethodOrConstructor(methodName, methodDesc);
+                                if(method != null) {
+                                    break;
                                 }
                             }
-                            if(requiresVisibilityUpgrade) {
+                        } catch (ClassNotFoundException e) {
+                            noClassData = true;
+                        }
+                        if (!noClassData) {
+                            if (method == null) {
+                                //this is a new method
+                                //lets deal with it
                                 int methodNo = MethodIdentifierStore.instance().getMethodNumber(methodName, methodDesc);
                                 newMethodInfoMap.put(i, new AddedMethodInfo(methodNo, className, methodName, methodDesc));
+                            } else if (!Modifier.isPublic(method.getAccessFlags())) {
+                                boolean requiresVisibilityUpgrade = false;
+                                if (Modifier.isPrivate(method.getAccessFlags())) {
+                                    requiresVisibilityUpgrade = true;
+                                } else if (!Modifier.isProtected(method.getAccessFlags())) {
+                                    //we can't handle protected properly, because we need to know the class heirachy
+                                    //this is package local, so we check the package names
+                                    boolean thisDefault = !file.getName().contains(".");
+                                    boolean thatDefault = !className.contains(".");
+                                    if (thisDefault && !thatDefault) {
+                                        requiresVisibilityUpgrade = true;
+                                    } else if (thatDefault && !thisDefault) {
+                                        requiresVisibilityUpgrade = true;
+                                    } else if (!thatDefault) {
+                                        String thatPackage = className.substring(0, className.lastIndexOf("."));
+                                        String thisPackage = file.getName().substring(0, file.getName().lastIndexOf("."));
+                                        if (!thisPackage.equals(thatPackage)) {
+                                            requiresVisibilityUpgrade = true;
+                                        }
+                                    }
+                                }
+                                if (requiresVisibilityUpgrade) {
+                                    int methodNo = MethodIdentifierStore.instance().getMethodNumber(methodName, methodDesc);
+                                    newMethodInfoMap.put(i, new AddedMethodInfo(methodNo, className, methodName, methodDesc));
+                                }
                             }
                         }
                     }
@@ -178,6 +209,16 @@ public class FakeMethodCallManipulator implements ClassManipulator {
             return true;
         } else {
             return false;
+        }
+    }
+
+    private void addToAllClasses(Class<?> clazz, Set<Class> allClasses) {
+        while ( clazz != null) {
+            allClasses.add(clazz);
+            for(Class<?> iface : clazz.getInterfaces()) {
+                addToAllClasses(iface, allClasses);
+            }
+            clazz = clazz.getSuperclass();
         }
     }
 

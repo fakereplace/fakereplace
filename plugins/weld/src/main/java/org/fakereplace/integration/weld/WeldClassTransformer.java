@@ -46,7 +46,7 @@ public class WeldClassTransformer implements FakereplaceTransformer {
     public static final String ORG_JBOSS_WELD_BEAN_PROXY_PROXY_FACTORY = "org.jboss.weld.bean.proxy.ProxyFactory";
 
     @Override
-    public boolean transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, ClassFile file, Set<Class<?>> classesToRetransform, ChangedClassImpl changedClass) throws IllegalClassFormatException, BadBytecode {
+    public boolean transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, ClassFile file, Set<Class<?>> classesToRetransform, ChangedClassImpl changedClass, Set<MethodInfo> modifiedMethods) throws IllegalClassFormatException, BadBytecode {
 
         /**
          * Hack up the proxy factory so it stores the proxy ClassFile. We need this to regenerate proxies.
@@ -54,22 +54,16 @@ public class WeldClassTransformer implements FakereplaceTransformer {
         if (file.getName().equals(ORG_JBOSS_WELD_BEAN_PROXY_PROXY_FACTORY)) {
             for (final MethodInfo method : (List<MethodInfo>) file.getMethods()) {
                 if (method.getName().equals("createProxyClass")) {
+
+                    modifiedMethods.add(method);
                     final VirtualToStaticManipulator virtualToStaticManipulator = new VirtualToStaticManipulator();
                     virtualToStaticManipulator.replaceVirtualMethodInvokationWithStatic(ClassLoader.class.getName(), WeldProxyClassLoadingDelegate.class.getName(), "loadClass", "(Ljava/lang/String;)Ljava/lang/Class;", "(Ljava/lang/ClassLoader;Ljava/lang/String;)Ljava/lang/Class;", loader);
                     virtualToStaticManipulator.replaceVirtualMethodInvokationWithStatic("org.jboss.weld.util.bytecode.ClassFileUtils", WeldProxyClassLoadingDelegate.class.getName(), "toClass", "(Lorg/jboss/classfilewriter/ClassFile;Ljava/lang/ClassLoader;Ljava/security/ProtectionDomain;)Ljava/lang/Class;", "(Lorg/jboss/classfilewriter/ClassFile;Ljava/lang/ClassLoader;Ljava/security/ProtectionDomain;)Ljava/lang/Class;", loader);
-                    HashSet<MethodInfo> modifiedMethods = new HashSet<MethodInfo>();
                     virtualToStaticManipulator.transformClass(file, loader, true, modifiedMethods);
-                    if(!modifiedMethods.isEmpty()) {
-                        ClassPool classPool = new ClassPool();
-                        classPool.appendSystemPath();
-                        classPool.appendClassPath(new LoaderClassPath(loader));
-                        for (MethodInfo m : modifiedMethods) {
-                            m.rebuildStackMap(classPool);
-                        }
-                    }
                     return true;
                 } else if (method.getName().equals("<init>")) {
 
+                    modifiedMethods.add(method);
                     Integer beanArgument = null;
                     int count = 1;
                     for (final String paramType : DescriptorUtils.descriptorStringToParameterArray(method.getDescriptor())) {

@@ -95,6 +95,7 @@ public class Agent {
         mainTransformer.addTransformer(new FieldReplacementTransformer());
         mainTransformer.addTransformer(new MethodReplacementTransformer());
         mainTransformer.addTransformer(new Transformer(extension));
+        mainTransformer.setRetransformationStarted(false);
 
         //start the server
         Thread thread = new Thread(new FakereplaceServer(Integer.parseInt(AgentOptions.getOption(AgentOption.PORT))));
@@ -133,7 +134,7 @@ public class Agent {
                         ByteArrayInputStream bin = new ByteArrayInputStream(d.getDefinitionClassFile());
                         DataInputStream dis = new DataInputStream(bin);
                         final ClassFile file = new ClassFile(dis);
-                        Transformer.getManipulator().transformClass(file, d.getDefinitionClass().getClassLoader(), true);
+                        Transformer.getManipulator().transformClass(file, d.getDefinitionClass().getClassLoader(), true, new HashSet<>());
                         String dumpDir = AgentOptions.getOption(AgentOption.DUMP_DIR);
                         if (dumpDir != null) {
                             FileOutputStream s = new FileOutputStream(dumpDir + '/' + d.getDefinitionClass().getName() + "1.class");
@@ -167,5 +168,9 @@ public class Agent {
             integrations.add(it.next());
         }
         return integrations;
+    }
+
+    public static boolean isRetransformationStarted() {
+        return mainTransformer.isRetransformationStarted();
     }
 }

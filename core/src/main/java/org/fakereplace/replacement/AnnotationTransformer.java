@@ -28,6 +28,7 @@ import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.BadBytecode;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.DuplicateMemberException;
+import javassist.bytecode.MethodInfo;
 
 /**
  * @author Stuart Douglas
@@ -35,7 +36,7 @@ import javassist.bytecode.DuplicateMemberException;
 public class AnnotationTransformer implements FakereplaceTransformer {
 
     @Override
-    public boolean transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, ClassFile file, Set<Class<?>> classesToRetransform, ChangedClassImpl changedClass) throws IllegalClassFormatException, BadBytecode, DuplicateMemberException {
+    public boolean transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, ClassFile file, Set<Class<?>> classesToRetransform, ChangedClassImpl changedClass, Set<MethodInfo> modifiedMethods) throws IllegalClassFormatException, BadBytecode, DuplicateMemberException {
         if(classBeingRedefined != null) {
             AnnotationsAttribute newAns = (AnnotationsAttribute) file.getAttribute(AnnotationsAttribute.visibleTag);
             AnnotationDataStore.recordClassAnnotations(classBeingRedefined, newAns, changedClass);

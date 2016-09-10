@@ -89,6 +89,8 @@ public class MainTransformer implements ClassFileTransformer {
     private int outstandingCount;
     private boolean waitingForIntegration;
 
+    private volatile boolean retransformationStarted;
+
     public MainTransformer(Set<Extension> extension) {
         Map<String, Extension> integrationClassTriggers = new HashMap<String, Extension>();
         for (Extension i : extension) {
@@ -104,6 +106,9 @@ public class MainTransformer implements ClassFileTransformer {
         if (className == null) {
             //TODO: deal with lambdas
             return classfileBuffer;
+        }
+        if(classBeingRedefined != null) {
+            retransformationStarted = true;
         }
         ChangedClassImpl changedClass = null;
         if (classBeingRedefined != null) {
@@ -146,9 +151,10 @@ public class MainTransformer implements ClassFileTransformer {
         Set<Class<?>> classesToRetransform = new HashSet<>();
         final ClassFile file;
         try {
+            Set<MethodInfo> modifiedMethods = new HashSet<>();
             file = new ClassFile(new DataInputStream(new ByteArrayInputStream(classfileBuffer)));
             for (final FakereplaceTransformer transformer : transformers) {
-                if (transformer.transform(loader, className, classBeingRedefined, protectionDomain, file, classesToRetransform, changedClass)) {
+                if (transformer.transform(loader, className, classBeingRedefined, protectionDomain, file, classesToRetransform, changedClass, modifiedMethods)) {
                     changed = true;
                 }
             }
@@ -157,12 +163,16 @@ public class MainTransformer implements ClassFileTransformer {
                 return null;
             } else {
                 try {
-
-                    ClassPool classPool = new ClassPool();
-                    classPool.appendClassPath(new LoaderClassPath(loader));
-                    classPool.appendSystemPath();
-                    for (MethodInfo method : (List<MethodInfo>) file.getMethods()) {
-                        method.rebuildStackMap(classPool);
+                    if(!modifiedMethods.isEmpty()) {
+                        ClassPool classPool = new ClassPool();
+                        classPool.appendClassPath(new LoaderClassPath(loader));
+                        classPool.appendSystemPath();
+                        for (MethodInfo method : modifiedMethods) {
+                            if(method.getCodeAttribute() != null) {
+                                method.getCodeAttribute().computeMaxStack();
+                                method.rebuildStackMap(classPool);
+                            }
+                        }
                     }
                 } catch (BadBytecode e) {
                     throw new RuntimeException(e);
@@ -312,5 +322,13 @@ public class MainTransformer implements ClassFileTransformer {
             }
             runIntegration();
         }
+    }
+
+    public boolean isRetransformationStarted() {
+        return retransformationStarted;
+    }
+
+    public void setRetransformationStarted(boolean retransformationStarted) {
+        this.retransformationStarted = retransformationStarted;
     }
 }

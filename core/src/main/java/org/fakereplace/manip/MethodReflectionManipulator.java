@@ -132,12 +132,11 @@ public class MethodReflectionManipulator implements ClassManipulator {
                                 it.writeByte(CodeIterator.NOP, index + 1);
                                 it.writeByte(CodeIterator.NOP, index + 2);
                                 it.insert(b.get());
+                                modifiedMethods.add(m);
                             }
                         }
 
                     }
-                    m.getCodeAttribute().computeMaxStack();
-                    modifiedMethods.add(m);
                 } catch (Exception e) {
                     log.error("Bad byte code transforming " + file.getName());
                     e.printStackTrace();

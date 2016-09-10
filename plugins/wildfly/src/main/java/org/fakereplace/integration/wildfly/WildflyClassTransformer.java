@@ -37,7 +37,7 @@ import java.util.Set;
  */
 public class WildflyClassTransformer implements FakereplaceTransformer {
     @Override
-    public boolean transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, ClassFile file, Set<Class<?>> classesToRetransform, ChangedClassImpl changedClass) throws IllegalClassFormatException, BadBytecode, DuplicateMemberException {
+    public boolean transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, ClassFile file, Set<Class<?>> classesToRetransform, ChangedClassImpl changedClass, Set<MethodInfo> modifiedMethods) throws IllegalClassFormatException, BadBytecode, DuplicateMemberException {
         if(!file.getName().equals("org.wildfly.extension.undertow.deployment.UndertowDeploymentInfoService")) {
             return false;
         }
@@ -46,6 +46,7 @@ public class WildflyClassTransformer implements FakereplaceTransformer {
                 CodeAttribute code = method.getCodeAttribute();
                 code.setMaxStack(code.getMaxStack() + 1);
                 CodeIterator it = code.iterator();
+                modifiedMethods.add(method);
                 while (it.hasNext()) {
                     int pos = it.next();
                     int inst = it.byteAt(pos);

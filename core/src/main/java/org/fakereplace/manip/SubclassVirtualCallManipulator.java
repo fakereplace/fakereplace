@@ -131,7 +131,7 @@ public class SubclassVirtualCallManipulator implements ClassManipulator {
                             method.getCodeAttribute().iterator().insert(run.get());
                             method.getCodeAttribute().iterator().insert(cd.get());
                             method.getCodeAttribute().iterator().insert(b.get());
-                            method.getCodeAttribute().computeMaxStack();
+                            modifiedMethods.add(method);
                         } catch (BadBytecode e) {
                             e.printStackTrace();
                         }
