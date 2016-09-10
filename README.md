@@ -21,7 +21,7 @@ pickup on these changes and re-load its metadata. To this end Fakereplace integr
 * **Hibernate** (This restarts the EMF if an entity is modified, this is still experimental)
 * **Resteasy**
 
-It also provides JBoss AS7 integration, and a maven plugin to allow maven to automatically replace classes after it has
+It also provides Wildfly integration, and a maven plugin to allow maven to automatically replace classes after it has
 compiled them.
 
 
@@ -29,10 +29,10 @@ Getting Started
 ---------------
 
 There is a single jar in the distribution, fakereplace.jar to use it you need to set the JVM -javaagent option to point
-to this jar. If you are not using JBoss AS7 you also need to specify the packages that you want to be able to hot
+to this jar. If you are not using Wildfly you also need to specify the packages that you want to be able to hot
 replace.
 
-For example, on JBoss AS7 you would edit standalone.conf and add the following to JAVA_OPTS:
+For example, on Wildfly you would edit standalone.conf and add the following to JAVA_OPTS:
 
 `
 -javaagent:/path/to/fakereplace.jar
@@ -45,8 +45,8 @@ For other containers, you would need to add the following to the JVM options:
 `
 
 Where ${com.mycompany.myclasses} is the top level package of the classes that you want to hot replace. All classes in
-this package or sub packages are instrumented to allow them to be replaced. If you are using JBoss AS7 this step is not
-nessesary, as the integration will just mark all user deployed classes as replacable.
+this package or sub packages are instrumented to allow them to be replaced. If you are using Wildfly this step is not
+necessary, as the integration will just mark all user deployed classes as replaceable.
 
 To set the JVM options you will probably need to modify your app servers startup script, or if you are using an IDE
 server plugin set the VM arguments in the launch configuration.
