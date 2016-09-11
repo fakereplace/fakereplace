@@ -19,10 +19,7 @@ package org.fakereplace.integration.wildfly.autoupdate;
 
 import org.fakereplace.core.Agent;
 import org.fakereplace.replacement.AddedClass;
-import org.jboss.modules.Module;
 import org.jboss.modules.ModuleClassLoader;
-import org.jboss.util.collection.WeakIdentityHashMap;
-import org.jboss.vfs.VirtualFile;
 
 import java.io.IOException;
 import java.lang.instrument.ClassDefinition;
