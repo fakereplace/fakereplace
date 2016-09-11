@@ -29,7 +29,7 @@
     <properties>
         <arquillian.version>1.1.8.Final</arquillian.version>
         <arquillian.weld-se.version>1.0.0.CR9</arquillian.weld-se.version>
-        <fakereplace.version>1.0.0.Alpha3-SNAPSHOT</fakereplace.version>
+        <fakereplace.version>1.0.0.Alpha3</fakereplace.version>
         <fakereplace.google.collections.version>1.0.1.Final</fakereplace.google.collections.version>
         <javassist.version>3.20.0-GA</javassist.version>
         <wildfly.version>9.0.0.Final</wildfly.version>
@@ -57,7 +57,7 @@
     <groupId>org.fakereplace</groupId>
     <artifactId>fakereplace-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.0.Alpha3-SNAPSHOT</version>
+    <version>1.0.0.Alpha3</version>
 
     <name>Fakereplace Parent</name>
     <url>http://fakereplace.org</url>

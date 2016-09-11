@@ -23,14 +23,14 @@
     <parent>
         <artifactId>fakereplace-plugins-parent</artifactId>
         <groupId>org.fakereplace</groupId>
-        <version>1.0.0.Alpha3-SNAPSHOT</version>
+        <version>1.0.0.Alpha3</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <groupId>org.fakereplace</groupId>
     <artifactId>fakereplace-jsf</artifactId>
     <name>Fakereplace JSF Integration</name>
-    <version>1.0.0.Alpha3-SNAPSHOT</version>
+    <version>1.0.0.Alpha3</version>
 
     <dependencies>
         <dependency>
