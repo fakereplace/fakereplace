@@ -23,6 +23,7 @@ import java.security.ProtectionDomain;
 import java.util.List;
 import java.util.Set;
 
+import javassist.bytecode.AccessFlag;
 import javassist.bytecode.BadBytecode;
 import javassist.bytecode.Bytecode;
 import javassist.bytecode.ClassFile;
@@ -67,7 +68,7 @@ public class ResteasyTransformer implements FakereplaceTransformer {
                 for (final MethodInfo method : (List<MethodInfo>) file.getMethods()) {
                     if (method.getName().equals("init") &&
                             method.getDescriptor().equals("(Ljavax/servlet/FilterConfig;)V")) {
-
+                        method.setAccessFlags(method.getAccessFlags() | AccessFlag.SYNCHRONIZED);
                         modifiedMethods.add(method);
                         final Bytecode b = new Bytecode(file.getConstPool());
                         b.addAload(0);
@@ -89,6 +90,9 @@ public class ResteasyTransformer implements FakereplaceTransformer {
                     } else if(method.getName().equals("<init>")) {
                         //no idea why this is needed
                         method.getCodeAttribute().setMaxStack(1);
+                    } else if(method.getName().equals("getDispatcher")) {
+                        method.setAccessFlags(method.getAccessFlags() | AccessFlag.SYNCHRONIZED);
+                        modifiedMethods.add(method);
                     }
                 }
                 return true;
@@ -103,6 +107,7 @@ public class ResteasyTransformer implements FakereplaceTransformer {
                     if (method.getName().equals("init") &&
                             method.getDescriptor().equals("(Ljavax/servlet/ServletConfig;)V")) {
 
+                        method.setAccessFlags(method.getAccessFlags() | AccessFlag.SYNCHRONIZED);
                         modifiedMethods.add(method);
                         final Bytecode b = new Bytecode(file.getConstPool());
                         b.addAload(0);
@@ -123,6 +128,9 @@ public class ResteasyTransformer implements FakereplaceTransformer {
                         method.getCodeAttribute().computeMaxStack();
                     } else if(method.getName().equals("<init>")) {
                         method.getCodeAttribute().setMaxStack(1);
+                    } else if(method.getName().equals("getDispatcher")) {
+                        method.setAccessFlags(method.getAccessFlags() | AccessFlag.SYNCHRONIZED);
+                        modifiedMethods.add(method);
                     }
                 }
                 return true;
