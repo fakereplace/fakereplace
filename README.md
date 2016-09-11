@@ -68,22 +68,22 @@ Performing a hot deployment
 
 There are currently 4 different ways to perform a hot deployment
 
-Use your IDE
+### Use your IDE
 
-: Fakereplace will automatically enhance the normal IDE hot swapping capability. You should no longer get errors if you try and add/remove methods etc.
+Fakereplace will automatically enhance the normal IDE hot swapping capability. You should no longer get errors if you try and add/remove methods etc.
 
-Have Fakereplace watch your source files (currently Wildfly only)
+### Have Fakereplace watch your source files (currently Wildfly only)
 
-: When you start your container specify the following system property fakereplace.source-paths.[test.war]=/path/to/src/main/java (replacing [test.war] with the actual name of your deployment.
+When you start your container specify the following system property fakereplace.source-paths.[test.war]=/path/to/src/main/java (replacing [test.war] with the actual name of your deployment.
 Fakereplace will then scan your source directory for changes, and attempt to automatically compile them. This is only triggered when a web request hits the container.
 
-Have Fakereplace watch your class files
+### Have Fakereplace watch your class files
 
-: If you are using an exploded type deployment where the class files are on the file system rather than in a jar then Wildfly will automatically watch them for changes and attempt to replace them if they are modified.
+If you are using an exploded type deployment where the class files are on the file system rather than in a jar then Wildfly will automatically watch them for changes and attempt to replace them if they are modified.
 
-Using the maven plugin
+### Using the maven plugin
 
-: Fakereplace also provides a maven plugin that communicates with Fakereplace over a socket.
+Fakereplace also provides a maven plugin that communicates with Fakereplace over a socket.
 
 Using the maven plugin
 ----------------------
