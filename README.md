@@ -24,6 +24,18 @@ pickup on these changes and re-load its metadata. To this end Fakereplace integr
 It also provides Wildfly integration, and a maven plugin to allow maven to automatically replace classes after it has
 compiled them.
 
+Getting Fakereplace
+-------------------
+
+Download the latest release from https://mvnrepository.com/artifact/org.fakereplace/fakereplace-dist
+
+To build it yourself simply run
+
+`
+mvn package
+`
+
+And then use the shaded jar that is build in the `dist\target` directory.
 
 Getting Started
 ---------------
@@ -54,7 +66,29 @@ server plugin set the VM arguments in the launch configuration.
 Performing a hot deployment
 ---------------------------
 
-To actually perform a hot deployment add the following to your projects
+There are currently 4 different ways to perform a hot deployment
+
+Use your IDE
+
+: Fakereplace will automatically enhance the normal IDE hot swapping capability. You should no longer get errors if you try and add/remove methods etc.
+
+Have Fakereplace watch your source files (currently Wildfly only)
+
+: When you start your container specify the following system property fakereplace.source-paths.[test.war]=/path/to/src/main/java (replacing [test.war] with the actual name of your deployment.
+Fakereplace will then scan your source directory for changes, and attempt to automatically compile them. This is only triggered when a web request hits the container.
+
+Have Fakereplace watch your class files
+
+: If you are using an exploded type deployment where the class files are on the file system rather than in a jar then Wildfly will automatically watch them for changes and attempt to replace them if they are modified.
+
+Using the maven plugin
+
+: Fakereplace also provides a maven plugin that communicates with Fakereplace over a socket.
+
+Using the maven plugin
+----------------------
+
+To actually a hot deployment via the maven plugin add the following to your projects
 pom.xml:
 
 
@@ -98,7 +132,7 @@ after the *-javaagent* command and comma seperated, e.g.
 * **log** Supported options are trace,debug,info,error
 * **index-file** The path to the fakereplace index file. Fakereplace stores this file after the first run to speed up later boots
 * **dump-dir** Dumps classes to this dir on hot replacement, only useful for developers working on Fakereplace
-* **port** The port that Fakereplace listens on
+* **port** The port that Fakereplace listens on for the maven plugin
 
 Other
 -----
