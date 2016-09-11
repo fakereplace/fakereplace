@@ -37,9 +37,9 @@ import org.fakereplace.replacement.AddedClass;
 
 /**
  * An implementation of the fakereplace client server protocol.
- * <p/>
+ * <p>
  * The basic protocol is as follows:
- * <p/>
+ * <p>
  * Client -
  * Magic no 0xCAFEDEAF
  * no classes (int)
@@ -47,13 +47,13 @@ import org.fakereplace.replacement.AddedClass;
  * class name length (int)
  * class name
  * timestamp (long)
- * <p/>
+ * <p>
  * Server -
  * no classes (int)
  * class data (1 per class)
  * class name length
  * class name
- * <p/>
+ * <p>
  * Client -
  * no classes (int)
  * class data

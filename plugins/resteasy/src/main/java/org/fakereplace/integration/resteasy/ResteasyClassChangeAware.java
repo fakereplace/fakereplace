@@ -131,7 +131,6 @@ public class ResteasyClassChangeAware implements ClassChangeAware {
     /**
      * Clear any resteasy stuff from the context
      *
-     * @param servletContext
      */
     private void clearContext(final ServletContext servletContext, final Set<String> doNotClear) {
         final Enumeration names = servletContext.getAttributeNames();

@@ -33,7 +33,7 @@ import org.fakereplace.util.DescriptorUtils;
 
 /**
  * this manipulator adds code that looks like:
- * <p/>
+ * <p>
  * if(!this.getClass().getName().equals("CurrentClass")) //if this is a subclass
  * {
  * if(org.fakereplace.runtime.VirtualDelegator.contains(this,methodName,
@@ -43,7 +43,7 @@ import org.fakereplace.util.DescriptorUtils;
  * methodDescriptor));
  * }
  * }
- * <p/>
+ * <p>
  * to a class
  *
  * @author stuart

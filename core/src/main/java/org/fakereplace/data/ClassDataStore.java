@@ -170,8 +170,6 @@ public class ClassDataStore {
      * all the transformers instead
      *
      * TODO: remove this method
-     * @param loader
-     * @param name
      */
     public void modifyCurrentData(ClassLoader loader, String name, Consumer<ClassDataBuilder> consumer) {
         ClassData current = getModifiedClassData(loader, name);

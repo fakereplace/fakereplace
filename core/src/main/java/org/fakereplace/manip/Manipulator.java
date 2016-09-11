@@ -82,11 +82,6 @@ public class Manipulator {
      * This can also be used to replace a static invokation with another static
      * invokation
      *
-     * @param oldClass
-     * @param newClass
-     * @param methodName
-     * @param methodDesc
-     * @param newStaticMethodDesc
      */
     public void replaceVirtualMethodInvokationWithStatic(String oldClass, String newClass, String methodName, String methodDesc, String newStaticMethodDesc, ClassLoader classLoader) {
         virtualToStaticManipulator.replaceVirtualMethodInvokationWithStatic(oldClass, newClass, methodName, methodDesc, newStaticMethodDesc, classLoader);

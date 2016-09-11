@@ -22,7 +22,7 @@ import javassist.bytecode.Bytecode;
 /**
  * This class is responsible for generating bytecode fragments to box/unbox
  * whatever happens to be on the top of the stack.
- * <p/>
+ * <p>
  * It is the calling codes responsibility to make sure that the correct type is
  * on the stack
  *

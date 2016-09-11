@@ -63,9 +63,6 @@ public class FieldReplacementTransformer implements FakereplaceTransformer {
      * to change and read it's value are redirected to the actual array based
      * store
      *
-     * @param loader
-     * @param m
-     * @param builder
      */
     private static int addField(ClassLoader loader, FieldInfo m, Set<FieldProxyInfo> builder, Class<?> oldClass) {
         int fieldNo = FieldReferenceDataStore.instance().getFieldNo(m.getName(), m.getDescriptor());

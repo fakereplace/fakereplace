@@ -148,8 +148,6 @@ public class Transformer implements FakereplaceTransformer {
     /**
      * Adds a method to a class that re can redefine when the class is reloaded
      *
-     * @param file
-     * @throws DuplicateMemberException
      */
     public void addMethodForInstrumentation(ClassFile file) {
         try {
@@ -210,8 +208,6 @@ public class Transformer implements FakereplaceTransformer {
     /**
      * Adds a method to a class that re can redefine when the class is reloaded
      *
-     * @param file
-     * @throws DuplicateMemberException
      */
     public void addAbstractMethodForInstrumentation(ClassFile file) {
         try {
@@ -254,8 +250,6 @@ public class Transformer implements FakereplaceTransformer {
      * modifies a class so that all created instances are registered with
      * InstanceTracker
      *
-     * @param file
-     * @throws BadBytecode
      */
     public void makeTrackedInstance(ClassFile file) throws BadBytecode {
         for (MethodInfo m : (List<MethodInfo>) file.getMethods()) {

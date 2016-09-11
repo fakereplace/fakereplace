@@ -273,14 +273,9 @@ public class MethodReplacementTransformer implements FakereplaceTransformer {
      * the bytecode is inserted inside a conditional that will only run the code
      * if the method number is correct variables are removed from the parameter
      * array and unboxed if nessesary the return value is boxed if nessesary
-     * <p/>
+     * <p>
      * Much of this work is handled by helper classes
      *
-     * @param methodNumber
-     * @param mInfo
-     * @param methodConstPool
-     * @param addedMethod
-     * @throws BadBytecode
      */
     private static void generateBoxedConditionalCodeBlock(int methodNumber, MethodInfo mInfo, ConstPool methodConstPool, CodeAttribute addedMethod, boolean staticMethod, boolean constructor)
             throws BadBytecode {
@@ -407,14 +402,10 @@ public class MethodReplacementTransformer implements FakereplaceTransformer {
     /**
      * creates a class with a fake constructor that can be used by the reflection
      * api
-     * <p/>
+     * <p>
      * Constructors are not invoked through the proxy class, instead we have to
      * do a lot more bytecode re-writing at the actual invocation sites
      *
-     * @param mInfo
-     * @param loader
-     * @return
-     * @throws BadBytecode
      */
     private static String generateFakeConstructorBytecode(MethodInfo mInfo, ClassLoader loader) throws BadBytecode {
         String proxyName = ProxyDefinitionStore.getProxyName();

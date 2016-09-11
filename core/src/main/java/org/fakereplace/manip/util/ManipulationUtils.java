@@ -104,7 +104,6 @@ public class ManipulationUtils {
         /**
          * Gets the correct return instruction for a proxy method
          *
-         * @param methodDescriptor
          */
         public static void addReturnProxyMethod(String methodDescriptor, Bytecode b) {
             String ret = DescriptorUtils.getReturnType(methodDescriptor);
@@ -194,8 +193,6 @@ public class ManipulationUtils {
     /**
      * inserts a 16 bit offset into the bytecode
      *
-     * @param b
-     * @param value
      */
     public static void add16bit(Bytecode b, int value) {
         value = value % 65536;

@@ -120,7 +120,6 @@ public class ClassData {
      * Searches through parent classloaders of the classes class loader to find
      * the ClassData structure for the super class
      *
-     * @return
      */
     public ClassData getSuperClassInformation() {
         if (superClassName == null) {
@@ -172,7 +171,6 @@ public class ClassData {
     /**
      * replaces a method if it already exists
      *
-     * @param data
      */
     public void replaceMethod(MethodData data) {
         if (!methods.containsKey(data.getMethodName())) {
@@ -202,9 +200,6 @@ public class ClassData {
      * methods with the same name and signature it is undefined which one will be
      * returned
      *
-     * @param name
-     * @param arguments
-     * @return
      */
     public MethodData getMethodData(String name, String arguments) {
         Map<String, Set<MethodData>> r = methods.get(name);

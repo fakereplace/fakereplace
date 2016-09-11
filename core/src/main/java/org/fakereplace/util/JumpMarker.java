@@ -21,7 +21,7 @@ import javassist.bytecode.Bytecode;
 
 /**
  * Interface that represents a conditional jump or goto in bytecode.
- * <p/>
+ * <p>
  * When the mark method is called the jump site is updated to point to the end
  * of the bytecode stream.
  *

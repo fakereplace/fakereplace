@@ -27,7 +27,7 @@ import java.util.Map;
  * method number and if the method exists on the superclass then it is handled
  * automatically
  *
- * @author Stuart Douglas <stuart.w.douglas@gmail.com>
+ * @author Stuart Douglas
  */
 public class MethodIdentifierStore {
 

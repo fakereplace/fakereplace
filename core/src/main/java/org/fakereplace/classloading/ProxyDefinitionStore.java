@@ -48,7 +48,6 @@ public class ProxyDefinitionStore {
     /**
      * Returns a unique proxy name
      *
-     * @return
      */
     public static String getProxyName() {
         return Constants.GENERATED_CLASS_PACKAGE + ".ProxyClass" + proxyNo.incrementAndGet();

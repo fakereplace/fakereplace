@@ -34,7 +34,7 @@ import org.fakereplace.util.JumpUtils;
 
 /**
  * manipulator that replaces Method.invokewith the following:
- * <p/>
+ * <p>
  * <code>
  * if(MethodReflection.fakeCallRequired)
  * MethodReflection.invoke

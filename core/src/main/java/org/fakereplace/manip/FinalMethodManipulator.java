@@ -31,7 +31,7 @@ import org.fakereplace.data.ModifiedMethod;
 /**
  * manipulator that removes the final attribute from methods
  *
- * @author Stuart Douglas <stuart.w.douglas@gmail.com>
+ * @author Stuart Douglas
  */
 public class FinalMethodManipulator implements ClassManipulator {
 

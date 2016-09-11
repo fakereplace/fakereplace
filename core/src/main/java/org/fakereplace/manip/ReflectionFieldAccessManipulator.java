@@ -36,7 +36,7 @@ import org.fakereplace.util.JumpUtils;
 
 /**
  * manipulator that replaces Field.set* / Field.get* with the following:
- * <p/>
+ * <p>
  * <code>
  * if(FieldAcess.isFakeField)
  * FieldAccess.set*

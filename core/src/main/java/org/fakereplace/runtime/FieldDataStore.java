@@ -25,7 +25,7 @@ import org.fakereplace.util.NullSafeConcurrentHashMap;
 
 /**
  * This class holds field data for added fields. It maintains a weakly
- * referenced computing map of instance -> field value.
+ * referenced computing map of instance to field value.
  *
  * @author Stuart Douglas
  */

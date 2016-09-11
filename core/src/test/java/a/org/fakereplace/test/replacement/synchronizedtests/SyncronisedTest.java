@@ -24,10 +24,10 @@ import org.junit.Test;
 
 /**
  * This class tests that syncronisation still works as it should
- * <p/>
+ * <p>
  * this is because we are going to remove the sync attribute and replace it with
  * the equivilent sync code
- * <p/>
+ * <p>
  * this has not actually happended yet, because it is harder than I though, but
  * these tests will be relevant eventually
  *

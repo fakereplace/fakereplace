@@ -47,8 +47,6 @@ public class DescriptorUtils {
      * getMethod to be called based on descriptor data We also pass the class
      * that the method We assume the descriptor is well formed
      *
-     * @param methodDescriptor
-     * @return
      */
     public static Class<?>[] argumentStringToClassArray(String methodDescriptor, Class<?> methodClass) throws ClassNotFoundException {
         int i = 1; // char 0 is a '('
@@ -121,11 +119,9 @@ public class DescriptorUtils {
      * returns an array of String representations of the parameter types.
      * Primitives are returned as their native representations, while clases are
      * returned in the form Ljava/lang/Integer
-     * <p/>
+     * <p>
      * this is so the class I can be determined from an int for example
      *
-     * @param methodDescriptor
-     * @return
      */
     public static String[] descriptorStringToParameterArray(String methodDescriptor) {
         int i = 1; // char 0 is a '('
@@ -196,10 +192,8 @@ public class DescriptorUtils {
     }
 
     /**
-     * e.g. Ljava/lang/Object; -> java/lang/Object
+     * e.g. Ljava/lang/Object; to java/lang/Object
      *
-     * @param descriptor
-     * @return
      */
     public static String getTypeStringFromDescriptorFormat(String descriptor) {
         descriptor = descriptor.substring(1);

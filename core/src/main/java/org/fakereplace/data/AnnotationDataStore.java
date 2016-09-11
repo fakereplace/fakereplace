@@ -46,7 +46,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Stores information about the annotations on reloaded classes
- * <p/>
+ * <p>
  * TODO: This leaks Class's. everthing should be stored in weak hashaps keyed on
  * the class object
  *

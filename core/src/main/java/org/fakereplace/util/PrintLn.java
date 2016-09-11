@@ -24,7 +24,7 @@ import javassist.bytecode.ConstPool;
  * Utility class that creates the System.out.println bytecode
  * usefull for debugging
  *
- * @author Stuart Douglas <stuart.w.douglas@gmail.com>
+ * @author Stuart Douglas
  */
 public class PrintLn {
     public static Bytecode println(ConstPool cp, String message) {

@@ -86,9 +86,6 @@ public class ManipulationDataStore<T extends ClassLoaderFiltered<T>> {
      * to try searching through the parent classloaders, which will not always
      * work.
      *
-     * @param loaderOfClassBeingManipulated
-     * @param loaderOfManipulatedClass
-     * @return
      */
     public static boolean includeClassLoader(ClassLoader loaderOfClassBeingManipulated, ClassLoader loaderOfManipulatedClass) {
         if (loaderOfManipulatedClass == null) {

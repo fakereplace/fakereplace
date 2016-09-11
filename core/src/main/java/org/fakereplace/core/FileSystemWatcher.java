@@ -43,7 +43,7 @@ import java.util.WeakHashMap;
 
 /**
  * Class that is responsible for watching the file system and reporting on class change events.
- * <p/>
+ * <p>
  * Internally it uses {@link org.fakereplace.util.WatchServiceFileSystemWatcher} to watch the file system.
  *
  * @author Stuart Douglas
