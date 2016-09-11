@@ -77,7 +77,7 @@ public class ConstructorReflection {
                 if (i.getType() == MemberType.FAKE_CONSTRUCTOR) {
                     Class<?> c = clazz.getClassLoader().loadClass(i.getClassName());
                     visible.add(i.getConstructor(c));
-                } else if (i.getType() == MemberType.REMOVED) {
+                } else if (i.getType() == MemberType.REMOVED && i.getMethodName().equals("<init>")) {
                     Class<?> c = clazz.getClassLoader().loadClass(i.getClassName());
                     visible.remove(i.getConstructor(c));
                 }
@@ -117,7 +117,7 @@ public class ConstructorReflection {
                         if (i.getType() == MemberType.FAKE_CONSTRUCTOR && AccessFlag.isPublic(i.getAccessFlags())) {
                             Class<?> c = clazz.getClassLoader().loadClass(i.getClassName());
                             visible.add(i.getConstructor(c));
-                        } else if (i.getType() == MemberType.REMOVED) {
+                        } else if (i.getType() == MemberType.REMOVED && i.getMethodName().equals("<init>")) {
                             Class<?> c = clazz.getClassLoader().loadClass(i.getClassName());
                             visible.remove(i.getConstructor(c));
                         }
