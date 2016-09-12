@@ -34,7 +34,6 @@
         <javassist.version>3.20.0-GA</javassist.version>
         <wildfly.version>10.1.0.Final</wildfly.version>
         <jsf-api.version>1.2_13</jsf-api.version>
-        <seam.version>2.1.2</seam.version>
         <servlet-api.version>2.4</servlet-api.version>
         <jboss.modules.version>1.5.1.Final</jboss.modules.version>
         <maven-plugin-api.version>2.0</maven-plugin-api.version>
@@ -316,6 +315,13 @@
                 <version>${slf4j-simple.version}</version>
                 <scope>test</scope>
             </dependency>
+
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>1.7.13</version>
+            </dependency>
+
             <dependency>
                 <groupId>javax.transaction</groupId>
                 <artifactId>javax.transaction-api</artifactId>
