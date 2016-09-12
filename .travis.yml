@@ -1,5 +1,5 @@
 language: java
-script: mvn test -Dmaven.javadoc.skip=true --settings=.settings.xml
+script: mvn integration-test -Dmaven.javadoc.skip=true --settings=.settings.xml
 install: mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V --settings=.settings.xml
 
 jdk:
