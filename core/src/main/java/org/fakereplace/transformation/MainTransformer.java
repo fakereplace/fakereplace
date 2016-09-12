@@ -55,11 +55,15 @@ import org.fakereplace.core.ClassChangeNotifier;
 import org.fakereplace.core.DefaultEnvironment;
 import org.fakereplace.logging.Logger;
 import org.fakereplace.replacement.notification.ChangedClassImpl;
+import org.fakereplace.util.DescriptorUtils;
 import javassist.ClassPool;
 import javassist.LoaderClassPath;
+import javassist.NotFoundException;
 import javassist.bytecode.BadBytecode;
+import javassist.bytecode.Bytecode;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.MethodInfo;
+import javassist.bytecode.Opcode;
 
 /**
  * @author Stuart Douglas
@@ -170,7 +174,30 @@ public class MainTransformer implements ClassFileTransformer {
                         for (MethodInfo method : modifiedMethods) {
                             if(method.getCodeAttribute() != null) {
                                 method.getCodeAttribute().computeMaxStack();
-                                method.rebuildStackMap(classPool);
+                                try {
+                                    method.rebuildStackMap(classPool);
+                                } catch (BadBytecode e) {
+                                    Throwable root = e;
+                                    while (!(root instanceof NotFoundException) && root != null && root.getCause() != root) {
+                                        root = root.getCause();
+                                    }
+
+                                    if(root instanceof NotFoundException) {
+                                        NotFoundException cause = (NotFoundException) root;
+                                        Bytecode bytecode = new Bytecode(file.getConstPool());
+                                        bytecode.addNew(NoClassDefFoundError.class.getName());
+                                        bytecode.add(Opcode.DUP);
+                                        bytecode.addLdc(cause.getMessage());
+                                        bytecode.addInvokespecial(NoClassDefFoundError.class.getName(), "<init>", "(Ljava/lang/String;)V");
+                                        bytecode.add(Opcode.ATHROW);
+                                        method.setCodeAttribute(bytecode.toCodeAttribute());
+                                        method.getCodeAttribute().computeMaxStack();
+                                        method.getCodeAttribute().setMaxLocals(DescriptorUtils.maxLocalsFromParameters(method.getDescriptor()) + 1);
+                                        method.rebuildStackMap(classPool);
+                                    } else {
+                                        throw e;
+                                    }
+                                }
                             }
                         }
                     }

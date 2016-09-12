@@ -42,6 +42,17 @@ public class DescriptorUtils {
         return "(" + classArrayToDescriptorString(method.getParameterTypes()) + ")V";
     }
 
+    public static int maxLocalsFromParameters(String methodDescriptor) {
+        String[] params = descriptorStringToParameterArray(methodDescriptor);
+        int ret = params.length;
+        for(String i : params) {
+            if(i.equals("J") || i.equals("D")) {
+                ++ret;
+            }
+        }
+        return ret;
+    }
+
     /**
      * returns an array of class types based on the method parameters this allows
      * getMethod to be called based on descriptor data We also pass the class

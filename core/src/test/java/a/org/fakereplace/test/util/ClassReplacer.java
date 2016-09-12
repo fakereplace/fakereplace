@@ -121,4 +121,7 @@ public class ClassReplacer {
     public void rewriteNames(Class<?> to, Class<?> from) {
         nameReplacements.put(from.getName(), to.getName());
     }
+    public void rewriteNames(String to, String from) {
+        nameReplacements.put(from, to);
+    }
 }

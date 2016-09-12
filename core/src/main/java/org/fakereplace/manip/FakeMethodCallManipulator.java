@@ -103,7 +103,7 @@ public class FakeMethodCallManipulator implements ClassManipulator {
                     }
                 }
                 if (!handled && !className.equals(file.getName()) && CurrentEnvironment.getEnvironment().isClassReplaceable(className, loader)) {
-                    //may be an added field
+                    //may be an added method
                     //if the field does not actually exist yet we just assume it is about to come into existence
                     //and rewrite it anyway
 
