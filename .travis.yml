@@ -1,4 +1,4 @@
 language: java
-
+script: mvn test --settings=.settings.xml
 jdk:
   - oraclejdk8
