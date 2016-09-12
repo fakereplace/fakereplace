@@ -98,8 +98,8 @@ pom.xml:
         <plugins>
           <plugin>
             <groupId>org.fakereplace</groupId>
-            <artifactId>fakereplace-plugin</artifactId>
-            <version>1.0.0.Alpha2</version>
+            <artifactId>fakereplace-maven-plugin</artifactId>
+            <version>1.0.0.Alpha3</version>
             <executions>
               <execution>
                 <phase>package</phase>
