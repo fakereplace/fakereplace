@@ -34,10 +34,12 @@ Download the latest release from https://mvnrepository.com/artifact/org.fakerepl
 To build it yourself simply run
 
 `
-mvn package
+mvn package --settings=.settings.xml
 `
 
-And then use the shaded jar that is build in the `dist\target` directory.
+And then use the shaded jar that is build in the `dist\target` directory. Note that you only need to use the custom settings
+file if you do not already have the JBoss nexus repositories in your personal settings file (as some tests are executed
+against Wildfly).
 
 Getting Started
 ---------------
