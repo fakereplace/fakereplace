@@ -1,6 +1,8 @@
 Fakereplace Class Reloader
 ==========================
 
+[![Build Status](https://travis-ci.org/fakereplace/fakereplace.svg?branch=master)](https://travis-ci.org/fakereplace/fakereplace)
+
 This project provides a javaagent and a client to hot replace classes in the JVM over and above what is provided by
 standard JDK hotswap.
 

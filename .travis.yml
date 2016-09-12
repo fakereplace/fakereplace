@@ -1,4 +1,6 @@
 language: java
-script: mvn test --settings=.settings.xml
+script: mvn test -Dmaven.javadoc.skip=true --settings=.settings.xml
+install: mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V --settings=.settings.xml
+
 jdk:
   - oraclejdk8
