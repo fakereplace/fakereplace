@@ -27,18 +27,18 @@ public enum AgentOption {
     DUMP_DIR("dump-dir"),
     PACKAGES("packages"),
     LOG("log"),
-    PORT("port", "6555"),
+    SERVER("server", "-1"),
     ;
 
     private final String key;
     private final String defaultValue;
 
-    private AgentOption(final String key) {
+    AgentOption(final String key) {
         this.key = key;
         this.defaultValue = null;
     }
 
-    private AgentOption(final String key, final String defaultValue) {
+    AgentOption(final String key, final String defaultValue) {
         this.key = key;
         this.defaultValue = defaultValue;
     }

@@ -98,10 +98,17 @@ public class Agent {
         mainTransformer.setRetransformationStarted(false);
 
         //start the server
-        Thread thread = new Thread(new FakereplaceServer(Integer.parseInt(AgentOptions.getOption(AgentOption.PORT))));
-        thread.setDaemon(true);
-        thread.setName("Fakereplace Thread");
-        thread.start();
+        String portString = AgentOptions.getOption(AgentOption.SERVER);
+
+        if(portString == null || !portString.equals("-1")) {
+            if(portString == null) {
+                portString = "6555";
+            }
+            Thread thread = new Thread(new FakereplaceServer(Integer.parseInt(portString)));
+            thread.setDaemon(true);
+            thread.setName("Fakereplace Thread");
+            thread.start();
+        }
     }
 
     public static void redefine(ClassDefinition[] classes, AddedClass[] addedData) throws UnmodifiableClassException, ClassNotFoundException {

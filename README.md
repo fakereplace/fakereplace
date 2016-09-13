@@ -92,6 +92,15 @@ Fakereplace also provides a maven plugin that communicates with Fakereplace over
 Using the maven plugin
 ----------------------
 
+You will need to tell Fakereplace to start the socket server to be notified of changes. To do this add
+the 'server' option to the fakereplace option string (e.g. ``-javaagent:/path/to/fakereplace.jar=server`).
+
+You should see the following on startup:
+
+`
+Fakereplace listening on port 6555
+`
+
 To actually a hot deployment via the maven plugin add the following to your projects
 pom.xml:
 
@@ -136,7 +145,7 @@ after the *-javaagent* command and comma seperated, e.g.
 * **log** Supported options are trace,debug,info,error
 * **index-file** The path to the fakereplace index file. Fakereplace stores this file after the first run to speed up later boots
 * **dump-dir** Dumps classes to this dir on hot replacement, only useful for developers working on Fakereplace
-* **port** The port that Fakereplace listens on for the maven plugin
+* **remote** If this is present Fakereplace will start its server, it can also be used to specify the port number e.g. remote=6222
 
 Other
 -----

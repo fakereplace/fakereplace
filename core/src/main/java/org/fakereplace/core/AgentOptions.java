@@ -59,10 +59,9 @@ public class AgentOptions {
         if (instance == null) {
             throw new IllegalStateException("setup() not called");
         }
-        String value = instance.options.get(option.getKey());
-        if(value != null) {
-            return value;
+        if(!instance.options.containsKey(option.getKey())) {
+            return option.getDefaultValue();
         }
-        return option.getDefaultValue();
+        return instance.options.get(option.getKey());
     }
 }
