@@ -27,7 +27,7 @@
 
     <groupId>org.fakereplace</groupId>
     <artifactId>fakereplace-build-config</artifactId>
-    <version>1.0.0.Alpha4</version>
+    <version>1.0.0.Alpha5-SNAPSHOT</version>
     <name>Fakereplace: Build Configuration</name>
 
 </project>
