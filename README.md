@@ -110,7 +110,7 @@ pom.xml:
           <plugin>
             <groupId>org.fakereplace</groupId>
             <artifactId>fakereplace-maven-plugin</artifactId>
-            <version>1.0.0.Alpha3</version>
+            <version>1.0.0.Alpha4</version>
             <executions>
               <execution>
                 <phase>package</phase>
