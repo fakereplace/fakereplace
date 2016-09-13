@@ -108,6 +108,8 @@ public class Agent {
             thread.setDaemon(true);
             thread.setName("Fakereplace Thread");
             thread.start();
+        } else {
+            System.out.println("Fakereplace is running.");
         }
     }
 
