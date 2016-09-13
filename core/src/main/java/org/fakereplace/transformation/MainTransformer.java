@@ -95,6 +95,8 @@ public class MainTransformer implements ClassFileTransformer {
 
     private volatile boolean retransformationStarted;
 
+    private boolean logClassRetransformation;
+
     public MainTransformer(Set<Extension> extension) {
         Map<String, Extension> integrationClassTriggers = new HashMap<String, Extension>();
         for (Extension i : extension) {
@@ -113,6 +115,9 @@ public class MainTransformer implements ClassFileTransformer {
         }
         if(classBeingRedefined != null) {
             retransformationStarted = true;
+            if(logClassRetransformation) {
+                System.out.println("Fakereplace is replacing class " + className);
+            }
         }
         ChangedClassImpl changedClass = null;
         if (classBeingRedefined != null) {
@@ -349,6 +354,14 @@ public class MainTransformer implements ClassFileTransformer {
             }
             runIntegration();
         }
+    }
+
+    public boolean isLogClassRetransformation() {
+        return logClassRetransformation;
+    }
+
+    public void setLogClassRetransformation(boolean logClassRetransformation) {
+        this.logClassRetransformation = logClassRetransformation;
     }
 
     public boolean isRetransformationStarted() {

@@ -96,6 +96,7 @@ public class Agent {
         mainTransformer.addTransformer(new MethodReplacementTransformer());
         mainTransformer.addTransformer(new Transformer(extension));
         mainTransformer.setRetransformationStarted(false);
+        mainTransformer.setLogClassRetransformation(true);
 
         //start the server
         String portString = AgentOptions.getOption(AgentOption.SERVER);
@@ -120,7 +121,6 @@ public class Agent {
                 mainTransformer.addNewClass(new NewClassData(i.getClassName(), i.getLoader(), cf));
             }
             for (ClassDefinition i : classes) {
-                System.out.println("Fakereplace is replacing class " + i.getDefinitionClass());
                 ClassDataStore.instance().markClassReplaced(i.getDefinitionClass());
                 BaseClassData baseClassData = ClassDataStore.instance().getBaseClassData(i.getDefinitionClass().getClassLoader(), i.getDefinitionClass().getName());
                 if (baseClassData != null) {
