@@ -75,6 +75,10 @@ public class WeldClassChangeAware implements ClassChangeAware {
     }
 
     public static void addProxyFactory(final Object factory, final Object bean) {
+        if(bean == null) {
+            //apparently this can happen for createInjectionTarget
+            return;
+        }
         proxyFactories.put(bean, factory);
     }
 }
