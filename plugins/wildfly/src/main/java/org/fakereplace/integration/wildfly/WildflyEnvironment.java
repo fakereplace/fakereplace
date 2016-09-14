@@ -18,6 +18,7 @@ package org.fakereplace.integration.wildfly;
 
 import org.fakereplace.api.environment.ChangedClasses;
 import org.fakereplace.api.environment.Environment;
+import org.fakereplace.core.DefaultEnvironment;
 import org.fakereplace.logging.Logger;
 import org.jboss.as.server.CurrentServiceContainer;
 import org.jboss.as.server.deployment.Attachments;
@@ -60,7 +61,7 @@ public class WildflyEnvironment implements Environment {
                 return true;
             }
         }
-        return false;
+        return DefaultEnvironment.INSTANCE.isClassReplaceable(className, loader);
     }
 
     public void recordTimestamp(String className, ClassLoader loader) {

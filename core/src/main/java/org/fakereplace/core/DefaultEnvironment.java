@@ -39,10 +39,12 @@ public class DefaultEnvironment implements Environment {
 
     private static final Logger log = Logger.getLogger(DefaultEnvironment.class);
 
-    protected static final String[] replaceablePackages;
+    private static final String[] replaceablePackages;
 
     private final Map<String, Long> timestamps = new ConcurrentHashMap<String, Long>();
     private final Map<String, ClassLoader> loaders = new ConcurrentHashMap<String, ClassLoader>();
+
+    public static final DefaultEnvironment INSTANCE = new DefaultEnvironment();
 
     static {
         String plist = AgentOptions.getOption(AgentOption.PACKAGES);
