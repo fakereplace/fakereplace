@@ -113,9 +113,10 @@ public class MainTransformer implements ClassFileTransformer {
             //TODO: deal with lambdas
             return classfileBuffer;
         }
+        final Environment environment = CurrentEnvironment.getEnvironment();
         if(classBeingRedefined != null) {
             retransformationStarted = true;
-            if(logClassRetransformation) {
+            if(logClassRetransformation && environment.isClassReplaceable(className, loader)) {
                 System.out.println("Fakereplace is replacing class " + className);
             }
         }
@@ -123,7 +124,6 @@ public class MainTransformer implements ClassFileTransformer {
         if (classBeingRedefined != null) {
             changedClass = new ChangedClassImpl(classBeingRedefined);
         }
-        final Environment environment = CurrentEnvironment.getEnvironment();
         if (integrationClassTriggers.containsKey(className)) {
             integrationClassloader.add(loader);
             // we need to load the class in another thread
