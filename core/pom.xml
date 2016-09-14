@@ -123,7 +123,7 @@
                                 <include>**/*.java</include>
                             </includes>
                             <forkMode>once</forkMode>
-                            <argLine>-javaagent:${project.build.directory}/${project.build.finalName}.jar=index-file=${project.build.directory}/fakereplace.index,packages=org.fakereplace.test,testRun </argLine>
+                            <argLine>-javaagent:${project.build.directory}/${project.build.finalName}.jar=index-file=${project.build.directory}/fakereplace.index,packages=a.org.fakereplace.test,testRun </argLine>
                         </configuration>
                     </execution>
                 </executions>
