@@ -117,7 +117,7 @@ public class MainTransformer implements ClassFileTransformer {
         if(classBeingRedefined != null) {
             retransformationStarted = true;
             if(logClassRetransformation && environment.isClassReplaceable(className, loader)) {
-                System.out.println("Fakereplace is replacing class " + className);
+                log.info("Fakereplace is replacing class " + className);
             }
         }
         ChangedClassImpl changedClass = null;

@@ -63,20 +63,24 @@ public class DefaultEnvironment implements Environment {
         className = className.replace("/", ".");
         for (String i : replaceablePackages) {
             if (className.startsWith(i)) {
+                log.trace(className + " is replaceable as it belongs to " + i);
                 return true;
             }
         }
         if (className.contains("$Proxy")) {
+            log.trace(className + " is replaceable as it is a proxy");
             return true;
         }
         if (loader != null) {
             URL u = loader.getResource(className.replace('.', '/') + ".class");
             if (u != null) {
                 if (u.getProtocol().equals("file") || u.getProtocol().equals("vfsfile")) {
+                    log.trace(className + " is replaceable as it is exploded");
                     return true;
                 }
             }
         }
+        log.trace(className + " is not replaceable");
         return false;
     }
 
