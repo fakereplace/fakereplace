@@ -114,9 +114,10 @@ public class MainTransformer implements ClassFileTransformer {
             return classfileBuffer;
         }
         final Environment environment = CurrentEnvironment.getEnvironment();
+        boolean replaceable = environment.isClassReplaceable(className, loader);
         if(classBeingRedefined != null) {
             retransformationStarted = true;
-            if(logClassRetransformation && environment.isClassReplaceable(className, loader)) {
+            if(logClassRetransformation && replaceable) {
                 log.info("Fakereplace is replacing class " + className);
             }
         }
@@ -154,7 +155,7 @@ public class MainTransformer implements ClassFileTransformer {
         }
 
         boolean changed = false;
-        if (UnmodifiedFileIndex.isClassUnmodified(className)) {
+        if (!replaceable && UnmodifiedFileIndex.isClassUnmodified(className)) {
             return null;
         }
         Set<Class<?>> classesToRetransform = new HashSet<>();
