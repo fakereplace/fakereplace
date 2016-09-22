@@ -146,6 +146,7 @@ after the *-javaagent* command and comma seperated, e.g.
 * **index-file** The path to the fakereplace index file. Fakereplace stores this file after the first run to speed up later boots
 * **dump-dir** Dumps classes to this dir on hot replacement, only useful for developers working on Fakereplace
 * **remote** If this is present Fakereplace will start its server, it can also be used to specify the port number e.g. remote=6222
+* **no-index=true** Will tell Fakereplace not to use an index file to speed up subsequent boots.
 
 Other
 -----

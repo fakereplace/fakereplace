@@ -121,7 +121,7 @@ public class UnmodifiedFileIndex {
         return new File(fileProp);
     }
 
-    static synchronized  void markClassUnmodified(final String clazz) {
+    static synchronized void markClassUnmodified(final String clazz) {
         index.add(clazz);
         if(writeTimer == null && getFile() != null) {
             //the shutdown hook is not always reliable, so we write the index every 10 seconds
