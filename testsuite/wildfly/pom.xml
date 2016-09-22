@@ -34,6 +34,7 @@
 
     <properties>
         <jboss.vm.args>-ea</jboss.vm.args>
+        <redirectTestOutput>true</redirectTestOutput>
     </properties>
 
     <dependencies>
@@ -95,7 +96,7 @@
                             <goal>test</goal>
                         </goals>
                         <configuration>
-                            <redirectTestOutputToFile>true</redirectTestOutputToFile>
+                            <redirectTestOutputToFile>${redirectTestOutput}</redirectTestOutputToFile>
                             <skip>false</skip>
                             <excludes>
                                 <exclude>none</exclude>

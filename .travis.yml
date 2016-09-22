@@ -1,6 +1,12 @@
 language: java
-script: mvn integration-test -Dmaven.javadoc.skip=true --settings=.settings.xml
-install: mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V --settings=.settings.xml
+script: mvn integration-test -Dmaven.javadoc.skip=true --settings=.settings.xml -DredirectTestOutput=false
+install: mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V --settings=.settings.xml -DredirectTestOutput=false
 
 jdk:
   - oraclejdk8
+
+notifications:
+  email:
+    recipients:
+      stuart.w.douglas@gmail.com
+      
