@@ -28,6 +28,7 @@ public enum AgentOption {
     PACKAGES("packages"),
     LOG("log"),
     SERVER("server", "-1"),
+    NO_INDEX("no-index")
     ;
 
     private final String key;
