@@ -120,7 +120,7 @@ public class WildflyEnvironment implements Environment {
                     log.debug("Could not load class " + entry.getKey(), e);
                 }
 
-                log.trace(traceString.toString());
+                log.debug(traceString.toString());
 
             }
         }

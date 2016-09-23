@@ -65,7 +65,7 @@ public class WeldProxyClassLoadingDelegate {
                 try {
                     ByteArrayDataOutputStream bs = new ByteArrayDataOutputStream();
                     ct.write(bs);
-                    Agent.redefine(new ClassDefinition[]{new ClassDefinition(originalProxyClass, bs.getBytes())}, new AddedClass[0]);
+                    Agent.redefine(new ClassDefinition[]{new ClassDefinition(originalProxyClass, bs.getBytes())}, new AddedClass[0], false);
                     return originalProxyClass;
                 } catch (Exception e) {
                     throw new RuntimeException("Failed " + ct.getName(), e);

@@ -90,8 +90,9 @@ public class MainTransformer implements ClassFileTransformer {
     /**
      * as some tasks are run asyncronously this allows external agents to wait for them to complete
      */
-    private int outstandingCount;
     private boolean waitingForIntegration;
+    private int integrationRun;
+    private int retransformationOutstandingCount;
 
     private volatile boolean retransformationStarted;
 
@@ -115,9 +116,9 @@ public class MainTransformer implements ClassFileTransformer {
         }
         final Environment environment = CurrentEnvironment.getEnvironment();
         boolean replaceable = environment.isClassReplaceable(className, loader);
-        if(classBeingRedefined != null) {
+        if (classBeingRedefined != null) {
             retransformationStarted = true;
-            if(logClassRetransformation && replaceable) {
+            if (logClassRetransformation && replaceable) {
                 log.info("Fakereplace is replacing class " + className);
             }
         }
@@ -173,12 +174,12 @@ public class MainTransformer implements ClassFileTransformer {
                 return null;
             } else {
                 try {
-                    if(!modifiedMethods.isEmpty()) {
+                    if (!modifiedMethods.isEmpty()) {
                         ClassPool classPool = new ClassPool();
                         classPool.appendClassPath(new LoaderClassPath(loader));
                         classPool.appendSystemPath();
                         for (MethodInfo method : modifiedMethods) {
-                            if(method.getCodeAttribute() != null) {
+                            if (method.getCodeAttribute() != null) {
                                 method.getCodeAttribute().computeMaxStack();
                                 try {
                                     method.rebuildStackMap(classPool);
@@ -188,7 +189,7 @@ public class MainTransformer implements ClassFileTransformer {
                                         root = root.getCause();
                                     }
 
-                                    if(root instanceof NotFoundException) {
+                                    if (root instanceof NotFoundException) {
                                         NotFoundException cause = (NotFoundException) root;
                                         Bytecode bytecode = new Bytecode(file.getConstPool());
                                         bytecode.addNew(NoClassDefFoundError.class.getName());
@@ -229,18 +230,16 @@ public class MainTransformer implements ClassFileTransformer {
 
                 if (!classesToRetransform.isEmpty()) {
                     synchronized (this) {
-                        outstandingCount++;
+                        retransformationOutstandingCount++;
                     }
-                    //this kinda sucks, as it is a little bit racey
-                    //TODO: need to figure put a test suite fix for this
                     Thread t = new Thread(() -> {
                         try {
                             Agent.getInstrumentation().retransformClasses(classesToRetransform.toArray(new Class[classesToRetransform.size()]));
                         } catch (UnmodifiableClassException e) {
-                            log.debug("Failed to retransform classes", e);
+                            log.error("Failed to retransform classes", e);
                         } finally {
                             synchronized (MainTransformer.this) {
-                                outstandingCount--;
+                                retransformationOutstandingCount--;
                                 notifyAll();
                             }
                         }
@@ -249,15 +248,8 @@ public class MainTransformer implements ClassFileTransformer {
                 }
 
                 if (classBeingRedefined != null) {
-                    synchronized (this) {
-                        if (!waitingForIntegration) {
-                            waitingForIntegration = true;
-                            outstandingCount++;
-                        }
-                    }
                     changedClasses.add(changedClass);
-                    integrationTime = System.currentTimeMillis() + INTEGRATION_WAIT_TIME;
-                    timer.schedule(new IntegrationTask(), INTEGRATION_WAIT_TIME);
+                    queueIntegration();
                 }
                 return bs.toByteArray();
             }
@@ -267,6 +259,17 @@ public class MainTransformer implements ClassFileTransformer {
         } catch (Throwable e) {
             e.printStackTrace();
             throw new RuntimeException(e);
+        }
+    }
+
+    private void queueIntegration() {
+        //retransformed classes should trigger this as well
+        synchronized (this) {
+            if (!waitingForIntegration) {
+                waitingForIntegration = true;
+            }
+            integrationTime = System.currentTimeMillis() + INTEGRATION_WAIT_TIME;
+            timer.schedule(new IntegrationTask(integrationRun), INTEGRATION_WAIT_TIME);
         }
     }
 
@@ -308,6 +311,7 @@ public class MainTransformer implements ClassFileTransformer {
     }
 
     public void runIntegration() {
+        System.out.println("Running Integration");
         try {
             List<ChangedClass> changes;
             List<NewClassData> added;
@@ -322,22 +326,22 @@ public class MainTransformer implements ClassFileTransformer {
             }
         } finally {
             synchronized (this) {
-                if (waitingForIntegration) {
-                    waitingForIntegration = false;
-                    outstandingCount--;
-                    notifyAll();
-                }
+                waitingForIntegration = false;
+                integrationRun++;
+                notifyAll();
             }
         }
     }
 
     public synchronized void addNewClass(NewClassData newClassData) {
         addedClasses.add(newClassData);
+        queueIntegration();
+
     }
 
     public void waitForTasks() {
         synchronized (this) {
-            while (outstandingCount > 0) {
+            while (waitingForIntegration) {
                 try {
                     wait();
                 } catch (InterruptedException e) {
@@ -348,10 +352,23 @@ public class MainTransformer implements ClassFileTransformer {
     }
 
     private class IntegrationTask extends TimerTask {
+        private final int integrationRun;
+        public IntegrationTask(int integrationRun) {
+            this.integrationRun = integrationRun;
+        }
+
         @Override
         public void run() {
             if (System.currentTimeMillis() < integrationTime) {
                 return;
+            }
+            synchronized (MainTransformer.this) {
+                if (retransformationOutstandingCount > 0) {
+                    return;
+                }
+                if(this.integrationRun != MainTransformer.this.integrationRun) {
+                    return;
+                }
             }
             runIntegration();
         }

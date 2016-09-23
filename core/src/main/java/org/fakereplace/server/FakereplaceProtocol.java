@@ -86,10 +86,11 @@ public class FakereplaceProtocol {
             readAvailable(input, classes);
             readAvailable(input, resources);
 
-            log.info("Fakereplace is checking for updates classes. Client sent " + classes.size() + "classes");
 
 
             final ChangedClasses classesToReplace = CurrentEnvironment.getEnvironment().getUpdatedClasses(archiveName, classes);
+
+            log.info("Fakereplace is checking for updates classes. Client sent " + classes.size() + " classes, " + classesToReplace.getChanged().size() + " need to be replaced");
             final Map<String, Class> classMap = new HashMap<String, Class>();
             output.writeInt(classesToReplace.getChanged().size() + classesToReplace.getNewClasses().size());
             for (Class clazz : classesToReplace.getChanged()) {

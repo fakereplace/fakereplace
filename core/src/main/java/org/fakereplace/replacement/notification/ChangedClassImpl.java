@@ -98,4 +98,14 @@ public class ChangedClassImpl implements ChangedClass {
         set.add(annotation);
     }
 
+    @Override
+    public String toString() {
+        return "ChangedClassImpl{" +
+                "changedClassAnnotations=" + changedClassAnnotations +
+                ", changedAnnotationsByType=" + changedAnnotationsByType +
+                ", fields=" + fields +
+                ", methods=" + methods +
+                ", changedClass=" + changedClass +
+                '}';
+    }
 }

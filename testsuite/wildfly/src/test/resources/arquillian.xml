@@ -22,7 +22,7 @@
     <container qualifier="jboss" default="true">
         <configuration>
             <property name="jbossHome">${project.build.directory}/wildfly</property>
-            <property name="javaVmArguments">-Xmx512m -XX:MaxPermSize=256m -javaagent:${project.build.directory}/fakereplace/fakereplace.jar=index-file=${project.build.directory}/fakereplace.index,server ${jboss.vm.args}</property>
+            <property name="javaVmArguments">-Xmx512m -XX:MaxPermSize=256m -javaagent:${project.build.directory}/fakereplace/fakereplace.jar=index-file=${project.build.directory}/fakereplace.index,server,log=debug ${jboss.vm.args}</property>
         </configuration>
     </container>
 </arquillian>

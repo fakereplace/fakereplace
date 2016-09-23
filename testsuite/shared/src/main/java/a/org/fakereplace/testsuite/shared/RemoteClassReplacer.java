@@ -103,12 +103,7 @@ public class RemoteClassReplacer {
                 }
                 nc.setName(o.getName());
                 final byte[] data = nc.toBytecode();
-                classes.put(o.getName(), new ClassData(o.getName(), new Date().getTime(), new ContentSource() {
-                    @Override
-                    public byte[] getData() throws IOException {
-                        return data;
-                    }
-                }));
+                classes.put(o.getName(), new ClassData(o.getName(), System.currentTimeMillis() + 100, () -> data));
             }
             for (Class<?> o : addedClasses) {
                 CtClass nc = pool.get(o.getName());
@@ -122,12 +117,7 @@ public class RemoteClassReplacer {
                     nc.replaceClassName(newName, oldName);
                 }
                 final byte[] data = nc.toBytecode();
-                classes.put(o.getName(), new ClassData(o.getName(), new Date().getTime(), new ContentSource() {
-                    @Override
-                    public byte[] getData() throws IOException {
-                        return data;
-                    }
-                }));
+                classes.put(o.getName(), new ClassData(o.getName(), System.currentTimeMillis() + 100, () -> data));
             }
             FakeReplaceClient.run(deploymentName, classes, replacedResources);
         } catch (Exception e) {

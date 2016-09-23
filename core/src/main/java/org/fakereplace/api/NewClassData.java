@@ -45,4 +45,13 @@ public class NewClassData {
     public ClassFile getClassFile() {
         return classFile;
     }
+
+    @Override
+    public String toString() {
+        return "NewClassData{" +
+                "className='" + className + '\'' +
+                ", classLoader=" + classLoader +
+                ", classFile=" + classFile +
+                '}';
+    }
 }

@@ -115,6 +115,10 @@ public class Agent {
     }
 
     public static void redefine(ClassDefinition[] classes, AddedClass[] addedData) throws UnmodifiableClassException, ClassNotFoundException {
+        redefine(classes, addedData, true);
+    }
+
+    public static void redefine(ClassDefinition[] classes, AddedClass[] addedData, boolean wait) throws UnmodifiableClassException, ClassNotFoundException {
         try {
             for (AddedClass i : addedData) {
                 ClassFile cf = new ClassFile(new DataInputStream(new ByteArrayInputStream(i.getData())));
@@ -133,8 +137,9 @@ public class Agent {
             }
             inst.redefineClasses(classes);
             Introspector.flushCaches();
-            mainTransformer.runIntegration();
-            mainTransformer.waitForTasks();
+            if(wait) {
+                mainTransformer.waitForTasks();
+            }
         } catch (Throwable e) {
             try {
                 // dump the classes to /tmp so we can look at them
