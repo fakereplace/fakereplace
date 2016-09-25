@@ -39,6 +39,7 @@
         <module>metawidget</module>
         <module>maven</module>
         <module>wildfly</module>
+        <module>tomcat</module>
         <module>weld</module>
         <module>resteasy</module>
     </modules>

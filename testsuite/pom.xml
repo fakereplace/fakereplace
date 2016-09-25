@@ -103,6 +103,18 @@
 
     <profiles>
         <profile>
+            <id>tomcat</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+                <property>
+                    <name>tomcat</name>
+                </property>
+            </activation>
+            <modules>
+                <module>tomcat</module>
+            </modules>
+        </profile>
+        <profile>
             <id>wildfly</id>
             <activation>
                 <activeByDefault>true</activeByDefault>

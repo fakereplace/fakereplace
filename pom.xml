@@ -84,6 +84,7 @@
         <module>build-config</module>
         <module>core</module>
         <module>client</module>
+        <module>standalone-client</module>
         <module>dist</module>
         <module>plugins</module>
         <module>testsuite/shared</module>
@@ -109,6 +110,12 @@
 
             <dependency>
                 <groupId>org.fakereplace</groupId>
+                <artifactId>fakereplace-standalone-client</artifactId>
+                <version>${fakereplace.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.fakereplace</groupId>
                 <artifactId>fakereplace-dist</artifactId>
                 <version>${fakereplace.version}</version>
             </dependency>
@@ -128,6 +135,12 @@
             <dependency>
                 <groupId>org.fakereplace</groupId>
                 <artifactId>fakereplace-metawidget</artifactId>
+                <version>${fakereplace.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.fakereplace</groupId>
+                <artifactId>fakereplace-tomcat</artifactId>
                 <version>${fakereplace.version}</version>
             </dependency>
 
