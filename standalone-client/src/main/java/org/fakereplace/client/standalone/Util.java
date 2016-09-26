@@ -20,23 +20,26 @@
 
 package org.fakereplace.client.standalone;
 
+import org.fakereplace.logging.Logger;
+
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ByteArrayOutputStream;
 
 /**
  * @author Stuart Douglas
  */
 public class Util {
+    private static final Logger log = Logger.getLogger(Util.class);
 
     public static byte[] getBytesFromFile(File file) throws IOException {
-        InputStream is = new FileInputStream(file);
-        try {
+        try (InputStream is = new FileInputStream(file)) {
             return getBytesFromStream(is);
-        } finally {
-            is.close();
+        } catch (Exception e) {
+            log.error("Unable to read file " + file, e);
+            return new byte[0];
         }
     }
 

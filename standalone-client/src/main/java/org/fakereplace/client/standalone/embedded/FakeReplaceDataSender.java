@@ -36,6 +36,20 @@ public class FakeReplaceDataSender implements DataSender {
         dataSender.sendChangedResource(deploymentConfig, basePath, file);
     }
 
+    @Override
+    public void removeChangedClass(DeploymentConfig deploymentConfig,
+                                   File basePath,
+                                   File file) {
+        dataSender.removeChangedClass(deploymentConfig, basePath, file);
+    }
+
+    @Override
+    public void removeChangedResource(DeploymentConfig deploymentConfig,
+                                      File basePath,
+                                      File file) {
+        dataSender.removeChangedResource(deploymentConfig, basePath, file);
+    }
+
     public void sendData(DeploymentData deploymentData) {
         try {
             FakeReplaceClient.run(

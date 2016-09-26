@@ -9,7 +9,15 @@ public interface DataSender {
                           File basePath,
                           File file);
 
+    void removeChangedClass(DeploymentConfig deploymentConfig,
+                            File basePath,
+                            File file);
+
     void sendChangedResource(DeploymentConfig deploymentConfig,
                              File basePath,
                              File file);
+
+    void removeChangedResource(DeploymentConfig deploymentConfig,
+                               File basePath,
+                               File file);
 }

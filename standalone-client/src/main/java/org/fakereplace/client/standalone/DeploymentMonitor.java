@@ -8,8 +8,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static org.fakereplace.util.WatchServiceFileSystemWatcher.FileChangeEvent.Type.ADDED;
 import static org.fakereplace.util.WatchServiceFileSystemWatcher.FileChangeEvent.Type.MODIFIED;
+import static org.fakereplace.util.WatchServiceFileSystemWatcher.FileChangeEvent.Type.ADDED;
+import static org.fakereplace.util.WatchServiceFileSystemWatcher.FileChangeEvent.Type.REMOVED;
+
 
 public class DeploymentMonitor {
     private final List<DeploymentConfig> deploymentConfigList;
@@ -64,6 +66,13 @@ public class DeploymentMonitor {
                                 basePath,
                                 e.getFile());
                     }
+
+                    if (e.getType() == REMOVED) {
+                        dataSender.removeChangedResource(
+                                deploymentConfig,
+                                basePath,
+                                e.getFile());
+                    }
                 });
             });
         };
@@ -83,6 +92,13 @@ public class DeploymentMonitor {
                 changes.stream().forEach((e) -> {
                     if (e.getType() == ADDED || e.getType() == MODIFIED) {
                         dataSender.sendChangedClass(
+                                deploymentConfig,
+                                basePath,
+                                e.getFile());
+                    }
+
+                    if (e.getType() == REMOVED) {
+                        dataSender.removeChangedClass(
                                 deploymentConfig,
                                 basePath,
                                 e.getFile());

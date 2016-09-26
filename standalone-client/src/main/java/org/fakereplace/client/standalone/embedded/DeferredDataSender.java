@@ -45,6 +45,21 @@ public class DeferredDataSender implements DataSender {
     }
 
     @Override
+    public void removeChangedClass(DeploymentConfig deploymentConfig,
+                                 File basePath,
+                                 File file) {
+        DeploymentData deploymentData;
+
+        synchronized (this) {
+            deploymentData = getDeploymentData(deploymentConfig);
+            removeChangedClass(deploymentData, basePath, file);
+        }
+
+        getTimeoutCall(deploymentData)
+                .reschedule(DEFAULT_TIMEOUT);
+    }
+
+    @Override
     public void sendChangedResource(DeploymentConfig deploymentConfig,
                                     File basePath,
                                     File file) {
@@ -56,7 +71,22 @@ public class DeferredDataSender implements DataSender {
         }
 
         getTimeoutCall(deploymentData)
-                .reschedule(500);
+                .reschedule(DEFAULT_TIMEOUT);
+    }
+
+    @Override
+    public void removeChangedResource(DeploymentConfig deploymentConfig,
+                                      File basePath,
+                                      File file) {
+        DeploymentData deploymentData;
+
+        synchronized (this) {
+            deploymentData = getDeploymentData(deploymentConfig);
+            removeChangedResource(deploymentData, basePath, file);
+        }
+
+        getTimeoutCall(deploymentData)
+                .reschedule(DEFAULT_TIMEOUT);
     }
 
     /**
@@ -106,6 +136,17 @@ public class DeferredDataSender implements DataSender {
 
     }
 
+    private void removeChangedClass(DeploymentData deploymentData, File basePath, File file) {
+        final String relFile = file.getAbsolutePath().substring(basePath.getAbsolutePath().length() + 1);
+        final String className = relFile.substring(0, relFile.length() - ".class".length()).replace(File.separator, ".");
+
+        if (!isClassNameAllowed(deploymentData.getDeploymentConfig(), className)) {
+            return; // ignore classes where the packages are filtered out.
+        }
+
+        deploymentData.getClasses().remove(className);
+    }
+
     /**
      * Notify a single changed file.
      * @param deploymentData
@@ -118,6 +159,19 @@ public class DeferredDataSender implements DataSender {
 
         deploymentData.getResources().put(relFile,
                 new ResourceData(relFile, timestamp, () -> Util.getBytesFromFile(file)));
+
+    }
+
+    /**
+     * Remove a previously changed file.
+     * @param deploymentData
+     * @param basePath
+     * @param file
+     */
+    private void removeChangedResource(DeploymentData deploymentData, File basePath, File file) {
+        final String relFile = file.getAbsolutePath().substring(basePath.getAbsolutePath().length() + 1);
+
+        deploymentData.getResources().remove(relFile);
 
     }
 

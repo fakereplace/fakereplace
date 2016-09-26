@@ -64,7 +64,6 @@
                             <includes>
                                 <include>**/*.java</include>
                             </includes>
-<!-- <argLine>-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=8000</argLine> -->
                         </configuration>
                     </execution>
                 </executions>

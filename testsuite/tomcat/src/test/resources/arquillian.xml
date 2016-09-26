@@ -26,10 +26,10 @@
             <property name="bindHttpPort">8080</property>
             <property name="unpackArchive">true</property>
             <property name="serverName">arquillian-tomcat-managed-7</property>
-<property name="javaVmArguments">-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=8001 -Xmx512m -XX:MaxPermSize=128m -javaagent:${project.build.directory}/fakereplace/fakereplace.jar=server,packages=a.org.fakereplace.integration.tomcat,log=trace</property> 
-<!-- <property name="javaVmArguments">-Xmx512m -XX:MaxPermSize=128m -javaagent:${project.build.directory}/fakereplace/fakereplace.jar=server,packages=a.org.fakereplace.integration.tomcat,log=trace</property> -->
-            <property name="user">fakereplace</property>
-            <property name="pass">fakereplace</property>
+<!-- <property name="javaVmArguments">-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=8001 -Xmx512m -XX:MaxPermSize=128m -javaagent:${project.build.directory}/fakereplace/fakereplace.jar=server,packages=a.org.fakereplace.integration.tomcat,log=trace</property>  -->
+            <property name="javaVmArguments">-Xmx512m -XX:MaxPermSize=128m -javaagent:${project.build.directory}/fakereplace/fakereplace.jar=server,packages=a.org.fakereplace.integration.tomcat,log=trace</property>
+                <property name="user">fakereplace</property>
+                <property name="pass">fakereplace</property>
             <property name="jmxPort">8099</property>
         </configuration>
     </container>
