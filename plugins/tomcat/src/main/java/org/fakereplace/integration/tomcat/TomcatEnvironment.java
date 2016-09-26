@@ -48,7 +48,6 @@ public class TomcatEnvironment implements Environment {
             return false;
         }
 
-        // FIXME: this should just registes the class loader, but return false
         if ("org.apache.jasper.servlet.JasperLoader".equals(loader.getClass().getCanonicalName())) {
             loader = loader.getParent();
         }
@@ -164,10 +163,12 @@ public class TomcatEnvironment implements Environment {
                                final Map<String, byte[]> replacedResources) {
         String absolutePath = getAbsoluteDeploymentPath(deploymentName);
 
-        for (Map.Entry<String, byte[]> entry: replacedResources.entrySet()) {
-            log.info("Reloading resource: " + entry.getKey());
+        log.trace("Absolute deployment path for " + deploymentName + " is " + absolutePath);
 
-            Path target = Paths.get(absolutePath, entry.getKey());
+        for (Map.Entry<String, byte[]> entry: replacedResources.entrySet()) {
+            Path target = Paths.get(absolutePath).resolve(entry.getKey());
+
+            log.info("Reloading resource: " + entry.getKey() + " to " + target.toFile());
 
             try (FileOutputStream outputStream =
                          new FileOutputStream(target.toFile())) {
@@ -186,7 +187,7 @@ public class TomcatEnvironment implements Environment {
 
         for (StandardContext context : servletContexts) {
             if (contextName.equals(context.getPath())) {
-                return context.getRealPath(".");
+                return context.getRealPath("");
             }
         }
 
