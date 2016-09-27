@@ -110,7 +110,13 @@ public class DeferredDataSender implements DataSender {
 
         if (result == null) {
             result = new TimeoutCall<>(
-                    deploymentDataConsumer,
+                    (deploymentData1) -> {
+                        synchronized (DeferredDataSender.this) {
+                            deploymentDataMap.remove(deploymentData.getDeploymentName());
+                        }
+
+                        deploymentDataConsumer.accept(deploymentData);
+                    },
                     deploymentData,
                     DEFAULT_TIMEOUT);
 
