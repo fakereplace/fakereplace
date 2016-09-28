@@ -85,7 +85,7 @@ public class MainTransformer implements ClassFileTransformer {
     private final List<ChangedClass> changedClasses = new CopyOnWriteArrayList<>();
     private final List<NewClassData> addedClasses = new CopyOnWriteArrayList<>();
     private volatile long integrationTime;
-    private final Timer timer = new Timer("Fakereplace integration timer");
+    private final Timer timer = new Timer("Fakereplace integration timer", true);
 
     /**
      * as some tasks are run asyncronously this allows external agents to wait for them to complete
