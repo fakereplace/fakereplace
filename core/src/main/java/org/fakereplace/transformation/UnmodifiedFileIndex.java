@@ -94,7 +94,7 @@ public class UnmodifiedFileIndex {
         }
         log.debug("Writing Fakereplace unmodified class cache at " + file.getAbsolutePath());
         if (!file.isDirectory()) {
-            if(!file.getParentFile().exists()) {
+            if(file.getParentFile() != null && !file.getParentFile().exists()) {
                 file.getParentFile().mkdirs();
             }
             try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8)){
