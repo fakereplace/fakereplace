@@ -27,7 +27,6 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>org.fakereplace</groupId>
     <artifactId>fakereplace-client</artifactId>
     <name>Fakereplace Client Side Protocol</name>
     <version>1.0.0.Alpha6-SNAPSHOT</version>
