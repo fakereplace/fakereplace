@@ -4,9 +4,4 @@ install: mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V --settings
 
 jdk:
   - oraclejdk8
-
-notifications:
-  email:
-    recipients:
-      stuart.w.douglas@gmail.com
-      
+  - openjdk8
