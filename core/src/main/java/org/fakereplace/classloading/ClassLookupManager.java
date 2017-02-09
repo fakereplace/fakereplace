@@ -31,6 +31,10 @@ import org.fakereplace.transformation.MainTransformer;
 public class ClassLookupManager {
     private static final Map<ClassIdentifier, byte[]> classData = new ConcurrentHashMap<>();
 
+    /**
+     * Called by redefined classloaders. See {@link org.fakereplace.core.ClassLoaderInstrumentation}.
+     */
+    @SuppressWarnings("unused")
     public static byte[] getClassData(String className, Object cl) {
         //if is possible for this to be called by an object that is not a CL
         //do nothing in this case

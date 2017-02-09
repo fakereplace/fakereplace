@@ -31,12 +31,12 @@ public class AgentOptions {
     private static volatile AgentOptions instance;
     private final Map<String, String> options;
 
-    public AgentOptions(final Map<String, String> options) {
+    private AgentOptions(final Map<String, String> options) {
         this.options = Collections.unmodifiableMap(options);
     }
 
     static void setup(final String options) {
-        final Map<String, String> map = new HashMap<String, String>();
+        final Map<String, String> map = new HashMap<>();
         if (options != null) {
             final String[] parts = options.split(",");
             for (final String part : parts) {

@@ -27,10 +27,22 @@ import java.net.Socket;
  */
 public class FakereplaceServer implements Runnable {
 
+    private static final int DEFAULT_PORT = 6555;
+
     private final int port;
 
-    public FakereplaceServer(int port) {
+    /**
+     * Server will listen on given port.
+     */
+    private FakereplaceServer(int port) {
         this.port = port;
+    }
+
+    /**
+     * Server will listen on {@link FakereplaceServer#DEFAULT_PORT} port.
+     */
+    private FakereplaceServer() {
+        this(DEFAULT_PORT);
     }
 
     @Override
@@ -51,6 +63,42 @@ public class FakereplaceServer implements Runnable {
         } catch (IOException e) {
             System.err.println("Fakereplace server could not start");
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * @param portParam must be parseable integer or null
+     * @throws NumberFormatException when {@code port} is not a valid integer
+     */
+    static FakereplaceServer createServer(String portParam) {
+        final FakereplaceServer server;
+        if (portParam == null) {
+            server = new FakereplaceServer();
+        } else {
+            int port = Integer.parseInt(portParam);
+            if (port < 1024 || port >= 65536) {
+                throw new IllegalArgumentException("Port is out of range. Must be 1024 <= port < 65536.");
+            }
+            server = new FakereplaceServer(port);
+        }
+        return server;
+    }
+
+    /**
+     * Creates and starts {@link FakereplaceServer} as a daemon thread listening on given port.
+     *
+     * @param portParam when equal to {@code -1}, no server nor Thread is created
+     *                  when null, server will listen on {@link FakereplaceServer#DEFAULT_PORT} port
+     *                  when
+     */
+    public static void startFakereplaceServerDaemonThread(String portParam) {
+        if (portParam == null || !portParam.equals("-1")) {
+            Thread thread = new Thread(FakereplaceServer.createServer(portParam));
+            thread.setDaemon(true);
+            thread.setName("Fakereplace Thread");
+            thread.start();
+        } else {
+            System.out.println("Fakereplace is running.");
         }
     }
 }

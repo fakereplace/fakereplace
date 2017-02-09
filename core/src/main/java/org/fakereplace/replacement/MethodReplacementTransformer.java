@@ -26,12 +26,9 @@ import java.lang.reflect.Method;
 import java.security.ProtectionDomain;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
 
-import javassist.ClassPool;
-import javassist.LoaderClassPath;
 import javassist.bytecode.AccessFlag;
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.AttributeInfo;
@@ -71,8 +68,7 @@ public class MethodReplacementTransformer implements FakereplaceTransformer {
 
     private static final Logger logger = Logger.getLogger(MethodReplacementTransformer.class);
 
-    private static String generateProxyInvocationBytecode(MethodInfo mInfo, int methodNumber, String className, ClassLoader loader, boolean staticMethod, boolean isInterface)
-            throws BadBytecode {
+    private static String generateProxyInvocationBytecode(MethodInfo mInfo, int methodNumber, String className, ClassLoader loader, boolean staticMethod, boolean isInterface) throws BadBytecode {
         String proxyName = ProxyDefinitionStore.getProxyName();
         ClassFile proxy = new ClassFile(false, proxyName, "java.lang.Object");
         proxy.setVersionToJava5();
@@ -247,7 +243,7 @@ public class MethodReplacementTransformer implements FakereplaceTransformer {
             ClassDataStore.instance().registerProxyName(oldClass, proxyName);
             Transformer.getManipulator().addFakeMethodCallRewrite(new FakeMethodCallData(file.getName(), mInfo.getName(), mInfo.getDescriptor(), staticMethod ? FakeMethodCallData.Type.STATIC : file.isInterface() ? FakeMethodCallData.Type.INTERFACE : FakeMethodCallData.Type.VIRTUAL, loader, methodCount));
 
-            builder.add(new FakeMethod(mInfo.getName(), proxyName,  mInfo.getDescriptor(), mInfo.getAccessFlags()));
+            builder.add(new FakeMethod(mInfo.getName(), proxyName, mInfo.getDescriptor(), mInfo.getAccessFlags()));
             if (!staticMethod) {
                 Class<?> sup = oldClass.getSuperclass();
                 while (sup != null && !sup.getName().equals(Object.class.getName())) {
@@ -275,10 +271,8 @@ public class MethodReplacementTransformer implements FakereplaceTransformer {
      * array and unboxed if nessesary the return value is boxed if nessesary
      * <p>
      * Much of this work is handled by helper classes
-     *
      */
-    private static void generateBoxedConditionalCodeBlock(int methodNumber, MethodInfo mInfo, ConstPool methodConstPool, CodeAttribute addedMethod, boolean staticMethod, boolean constructor)
-            throws BadBytecode {
+    private static void generateBoxedConditionalCodeBlock(int methodNumber, MethodInfo mInfo, ConstPool methodConstPool, CodeAttribute addedMethod, boolean staticMethod, boolean constructor) throws BadBytecode {
 
         // we need to insert a conditional
         Bytecode bc = new Bytecode(mInfo.getConstPool());
@@ -392,7 +386,7 @@ public class MethodReplacementTransformer implements FakereplaceTransformer {
             String proxyName = generateFakeConstructorBytecode(mInfo, loader);
             ClassDataStore.instance().registerProxyName(oldClass, proxyName);
             Transformer.getManipulator().rewriteConstructorAccess(file.getName(), mInfo.getDescriptor(), methodCount, loader);
-            builder.add(new FakeMethod(mInfo.getName(),proxyName, mInfo.getDescriptor(), mInfo.getAccessFlags(), methodCount));
+            builder.add(new FakeMethod(mInfo.getName(), proxyName, mInfo.getDescriptor(), mInfo.getAccessFlags(), methodCount));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -405,7 +399,6 @@ public class MethodReplacementTransformer implements FakereplaceTransformer {
      * <p>
      * Constructors are not invoked through the proxy class, instead we have to
      * do a lot more bytecode re-writing at the actual invocation sites
-     *
      */
     private static String generateFakeConstructorBytecode(MethodInfo mInfo, ClassLoader loader) throws BadBytecode {
         String proxyName = ProxyDefinitionStore.getProxyName();
@@ -582,9 +575,83 @@ public class MethodReplacementTransformer implements FakereplaceTransformer {
 
     }
 
+    private CodeAttribute injectAddedStaticMethod(ClassFile file, Set<MethodInfo> modifiedMethods) throws DuplicateMemberException {
+        MethodInfo addedStaticMethod = new MethodInfo(file.getConstPool(), Constants.ADDED_STATIC_METHOD_NAME, Constants.ADDED_STATIC_METHOD_DESCRIPTOR);
+        modifiedMethods.add(addedStaticMethod);
+        addedStaticMethod.setAccessFlags(AccessFlag.PUBLIC | AccessFlag.STATIC | AccessFlag.SYNTHETIC);
+        Bytecode staticMethodBytecode = new Bytecode(file.getConstPool(), 0, 3);
+        staticMethodBytecode.addNew(NoSuchMethodError.class.getName());
+        staticMethodBytecode.add(Opcode.DUP);
+        staticMethodBytecode.addInvokespecial(NoSuchMethodError.class.getName(), "<init>", "()V");
+        staticMethodBytecode.add(Opcode.ATHROW);
+        CodeAttribute codeAttribute = staticMethodBytecode.toCodeAttribute();
+        addedStaticMethod.setCodeAttribute(codeAttribute);
+        file.addMethod(addedStaticMethod);
+
+        return codeAttribute;
+    }
+
+    private CodeAttribute injectAddedConstructor(ClassFile file, Set<MethodInfo> modifiedMethods) throws DuplicateMemberException {
+        MethodInfo addedConstructor = new MethodInfo(file.getConstPool(), "<init>", Constants.ADDED_CONSTRUCTOR_DESCRIPTOR);
+        modifiedMethods.add(addedConstructor);
+        addedConstructor.setAccessFlags(AccessFlag.PUBLIC | AccessFlag.SYNTHETIC);
+        Bytecode constructorBytecode = new Bytecode(file.getConstPool(), 0, 4);
+
+        final CodeAttribute constructorCodeAttribute;
+        if (ManipulationUtils.addBogusConstructorCall(file, constructorBytecode)) {
+            constructorCodeAttribute = constructorBytecode.toCodeAttribute();
+            addedConstructor.setCodeAttribute(constructorCodeAttribute);
+            constructorCodeAttribute.setMaxLocals(6);
+            file.addMethod(addedConstructor);
+        } else {
+            constructorCodeAttribute = null;
+        }
+        return constructorCodeAttribute;
+    }
+
+    private void handleConstructor(MethodData oldMethod, MethodInfo newMethod, ClassFile file, Class<?> oldClass) {
+        try {
+            Constructor<?> constructor = oldMethod.getConstructor(oldClass);
+            AnnotationDataStore.recordConstructorAnnotations(constructor, (AnnotationsAttribute) newMethod.getAttribute(AnnotationsAttribute.visibleTag));
+            AnnotationDataStore.recordConstructorParameterAnnotations(constructor, (ParameterAnnotationsAttribute) newMethod.getAttribute(ParameterAnnotationsAttribute.visibleTag));
+            // now revert the annotations:
+            newMethod.addAttribute(AnnotationReplacer.duplicateAnnotationsAttribute(file.getConstPool(), constructor));
+            newMethod.addAttribute(AnnotationReplacer.duplicateParameterAnnotationsAttribute(file.getConstPool(), constructor));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void handleMethod(MethodData oldMethod, MethodInfo newMethod, ClassFile file, Class<?> oldClass) {
+        // other methods
+        // static constructors cannot have annotations so
+        // we do not have to worry about them
+        try {
+            Method method = oldMethod.getMethod(oldClass);
+            AnnotationDataStore.recordMethodAnnotations(method, (AnnotationsAttribute) newMethod.getAttribute(AnnotationsAttribute.visibleTag));
+            AnnotationDataStore.recordMethodParameterAnnotations(method, (ParameterAnnotationsAttribute) newMethod.getAttribute(ParameterAnnotationsAttribute.visibleTag));
+            // now revert the annotations:
+            newMethod.addAttribute(AnnotationReplacer.duplicateAnnotationsAttribute(file.getConstPool(), method));
+            newMethod.addAttribute(AnnotationReplacer.duplicateParameterAnnotationsAttribute(file.getConstPool(), method));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void handleMethodAndConstructor(MethodData oldMethod, MethodInfo newMethod, ClassFile file, Class<?> oldClass) {
+        // if it is the constructor
+        if (newMethod.getName().equals("<init>")) {
+            handleConstructor(oldMethod, newMethod, file, oldClass);
+        } else if (!newMethod.getName().equals("<clinit>")) {
+            handleMethod(oldMethod, newMethod, file, oldClass);
+        }
+    }
+
     @Override
-    public boolean transform(ClassLoader loader, String className, Class<?> oldClass, ProtectionDomain protectionDomain, ClassFile file, Set<Class<?>> classesToRetransform, ChangedClassImpl changedClass, Set<MethodInfo> modifiedMethods) throws IllegalClassFormatException, BadBytecode, DuplicateMemberException {
-        if(oldClass == null || className == null) {
+    public boolean transform(ClassLoader loader, String className, Class<?> oldClass, ProtectionDomain protectionDomain,
+                             ClassFile file, Set<Class<?>> classesToRetransform, ChangedClassImpl changedClass, Set<MethodInfo> modifiedMethods)
+            throws IllegalClassFormatException, BadBytecode, DuplicateMemberException {
+        if (oldClass == null || className == null) {
             return false;
         }
         final Set<MethodData> methodsToRemove = new HashSet<>();
@@ -597,122 +664,75 @@ public class MethodReplacementTransformer implements FakereplaceTransformer {
             // stick our added methods into the class file
             // we can't finalise the code yet because we will probably need
             // the add stuff to them
-            MethodInfo virtMethod = new MethodInfo(file.getConstPool(), Constants.ADDED_METHOD_NAME, Constants.ADDED_METHOD_DESCRIPTOR);
-            modifiedMethods.add(virtMethod);
-            virtMethod.setAccessFlags(AccessFlag.PUBLIC);
+            MethodInfo addedMethod = new MethodInfo(file.getConstPool(), Constants.ADDED_METHOD_NAME, Constants.ADDED_METHOD_DESCRIPTOR);
+            modifiedMethods.add(addedMethod);
+            addedMethod.setAccessFlags(AccessFlag.PUBLIC);
             if (file.isInterface()) {
-                virtMethod.setAccessFlags(AccessFlag.PUBLIC | AccessFlag.ABSTRACT | AccessFlag.SYNTHETIC);
+                addedMethod.setAccessFlags(AccessFlag.PUBLIC | AccessFlag.ABSTRACT | AccessFlag.SYNTHETIC);
             } else {
-                virtMethod.setAccessFlags(AccessFlag.PUBLIC | AccessFlag.SYNTHETIC);
-                Bytecode b = new Bytecode(file.getConstPool(), 0, 3);
+                addedMethod.setAccessFlags(AccessFlag.PUBLIC | AccessFlag.SYNTHETIC);
+                Bytecode bytecode = new Bytecode(file.getConstPool(), 0, 3);
                 if (BuiltinClassData.skipInstrumentation(file.getSuperclass())) {
-                    b.addNew(NoSuchMethodError.class.getName());
-                    b.add(Opcode.DUP);
-                    b.addInvokespecial(NoSuchMethodError.class.getName(), "<init>", "()V");
-                    b.add(Opcode.ATHROW);
+                    bytecode.addNew(NoSuchMethodError.class.getName());
+                    bytecode.add(Opcode.DUP);
+                    bytecode.addInvokespecial(NoSuchMethodError.class.getName(), "<init>", "()V");
+                    bytecode.add(Opcode.ATHROW);
                 } else {
-                    b.add(Bytecode.ALOAD_0);
-                    b.add(Bytecode.ILOAD_1);
-                    b.add(Bytecode.ALOAD_2);
-                    b.addInvokespecial(file.getSuperclass(), Constants.ADDED_METHOD_NAME, Constants.ADDED_METHOD_DESCRIPTOR);
-                    b.add(Bytecode.ARETURN);
+                    bytecode.add(Bytecode.ALOAD_0);
+                    bytecode.add(Bytecode.ILOAD_1);
+                    bytecode.add(Bytecode.ALOAD_2);
+                    bytecode.addInvokespecial(file.getSuperclass(), Constants.ADDED_METHOD_NAME, Constants.ADDED_METHOD_DESCRIPTOR);
+                    bytecode.add(Bytecode.ARETURN);
                 }
-                virtualCodeAttribute = b.toCodeAttribute();
-                virtMethod.setCodeAttribute(virtualCodeAttribute);
+                virtualCodeAttribute = bytecode.toCodeAttribute();
+                addedMethod.setCodeAttribute(virtualCodeAttribute);
 
-                MethodInfo m = new MethodInfo(file.getConstPool(), Constants.ADDED_STATIC_METHOD_NAME, Constants.ADDED_STATIC_METHOD_DESCRIPTOR);
-                modifiedMethods.add(m);
-                m.setAccessFlags(AccessFlag.PUBLIC | AccessFlag.STATIC | AccessFlag.SYNTHETIC);
-                b = new Bytecode(file.getConstPool(), 0, 3);
-                b.addNew(NoSuchMethodError.class.getName());
-                b.add(Opcode.DUP);
-                b.addInvokespecial(NoSuchMethodError.class.getName(), "<init>", "()V");
-                b.add(Opcode.ATHROW);
-                staticCodeAttribute = b.toCodeAttribute();
-                m.setCodeAttribute(staticCodeAttribute);
-                file.addMethod(m);
-
-                m = new MethodInfo(file.getConstPool(), "<init>", Constants.ADDED_CONSTRUCTOR_DESCRIPTOR);
-                modifiedMethods.add(m);
-                m.setAccessFlags(AccessFlag.PUBLIC | AccessFlag.SYNTHETIC);
-                b = new Bytecode(file.getConstPool(), 0, 4);
-                if (ManipulationUtils.addBogusConstructorCall(file, b)) {
-                    constructorCodeAttribute = b.toCodeAttribute();
-                    m.setCodeAttribute(constructorCodeAttribute);
-                    constructorCodeAttribute.setMaxLocals(6);
-                    file.addMethod(m);
-                }
+                staticCodeAttribute = injectAddedStaticMethod(file, modifiedMethods);
+                constructorCodeAttribute = injectAddedConstructor(file, modifiedMethods);
             }
-            file.addMethod(virtMethod);
+            file.addMethod(addedMethod);
         } catch (DuplicateMemberException e) {
             e.printStackTrace();
         }
 
-        Set<MethodData> methods = new HashSet<MethodData>();
+        Set<MethodData> oldMethods = new HashSet<>();
+        oldMethods.addAll(data.getMethods());
 
-        methods.addAll(data.getMethods());
+        ListIterator<?> newMethodsIterator = file.getMethods().listIterator();
 
-        ListIterator<?> it = file.getMethods().listIterator();
-
-        // now we iterator through all methods and constructors and compare new
+        // now we iterate through all methods and constructors and compare new
         // and old. in the process we modify the new class so that is's signature
         // is exactly compatible with the old class, otherwise an
         // IncompatibleClassChange exception will be thrown
-        while (it.hasNext()) {
-            MethodInfo m = (MethodInfo) it.next();
+        while (newMethodsIterator.hasNext()) {
+            MethodInfo newMethod = (MethodInfo) newMethodsIterator.next();
             MethodData md = null;
             boolean upgradedVisibility = false;
-            for (MethodData i : methods) {
-                if (i.getMethodName().equals(m.getName()) && i.getDescriptor().equals(m.getDescriptor())) {
+            for (MethodData oldMethod : oldMethods) {
+                if (oldMethod.getMethodName().equals(newMethod.getName()) && oldMethod.getDescriptor().equals(newMethod.getDescriptor())) {
 
                     // if the access flags do not match then what we need to do
                     // depends on what has changed
-                    if (i.getAccessFlags() != m.getAccessFlags()) {
-                        if (AccessFlagUtils.upgradeVisibility(m.getAccessFlags(), i.getAccessFlags())) {
+                    if (oldMethod.getAccessFlags() != newMethod.getAccessFlags()) {
+                        if (AccessFlagUtils.upgradeVisibility(newMethod.getAccessFlags(), oldMethod.getAccessFlags())) {
                             upgradedVisibility = true;
-                        } else if (AccessFlagUtils.downgradeVisibility(m.getAccessFlags(), i.getAccessFlags())) {
+                        } else if (AccessFlagUtils.downgradeVisibility(newMethod.getAccessFlags(), oldMethod.getAccessFlags())) {
                             // ignore this, we don't need to do anything
                         } else {
                             // we can't handle this yet
                             continue;
                         }
                     }
-                    m.setAccessFlags(i.getAccessFlags());
+                    newMethod.setAccessFlags(oldMethod.getAccessFlags());
 
-                    // if it is the constructor
-                    if (m.getName().equals("<init>")) {
-                        try {
-                            Constructor<?> meth = i.getConstructor(oldClass);
-                            AnnotationDataStore.recordConstructorAnnotations(meth, (AnnotationsAttribute) m.getAttribute(AnnotationsAttribute.visibleTag));
-                            AnnotationDataStore.recordConstructorParameterAnnotations(meth, (ParameterAnnotationsAttribute) m.getAttribute(ParameterAnnotationsAttribute.visibleTag));
-                            // now revert the annotations:
-                            m.addAttribute(AnnotationReplacer.duplicateAnnotationsAttribute(file.getConstPool(), meth));
-                            m.addAttribute(AnnotationReplacer.duplicateParameterAnnotationsAttribute(file.getConstPool(), meth));
-                        } catch (Exception e) {
-                            throw new RuntimeException(e);
-                        }
-                    } else if (!m.getName().equals("<clinit>")) {
-                        // other methods
-                        // static constructors cannot have annotations so
-                        // we do not have to worry about them
-                        try {
-                            Method meth = i.getMethod(oldClass);
-                            AnnotationDataStore.recordMethodAnnotations(meth, (AnnotationsAttribute) m.getAttribute(AnnotationsAttribute.visibleTag));
-                            AnnotationDataStore.recordMethodParameterAnnotations(meth, (ParameterAnnotationsAttribute) m.getAttribute(ParameterAnnotationsAttribute.visibleTag));
-                            // now revert the annotations:
-                            m.addAttribute(AnnotationReplacer.duplicateAnnotationsAttribute(file.getConstPool(), meth));
-                            m.addAttribute(AnnotationReplacer.duplicateParameterAnnotationsAttribute(file.getConstPool(), meth));
-                        } catch (Exception e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
+                    handleMethodAndConstructor(oldMethod, newMethod, file, oldClass);
 
-                    md = i;
+                    md = oldMethod;
                     break;
                 }
             }
             // we do not need to deal with these
-            if (m.getName().equals(Constants.ADDED_METHOD_NAME) || m.getName().equals(Constants.ADDED_STATIC_METHOD_NAME)) {
+            if (newMethod.getName().equals(Constants.ADDED_METHOD_NAME) || newMethod.getName().equals(Constants.ADDED_STATIC_METHOD_NAME)) {
                 break;
             }
             // This is a newly added method.
@@ -720,52 +740,54 @@ public class MethodReplacementTransformer implements FakereplaceTransformer {
             // with the visiblity upgrade we just copy the method
             // so it is still in the original
             if (md == null || upgradedVisibility) {
-                if ((m.getAccessFlags() & AccessFlag.STATIC) != 0) {
-                    Class<?> c = addMethod(file, loader, m, methodsToAdd, staticCodeAttribute, true, oldClass);
+                if ((newMethod.getAccessFlags() & AccessFlag.STATIC) != 0) {
+                    Class<?> c = addMethod(file, loader, newMethod, methodsToAdd, staticCodeAttribute, true, oldClass);
                     if (c != null) {
                         classesToRetransform.add(c);
                     }
-                } else if ((m.getName().equals("<init>"))) {
-                    addConstructor(file, loader, m, constructorsToAdd, constructorCodeAttribute, oldClass);
-                } else if (m.getName().equals("<clinit>")) {
+                } else if ((newMethod.getName().equals("<init>"))) {
+                    addConstructor(file, loader, newMethod, constructorsToAdd, constructorCodeAttribute, oldClass);
+                } else if (newMethod.getName().equals("<clinit>")) {
                     // nop, we can't change this, just ignore it
                 } else {
-                    Class<?> c = addMethod(file, loader, m, methodsToAdd, virtualCodeAttribute, false, oldClass);
+                    Class<?> c = addMethod(file, loader, newMethod, methodsToAdd, virtualCodeAttribute, false, oldClass);
                     if (c != null) {
                         classesToRetransform.add(c);
                     }
                 }
                 if (!upgradedVisibility) {
-                    it.remove();
+                    newMethodsIterator.remove();
                 }
             } else {
-                methods.remove(md);
+                oldMethods.remove(md);
             }
             if (upgradedVisibility) {
-                methods.remove(md);
+                oldMethods.remove(md);
             }
         }
         // these methods have been removed, change them to throw a
         // MethodNotFoundError
 
-        for (MethodData md : methods) {
+        for (MethodData md : oldMethods) {
             if (md.getType() == MemberType.NORMAL) {
                 MethodInfo removedMethod = createRemovedMethod(file, md, oldClass, methodsToRemove);
-                if(removedMethod != null) {
+                if (removedMethod != null) {
                     modifiedMethods.add(removedMethod);
                 }
             }
         }
 
-        ClassDataStore.instance().modifyCurrentData(loader, className, (builder) -> {
-            for(MethodData method : methodsToRemove) {
+        ClassDataStore.instance().modifyCurrentData(loader, className, builder -> {
+            for (MethodData method : methodsToRemove) {
                 builder.removeMethod(method);
             }
-            for(FakeMethod fake : methodsToAdd) {
-                ClassDataStore.instance().registerReplacedMethod(fake.proxyName, builder.addFakeMethod(fake.name, fake.descriptor, fake.proxyName, fake.accessFlags));
+            for (FakeMethod fake : methodsToAdd) {
+                ClassDataStore.instance().registerReplacedMethod(fake.proxyName,
+                        builder.addFakeMethod(fake.name, fake.descriptor, fake.proxyName, fake.accessFlags));
             }
-            for(FakeMethod fake : constructorsToAdd) {
-                ClassDataStore.instance().registerReplacedMethod(fake.proxyName, builder.addFakeConstructor(fake.name, fake.descriptor, fake.proxyName, fake.accessFlags, fake.methodCount));
+            for (FakeMethod fake : constructorsToAdd) {
+                ClassDataStore.instance().registerReplacedMethod(fake.proxyName,
+                        builder.addFakeConstructor(fake.name, fake.descriptor, fake.proxyName, fake.accessFlags, fake.methodCount));
             }
 
         });
@@ -801,6 +823,7 @@ public class MethodReplacementTransformer implements FakereplaceTransformer {
             this.accessFlags = accessFlags;
             this.methodCount = -1;
         }
+
         private FakeMethod(String name, String proxyName, String descriptor, int accessFlags, int methodCount) {
             this.name = name;
             this.proxyName = proxyName;

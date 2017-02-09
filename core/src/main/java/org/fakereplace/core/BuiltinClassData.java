@@ -19,12 +19,13 @@ package org.fakereplace.core;
 
 public class BuiltinClassData {
 
-    private static final String[] doNotInstrument = {"org/fakereplace", "java/math", "java/lang", "java/util/concurrent", "java/util/Currency", "java/util/Random", "java/util",};
+    private static final String[] doNotInstrument =
+            {"org/fakereplace", "java/math", "java/lang", "java/util/concurrent", "java/util/Currency", "java/util/Random", "java/util",};
 
     private static final String[] exceptions = {"java/lang/reflect/Proxy",};
 
     public static boolean skipInstrumentation(String className) {
-        if(className == null) {
+        if (className == null) {
             return true;
         }
         className = className.replace('.', '/');

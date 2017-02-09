@@ -78,6 +78,7 @@ public class Transformer implements FakereplaceTransformer {
         }
     }
 
+    @Override
     public boolean transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, ClassFile file, Set<Class<?>> classesToRetransform, ChangedClassImpl changedClass, Set<MethodInfo> modifiedMethods) throws IllegalClassFormatException, BadBytecode, DuplicateMemberException {
         boolean modified = false;
         if (classBeingRedefined != null) {
@@ -147,9 +148,8 @@ public class Transformer implements FakereplaceTransformer {
 
     /**
      * Adds a method to a class that re can redefine when the class is reloaded
-     *
      */
-    public void addMethodForInstrumentation(ClassFile file) {
+    private void addMethodForInstrumentation(ClassFile file) {
         try {
             MethodInfo m = new MethodInfo(file.getConstPool(), Constants.ADDED_METHOD_NAME, Constants.ADDED_METHOD_DESCRIPTOR);
             m.setAccessFlags(AccessFlag.PUBLIC | AccessFlag.SYNTHETIC);
@@ -207,7 +207,6 @@ public class Transformer implements FakereplaceTransformer {
 
     /**
      * Adds a method to a class that re can redefine when the class is reloaded
-     *
      */
     public void addAbstractMethodForInstrumentation(ClassFile file) {
         try {
@@ -249,7 +248,6 @@ public class Transformer implements FakereplaceTransformer {
     /**
      * modifies a class so that all created instances are registered with
      * InstanceTracker
-     *
      */
     public void makeTrackedInstance(ClassFile file) throws BadBytecode {
         for (MethodInfo m : (List<MethodInfo>) file.getMethods()) {
