@@ -135,9 +135,9 @@ public class MainTransformer implements ClassFileTransformer {
                 loadedClassChangeAwares.add(extension.getClassChangeAwareName());
                 try {
                     Class<?> clazz = Class.forName(extension.getClassChangeAwareName(), true, loader);
-                    final Object intance = clazz.newInstance();
-                    if (intance instanceof ClassChangeAware) {
-                        ClassChangeNotifier.instance().add((ClassChangeAware) intance);
+                    final Object instance = clazz.newInstance();
+                    if (instance instanceof ClassChangeAware) {
+                        ClassChangeNotifier.instance().add((ClassChangeAware) instance);
                     }
                     final String newEnv = extension.getEnvironment();
                     if (newEnv != null) {

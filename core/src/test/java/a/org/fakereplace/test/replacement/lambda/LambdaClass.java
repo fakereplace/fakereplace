@@ -17,11 +17,11 @@
 
 package a.org.fakereplace.test.replacement.lambda;
 
-import java.util.concurrent.Callable;
+import java.util.function.Supplier;
 
 public class LambdaClass {
 
-    public static Callable<String> getMessageProducer() {
+    public static Supplier<String> getMessageProducer() {
         return () -> "first";
     }
 }

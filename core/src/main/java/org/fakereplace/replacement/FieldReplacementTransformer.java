@@ -64,18 +64,18 @@ public class FieldReplacementTransformer implements FakereplaceTransformer {
      * store
      *
      */
-    private static int addField(ClassLoader loader, FieldInfo m, Set<FieldProxyInfo> builder, Class<?> oldClass) {
-        int fieldNo = FieldReferenceDataStore.instance().getFieldNo(m.getName(), m.getDescriptor());
+    private static int addField(ClassLoader loader, FieldInfo fieldInfo, Set<FieldProxyInfo> builder, Class<?> oldClass) {
+        int fieldNo = FieldReferenceDataStore.instance().getFieldNo(fieldInfo.getName(), fieldInfo.getDescriptor());
         String proxyName = ProxyDefinitionStore.getProxyName();
         ClassFile proxy = new ClassFile(false, proxyName, "java.lang.Object");
         ClassDataStore.instance().registerProxyName(oldClass, proxyName);
-        FieldAccessor accessor = new FieldAccessor(oldClass, fieldNo, (m.getAccessFlags() & AccessFlag.STATIC) != 0);
+        FieldAccessor accessor = new FieldAccessor(oldClass, fieldNo, (fieldInfo.getAccessFlags() & AccessFlag.STATIC) != 0);
         ClassDataStore.instance().registerFieldAccessor(proxyName, accessor);
         proxy.setAccessFlags(AccessFlag.PUBLIC);
-        FieldInfo newField = new FieldInfo(proxy.getConstPool(), m.getName(), m.getDescriptor());
-        newField.setAccessFlags(m.getAccessFlags());
+        FieldInfo newField = new FieldInfo(proxy.getConstPool(), fieldInfo.getName(), fieldInfo.getDescriptor());
+        newField.setAccessFlags(fieldInfo.getAccessFlags());
 
-        copyFieldAttributes(m, newField);
+        copyFieldAttributes(fieldInfo, newField);
 
         try {
             proxy.addField(newField);
@@ -87,7 +87,7 @@ public class FieldReplacementTransformer implements FakereplaceTransformer {
                 throw new RuntimeException(e);
             }
             ProxyDefinitionStore.saveProxyDefinition(loader, proxyName, bytes.toByteArray());
-            builder.add(new FieldProxyInfo(newField, proxyName, m.getAccessFlags()));
+            builder.add(new FieldProxyInfo(newField, proxyName, fieldInfo.getAccessFlags()));
         } catch (DuplicateMemberException e) {
             // can't happen
         }

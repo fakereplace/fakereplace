@@ -45,10 +45,10 @@ public class ManipulationDataStore<T extends ClassLoaderFiltered<T>> {
         if (loader == null) {
             loader = NULL_CLASS_LOADER;
         }
-        Map<String, Set<T>> ret = new HashMap<String, Set<T>>();
+        Map<String, Set<T>> ret = new HashMap<>();
         for (Entry<ClassLoader, ConcurrentMap<String, Set<T>>> centry : cldata.entrySet()) {
             for (Entry<String, Set<T>> e : centry.getValue().entrySet()) {
-                Set<T> set = new HashSet<T>();
+                Set<T> set = new HashSet<>();
                 ret.put(e.getKey(), set);
                 for (ClassLoaderFiltered<T> f : e.getValue()) {
                     if (includeClassLoader(loader, f.getClassLoader())) {
@@ -69,7 +69,7 @@ public class ManipulationDataStore<T extends ClassLoaderFiltered<T>> {
         ConcurrentMap<String, Set<T>> data = cldata.get(loader);
         Set<T> store = data.get(name);
         if(store == null) {
-            store = new CopyOnWriteArraySet<T>();
+            store = new CopyOnWriteArraySet<>();
             Set<T> existing = data.putIfAbsent(name, store);
             if(existing != null) {
                 store = existing;

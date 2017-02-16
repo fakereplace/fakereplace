@@ -63,7 +63,7 @@ public class FakeMethodCallManipulator implements ClassManipulator {
     }
 
     public boolean transformClass(ClassFile file, ClassLoader loader, boolean modifiableClass, final Set<MethodInfo> modifiedMethods) {
-        if(!Agent.isRetransformationStarted()) {
+        if (!Agent.isRetransformationStarted()) {
             return false;
         }
         final Map<String, Set<FakeMethodCallData>> virtualToStaticMethod = data.getManipulationData(loader);
@@ -85,7 +85,7 @@ public class FakeMethodCallManipulator implements ClassManipulator {
                     methodDesc = pool.getInterfaceMethodrefType(i);
                     methodName = pool.getInterfaceMethodrefName(i);
                 }
-                if(methodName.equals("<clinit>") || methodName.equals("<init>")) {
+                if (methodName.equals("<clinit>") || methodName.equals("<init>")) {
                     continue;
                 }
                 boolean handled = false;
@@ -109,21 +109,21 @@ public class FakeMethodCallManipulator implements ClassManipulator {
 
 
                     BaseClassData data = ClassDataStore.instance().getBaseClassData(loader, className);
-                    if(data != null) {
+                    if (data != null) {
                         boolean noClassData = false;
                         MethodData method = null;
                         try {
                             Class<?> mainClass = loader.loadClass(className);
                             Set<Class> allClasses = new HashSet<>();
                             addToAllClasses(mainClass, allClasses);
-                            for(Class clazz : allClasses) {
+                            for (Class clazz : allClasses) {
                                 data = ClassDataStore.instance().getBaseClassData(clazz.getClassLoader(), clazz.getName());
-                                if(data == null) {
+                                if (data == null) {
                                     noClassData = true;
                                     break;
                                 }
                                 method = data.getMethodOrConstructor(methodName, methodDesc);
-                                if(method != null) {
+                                if (method != null) {
                                     break;
                                 }
                             }
@@ -172,35 +172,40 @@ public class FakeMethodCallManipulator implements ClassManipulator {
         // through the methods and replace instances of the call
         if (!methodCallLocations.isEmpty() || !newMethodInfoMap.isEmpty()) {
             List<MethodInfo> methods = file.getMethods();
-            for (MethodInfo m : methods) {
+            for (MethodInfo method : methods) {
                 try {
                     // ignore abstract methods
-                    if (m.getCodeAttribute() == null) {
+                    if (method.getCodeAttribute() == null) {
                         continue;
                     }
-                    CodeIterator it = m.getCodeAttribute().iterator();
+                    CodeIterator it = method.getCodeAttribute().iterator();
                     while (it.hasNext()) {
                         // loop through the bytecode
                         int index = it.next();
                         int op = it.byteAt(index);
                         // if the bytecode is a method invocation
-                        if (op == CodeIterator.INVOKEVIRTUAL || op == CodeIterator.INVOKESTATIC || op == CodeIterator.INVOKEINTERFACE || op == CodeIterator.INVOKESPECIAL) {
+                        if (op == CodeIterator.INVOKEVIRTUAL ||
+                                op == CodeIterator.INVOKESTATIC ||
+                                op == CodeIterator.INVOKEINTERFACE ||
+                                op == CodeIterator.INVOKESPECIAL) {
                             int val = it.s16bitAt(index + 1);
-                            // if the method call is one of the methods we are
-                            // replacing
-                            if(newMethodInfoMap.containsKey(val)) {
+                            // if the method call is one of the methods we are replacing
+                            if (newMethodInfoMap.containsKey(val)) {
                                 AddedMethodInfo methodInfo = newMethodInfoMap.get(val);
-                                FakeMethodCallData data = new FakeMethodCallData(methodInfo.className, methodInfo.name, methodInfo.desc, op == Opcode.INVOKESTATIC ? FakeMethodCallData.Type.STATIC : op == Opcode.INVOKEINTERFACE ? FakeMethodCallData.Type.INTERFACE : FakeMethodCallData.Type.VIRTUAL, loader, methodInfo.number);
-                                handleFakeMethodCall(file, modifiedMethods, m, it, index, op, data);
+                                FakeMethodCallData data = new FakeMethodCallData(methodInfo.className, methodInfo.name, methodInfo.desc,
+                                        op == Opcode.INVOKESTATIC ? FakeMethodCallData.Type.STATIC : op == Opcode.INVOKEINTERFACE ? FakeMethodCallData.Type.INTERFACE : FakeMethodCallData.Type.VIRTUAL, loader, methodInfo.number);
+                                handleFakeMethodCall(file, modifiedMethods, method, it, index, op, data);
                             } else if (methodCallLocations.containsKey(val)) {
                                 FakeMethodCallData data = methodCallLocations.get(val);
-                                handleFakeMethodCall(file, modifiedMethods, m, it, index, op, data);
+                                handleFakeMethodCall(file, modifiedMethods, method, it, index, op, data);
 
                             }
+                        } else if (op == CodeIterator.INVOKEDYNAMIC) {
+                            System.out.println(op);
                         }
                     }
-                    modifiedMethods.add(m);
-                    m.getCodeAttribute().computeMaxStack();
+                    modifiedMethods.add(method);
+                    method.getCodeAttribute().computeMaxStack();
                 } catch (Exception e) {
                     log.error("Bad byte code transforming " + file.getName(), e);
                     e.printStackTrace();
@@ -213,9 +218,9 @@ public class FakeMethodCallManipulator implements ClassManipulator {
     }
 
     private void addToAllClasses(Class<?> clazz, Set<Class> allClasses) {
-        while ( clazz != null) {
+        while (clazz != null) {
             allClasses.add(clazz);
-            for(Class<?> iface : clazz.getInterfaces()) {
+            for (Class<?> iface : clazz.getInterfaces()) {
                 addToAllClasses(iface, allClasses);
             }
             clazz = clazz.getSuperclass();
@@ -224,7 +229,7 @@ public class FakeMethodCallManipulator implements ClassManipulator {
 
     private void handleFakeMethodCall(ClassFile file, Set<MethodInfo> modifiedMethods, MethodInfo m, CodeIterator it, int index, int op, FakeMethodCallData data) throws BadBytecode {
         //NOP out the whole thing
-        it.writeByte(CodeIterator.NOP, index );
+        it.writeByte(CodeIterator.NOP, index);
         it.writeByte(CodeIterator.NOP, index + 1);
         it.writeByte(CodeIterator.NOP, index + 2);
         if (op == CodeIterator.INVOKEINTERFACE) {
@@ -253,9 +258,9 @@ public class FakeMethodCallManipulator implements ClassManipulator {
         }
         // cast it to the appropriate type and return it
         String returnType = DescriptorUtils.getReturnType(data.getMethodDesc());
-        if(returnType.length() == 1 && !returnType.equals("V")) {
+        if (returnType.length() == 1 && !returnType.equals("V")) {
             Boxing.unbox(byteCode, returnType.charAt(0));
-        } else if(returnType.equals("V")) {
+        } else if (returnType.equals("V")) {
             byteCode.add(Opcode.POP);
         } else {
             byteCode.addCheckcast(returnType.substring(1, returnType.length() - 1));
