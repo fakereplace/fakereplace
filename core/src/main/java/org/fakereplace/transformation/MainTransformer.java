@@ -88,7 +88,7 @@ public class MainTransformer implements ClassFileTransformer {
     private final Timer timer = new Timer("Fakereplace integration timer", true);
 
     /**
-     * as some tasks are run asyncronously this allows external agents to wait for them to complete
+     * as some tasks are run asynchronously this allows external agents to wait for them to complete
      */
     private boolean waitingForIntegration;
     private int integrationRun;
@@ -98,11 +98,11 @@ public class MainTransformer implements ClassFileTransformer {
 
     private boolean logClassRetransformation;
 
-    public MainTransformer(Set<Extension> extension) {
-        Map<String, Extension> integrationClassTriggers = new HashMap<String, Extension>();
-        for (Extension i : extension) {
-            for (String j : i.getIntegrationTriggerClassNames()) {
-                integrationClassTriggers.put(j.replace(".", "/"), i);
+    public MainTransformer(Set<Extension> extensions) {
+        Map<String, Extension> integrationClassTriggers = new HashMap<>();
+        for (Extension extension : extensions) {
+            for (String className : extension.getIntegrationTriggerClassNames()) {
+                integrationClassTriggers.put(className.replace(".", "/"), extension);
             }
         }
         this.integrationClassTriggers = integrationClassTriggers;
@@ -135,9 +135,9 @@ public class MainTransformer implements ClassFileTransformer {
                 loadedClassChangeAwares.add(extension.getClassChangeAwareName());
                 try {
                     Class<?> clazz = Class.forName(extension.getClassChangeAwareName(), true, loader);
-                    final Object intance = clazz.newInstance();
-                    if (intance instanceof ClassChangeAware) {
-                        ClassChangeNotifier.instance().add((ClassChangeAware) intance);
+                    final Object instance = clazz.newInstance();
+                    if (instance instanceof ClassChangeAware) {
+                        ClassChangeNotifier.instance().add((ClassChangeAware) instance);
                     }
                     final String newEnv = extension.getEnvironment();
                     if (newEnv != null) {

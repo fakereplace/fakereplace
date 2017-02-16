@@ -74,8 +74,8 @@ public class FakereplaceProtocol {
             log.trace("Fakereplace update is running");
             final DataInputStream input = new DataInputStream(socket.getInputStream());
             output = new DataOutputStream(socket.getOutputStream());
-            final Map<String, Long> classes = new HashMap<String, Long>();
-            final Map<String, Long> resources = new HashMap<String, Long>();
+            final Map<String, Long> classes = new HashMap<>();
+            final Map<String, Long> resources = new HashMap<>();
             int magic = input.readInt();
             if (magic != 0xCAFEDEAF) {
                 System.err.println("Fakereplace server error, wrong magic number");
@@ -112,9 +112,9 @@ public class FakereplaceProtocol {
 
             output.flush();
 
-            final Set<ClassDefinition> classDefinitions = new HashSet<ClassDefinition>();
-            final Set<Class<?>> replacedClasses = new HashSet<Class<?>>();
-            final List<AddedClass> addedClassList = new ArrayList<AddedClass>();
+            final Set<ClassDefinition> classDefinitions = new HashSet<>();
+            final Set<Class<?>> replacedClasses = new HashSet<>();
+            final List<AddedClass> addedClassList = new ArrayList<>();
             int noClasses = input.readInt();
             for (int i = 0; i < noClasses; ++i) {
                 final String className = readString(input);
@@ -132,7 +132,7 @@ public class FakereplaceProtocol {
                 }
             }
 
-            final Map<String, byte[]> replacedResources = new HashMap<String, byte[]>();
+            final Map<String, byte[]> replacedResources = new HashMap<>();
 
             int noResources = input.readInt();
             for (int i = 0; i < noResources; ++i) {

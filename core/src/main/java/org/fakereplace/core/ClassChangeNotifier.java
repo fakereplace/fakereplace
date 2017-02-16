@@ -31,19 +31,14 @@ public class ClassChangeNotifier {
 
     private static final ClassChangeNotifier INSTANCE = new ClassChangeNotifier();
 
-    private static final ThreadLocal<Boolean> NOTIFICATION_IN_PROGRESS = new ThreadLocal<Boolean>() {
-        @Override
-        protected Boolean initialValue() {
-            return false;
-        }
-    };
+    private static final ThreadLocal<Boolean> NOTIFICATION_IN_PROGRESS = ThreadLocal.withInitial(() -> false);
 
 
     private final Map<ClassLoader, Set<ClassChangeAware>> classChangeAwares = new MapMaker().weakKeys().makeMap();
 
     public void add(ClassChangeAware aware) {
         if (!classChangeAwares.containsKey(aware.getClass().getClassLoader())) {
-            classChangeAwares.put(aware.getClass().getClassLoader(), new HashSet<ClassChangeAware>());
+            classChangeAwares.put(aware.getClass().getClassLoader(), new HashSet<>());
         }
         classChangeAwares.get(aware.getClass().getClassLoader()).add(aware);
     }

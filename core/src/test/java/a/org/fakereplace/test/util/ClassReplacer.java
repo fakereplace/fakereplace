@@ -60,6 +60,7 @@ public class ClassReplacer {
         replaceQueuedClasses(false);
     }
 
+    @SuppressWarnings("Duplicates")
     public void replaceQueuedClasses(boolean useFakereplace) {
         try {
             ClassDefinition[] definitions = new ClassDefinition[queuedClassReplacements.size()];

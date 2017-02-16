@@ -26,7 +26,6 @@
         <version>1.0.0.Alpha6-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.fakereplace</groupId>
     <artifactId>fakereplace-dist</artifactId>
     <packaging>jar</packaging>
     <version>1.0.0.Alpha6-SNAPSHOT</version>

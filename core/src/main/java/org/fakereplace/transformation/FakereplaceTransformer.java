@@ -34,7 +34,19 @@ public interface FakereplaceTransformer {
 
     /**
      * Transforms a class, returning true if any modifications where made
+     *
+     * @param classesToRetransform implementation should add classes to this set that are needed to retransform by agent
+     *                             with {@link java.lang.instrument.Instrumentation#retransformClasses(Class[])}
+     * @param modifiedMethods      implementation should add methods that are changed to this set
      */
-    boolean transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final ClassFile file, Set<Class<?>> classesToRetransform, ChangedClassImpl changedClass, Set<MethodInfo> modifiedMethods) throws IllegalClassFormatException, BadBytecode, DuplicateMemberException;
+    boolean transform(final ClassLoader loader,
+                      final String className,
+                      final Class<?> classBeingRedefined,
+                      final ProtectionDomain protectionDomain,
+                      final ClassFile file,
+                      Set<Class<?>> classesToRetransform,
+                      ChangedClassImpl changedClass,
+                      Set<MethodInfo> modifiedMethods)
+            throws IllegalClassFormatException, BadBytecode, DuplicateMemberException;
 
 }

@@ -17,20 +17,8 @@
 
 package org.fakereplace.core;
 
-import java.beans.Introspector;
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.lang.instrument.ClassDefinition;
-import java.lang.instrument.Instrumentation;
-import java.lang.instrument.UnmodifiableClassException;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.ServiceLoader;
-import java.util.Set;
-
+import javassist.bytecode.BadBytecode;
+import javassist.bytecode.ClassFile;
 import org.fakereplace.api.Extension;
 import org.fakereplace.api.NewClassData;
 import org.fakereplace.classloading.ClassLookupManager;
@@ -43,9 +31,24 @@ import org.fakereplace.replacement.FieldReplacementTransformer;
 import org.fakereplace.replacement.MethodReplacementTransformer;
 import org.fakereplace.server.FakereplaceServer;
 import org.fakereplace.transformation.ClassLoaderTransformer;
+import org.fakereplace.transformation.FakereplaceTransformer;
 import org.fakereplace.transformation.MainTransformer;
 import org.fakereplace.transformation.UnmodifiedFileIndex;
-import javassist.bytecode.ClassFile;
+
+import java.beans.Introspector;
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.lang.instrument.ClassDefinition;
+import java.lang.instrument.Instrumentation;
+import java.lang.instrument.UnmodifiableClassException;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.ServiceLoader;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * The agent entry point.
@@ -53,78 +56,75 @@ import javassist.bytecode.ClassFile;
  * @author stuart
  */
 public class Agent {
-
-    private static final Class[] EMPTY_CL_ARRAY = new Class[0];
-
     private static volatile Instrumentation inst;
 
     private static volatile MainTransformer mainTransformer;
 
-
-    public static void premain(java.lang.String s, java.lang.instrument.Instrumentation i) {
-
-        AgentOptions.setup(s);
-        inst = i;
-
-        final Set<Extension> extension = getIntegrationInfo(ClassLoader.getSystemClassLoader());
+    /**
+     * Entry method for agent
+     *
+     * @param args            args given to agent
+     * @param instrumentation runtime instrumentation instance
+     */
+    public static void premain(String args, Instrumentation instrumentation) {
+        AgentOptions.setup(args);
+        inst = instrumentation;
 
         //initialise the unmodified file index
         UnmodifiedFileIndex.loadIndex();
 
-        //first we need to instrument the class loaders
-        final Set<Class> cls = new HashSet<Class>();
-        for (Class c : inst.getAllLoadedClasses()) {
-            if (ClassLoader.class.isAssignableFrom(c)) {
-                cls.add(c);
-            }
-        }
+        final Set<Extension> extensions = getIntegrationInfo(ClassLoader.getSystemClassLoader());
 
-        final ClassLoaderTransformer classLoaderTransformer = new ClassLoaderTransformer();
-        final MainTransformer mainTransformer = new MainTransformer(extension);
+        initMainTransformer(extensions, new ClassLoaderTransformer(),
+                new AnnotationTransformer(),
+                new FieldReplacementTransformer(),
+                new MethodReplacementTransformer(),
+                new Transformer(extensions));
+
+        FakereplaceServer.startFakereplaceServerDaemonThread(AgentOptions.getOption(AgentOption.SERVER));
+    }
+
+    private static void initMainTransformer(Set<Extension> extensions,
+                                            ClassLoaderTransformer classLoaderTransformer,
+                                            FakereplaceTransformer... transformers) {
+        final MainTransformer mainTransformer = new MainTransformer(extensions);
         Agent.mainTransformer = mainTransformer;
         inst.addTransformer(mainTransformer, true);
 
         mainTransformer.addTransformer(classLoaderTransformer);
 
+        instrumentClassloaders();
+
+        Arrays.stream(transformers).forEach(mainTransformer::addTransformer);
+
+        mainTransformer.setRetransformationStarted(false);
+        mainTransformer.setLogClassRetransformation(true);
+    }
+
+    private static void instrumentClassloaders() {
+        //first we need to instrument the class loaders
+        final Set<Class> allClasses = Arrays.stream(inst.getAllLoadedClasses())
+                .filter(ClassLoader.class::isAssignableFrom)
+                .collect(Collectors.toSet());
+
         try {
-            inst.retransformClasses(cls.toArray(EMPTY_CL_ARRAY));
+            inst.retransformClasses(allClasses.toArray(new Class[allClasses.size()]));
         } catch (UnmodifiableClassException e) {
             e.printStackTrace();
         }
-        mainTransformer.addTransformer(new AnnotationTransformer());
-        mainTransformer.addTransformer(new FieldReplacementTransformer());
-        mainTransformer.addTransformer(new MethodReplacementTransformer());
-        mainTransformer.addTransformer(new Transformer(extension));
-        mainTransformer.setRetransformationStarted(false);
-        mainTransformer.setLogClassRetransformation(true);
-
-        //start the server
-        String portString = AgentOptions.getOption(AgentOption.SERVER);
-
-        if(portString == null || !portString.equals("-1")) {
-            if(portString == null) {
-                portString = "6555";
-            }
-            Thread thread = new Thread(new FakereplaceServer(Integer.parseInt(portString)));
-            thread.setDaemon(true);
-            thread.setName("Fakereplace Thread");
-            thread.start();
-        } else {
-            System.out.println("Fakereplace is running.");
-        }
     }
 
-    public static void redefine(ClassDefinition[] classes, AddedClass[] addedData) throws UnmodifiableClassException, ClassNotFoundException {
-        redefine(classes, addedData, true);
+    public static void redefine(ClassDefinition[] toRedefineClasses, AddedClass[] addedData) throws UnmodifiableClassException, ClassNotFoundException {
+        redefine(toRedefineClasses, addedData, true);
     }
 
-    public static void redefine(ClassDefinition[] classes, AddedClass[] addedData, boolean wait) throws UnmodifiableClassException, ClassNotFoundException {
+    public static void redefine(ClassDefinition[] classesToRedefine, AddedClass[] addedClasses, boolean wait) throws UnmodifiableClassException, ClassNotFoundException {
         try {
-            for (AddedClass i : addedData) {
-                ClassFile cf = new ClassFile(new DataInputStream(new ByteArrayInputStream(i.getData())));
-                mainTransformer.addNewClass(new NewClassData(i.getClassName(), i.getLoader(), cf));
+            for (AddedClass addedClass : addedClasses) {
+                ClassFile cf = new ClassFile(new DataInputStream(new ByteArrayInputStream(addedClass.getData())));
+                mainTransformer.addNewClass(new NewClassData(addedClass.getClassName(), addedClass.getLoader(), cf));
             }
-            for (ClassDefinition i : classes) {
+            for (ClassDefinition i : classesToRedefine) {
                 ClassDataStore.instance().markClassReplaced(i.getDefinitionClass());
                 BaseClassData baseClassData = ClassDataStore.instance().getBaseClassData(i.getDefinitionClass().getClassLoader(), i.getDefinitionClass().getName());
                 if (baseClassData != null) {
@@ -132,41 +132,44 @@ public class Agent {
                 }
             }
             // re-write the classes so their field
-            for (AddedClass c : addedData) {
-                ClassLookupManager.addClassInfo(c.getClassName(), c.getLoader(), c.getData());
+            for (AddedClass addedClass : addedClasses) {
+                ClassLookupManager.addClassInfo(addedClass.getClassName(), addedClass.getLoader(), addedClass.getData());
             }
-            inst.redefineClasses(classes);
+            inst.redefineClasses(classesToRedefine);
             Introspector.flushCaches();
-            if(wait) {
+            if (wait) {
                 mainTransformer.waitForTasks();
             }
         } catch (Throwable e) {
             try {
-                // dump the classes to /tmp so we can look at them
-                for (ClassDefinition d : classes) {
-                    try {
-                        ByteArrayInputStream bin = new ByteArrayInputStream(d.getDefinitionClassFile());
-                        DataInputStream dis = new DataInputStream(bin);
-                        final ClassFile file = new ClassFile(dis);
-                        Transformer.getManipulator().transformClass(file, d.getDefinitionClass().getClassLoader(), true, new HashSet<>());
-                        String dumpDir = AgentOptions.getOption(AgentOption.DUMP_DIR);
-                        if (dumpDir != null) {
-                            FileOutputStream s = new FileOutputStream(dumpDir + '/' + d.getDefinitionClass().getName() + "1.class");
-                            DataOutputStream dos = new DataOutputStream(s);
-                            file.write(dos);
-                            dos.flush();
-                            dos.close();
-                            // s.write(d.getDefinitionClassFile());
-                            s.close();
-                        }
-                    } catch (IOException a) {
-                        a.printStackTrace();
-                    }
-                }
+                dumpClassesToTemp(classesToRedefine);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
-            throw (new RuntimeException(e));
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static void dumpClassesToTemp(ClassDefinition[] classes) throws BadBytecode {
+        // dump the classes to /tmp so we can look at them
+        for (ClassDefinition clazz : classes) {
+            try {
+                ByteArrayInputStream bin = new ByteArrayInputStream(clazz.getDefinitionClassFile());
+                DataInputStream dis = new DataInputStream(bin);
+                final ClassFile file = new ClassFile(dis);
+                Transformer.getManipulator().transformClass(file, clazz.getDefinitionClass().getClassLoader(), true, new HashSet<>());
+                String dumpDir = AgentOptions.getOption(AgentOption.DUMP_DIR);
+                if (dumpDir != null) {
+                    FileOutputStream fos = new FileOutputStream(dumpDir + '/' + clazz.getDefinitionClass().getName() + "1.class");
+                    DataOutputStream dos = new DataOutputStream(fos);
+                    file.write(dos);
+                    dos.flush();
+                    dos.close();
+                    fos.close();
+                }
+            } catch (IOException a) {
+                a.printStackTrace();
+            }
         }
     }
 
@@ -174,12 +177,11 @@ public class Agent {
         return inst;
     }
 
-    public static Set<Extension> getIntegrationInfo(ClassLoader clr) {
-        final ServiceLoader<Extension> loader = ServiceLoader.load(Extension.class, clr);
-        final Set<Extension> integrations = new HashSet<Extension>();
-        final Iterator<Extension> it = loader.iterator();
-        while (it.hasNext()) {
-            integrations.add(it.next());
+    private static Set<Extension> getIntegrationInfo(ClassLoader clr) {
+        final ServiceLoader<Extension> extensionLoader = ServiceLoader.load(Extension.class, clr);
+        final Set<Extension> integrations = new HashSet<>();
+        for (Extension extension : extensionLoader) {
+            integrations.add(extension);
         }
         return integrations;
     }

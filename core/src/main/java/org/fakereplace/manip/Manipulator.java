@@ -17,12 +17,9 @@
 
 package org.fakereplace.manip;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import javassist.ClassPool;
-import javassist.LoaderClassPath;
 import javassist.bytecode.BadBytecode;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.MethodInfo;
@@ -79,16 +76,14 @@ public class Manipulator {
     }
 
     /**
-     * This can also be used to replace a static invokation with another static
-     * invokation
-     *
+     * This can also be used to replace a static invocation with another static invocation
      */
     public void replaceVirtualMethodInvokationWithStatic(String oldClass, String newClass, String methodName, String methodDesc, String newStaticMethodDesc, ClassLoader classLoader) {
-        virtualToStaticManipulator.replaceVirtualMethodInvokationWithStatic(oldClass, newClass, methodName, methodDesc, newStaticMethodDesc, classLoader);
+        virtualToStaticManipulator.replaceVirtualMethodInvocationWithStatic(oldClass, newClass, methodName, methodDesc, newStaticMethodDesc, classLoader);
     }
 
     public void replaceVirtualMethodInvokationWithLocal(String oldClass, String methodName, String newMethodName, String methodDesc, String newStaticMethodDesc, ClassLoader classLoader) {
-        virtualToStaticManipulator.replaceVirtualMethodInvokationWithLocal(oldClass, methodName, newMethodName, methodDesc, newStaticMethodDesc, classLoader);
+        virtualToStaticManipulator.replaceVirtualMethodInvocationWithLocal(oldClass, methodName, newMethodName, methodDesc, newStaticMethodDesc, classLoader);
     }
 
     public void addFakeMethodCallRewrite(FakeMethodCallData fakeMethodCallData) {

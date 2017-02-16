@@ -19,12 +19,12 @@ package a.org.fakereplace.test.replacement.lambda;
 
 import org.fakereplace.util.NoInstrument;
 
-import java.util.concurrent.Callable;
+import java.util.function.Supplier;
 
 @NoInstrument
-public class LambdaClass1 {
+public class LambdaClassM {
 
-    public static Callable<String> getMessageProducer() {
+    public static Supplier<String> getMessageProducer() {
         return () -> "second";
     }
 }

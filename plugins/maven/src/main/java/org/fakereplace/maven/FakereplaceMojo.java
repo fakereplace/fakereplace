@@ -31,7 +31,6 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
 import org.fakereplace.client.ClassData;
-import org.fakereplace.client.ContentSource;
 import org.fakereplace.client.FakeReplaceClient;
 import org.fakereplace.client.ResourceData;
 
@@ -69,7 +68,6 @@ public class FakereplaceMojo extends AbstractMojo {
             final Map<String, ResourceData> resources = new HashMap<String, ResourceData>();
             handleClassesDirectory(file, file, classes);
 
-
             handleArtifact(zipFile, resources);
 
             FakeReplaceClient.run(fileName, classes, resources);
@@ -92,15 +90,12 @@ public class FakereplaceMojo extends AbstractMojo {
         while (entries.hasMoreElements()) {
             final ZipEntry entry = entries.nextElement();
             if (!entry.isDirectory()) {
-                resources.put(entry.getName(), new ResourceData(entry.getName(), entry.getTime(), new ContentSource() {
-                    @Override
-                    public byte[] getData() throws IOException {
-                        final InputStream stream = zipFile.getInputStream(entry);
-                        try {
-                            return Util.getBytesFromStream(stream);
-                        } finally {
-                            stream.close();
-                        }
+                resources.put(entry.getName(), new ResourceData(entry.getName(), entry.getTime(), () -> {
+                    final InputStream stream = zipFile.getInputStream(entry);
+                    try {
+                        return Util.getBytesFromStream(stream);
+                    } finally {
+                        stream.close();
                     }
                 }));
             }
@@ -114,12 +109,7 @@ public class FakereplaceMojo extends AbstractMojo {
             } else if (file.getName().endsWith(".class")) {
                 final String relFile = file.getAbsolutePath().substring(base.getAbsolutePath().length() + 1);
                 final String className = relFile.substring(0, relFile.length() - ".class".length()).replace("/", ".");
-                classes.put(className, new ClassData(className, file.lastModified(), new ContentSource() {
-                    @Override
-                    public byte[] getData() throws IOException {
-                        return Util.getBytesFromFile(file);
-                    }
-                }));
+                classes.put(className, new ClassData(className, file.lastModified(), () -> Util.getBytesFromFile(file)));
             }
         }
     }

@@ -50,18 +50,16 @@ public class VirtualToStaticManipulator implements ClassManipulator {
     }
 
     /**
-     * This can also be used to replace a static invokation with another static
-     * invokation.
+     * This can also be used to replace a static invocation with another static invocation.
      * <p>
-     * if newClass is null then the invokation is changed to point to a method on the current class
-     *
+     * if newClass is null then the invocation is changed to point to a method on the current class
      */
-    public void replaceVirtualMethodInvokationWithStatic(String oldClass, String newClass, String methodName, String methodDesc, String newStaticMethodDesc, ClassLoader classLoader) {
+    public void replaceVirtualMethodInvocationWithStatic(String oldClass, String newClass, String methodName, String methodDesc, String newStaticMethodDesc, ClassLoader classLoader) {
         VirtualToStaticData d = new VirtualToStaticData(oldClass, newClass, methodName, methodDesc, newStaticMethodDesc, null, classLoader);
         data.add(oldClass, d);
     }
 
-    public void replaceVirtualMethodInvokationWithLocal(String oldClass, String methodName, String newMethodName, String methodDesc, String newStaticMethodDesc, ClassLoader classLoader) {
+    public void replaceVirtualMethodInvocationWithLocal(String oldClass, String methodName, String newMethodName, String methodDesc, String newStaticMethodDesc, ClassLoader classLoader) {
         VirtualToStaticData d = new VirtualToStaticData(oldClass, null, methodName, methodDesc, newStaticMethodDesc, newMethodName, classLoader);
         data.add(oldClass, d);
     }
