@@ -244,6 +244,7 @@ public class MainTransformer implements ClassFileTransformer {
                             }
                         }
                     });
+                    t.setDaemon(true);
                     t.start();
                 }
 
