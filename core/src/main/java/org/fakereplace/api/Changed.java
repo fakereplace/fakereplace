@@ -18,12 +18,27 @@
 package org.fakereplace.api;
 
 /**
+ * Represents a changed element of a class
+ *
  * @author Stuart Douglas
  */
 public interface Changed<T> {
+
+    /**
+     * The type of change
+     * @return the type of change
+     */
     ChangeType getType();
 
+    /**
+     *
+     * @return A representation of the element after the change
+     */
     T getModified();
 
+    /**
+     *
+     * @return A representation of the element before the change, or null if it did not exist
+     */
     T getExisting();
 }

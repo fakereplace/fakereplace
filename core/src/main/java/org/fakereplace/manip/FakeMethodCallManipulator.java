@@ -176,7 +176,7 @@ public class FakeMethodCallManipulator implements ClassManipulator {
         // this means we found an instance of the call, now we have to iterate
         // through the methods and replace instances of the call
         if (!knownFakeMethodCallLocations.isEmpty() || !potentialFakeMethodCallLocations.isEmpty()) {
-            
+
             handleLambdas(file, knownFakeMethodCallLocations, pool);
 
 

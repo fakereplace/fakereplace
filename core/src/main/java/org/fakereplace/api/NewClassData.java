@@ -20,6 +20,8 @@ package org.fakereplace.api;
 import javassist.bytecode.ClassFile;
 
 /**
+ * Represents a new class
+ *
  * @author Stuart Douglas
  */
 public class NewClassData {

@@ -21,6 +21,8 @@ import java.lang.reflect.Type;
 import java.util.Set;
 
 /**
+ * Represents a field that has been modified
+ *
  * @author Stuart Douglas
  */
 public interface ChangedField {

@@ -20,10 +20,22 @@ package org.fakereplace.api;
 import java.lang.annotation.Annotation;
 
 /**
+ * Represets and annotation that has been modified
+ *
  * @author Stuart Douglas
  */
 public interface ChangedAnnotation extends Changed<Annotation> {
+
+    /**
+     *
+     * @return The element that is annotated
+     */
     AnnotationTarget getAnnotationTarget();
 
+    /**
+     *
+     *
+     * @return The type of annotation
+     */
     Class<? extends Annotation> getAnnotationType();
 }
