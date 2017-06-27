@@ -176,57 +176,9 @@ public class FakeMethodCallManipulator implements ClassManipulator {
         // this means we found an instance of the call, now we have to iterate
         // through the methods and replace instances of the call
         if (!knownFakeMethodCallLocations.isEmpty() || !potentialFakeMethodCallLocations.isEmpty()) {
+            
+            handleLambdas(file, knownFakeMethodCallLocations, pool);
 
-            //check the bootstrapmethod's attribute
-            //this makes lambda support work
-            AttributeInfo bootstrapMethods = file.getAttribute(BootstrapMethodsAttribute.tag);
-            if(bootstrapMethods instanceof BootstrapMethodsAttribute) {
-                BootstrapMethodsAttribute boot = (BootstrapMethodsAttribute) bootstrapMethods;
-                boolean replaceBootstrap = false;
-                BootstrapMethodsAttribute.BootstrapMethod[] replacement = boot.getMethods();
-                for(BootstrapMethodsAttribute.BootstrapMethod method : replacement) {
-
-                    //initial support for lambda replacement
-                    //first we look for all invocations on LambdaMetafactory
-                    int kind = pool.getMethodHandleKind(method.methodRef);
-                    if(kind == ConstPool.REF_invokeStatic) {
-                        int nameAndType = pool.getMethodHandleIndex(method.methodRef);
-                        String className = pool.getMethodrefClassName(nameAndType);
-                        String methodName = pool.getMethodrefName(nameAndType);
-                        if(className.equals(LambdaMetafactory.class.getName())) {
-                            if(methodName.equals("metafactory")) {
-                                //we have a lambda instance
-                                //does it reference a new method
-                                int methodHandleArg = method.arguments[1];
-                                kind = pool.getMethodHandleKind(methodHandleArg);
-                                if(kind == ConstPool.REF_invokeStatic || kind == ConstPool.REF_invokeVirtual || kind == ConstPool.REF_invokeSpecial) {
-                                    int methodRefArg = pool.getMethodHandleIndex(methodHandleArg);
-                                    if (knownFakeMethodCallLocations.containsKey(methodRefArg)) {
-                                        //the lambda references a new method
-
-                                        replaceBootstrap = true;
-                                        FakeMethodCallData target = knownFakeMethodCallLocations.get(methodRefArg);
-                                        String type = pool.getMethodrefType(methodRefArg);
-                                        String name = pool.getMethodrefName(methodRefArg);
-                                        if(kind != ConstPool.REF_invokeStatic) {
-                                            type = "(" + DescriptorUtils.extToInt(file.getName()) + type.substring(1);
-                                        }
-
-                                        int newMethodRef = pool.addMethodrefInfo(pool.addClassInfo(target.getProxyName()), name, type);
-                                        int newMethodHandle = pool.addMethodHandleInfo(ConstPool.REF_invokeStatic, newMethodRef);
-                                        method.arguments[1] = newMethodHandle;
-                                    }
-                                }
-
-
-                            }
-                        }
-                    }
-                }
-                if(replaceBootstrap) {
-                    file.addAttribute(new BootstrapMethodsAttribute(file.getConstPool(), replacement));
-                }
-            }
 
             List<MethodInfo> methods = file.getMethods();
             for (MethodInfo m : methods) {
@@ -266,6 +218,59 @@ public class FakeMethodCallManipulator implements ClassManipulator {
             return true;
         } else {
             return false;
+        }
+    }
+
+    private void handleLambdas(ClassFile file, Map<Integer, FakeMethodCallData> knownFakeMethodCallLocations, ConstPool pool) {
+        //check the bootstrapmethod's attribute
+        //this makes lambda support work
+        AttributeInfo bootstrapMethods = file.getAttribute(BootstrapMethodsAttribute.tag);
+        if(bootstrapMethods instanceof BootstrapMethodsAttribute) {
+            BootstrapMethodsAttribute boot = (BootstrapMethodsAttribute) bootstrapMethods;
+            boolean replaceBootstrap = false;
+            BootstrapMethodsAttribute.BootstrapMethod[] replacement = boot.getMethods();
+            for(BootstrapMethodsAttribute.BootstrapMethod method : replacement) {
+
+                //initial support for lambda replacement
+                //first we look for all invocations on LambdaMetafactory
+                int kind = pool.getMethodHandleKind(method.methodRef);
+                if(kind == ConstPool.REF_invokeStatic) {
+                    int nameAndType = pool.getMethodHandleIndex(method.methodRef);
+                    String className = pool.getMethodrefClassName(nameAndType);
+                    String methodName = pool.getMethodrefName(nameAndType);
+                    if(className.equals(LambdaMetafactory.class.getName())) {
+                        if(methodName.equals("metafactory")) {
+                            //we have a lambda instance
+                            //does it reference a new method
+                            int methodHandleArg = method.arguments[1];
+                            kind = pool.getMethodHandleKind(methodHandleArg);
+                            if(kind == ConstPool.REF_invokeStatic || kind == ConstPool.REF_invokeVirtual || kind == ConstPool.REF_invokeSpecial) {
+                                int methodRefArg = pool.getMethodHandleIndex(methodHandleArg);
+                                if (knownFakeMethodCallLocations.containsKey(methodRefArg)) {
+                                    //the lambda references a new method
+
+                                    replaceBootstrap = true;
+                                    FakeMethodCallData target = knownFakeMethodCallLocations.get(methodRefArg);
+                                    String type = pool.getMethodrefType(methodRefArg);
+                                    String name = pool.getMethodrefName(methodRefArg);
+                                    if(kind != ConstPool.REF_invokeStatic) {
+                                        type = "(" + DescriptorUtils.extToInt(file.getName()) + type.substring(1);
+                                    }
+
+                                    int newMethodRef = pool.addMethodrefInfo(pool.addClassInfo(target.getProxyName()), name, type);
+                                    int newMethodHandle = pool.addMethodHandleInfo(ConstPool.REF_invokeStatic, newMethodRef);
+                                    method.arguments[1] = newMethodHandle;
+                                }
+                            }
+
+
+                        }
+                    }
+                }
+            }
+            if(replaceBootstrap) {
+                file.addAttribute(new BootstrapMethodsAttribute(file.getConstPool(), replacement));
+            }
         }
     }
 
