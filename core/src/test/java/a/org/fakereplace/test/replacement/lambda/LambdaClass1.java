@@ -27,4 +27,11 @@ public class LambdaClass1 {
     public static Callable<String> getMessageProducer() {
         return () -> "second";
     }
+    public Callable<String> getMessageProducer2() {
+        return () -> "second" + this.toString();
+    }
+
+    public String toString() {
+        return "LambdaClass1";
+    }
 }

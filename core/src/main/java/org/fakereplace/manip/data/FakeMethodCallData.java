@@ -29,14 +29,16 @@ public class FakeMethodCallData implements ClassLoaderFiltered<FakeMethodCallDat
     private final Type type;
     private final ClassLoader classLoader;
     private final int methodNumber;
+    private final String proxyName;
 
-    public FakeMethodCallData(String className, String methodName, String methodDesc, Type type, ClassLoader classLoader, int methodNumber) {
+    public FakeMethodCallData(String className, String methodName, String methodDesc, Type type, ClassLoader classLoader, int methodNumber, String proxyName) {
         this.className = className;
         this.methodName = methodName;
         this.methodDesc = methodDesc;
         this.type = type;
         this.classLoader = classLoader;
         this.methodNumber = methodNumber;
+        this.proxyName = proxyName;
     }
 
     public String getClassName() {
@@ -62,6 +64,10 @@ public class FakeMethodCallData implements ClassLoaderFiltered<FakeMethodCallDat
     @Override
     public ClassLoader getClassLoader() {
         return classLoader;
+    }
+
+    public String getProxyName() {
+        return proxyName;
     }
 
     @Override

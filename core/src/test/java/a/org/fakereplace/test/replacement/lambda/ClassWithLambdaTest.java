@@ -22,16 +22,18 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
-@Ignore("This still needs some work, we need to rewrite the BootstrapMethods attribute")
 public class ClassWithLambdaTest {
     @Test
     public void testReplaceClassWithLambda() throws Exception {
 
+        LambdaClass lc = new LambdaClass();
         Assert.assertEquals("first", LambdaClass.getMessageProducer().call());
+        Assert.assertEquals("first", lc.getMessageProducer2().call());
         ClassReplacer rep = new ClassReplacer();
         rep.queueClassForReplacement(LambdaClass.class, LambdaClass1.class);
         rep.replaceQueuedClasses();
         Assert.assertEquals("second", LambdaClass.getMessageProducer().call());
+        Assert.assertEquals("secondLambdaClass1", lc.getMessageProducer2().call());
     }
 
 }

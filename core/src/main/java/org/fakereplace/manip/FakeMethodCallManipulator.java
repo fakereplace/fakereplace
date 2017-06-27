@@ -17,6 +17,7 @@
 
 package org.fakereplace.manip;
 
+import java.lang.invoke.LambdaMetafactory;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -37,7 +38,9 @@ import org.fakereplace.manip.util.ManipulationDataStore;
 import org.fakereplace.manip.util.ManipulationUtils;
 import org.fakereplace.runtime.MethodIdentifierStore;
 import org.fakereplace.util.DescriptorUtils;
+import javassist.bytecode.AttributeInfo;
 import javassist.bytecode.BadBytecode;
+import javassist.bytecode.BootstrapMethodsAttribute;
 import javassist.bytecode.Bytecode;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.CodeIterator;
@@ -66,9 +69,11 @@ public class FakeMethodCallManipulator implements ClassManipulator {
         if(!Agent.isRetransformationStarted()) {
             return false;
         }
-        final Map<String, Set<FakeMethodCallData>> virtualToStaticMethod = data.getManipulationData(loader);
-        final Map<Integer, FakeMethodCallData> methodCallLocations = new HashMap<>();
-        final Map<Integer, AddedMethodInfo> newMethodInfoMap = new HashMap<>();
+        final Map<String, Set<FakeMethodCallData>> knownFakeMethods = data.getManipulationData(loader);
+        //methods that are known to need a rewrite to a generated static method
+        final Map<Integer, FakeMethodCallData> knownFakeMethodCallLocations = new HashMap<>();
+        //methods that may need a rewrite to a generated static method
+        final Map<Integer, AddedMethodInfo> potentialFakeMethodCallLocations = new HashMap<>();
         // first we need to scan the constant pool looking for
         // CONSTANT_method_info_ref structures
         ConstPool pool = file.getConstPool();
@@ -89,11 +94,11 @@ public class FakeMethodCallManipulator implements ClassManipulator {
                     continue;
                 }
                 boolean handled = false;
-                if (virtualToStaticMethod.containsKey(className)) {
-                    for (FakeMethodCallData data : virtualToStaticMethod.get(className)) {
+                if (knownFakeMethods.containsKey(className)) {
+                    for (FakeMethodCallData data : knownFakeMethods.get(className)) {
                         if (methodName.equals(data.getMethodName()) && methodDesc.equals(data.getMethodDesc())) {
                             // store the location in the const pool of the method ref
-                            methodCallLocations.put(i, data);
+                            knownFakeMethodCallLocations.put(i, data);
                             // we have found a method call
                             // now lets replace it
                             handled = true;
@@ -135,7 +140,7 @@ public class FakeMethodCallManipulator implements ClassManipulator {
                                 //this is a new method
                                 //lets deal with it
                                 int methodNo = MethodIdentifierStore.instance().getMethodNumber(methodName, methodDesc);
-                                newMethodInfoMap.put(i, new AddedMethodInfo(methodNo, className, methodName, methodDesc));
+                                potentialFakeMethodCallLocations.put(i, new AddedMethodInfo(methodNo, className, methodName, methodDesc));
                             } else if (!Modifier.isPublic(method.getAccessFlags())) {
                                 boolean requiresVisibilityUpgrade = false;
                                 if (Modifier.isPrivate(method.getAccessFlags())) {
@@ -159,7 +164,7 @@ public class FakeMethodCallManipulator implements ClassManipulator {
                                 }
                                 if (requiresVisibilityUpgrade) {
                                     int methodNo = MethodIdentifierStore.instance().getMethodNumber(methodName, methodDesc);
-                                    newMethodInfoMap.put(i, new AddedMethodInfo(methodNo, className, methodName, methodDesc));
+                                    potentialFakeMethodCallLocations.put(i, new AddedMethodInfo(methodNo, className, methodName, methodDesc));
                                 }
                             }
                         }
@@ -170,7 +175,59 @@ public class FakeMethodCallManipulator implements ClassManipulator {
 
         // this means we found an instance of the call, now we have to iterate
         // through the methods and replace instances of the call
-        if (!methodCallLocations.isEmpty() || !newMethodInfoMap.isEmpty()) {
+        if (!knownFakeMethodCallLocations.isEmpty() || !potentialFakeMethodCallLocations.isEmpty()) {
+
+            //check the bootstrapmethod's attribute
+            //this makes lambda support work
+            AttributeInfo bootstrapMethods = file.getAttribute(BootstrapMethodsAttribute.tag);
+            if(bootstrapMethods instanceof BootstrapMethodsAttribute) {
+                BootstrapMethodsAttribute boot = (BootstrapMethodsAttribute) bootstrapMethods;
+                boolean replaceBootstrap = false;
+                BootstrapMethodsAttribute.BootstrapMethod[] replacement = boot.getMethods();
+                for(BootstrapMethodsAttribute.BootstrapMethod method : replacement) {
+
+                    //initial support for lambda replacement
+                    //first we look for all invocations on LambdaMetafactory
+                    int kind = pool.getMethodHandleKind(method.methodRef);
+                    if(kind == ConstPool.REF_invokeStatic) {
+                        int nameAndType = pool.getMethodHandleIndex(method.methodRef);
+                        String className = pool.getMethodrefClassName(nameAndType);
+                        String methodName = pool.getMethodrefName(nameAndType);
+                        if(className.equals(LambdaMetafactory.class.getName())) {
+                            if(methodName.equals("metafactory")) {
+                                //we have a lambda instance
+                                //does it reference a new method
+                                int methodHandleArg = method.arguments[1];
+                                kind = pool.getMethodHandleKind(methodHandleArg);
+                                if(kind == ConstPool.REF_invokeStatic || kind == ConstPool.REF_invokeVirtual || kind == ConstPool.REF_invokeSpecial) {
+                                    int methodRefArg = pool.getMethodHandleIndex(methodHandleArg);
+                                    if (knownFakeMethodCallLocations.containsKey(methodRefArg)) {
+                                        //the lambda references a new method
+
+                                        replaceBootstrap = true;
+                                        FakeMethodCallData target = knownFakeMethodCallLocations.get(methodRefArg);
+                                        String type = pool.getMethodrefType(methodRefArg);
+                                        String name = pool.getMethodrefName(methodRefArg);
+                                        if(kind != ConstPool.REF_invokeStatic) {
+                                            type = "(" + DescriptorUtils.extToInt(file.getName()) + type.substring(1);
+                                        }
+
+                                        int newMethodRef = pool.addMethodrefInfo(pool.addClassInfo(target.getProxyName()), name, type);
+                                        int newMethodHandle = pool.addMethodHandleInfo(ConstPool.REF_invokeStatic, newMethodRef);
+                                        method.arguments[1] = newMethodHandle;
+                                    }
+                                }
+
+
+                            }
+                        }
+                    }
+                }
+                if(replaceBootstrap) {
+                    file.addAttribute(new BootstrapMethodsAttribute(file.getConstPool(), replacement));
+                }
+            }
+
             List<MethodInfo> methods = file.getMethods();
             for (MethodInfo m : methods) {
                 try {
@@ -188,12 +245,12 @@ public class FakeMethodCallManipulator implements ClassManipulator {
                             int val = it.s16bitAt(index + 1);
                             // if the method call is one of the methods we are
                             // replacing
-                            if(newMethodInfoMap.containsKey(val)) {
-                                AddedMethodInfo methodInfo = newMethodInfoMap.get(val);
-                                FakeMethodCallData data = new FakeMethodCallData(methodInfo.className, methodInfo.name, methodInfo.desc, op == Opcode.INVOKESTATIC ? FakeMethodCallData.Type.STATIC : op == Opcode.INVOKEINTERFACE ? FakeMethodCallData.Type.INTERFACE : FakeMethodCallData.Type.VIRTUAL, loader, methodInfo.number);
+                            if(potentialFakeMethodCallLocations.containsKey(val)) {
+                                AddedMethodInfo methodInfo = potentialFakeMethodCallLocations.get(val);
+                                FakeMethodCallData data = new FakeMethodCallData(methodInfo.className, methodInfo.name, methodInfo.desc, op == Opcode.INVOKESTATIC ? FakeMethodCallData.Type.STATIC : op == Opcode.INVOKEINTERFACE ? FakeMethodCallData.Type.INTERFACE : FakeMethodCallData.Type.VIRTUAL, loader, methodInfo.number, null);
                                 handleFakeMethodCall(file, modifiedMethods, m, it, index, op, data);
-                            } else if (methodCallLocations.containsKey(val)) {
-                                FakeMethodCallData data = methodCallLocations.get(val);
+                            } else if (knownFakeMethodCallLocations.containsKey(val)) {
+                                FakeMethodCallData data = knownFakeMethodCallLocations.get(val);
                                 handleFakeMethodCall(file, modifiedMethods, m, it, index, op, data);
 
                             }

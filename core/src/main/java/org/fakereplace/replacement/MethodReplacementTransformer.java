@@ -26,12 +26,9 @@ import java.lang.reflect.Method;
 import java.security.ProtectionDomain;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
 
-import javassist.ClassPool;
-import javassist.LoaderClassPath;
 import javassist.bytecode.AccessFlag;
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.AttributeInfo;
@@ -245,7 +242,7 @@ public class MethodReplacementTransformer implements FakereplaceTransformer {
             }
             String proxyName = generateProxyInvocationBytecode(mInfo, methodCount, file.getName(), loader, staticMethod, file.isInterface());
             ClassDataStore.instance().registerProxyName(oldClass, proxyName);
-            Transformer.getManipulator().addFakeMethodCallRewrite(new FakeMethodCallData(file.getName(), mInfo.getName(), mInfo.getDescriptor(), staticMethod ? FakeMethodCallData.Type.STATIC : file.isInterface() ? FakeMethodCallData.Type.INTERFACE : FakeMethodCallData.Type.VIRTUAL, loader, methodCount));
+            Transformer.getManipulator().addFakeMethodCallRewrite(new FakeMethodCallData(file.getName(), mInfo.getName(), mInfo.getDescriptor(), staticMethod ? FakeMethodCallData.Type.STATIC : file.isInterface() ? FakeMethodCallData.Type.INTERFACE : FakeMethodCallData.Type.VIRTUAL, loader, methodCount, proxyName));
 
             builder.add(new FakeMethod(mInfo.getName(), proxyName,  mInfo.getDescriptor(), mInfo.getAccessFlags()));
             if (!staticMethod) {

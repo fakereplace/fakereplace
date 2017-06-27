@@ -24,4 +24,13 @@ public class LambdaClass {
     public static Callable<String> getMessageProducer() {
         return () -> "first";
     }
+
+    public Callable<String> getMessageProducer2() {
+        return new Callable<String>() {
+            @Override
+            public String call() throws Exception {
+                return "first";
+            }
+        };
+    }
 }
