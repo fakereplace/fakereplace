@@ -276,9 +276,7 @@ public class MainTransformer implements ClassFileTransformer {
 
     public synchronized void addTransformer(FakereplaceTransformer transformer) {
         final FakereplaceTransformer[] transformers = new FakereplaceTransformer[this.transformers.length + 1];
-        for (int i = 0; i < this.transformers.length; ++i) {
-            transformers[i] = this.transformers[i];
-        }
+        System.arraycopy(this.transformers, 0, transformers, 0, this.transformers.length);
         transformers[this.transformers.length] = transformer;
         this.transformers = transformers;
     }

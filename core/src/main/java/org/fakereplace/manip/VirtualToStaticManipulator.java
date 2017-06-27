@@ -87,7 +87,6 @@ public class VirtualToStaticManipulator implements ClassManipulator {
                     methodDesc = pool.getInterfaceMethodrefType(i);
                     methodName = pool.getInterfaceMethodrefName(i);
                 }
-                boolean handled = false;
                 if (virtualToStaticMethod.containsKey(className)) {
                     for (VirtualToStaticData data : virtualToStaticMethod.get(className)) {
                         if (methodName.equals(data.getMethodName()) && methodDesc.equals(data.getMethodDesc())) {
@@ -113,7 +112,6 @@ public class VirtualToStaticManipulator implements ClassManipulator {
                                 newCallLocations.put(data, pool.addMethodrefInfo(newCpLoc, newNameAndType));
 
                             }
-                            handled = true;
                             break;
                         }
 

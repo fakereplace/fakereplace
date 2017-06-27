@@ -147,9 +147,7 @@ public class MethodData {
             methodDesc = DescriptorUtils.argumentStringToClassArray(descriptor, actualClass);
             Class<?>[] ret = new Class<?>[methodDesc.length + 1];
             ret[0] = ClassDataStore.instance().getRealClassFromProxyName(actualClass.getName());
-            for (int i = 0; i < methodDesc.length; ++i) {
-                ret[i + 1] = methodDesc[i];
-            }
+            System.arraycopy(methodDesc, 0, ret, 1, methodDesc.length);
             methodDesc = ret;
         } else {
             methodDesc = DescriptorUtils.argumentStringToClassArray(descriptor, actualClass);

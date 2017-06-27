@@ -266,8 +266,8 @@ public class MethodReflection {
         }
         Object[] ret = new Object[length + 1];
         ret[0] = object;
-        for (int i = 0; i < length; ++i) {
-            ret[i + 1] = array[i];
+        if(array != null) {
+            System.arraycopy(array, 0, ret, 1, length);
         }
         return ret;
     }

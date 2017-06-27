@@ -30,11 +30,7 @@ import org.fakereplace.util.NullSafeConcurrentHashMap;
  * @author Stuart Douglas
  */
 public class FieldDataStore {
-    private static final Map<Object, Map<Integer, Object>> fieldData = new MapMaker().weakKeys().makeComputingMap(new Function<Object, Map<Integer, Object>>() {
-        public Map<Integer, Object> apply(Object from) {
-            return new NullSafeConcurrentHashMap<Integer, Object>();
-        }
-    });
+    private static final Map<Object, Map<Integer, Object>> fieldData = new MapMaker().weakKeys().makeComputingMap(from -> new NullSafeConcurrentHashMap<Integer, Object>());
 
     public static Object getValue(Object instance, int field) {
         Object ret = fieldData.get(instance).get(field);

@@ -182,11 +182,10 @@ public class DescriptorUtils {
     }
 
     public static String methodSignitureToDescriptor(Class<?> returnType, Class<?>... params) {
-        StringBuilder sb = new StringBuilder("(");
-        sb.append(classArrayToDescriptorString(params));
-        sb.append(")");
-        sb.append(classToStringRepresentation(returnType));
-        return sb.toString();
+        String sb = "(" + classArrayToDescriptorString(params) +
+                ")" +
+                classToStringRepresentation(returnType);
+        return sb;
     }
 
     public static String getReturnType(String descriptor) {

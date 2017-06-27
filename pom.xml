@@ -29,7 +29,6 @@
     <properties>
         <arquillian.version>1.1.8.Final</arquillian.version>
         <arquillian.weld-se.version>1.0.0.CR9</arquillian.weld-se.version>
-        <fakereplace.version>1.0.0.Alpha6-SNAPSHOT</fakereplace.version>
         <fakereplace.google.collections.version>1.0.1.Final</fakereplace.google.collections.version>
         <javassist.version>3.21.0-GA</javassist.version>
         <wildfly.version>10.1.0.Final</wildfly.version>
@@ -98,62 +97,62 @@
             <dependency>
                 <groupId>org.fakereplace</groupId>
                 <artifactId>fakereplace</artifactId>
-                <version>${fakereplace.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>org.fakereplace</groupId>
                 <artifactId>fakereplace-client</artifactId>
-                <version>${fakereplace.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>org.fakereplace</groupId>
                 <artifactId>fakereplace-dist</artifactId>
-                <version>${fakereplace.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>org.fakereplace</groupId>
                 <artifactId>fakereplace-resteasy</artifactId>
-                <version>${fakereplace.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>org.fakereplace</groupId>
                 <artifactId>fakereplace-jsf</artifactId>
-                <version>${fakereplace.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>org.fakereplace</groupId>
                 <artifactId>fakereplace-metawidget</artifactId>
-                <version>${fakereplace.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>org.fakereplace</groupId>
                 <artifactId>fakereplace-wildfly</artifactId>
-                <version>${fakereplace.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>org.fakereplace</groupId>
                 <artifactId>fakereplace-testsuite-shared</artifactId>
-                <version>${fakereplace.version}</version>
+                <version>${project.version}</version>
                 <scope>test</scope>
             </dependency>
 
             <dependency>
                 <groupId>org.fakereplace</groupId>
                 <artifactId>fakereplace-weld</artifactId>
-                <version>${fakereplace.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>org.fakereplace</groupId>
                 <artifactId>fakereplace-plugin</artifactId>
-                <version>${fakereplace.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <!-- External dependencies-->

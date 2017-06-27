@@ -42,7 +42,7 @@ public class NullSafeConcurrentHashMap<K, V> implements Map<K, V>, Serializable 
     }
 
     public boolean containsKey(Object key) {
-        return map.contains(key);
+        return map.containsKey(key);
     }
 
     public boolean containsValue(Object value) {
