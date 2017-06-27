@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <artifactId>fakereplace-plugins-parent</artifactId>
+        <groupId>org.fakereplace</groupId>
+        <version>1.0.0.Alpha5-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <groupId>org.fakereplace</groupId>
+    <artifactId>fakereplace-tomcat</artifactId>
+    <name>Fakereplace Tomcat Integration</name>
+    <version>1.0.0.Alpha5-SNAPSHOT</version>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-catalina</artifactId>
+            <version>7.0.67</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.fakereplace</groupId>
+            <artifactId>fakereplace</artifactId>
+        </dependency>
+    </dependencies>
+</project>

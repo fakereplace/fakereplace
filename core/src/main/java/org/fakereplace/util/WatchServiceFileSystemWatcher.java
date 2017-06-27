@@ -43,13 +43,12 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
-import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
+import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
 
 public class WatchServiceFileSystemWatcher implements Runnable, AutoCloseable {
 
     private static final AtomicInteger threadIdCounter = new AtomicInteger(0);
-    private static int WAIT_TIME = Integer.getInteger("fakereplace.wait-time", 500);
     public static final String THREAD_NAME = "fakereplace-file-watcher";
 
     private WatchService watchService;
@@ -83,11 +82,10 @@ public class WatchServiceFileSystemWatcher implements Runnable, AutoCloseable {
                             final List<FileChangeEvent> results = new ArrayList<>();
                             List<WatchEvent<?>> latest;
                             do {
-                                //we need to wait till nothing has changed in 500ms to make sure we have picked up all the changes
-                                Thread.sleep(WAIT_TIME);
                                 latest = key.pollEvents();
                                 events.addAll(latest);
                             } while (!latest.isEmpty());
+
                             final Set<File> addedFiles = new HashSet<>();
                             final Set<File> deletedFiles = new HashSet<>();
                             for (WatchEvent<?> event : events) {
