@@ -24,7 +24,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.instrument.ClassDefinition;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -34,6 +38,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.fakereplace.data.ClassLoaderData;
+import org.fakereplace.logging.Logger;
 import org.fakereplace.replacement.AddedClass;
 import org.fakereplace.util.FileReader;
 import org.fakereplace.util.MD5;
@@ -50,11 +55,14 @@ import javassist.bytecode.ClassFile;
  */
 class FileSystemWatcher {
 
+
+    private static final Logger log = Logger.getLogger(FileSystemWatcher.class);
+
     private final WatchServiceFileSystemWatcher watcher = new WatchServiceFileSystemWatcher();
 
-    private final Set<File> registered = new HashSet<>();
+    private final Set<Path> registered = new HashSet<>();
 
-    private final Map<String, String> hashes = new HashMap<>();
+    private final Map<Path, String> hashes = new HashMap<>();
 
     private final ClassLoaderData.AttachmentKey<Callback> callbackAttachmentKey = new ClassLoaderData.AttachmentKey<>();
 
@@ -73,18 +81,18 @@ class FileSystemWatcher {
                 List<ClassDefinition> changedClasses = new ArrayList<>();
                 for (WatchServiceFileSystemWatcher.FileChangeEvent change : changes) {
                     if (change.getType() == WatchServiceFileSystemWatcher.FileChangeEvent.Type.ADDED) {
-                        try (FileInputStream in = new FileInputStream(change.getFile())) {
+                        try (FileInputStream in = new FileInputStream(change.getFile().toFile())) {
                             byte[] bytes = FileReader.readFileBytes(in);
                             ClassFile file = new ClassFile(new DataInputStream(new ByteArrayInputStream(bytes)));
                             addedClasses.add(new AddedClass(file.getName(), bytes, classLoader));
                         }
                     } else if(change.getType() == WatchServiceFileSystemWatcher.FileChangeEvent.Type.MODIFIED) {
-                        String hash = hashes.get(change.getFile().getCanonicalPath());
+                        String hash = hashes.get(change.getFile().toAbsolutePath());
                         if(hash == null) {
                             //class is not loaded yet
                             continue;
                         }
-                        try (FileInputStream in = new FileInputStream(change.getFile())) {
+                        try (FileInputStream in = new FileInputStream(change.getFile().toFile())) {
                             byte[] bytes = FileReader.readFileBytes(in);
                             if(!hash.equals(MD5.md5(bytes))) {
                                 ClassFile file = new ClassFile(new DataInputStream(new ByteArrayInputStream(bytes)));
@@ -108,8 +116,8 @@ class FileSystemWatcher {
         if(resource == null) {
             return;
         }
-        File file = new File(resource.getFile());
-        if(!file.exists()) {
+        Path file = Paths.get(resource.getFile());
+        if(!Files.exists(file)) {
             return;
         }
 
@@ -120,13 +128,13 @@ class FileSystemWatcher {
             }
         }
         try (InputStream in = resource.openStream()) {
-            hashes.put(file.getCanonicalPath(), MD5.md5(FileReader.readFileBytes(in)));
+            hashes.put(file.toAbsolutePath(), MD5.md5(FileReader.readFileBytes(in)));
         } catch (IOException e) {
             e.printStackTrace();
             return;
         }
         for(int i = 0; i < parentCount; ++i) {
-            file = file.getParentFile();
+            file = file.getParent();
         }
         if(registered.contains(file)) {
             return;

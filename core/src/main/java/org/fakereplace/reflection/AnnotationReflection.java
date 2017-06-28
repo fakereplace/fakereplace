@@ -133,60 +133,53 @@ public class AnnotationReflection {
 
     public static Annotation[] getDeclaredAnnotations(Class<?> clazz) {
         if (AnnotationDataStore.isClassDataRecorded(clazz)) {
-            Annotation[] result = AnnotationDataStore.getClassAnnotations(clazz);
-            return result;
+            return AnnotationDataStore.getClassAnnotations(clazz);
         }
         return clazz.getDeclaredAnnotations();
     }
 
     public static boolean isAnnotationPresent(Field clazz, Class anType) {
         if (AnnotationDataStore.isFieldDataRecorded(clazz)) {
-            boolean result = AnnotationDataStore.isFieldAnnotationPresent(clazz, anType);
 
-            return result;
+            return AnnotationDataStore.isFieldAnnotationPresent(clazz, anType);
         }
         return clazz.isAnnotationPresent(anType);
     }
 
     public static Annotation getAnnotation(Field clazz, Class anType) {
         if (AnnotationDataStore.isFieldDataRecorded(clazz)) {
-            Annotation result = AnnotationDataStore.getFieldAnnotation(clazz, anType);
 
-            return result;
+            return AnnotationDataStore.getFieldAnnotation(clazz, anType);
         }
         return clazz.getAnnotation(anType);
     }
 
     public static Annotation[] getAnnotations(Field clazz) {
         if (AnnotationDataStore.isFieldDataRecorded(clazz)) {
-            Annotation[] result = AnnotationDataStore.getFieldAnnotations(clazz);
-            return result;
+            return AnnotationDataStore.getFieldAnnotations(clazz);
         }
         return clazz.getAnnotations();
     }
 
     public static Annotation[] getDeclaredAnnotations(Field clazz) {
         if (AnnotationDataStore.isFieldDataRecorded(clazz)) {
-            Annotation[] result = AnnotationDataStore.getFieldAnnotations(clazz);
-            return result;
+            return AnnotationDataStore.getFieldAnnotations(clazz);
         }
         return clazz.getDeclaredAnnotations();
     }
 
     public static boolean isAnnotationPresent(Method clazz, Class anType) {
         if (AnnotationDataStore.isMethodDataRecorded(clazz)) {
-            boolean result = AnnotationDataStore.isMethodAnnotationPresent(clazz, anType);
 
-            return result;
+            return AnnotationDataStore.isMethodAnnotationPresent(clazz, anType);
         }
         return clazz.isAnnotationPresent(anType);
     }
 
     public static Annotation getAnnotation(Method clazz, Class anType) {
         if (AnnotationDataStore.isMethodDataRecorded(clazz)) {
-            Annotation result = AnnotationDataStore.getMethodAnnotation(clazz, anType);
 
-            return result;
+            return AnnotationDataStore.getMethodAnnotation(clazz, anType);
         }
         return clazz.getAnnotation(anType);
     }
@@ -271,8 +264,7 @@ public class AnnotationReflection {
 
     public static Annotation[][] getParameterAnnotations(Method clazz) {
         if (AnnotationDataStore.isMethodDataRecorded(clazz)) {
-            Annotation[][] result = AnnotationDataStore.getMethodParameterAnnotations(clazz);
-            return result;
+            return AnnotationDataStore.getMethodParameterAnnotations(clazz);
         }
         return clazz.getParameterAnnotations();
     }
@@ -281,42 +273,37 @@ public class AnnotationReflection {
 
     public static boolean isAnnotationPresent(Constructor<?> clazz, Class anType) {
         if (AnnotationDataStore.isConstructorDataRecorded(clazz)) {
-            boolean result = AnnotationDataStore.isConstructorAnnotationPresent(clazz, anType);
 
-            return result;
+            return AnnotationDataStore.isConstructorAnnotationPresent(clazz, anType);
         }
         return clazz.isAnnotationPresent(anType);
     }
 
     public static Annotation getAnnotation(Constructor<?> clazz, Class anType) {
         if (AnnotationDataStore.isConstructorDataRecorded(clazz)) {
-            Annotation result = AnnotationDataStore.getConstructorAnnotation(clazz, anType);
 
-            return result;
+            return AnnotationDataStore.getConstructorAnnotation(clazz, anType);
         }
         return clazz.getAnnotation(anType);
     }
 
     public static Annotation[] getAnnotations(Constructor<?> clazz) {
         if (AnnotationDataStore.isConstructorDataRecorded(clazz)) {
-            Annotation[] result = AnnotationDataStore.getConstructorAnnotations(clazz);
-            return result;
+            return AnnotationDataStore.getConstructorAnnotations(clazz);
         }
         return clazz.getAnnotations();
     }
 
     public static Annotation[] getDeclaredAnnotations(Constructor<?> clazz) {
         if (AnnotationDataStore.isConstructorDataRecorded(clazz)) {
-            Annotation[] result = AnnotationDataStore.getConstructorAnnotations(clazz);
-            return result;
+            return AnnotationDataStore.getConstructorAnnotations(clazz);
         }
         return clazz.getDeclaredAnnotations();
     }
 
     public static Annotation[][] getParameterAnnotations(Constructor<?> clazz) {
         if (AnnotationDataStore.isConstructorDataRecorded(clazz)) {
-            Annotation[][] result = AnnotationDataStore.getMethodParameterAnnotations(clazz);
-            return result;
+            return AnnotationDataStore.getMethodParameterAnnotations(clazz);
         }
         return clazz.getParameterAnnotations();
     }

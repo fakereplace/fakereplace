@@ -24,7 +24,7 @@ import org.fakereplace.core.Constants;
 import org.fakereplace.transformation.MainTransformer;
 
 /**
- * this class is resposible for serving up classes to instrumented ClassLoaders
+ * this class is responsible for serving up classes to instrumented ClassLoaders
  *
  * @author stuart
  */

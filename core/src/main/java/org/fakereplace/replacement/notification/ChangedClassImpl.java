@@ -35,10 +35,10 @@ import org.fakereplace.api.ChangedMethod;
  */
 public class ChangedClassImpl implements ChangedClass {
 
-    private final Set<ChangedAnnotation> changedClassAnnotations = new HashSet<ChangedAnnotation>();
-    private final Map<Class<? extends Annotation>, Set<ChangedAnnotation>> changedAnnotationsByType = new HashMap<Class<? extends Annotation>, Set<ChangedAnnotation>>();
-    private final Set<Changed<ChangedField>> fields = new HashSet<Changed<ChangedField>>();
-    private final Set<Changed<ChangedMethod>> methods = new HashSet<Changed<ChangedMethod>>();
+    private final Set<ChangedAnnotation> changedClassAnnotations = new HashSet<>();
+    private final Map<Class<? extends Annotation>, Set<ChangedAnnotation>> changedAnnotationsByType = new HashMap<>();
+    private final Set<Changed<ChangedField>> fields = new HashSet<>();
+    private final Set<Changed<ChangedMethod>> methods = new HashSet<>();
     private final Class<?> changedClass;
 
     public ChangedClassImpl(final Class<?> changedClass) {
@@ -91,10 +91,7 @@ public class ChangedClassImpl implements ChangedClass {
 
 
     private void changedAnnotation(final ChangedAnnotation annotation) {
-        Set<ChangedAnnotation> set = changedAnnotationsByType.get(annotation.getAnnotationType());
-        if(set == null) {
-            changedAnnotationsByType.put(annotation.getAnnotationType(), set = new HashSet<ChangedAnnotation>());
-        }
+        Set<ChangedAnnotation> set = changedAnnotationsByType.computeIfAbsent(annotation.getAnnotationType(), k -> new HashSet<>());
         set.add(annotation);
     }
 

@@ -50,7 +50,7 @@ import javassist.bytecode.Opcode;
  */
 class SubclassVirtualCallManipulator implements ClassManipulator {
 
-    private final ManipulationDataStore<SubclassVirtualCallData> data = new ManipulationDataStore<SubclassVirtualCallData>();
+    private final ManipulationDataStore<SubclassVirtualCallData> data = new ManipulationDataStore<>();
 
     void addClassData(String className, ClassLoader classLoader, String parentClassName, ClassLoader parentClassLoader, String methodName, String methodDesc) {
         data.add(parentClassName, new SubclassVirtualCallData(parentClassLoader, parentClassName, methodName, methodDesc));

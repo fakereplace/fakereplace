@@ -32,7 +32,7 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class InstanceTracker {
 
-    private static ConcurrentMap<String, Set<Object>> data = new ConcurrentHashMap<String, Set<Object>>();
+    private static final ConcurrentMap<String, Set<Object>> data = new ConcurrentHashMap<>();
 
     public static void add(String type, Object object) {
         Set<Object> set = data.get(type);

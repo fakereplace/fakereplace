@@ -56,7 +56,7 @@ public class FieldReflection {
             Field[] meth = clazz.getDeclaredFields();
 
             Collection<FieldData> fieldData = cd.getFields();
-            List<Field> visible = new ArrayList<Field>(meth.length);
+            List<Field> visible = new ArrayList<>(meth.length);
             for (int i = 0; i < meth.length; ++i) {
                 for (FieldData f : fieldData) {
                     if (f.getAccessFlags() == meth[i].getModifiers() && f.getName().equals(meth[i].getName())) {
@@ -99,7 +99,7 @@ public class FieldReflection {
 
             Field[] meth = clazz.getFields();
             Collection<FieldData> fieldData = cd.getFields();
-            List<Field> visible = new ArrayList<Field>(meth.length);
+            List<Field> visible = new ArrayList<>(meth.length);
             for (int i = 0; i < meth.length; ++i) {
                 for (FieldData f : fieldData) {
                     if (f.getAccessFlags() == meth[i].getModifiers() && f.getName().equals(meth[i].getName())) {

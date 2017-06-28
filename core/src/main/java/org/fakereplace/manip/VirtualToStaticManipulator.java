@@ -32,7 +32,7 @@ import javassist.bytecode.MethodInfo;
 
 public class VirtualToStaticManipulator implements ClassManipulator {
 
-    private final ManipulationDataStore<VirtualToStaticData> data = new ManipulationDataStore<VirtualToStaticData>();
+    private final ManipulationDataStore<VirtualToStaticData> data = new ManipulationDataStore<>();
 
     private final Logger log = Logger.getLogger(VirtualToStaticManipulator.class);
 

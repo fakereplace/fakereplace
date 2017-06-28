@@ -24,7 +24,9 @@ import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.ClosedWatchServiceException;
+import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
@@ -43,17 +45,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Stream;
 
 import com.sun.nio.file.SensitivityWatchEventModifier;
 
 public class WatchServiceFileSystemWatcher implements Runnable, AutoCloseable {
 
     private static final AtomicInteger threadIdCounter = new AtomicInteger(0);
-    private static int WAIT_TIME = Integer.getInteger("fakereplace.wait-time", 500);
+    private static final int WAIT_TIME = Integer.getInteger("fakereplace.wait-time", 500);
     public static final String THREAD_NAME = "fakereplace-file-watcher";
 
     private WatchService watchService;
-    private final Map<File, PathData> files = Collections.synchronizedMap(new HashMap<>());
+    private final Map<Path, PathData> files = Collections.synchronizedMap(new HashMap<>());
     private final Map<WatchKey, PathData> pathDataByKey = Collections.synchronizedMap(new IdentityHashMap<>());
 
     private volatile boolean stopped = false;
@@ -88,17 +91,17 @@ public class WatchServiceFileSystemWatcher implements Runnable, AutoCloseable {
                                 latest = key.pollEvents();
                                 events.addAll(latest);
                             } while (!latest.isEmpty());
-                            final Set<File> addedFiles = new HashSet<>();
-                            final Set<File> deletedFiles = new HashSet<>();
+                            final Set<Path> addedFiles = new HashSet<>();
+                            final Set<Path> deletedFiles = new HashSet<>();
                             for (WatchEvent<?> event : events) {
                                 Path eventPath = (Path) event.context();
-                                File targetFile = ((Path) key.watchable()).resolve(eventPath).toFile();
+                                Path targetFile = ((Path) key.watchable()).resolve(eventPath);
                                 FileChangeEvent.Type type;
 
                                 if (event.kind() == ENTRY_CREATE) {
                                     type = FileChangeEvent.Type.ADDED;
                                     addedFiles.add(targetFile);
-                                    if (targetFile.isDirectory()) {
+                                    if (Files.isDirectory(targetFile)) {
                                         try {
                                             addWatchedDirectory(pathData, targetFile);
                                         } catch (IOException e) {
@@ -166,17 +169,16 @@ public class WatchServiceFileSystemWatcher implements Runnable, AutoCloseable {
         }
     }
 
-    public synchronized void watchPath(File file, FileChangeCallback callback) {
+    public synchronized void watchPath(Path path, FileChangeCallback callback) {
         try {
-            PathData data = files.get(file);
+            PathData data = files.get(path);
             if (data == null) {
-                Set<File> allDirectories = doScan(file).keySet();
-                Path path = Paths.get(file.toURI());
+                Set<Path> allDirectories = doScan(path).keySet();
                 data = new PathData(path);
-                for (File dir : allDirectories) {
+                for (Path dir : allDirectories) {
                     addWatchedDirectory(data, dir);
                 }
-                files.put(file, data);
+                files.put(path, data);
             }
             data.callbacks.add(callback);
 
@@ -185,14 +187,13 @@ public class WatchServiceFileSystemWatcher implements Runnable, AutoCloseable {
         }
     }
 
-    private void addWatchedDirectory(PathData data, File dir) throws IOException {
-        Path path = Paths.get(dir.toURI());
-        WatchKey key = path.register(watchService, new WatchEvent.Kind[] {ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY}, SensitivityWatchEventModifier.HIGH);
+    private void addWatchedDirectory(PathData data, Path dir) throws IOException {
+        WatchKey key = dir.register(watchService, new WatchEvent.Kind[] {ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY}, SensitivityWatchEventModifier.HIGH);
         pathDataByKey.put(key, data);
         data.keys.add(key);
     }
 
-    public synchronized void unwatchPath(File file, final FileChangeCallback callback) {
+    public synchronized void unwatchPath(Path file, final FileChangeCallback callback) {
         PathData data = files.get(file);
         if (data != null) {
             data.callbacks.remove(callback);
@@ -217,20 +218,18 @@ public class WatchServiceFileSystemWatcher implements Runnable, AutoCloseable {
     }
 
 
-    private static Map<File, Long> doScan(File file) {
-        final Map<File, Long> results = new HashMap<>();
+    private static Map<Path, Long> doScan(Path file) throws IOException {
+        final Map<Path, Long> results = new HashMap<>();
 
-        final Deque<File> toScan = new ArrayDeque<File>();
+        final Deque<Path> toScan = new ArrayDeque<>();
         toScan.add(file);
         while (!toScan.isEmpty()) {
-            File next = toScan.pop();
-            if (next.isDirectory()) {
-                results.put(next, next.lastModified());
-                File[] list = next.listFiles();
+            Path next = toScan.pop();
+            if (Files.isDirectory(next)) {
+                results.put(next, Files.getLastModifiedTime(next).toMillis());
+                Stream<Path> list = Files.list(next);
                 if (list != null) {
-                    for (File f : list) {
-                        toScan.push(new File(f.getAbsolutePath()));
-                    }
+                    list.forEach((toScan::push));
                 }
             }
         }
@@ -263,7 +262,7 @@ public class WatchServiceFileSystemWatcher implements Runnable, AutoCloseable {
      */
     public static class FileChangeEvent {
 
-        private final File file;
+        private final Path file;
         private final Type type;
 
         /**
@@ -272,7 +271,7 @@ public class WatchServiceFileSystemWatcher implements Runnable, AutoCloseable {
          * @param file the file which is being watched
          * @param type the type of event that was encountered
          */
-        public FileChangeEvent(File file, Type type) {
+        public FileChangeEvent(Path file, Type type) {
             this.file = file;
             this.type = type;
         }
@@ -282,7 +281,7 @@ public class WatchServiceFileSystemWatcher implements Runnable, AutoCloseable {
          *
          * @return the file which was being watched
          */
-        public File getFile() {
+        public Path getFile() {
             return file;
         }
 
@@ -298,7 +297,7 @@ public class WatchServiceFileSystemWatcher implements Runnable, AutoCloseable {
         /**
          * Watched file event types.  More may be added in the future.
          */
-        public static enum Type {
+        public enum Type {
             /**
              * A file was added in a directory.
              */

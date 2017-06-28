@@ -92,7 +92,7 @@ public class Manipulator {
         fakeMethodCallManipulator.addFakeMethodCall(fakeMethodCallData);
     }
 
-    public boolean transformClass(ClassFile file, ClassLoader classLoader, boolean modifiable, Set<MethodInfo> modifiedMethods) throws BadBytecode {
+    public boolean transformClass(ClassFile file, ClassLoader classLoader, boolean modifiable, Set<MethodInfo> modifiedMethods) {
         try {
             boolean modified = false;
 

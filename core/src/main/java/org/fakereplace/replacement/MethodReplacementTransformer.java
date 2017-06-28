@@ -179,20 +179,26 @@ public class MethodReplacementTransformer implements FakereplaceTransformer {
                 Bytecode b = new Bytecode(proxy.getConstPool());
                 String ret = DescriptorUtils.getReturnType(mInfo.getDescriptor());
                 if (ret.length() == 1) {
-                    if (ret.equals("V")) {
-                        b.add(Opcode.RETURN);
-                    } else if (ret.equals("D")) {
-                        b.add(Opcode.DCONST_0);
-                        b.add(Opcode.DRETURN);
-                    } else if (ret.equals("F")) {
-                        b.add(Opcode.FCONST_0);
-                        b.add(Opcode.FRETURN);
-                    } else if (ret.equals("J")) {
-                        b.add(Opcode.LCONST_0);
-                        b.add(Opcode.LRETURN);
-                    } else {
-                        b.add(Opcode.ICONST_0);
-                        b.add(Opcode.IRETURN);
+                    switch (ret) {
+                        case "V":
+                            b.add(Opcode.RETURN);
+                            break;
+                        case "D":
+                            b.add(Opcode.DCONST_0);
+                            b.add(Opcode.DRETURN);
+                            break;
+                        case "F":
+                            b.add(Opcode.FCONST_0);
+                            b.add(Opcode.FRETURN);
+                            break;
+                        case "J":
+                            b.add(Opcode.LCONST_0);
+                            b.add(Opcode.LRETURN);
+                            break;
+                        default:
+                            b.add(Opcode.ICONST_0);
+                            b.add(Opcode.IRETURN);
+                            break;
                     }
                 } else {
                     b.add(Opcode.ACONST_NULL);
@@ -645,7 +651,7 @@ public class MethodReplacementTransformer implements FakereplaceTransformer {
             e.printStackTrace();
         }
 
-        Set<MethodData> methods = new HashSet<MethodData>();
+        Set<MethodData> methods = new HashSet<>();
 
         methods.addAll(data.getMethods());
 

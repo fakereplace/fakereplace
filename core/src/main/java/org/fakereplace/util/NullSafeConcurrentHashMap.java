@@ -32,9 +32,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author stuart
  */
 public class NullSafeConcurrentHashMap<K, V> implements Map<K, V>, Serializable {
-    final ConcurrentHashMap<K, V> map = new ConcurrentHashMap<K, V>();
+    private final ConcurrentHashMap<K, V> map = new ConcurrentHashMap<>();
 
-    final Serializable NULL_VALUE = new Serializable() {
+    private final Serializable NULL_VALUE = new Serializable() {
     };
 
     public void clear() {

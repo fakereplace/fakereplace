@@ -43,7 +43,7 @@ class ConstructorInvocationManipulator implements ClassManipulator {
 
     private static final Logger log = Logger.getLogger(ConstructorInvocationManipulator.class);
 
-    private final ManipulationDataStore<ConstructorRewriteData> data = new ManipulationDataStore<ConstructorRewriteData>();
+    private final ManipulationDataStore<ConstructorRewriteData> data = new ManipulationDataStore<>();
 
     public synchronized void clearRewrites(String className, ClassLoader loader) {
         data.remove(className, loader);
@@ -60,7 +60,7 @@ class ConstructorInvocationManipulator implements ClassManipulator {
 
     public boolean transformClass(ClassFile file, ClassLoader loader, boolean modifiableClass, final Set<MethodInfo> modifiedMethods) {
         Map<String, Set<ConstructorRewriteData>> constructorRewrites = new HashMap<>(data.getManipulationData(loader));
-        Map<Integer, ConstructorRewriteData> methodCallLocations = new HashMap<Integer, ConstructorRewriteData>();
+        Map<Integer, ConstructorRewriteData> methodCallLocations = new HashMap<>();
         // first we need to scan the constant pool looking for
         // CONSTANT_method_info_ref structures
         ConstPool pool = file.getConstPool();

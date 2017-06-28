@@ -61,10 +61,10 @@ public class DescriptorUtils {
      */
     public static Class<?>[] argumentStringToClassArray(String methodDescriptor, Class<?> methodClass) throws ClassNotFoundException {
         int i = 1; // char 0 is a '('
-        List<Class<?>> classes = new ArrayList<Class<?>>();
+        List<Class<?>> classes = new ArrayList<>();
         int arraystart = -1;
         while (methodDescriptor.charAt(i) != ')') {
-            Class<?> type = null;
+            Class<?> type;
             if (methodDescriptor.charAt(i) == '[') {
                 if (arraystart == -1) {
                     arraystart = i;
@@ -136,10 +136,10 @@ public class DescriptorUtils {
      */
     public static String[] descriptorStringToParameterArray(String methodDescriptor) {
         int i = 1; // char 0 is a '('
-        List<String> ret = new ArrayList<String>();
+        List<String> ret = new ArrayList<>();
         int arraystart = -1;
         while (methodDescriptor.charAt(i) != ')') {
-            String type = null;
+            String type;
             if (methodDescriptor.charAt(i) == '[') {
                 if (arraystart == -1) {
                     arraystart = i;
@@ -182,10 +182,9 @@ public class DescriptorUtils {
     }
 
     public static String methodSignitureToDescriptor(Class<?> returnType, Class<?>... params) {
-        String sb = "(" + classArrayToDescriptorString(params) +
+        return "(" + classArrayToDescriptorString(params) +
                 ")" +
                 classToStringRepresentation(returnType);
-        return sb;
     }
 
     public static String getReturnType(String descriptor) {

@@ -105,10 +105,9 @@ public class FieldData {
         return memberType;
     }
 
-    public Field getField(Class<?> actualClass) throws ClassNotFoundException, SecurityException, NoSuchFieldException {
+    public Field getField(Class<?> actualClass) throws SecurityException, NoSuchFieldException {
 
-        Field method = actualClass.getDeclaredField(name);
-        return method;
+        return actualClass.getDeclaredField(name);
     }
 
     public int getAccessFlags() {

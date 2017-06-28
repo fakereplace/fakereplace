@@ -41,8 +41,8 @@ public class DefaultEnvironment implements Environment {
 
     private static final String[] replaceablePackages;
 
-    private final Map<String, Long> timestamps = new ConcurrentHashMap<String, Long>();
-    private final Map<String, ClassLoader> loaders = new ConcurrentHashMap<String, ClassLoader>();
+    private final Map<String, Long> timestamps = new ConcurrentHashMap<>();
+    private final Map<String, ClassLoader> loaders = new ConcurrentHashMap<>();
 
     public static final DefaultEnvironment INSTANCE = new DefaultEnvironment();
 
@@ -94,7 +94,7 @@ public class DefaultEnvironment implements Environment {
         final URL file = loader.getResource(className.replace(".", "/") + ".class");
         className = className.replace("/", ".");
         if (file != null) {
-            URLConnection connection = null;
+            URLConnection connection;
             try {
                 connection = file.openConnection();
                 timestamps.put(className, connection.getLastModified());
@@ -107,7 +107,7 @@ public class DefaultEnvironment implements Environment {
 
 
     public ChangedClasses getUpdatedClasses(final String deploymentName, Map<String, Long> updatedClasses) {
-        final Set<Class<?>> ret = new HashSet<Class<?>>();
+        final Set<Class<?>> ret = new HashSet<>();
         ClassLoader loader = null;
         for (Map.Entry<String, Long> entry : updatedClasses.entrySet()) {
             if (timestamps.containsKey(entry.getKey()) && timestamps.get(entry.getKey()) < entry.getValue()) {

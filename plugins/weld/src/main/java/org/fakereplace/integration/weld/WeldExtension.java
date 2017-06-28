@@ -45,8 +45,7 @@ public class WeldExtension implements Extension {
 
     @Override
     public Set<String> getTrackedInstanceClassNames() {
-        Set<String> ret = new HashSet<String>();
-        return ret;
+        return new HashSet<String>();
     }
 
     @Override

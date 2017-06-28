@@ -48,6 +48,4 @@ public class AccessFlagUtils {
         }
         return false;
     }
-
-    static final int INVERSE_ACCESS_FLAGS = ~(AccessFlag.PRIVATE | AccessFlag.PUBLIC | AccessFlag.PROTECTED);
 }

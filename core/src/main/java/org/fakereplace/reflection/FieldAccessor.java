@@ -37,7 +37,7 @@ public class FieldAccessor {
         this.staticField = staticField;
     }
 
-    public void set(Object object, Object value) throws IllegalAccessException {
+    public void set(Object object, Object value) {
         if(staticField) {
             FieldDataStore.setValue(declaringClass, value, mapKey);
         } else {
@@ -45,7 +45,7 @@ public class FieldAccessor {
         }
     }
 
-    public Object get(Object object) throws IllegalAccessException {
+    public Object get(Object object) {
         if(staticField) {
             return FieldDataStore.getValue(declaringClass, mapKey);
         } else {

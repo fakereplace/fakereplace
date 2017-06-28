@@ -32,7 +32,7 @@ public class VirtualDelegator {
      * is not needed to actually call the new method, as we can just look up the
      * method no from the MethodIdentifierStore
      */
-    private static final Set<VirtualDelegatorData> delegatingMethods = new CopyOnWriteArraySet<VirtualDelegatorData>();
+    private static final Set<VirtualDelegatorData> delegatingMethods = new CopyOnWriteArraySet<>();
 
     public static void add(ClassLoader loader, String className, String methodName, String methodDesc) {
         delegatingMethods.add(new VirtualDelegatorData(loader, className, methodName, methodDesc));

@@ -24,5 +24,5 @@ enum Level {
     TRACE,
     DEBUG,
     INFO,
-    ERROR;
+    ERROR
 }

@@ -50,7 +50,7 @@ class ReflectionFieldAccessManipulator implements ClassManipulator {
 
     private static final Logger log = Logger.getLogger(ReflectionFieldAccessManipulator.class);
 
-    private final Map<String, RewriteData> manipulationData = new ConcurrentHashMap<String, RewriteData>();
+    private final Map<String, RewriteData> manipulationData = new ConcurrentHashMap<>();
 
     public void clearRewrites(String className, ClassLoader loader) {
 
@@ -87,8 +87,8 @@ class ReflectionFieldAccessManipulator implements ClassManipulator {
     }
 
     public boolean transformClass(ClassFile file, ClassLoader loader, boolean modifiableClass, final Set<MethodInfo> modifiedMethods) {
-        Map<Integer, RewriteData> methodCallLocations = new HashMap<Integer, RewriteData>();
-        Map<RewriteData, Integer> newClassPoolLocations = new HashMap<RewriteData, Integer>();
+        Map<Integer, RewriteData> methodCallLocations = new HashMap<>();
+        Map<RewriteData, Integer> newClassPoolLocations = new HashMap<>();
         Integer fieldAccessLocation = null;
         // first we need to scan the constant pool looking for
         // CONSTANT_method_info_ref structures

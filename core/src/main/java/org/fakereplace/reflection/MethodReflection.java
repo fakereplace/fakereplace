@@ -55,11 +55,7 @@ public class MethodReflection {
                 Method invoke = info.getMethodToInvoke(method.getDeclaringClass());
                 Object[] newAgrs = prependInstanceToParams(instance, args);
                 return invokeWithPermissionCheck(method, invoke, null, newAgrs);
-            } catch (NoSuchMethodException e) {
-                throw new RuntimeException(e);
-            } catch (SecurityException e) {
-                throw new RuntimeException(e);
-            } catch (ClassNotFoundException e) {
+            } catch (NoSuchMethodException | ClassNotFoundException | SecurityException e) {
                 throw new RuntimeException(e);
             }
         }
@@ -93,7 +89,7 @@ public class MethodReflection {
                 return clazz.getDeclaredMethods();
             }
             Method[] meth = clazz.getDeclaredMethods();
-            List<Method> visible = new ArrayList<Method>(meth.length);
+            List<Method> visible = new ArrayList<>(meth.length);
             for (int i = 0; i < meth.length; ++i) {
                 MethodData mData = cd.getData(meth[i]);
                 if (mData == null || mData.getType() == MemberType.NORMAL) {
@@ -128,7 +124,7 @@ public class MethodReflection {
             }
 
             Method[] meth = clazz.getMethods();
-            List<Method> visible = new ArrayList<Method>(meth.length);
+            List<Method> visible = new ArrayList<>(meth.length);
             for (int i = 0; i < meth.length; ++i) {
                 MethodData mData = cd.getData(meth[i]);
                 if (mData == null || mData.getType() == MemberType.NORMAL) {
@@ -167,8 +163,7 @@ public class MethodReflection {
         ClassData cd = ClassDataStore.instance().getModifiedClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
 
         if (cd == null) {
-            Method meth = clazz.getMethod(name, parameters);
-            return meth;
+            return clazz.getMethod(name, parameters);
         }
         String args = '(' + DescriptorUtils.classArrayToDescriptorString(parameters) + ')';
         MethodData md = cd.getMethodData(name, args);
@@ -182,22 +177,19 @@ public class MethodReflection {
         }
 
         if (md == null) {
-            Method meth = clazz.getMethod(name, parameters);
-            return meth;
+            return clazz.getMethod(name, parameters);
         }
 
         switch (md.getType()) {
             case NORMAL:
-                Method meth = superClass.getMethod(name, parameters);
-                return meth;
+                return superClass.getMethod(name, parameters);
             case FAKE:
                 try {
                     if (!AccessFlag.isPublic(md.getAccessFlags())) {
                         throw new NoSuchMethodException(clazz.getName() + "." + name);
                     }
                     Class<?> c = superClass.getClassLoader().loadClass(md.getClassName());
-                    meth = c.getMethod(name, parameters);
-                    return meth;
+                    return c.getMethod(name, parameters);
                 } catch (NoSuchMethodException e) {
                     throw e;
                 } catch (Exception e) {
@@ -210,8 +202,7 @@ public class MethodReflection {
     public static Method getDeclaredMethod(Class<?> clazz, String name, Class<?>... parameters) throws NoSuchMethodException {
         ClassData cd = ClassDataStore.instance().getModifiedClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
         if (cd == null || !cd.isReplaceable()) {
-            Method meth = clazz.getDeclaredMethod(name, parameters);
-            return meth;
+            return clazz.getDeclaredMethod(name, parameters);
         }
         String args;
         if (parameters != null) {
@@ -221,20 +212,16 @@ public class MethodReflection {
         }
         MethodData md = cd.getMethodData(name, args);
         if (md == null) {
-            Method meth = clazz.getDeclaredMethod(name, parameters);
-            return meth;
+            return clazz.getDeclaredMethod(name, parameters);
         }
 
         switch (md.getType()) {
             case NORMAL:
-                Method meth = clazz.getDeclaredMethod(name, parameters);
-                return meth;
+                return clazz.getDeclaredMethod(name, parameters);
             case FAKE:
                 try {
                     Class<?> c = clazz.getClassLoader().loadClass(md.getClassName());
-                    meth = c.getDeclaredMethod(name, parameters);
-
-                    return meth;
+                    return c.getDeclaredMethod(name, parameters);
                 } catch (NoSuchMethodException e) {
                     throw e;
                 } catch (Exception e) {

@@ -30,12 +30,7 @@ public class ClassChangeNotifier {
 
     private static final ClassChangeNotifier INSTANCE = new ClassChangeNotifier();
 
-    private static final ThreadLocal<Boolean> NOTIFICATION_IN_PROGRESS = new ThreadLocal<Boolean>() {
-        @Override
-        protected Boolean initialValue() {
-            return false;
-        }
-    };
+    private static final ThreadLocal<Boolean> NOTIFICATION_IN_PROGRESS = ThreadLocal.withInitial(() -> false);
 
     private final ClassLoaderData.AttachmentKey<Set<ClassChangeAware>> classChangeAwares = new ClassLoaderData.AttachmentKey<>();
 

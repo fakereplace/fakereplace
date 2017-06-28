@@ -57,9 +57,9 @@ public class Transformer implements FakereplaceTransformer {
 
     private static final Manipulator manipulator = new Manipulator();
 
-    private final Set<String> trackedInstances = new HashSet<String>();
+    private final Set<String> trackedInstances = new HashSet<>();
 
-    private final List<FakereplaceTransformer> integrationTransformers = new CopyOnWriteArrayList<FakereplaceTransformer>();
+    private final List<FakereplaceTransformer> integrationTransformers = new CopyOnWriteArrayList<>();
 
     /**
      * TODO: Move this elsewhere

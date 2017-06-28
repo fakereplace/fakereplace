@@ -22,5 +22,5 @@ package a.org.fakereplace.test.replacement.virtualmethod;
  */
 public class OrderClass {
 
-    void notUsed() {};
+    void notUsed() {}
 }

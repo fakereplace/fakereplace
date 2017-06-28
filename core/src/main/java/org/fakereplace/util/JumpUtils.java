@@ -40,7 +40,7 @@ public class JumpUtils {
 
     private static class JumpMarkerImpl implements JumpMarker {
         private final Bytecode code;
-        private int position;
+        private final int position;
 
         public JumpMarkerImpl(Bytecode code) {
             this.code = code;

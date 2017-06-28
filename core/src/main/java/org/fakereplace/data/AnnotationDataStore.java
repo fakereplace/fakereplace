@@ -54,27 +54,27 @@ import javassist.bytecode.ParameterAnnotationsAttribute;
  */
 public class AnnotationDataStore {
 
-    private static Map<Class<?>, Annotation[]> classAnnotations = new ConcurrentHashMap<Class<?>, Annotation[]>();
+    private static final Map<Class<?>, Annotation[]> classAnnotations = new ConcurrentHashMap<>();
 
-    private static Map<Class<?>, Map<Class<? extends Annotation>, Annotation>> classAnnotationsByType = new ConcurrentHashMap<Class<?>, Map<Class<? extends Annotation>, Annotation>>();
+    private static final Map<Class<?>, Map<Class<? extends Annotation>, Annotation>> classAnnotationsByType = new ConcurrentHashMap<>();
 
-    private static Map<Field, Annotation[]> fieldAnnotations = new ConcurrentHashMap<Field, Annotation[]>();
+    private static final Map<Field, Annotation[]> fieldAnnotations = new ConcurrentHashMap<>();
 
-    private static Map<Field, Map<Class<? extends Annotation>, Annotation>> fieldAnnotationsByType = new ConcurrentHashMap<Field, Map<Class<? extends Annotation>, Annotation>>();
+    private static final Map<Field, Map<Class<? extends Annotation>, Annotation>> fieldAnnotationsByType = new ConcurrentHashMap<>();
 
-    private static Map<Method, Annotation[]> methodAnnotations = new ConcurrentHashMap<Method, Annotation[]>();
+    private static final Map<Method, Annotation[]> methodAnnotations = new ConcurrentHashMap<>();
 
-    private static Map<Method, Map<Class<? extends Annotation>, Annotation>> methodAnnotationsByType = new ConcurrentHashMap<Method, Map<Class<? extends Annotation>, Annotation>>();
+    private static final Map<Method, Map<Class<? extends Annotation>, Annotation>> methodAnnotationsByType = new ConcurrentHashMap<>();
 
-    private static Map<Method, Annotation[][]> parameterAnnotations = new ConcurrentHashMap<Method, Annotation[][]>();
+    private static final Map<Method, Annotation[][]> parameterAnnotations = new ConcurrentHashMap<>();
 
-    private static Map<Constructor<?>, Annotation[]> constructorAnnotations = new ConcurrentHashMap<Constructor<?>, Annotation[]>();
+    private static final Map<Constructor<?>, Annotation[]> constructorAnnotations = new ConcurrentHashMap<>();
 
-    private static Map<Constructor<?>, Map<Class<? extends Annotation>, Annotation>> constructorAnnotationsByType = new ConcurrentHashMap<Constructor<?>, Map<Class<? extends Annotation>, Annotation>>();
+    private static final Map<Constructor<?>, Map<Class<? extends Annotation>, Annotation>> constructorAnnotationsByType = new ConcurrentHashMap<>();
 
-    private static Map<Constructor<?>, Annotation[][]> constructorParameterAnnotations = new ConcurrentHashMap<Constructor<?>, Annotation[][]>();
+    private static final Map<Constructor<?>, Annotation[][]> constructorParameterAnnotations = new ConcurrentHashMap<>();
 
-    static final String PROXY_METHOD_NAME = "annotationsMethod";
+    private static final String PROXY_METHOD_NAME = "annotationsMethod";
 
     public static boolean isClassDataRecorded(Class<?> clazz) {
         return classAnnotations.containsKey(clazz);
@@ -150,7 +150,7 @@ public class AnnotationDataStore {
         return constructorParameterAnnotations.get(clazz);
     }
 
-    static Class<?> createAnnotationsProxy(ClassLoader loader, AnnotationsAttribute annotations) {
+    private static Class<?> createAnnotationsProxy(ClassLoader loader, AnnotationsAttribute annotations) {
         String proxyName = ProxyDefinitionStore.getProxyName();
         ClassFile proxy = new ClassFile(false, proxyName, "java.lang.Object");
         proxy.setAccessFlags(AccessFlag.PUBLIC);
@@ -171,7 +171,7 @@ public class AnnotationDataStore {
         }
     }
 
-    static Class<?> createParameterAnnotationsProxy(ClassLoader loader, ParameterAnnotationsAttribute annotations, int paramCount) {
+    private static Class<?> createParameterAnnotationsProxy(ClassLoader loader, ParameterAnnotationsAttribute annotations, int paramCount) {
         String proxyName = ProxyDefinitionStore.getProxyName();
         ClassFile proxy = new ClassFile(false, proxyName, "java.lang.Object");
         proxy.setAccessFlags(AccessFlag.PUBLIC);
@@ -211,21 +211,21 @@ public class AnnotationDataStore {
         if (annotations == null) {
             Annotation[] ans = new Annotation[0];
             classAnnotations.put(clazz, ans);
-            classAnnotationsByType.put(clazz, Collections.EMPTY_MAP);
+            classAnnotationsByType.put(clazz, Collections.emptyMap());
             for(Annotation annotation : clazz.getDeclaredAnnotations()) {
                 changedClass.changeClassAnnotation(new ChangedAnnotationImpl(null, annotation, ChangeType.REMOVE, changedClass, annotation.annotationType()));
             }
         } else {
             final Class<?> pclass = createAnnotationsProxy(clazz.getClassLoader(), annotations);
             classAnnotations.put(clazz, pclass.getAnnotations());
-            Map<Class<? extends Annotation>, Annotation> anVals = new HashMap<Class<? extends Annotation>, Annotation>();
+            Map<Class<? extends Annotation>, Annotation> anVals = new HashMap<>();
             classAnnotationsByType.put(clazz, anVals);
             int count = 0;
             for (Annotation a : pclass.getAnnotations()) {
                 anVals.put(a.annotationType(), a);
                 count++;
             }
-            final Set<Class<? extends Annotation>> newAnnotations = new HashSet<Class<? extends Annotation>>(anVals.keySet());
+            final Set<Class<? extends Annotation>> newAnnotations = new HashSet<>(anVals.keySet());
             for(Annotation annotation : clazz.getDeclaredAnnotations()) {
                 final Annotation newAnnotation = anVals.get(annotation.annotationType());
                 if(newAnnotation == null) {
@@ -249,12 +249,12 @@ public class AnnotationDataStore {
         if (annotations == null) {
             Annotation[] ans = new Annotation[0];
             fieldAnnotations.put(field, ans);
-            fieldAnnotationsByType.put(field, Collections.EMPTY_MAP);
+            fieldAnnotationsByType.put(field, Collections.emptyMap());
             return;
         }
         Class<?> pclass = createAnnotationsProxy(field.getDeclaringClass().getClassLoader(), annotations);
         fieldAnnotations.put(field, pclass.getAnnotations());
-        Map<Class<? extends Annotation>, Annotation> anVals = new HashMap<Class<? extends Annotation>, Annotation>();
+        Map<Class<? extends Annotation>, Annotation> anVals = new HashMap<>();
         fieldAnnotationsByType.put(field, anVals);
         int count = 0;
         for (Annotation a : pclass.getAnnotations()) {
@@ -268,12 +268,12 @@ public class AnnotationDataStore {
         if (annotations == null) {
             Annotation[] ans = new Annotation[0];
             methodAnnotations.put(method, ans);
-            methodAnnotationsByType.put(method, Collections.EMPTY_MAP);
+            methodAnnotationsByType.put(method, Collections.emptyMap());
             return;
         }
         Class<?> pclass = createAnnotationsProxy(method.getDeclaringClass().getClassLoader(), annotations);
         methodAnnotations.put(method, pclass.getAnnotations());
-        Map<Class<? extends Annotation>, Annotation> anVals = new HashMap<Class<? extends Annotation>, Annotation>();
+        Map<Class<? extends Annotation>, Annotation> anVals = new HashMap<>();
         methodAnnotationsByType.put(method, anVals);
         int count = 0;
         for (Annotation a : pclass.getAnnotations()) {
@@ -310,12 +310,12 @@ public class AnnotationDataStore {
         if (annotations == null) {
             Annotation[] ans = new Annotation[0];
             constructorAnnotations.put(constructor, ans);
-            constructorAnnotationsByType.put(constructor, Collections.EMPTY_MAP);
+            constructorAnnotationsByType.put(constructor, Collections.emptyMap());
             return;
         }
         Class<?> pclass = createAnnotationsProxy(constructor.getDeclaringClass().getClassLoader(), annotations);
         constructorAnnotations.put(constructor, pclass.getAnnotations());
-        Map<Class<? extends Annotation>, Annotation> anVals = new HashMap<Class<? extends Annotation>, Annotation>();
+        Map<Class<? extends Annotation>, Annotation> anVals = new HashMap<>();
         constructorAnnotationsByType.put(constructor, anVals);
         int count = 0;
         for (Annotation a : pclass.getAnnotations()) {

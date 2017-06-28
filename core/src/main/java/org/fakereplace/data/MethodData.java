@@ -136,8 +136,7 @@ public class MethodData {
 
     public Method getMethod(Class<?> actualClass) throws ClassNotFoundException, SecurityException, NoSuchMethodException {
         Class<?>[] methodDesc = DescriptorUtils.argumentStringToClassArray(descriptor, actualClass);
-        Method method = actualClass.getDeclaredMethod(methodName, methodDesc);
-        return method;
+        return actualClass.getDeclaredMethod(methodName, methodDesc);
 
     }
 
@@ -152,8 +151,7 @@ public class MethodData {
         } else {
             methodDesc = DescriptorUtils.argumentStringToClassArray(descriptor, actualClass);
         }
-        Method method = actualClass.getDeclaredMethod(methodName, methodDesc);
-        return method;
+        return actualClass.getDeclaredMethod(methodName, methodDesc);
 
     }
 
@@ -162,8 +160,7 @@ public class MethodData {
      */
     public Constructor<?> getConstructor(Class<?> actualClass) throws ClassNotFoundException, SecurityException, NoSuchMethodException {
         Class<?>[] methodDesc = DescriptorUtils.argumentStringToClassArray(descriptor, actualClass);
-        Constructor<?> method = actualClass.getDeclaredConstructor(methodDesc);
-        return method;
+        return actualClass.getDeclaredConstructor(methodDesc);
     }
 
     public int getMethodNo() {

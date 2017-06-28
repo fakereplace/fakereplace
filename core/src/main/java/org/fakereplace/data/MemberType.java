@@ -37,5 +37,5 @@ public enum MemberType {
      * This is a method that has been added that should not be visible to the
      * user
      */
-    ADDED_SYSTEM;
+    ADDED_SYSTEM
 }

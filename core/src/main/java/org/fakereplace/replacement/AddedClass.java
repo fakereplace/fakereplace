@@ -42,7 +42,4 @@ public class AddedClass {
         return loader;
     }
 
-    public ClassIdentifier getClassIdentifier() {
-        return new ClassIdentifier(className, loader);
-    }
 }

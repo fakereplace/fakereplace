@@ -68,7 +68,7 @@ public class Agent {
         final Set<Extension> extension = getIntegrationInfo(ClassLoader.getSystemClassLoader());
 
         //first we need to instrument the class loaders
-        final Set<Class> cls = new HashSet<Class>();
+        final Set<Class> cls = new HashSet<>();
         for (Class c : inst.getAllLoadedClasses()) {
             if (ClassLoader.class.isAssignableFrom(c)) {
                 cls.add(c);
@@ -114,7 +114,7 @@ public class Agent {
         redefine(classes, addedData, true);
     }
 
-    public static void redefine(ClassDefinition[] classes, AddedClass[] addedData, boolean wait) throws UnmodifiableClassException, ClassNotFoundException {
+    public static void redefine(ClassDefinition[] classes, AddedClass[] addedData, boolean wait) {
         try {
             for (AddedClass i : addedData) {
                 ClassFile cf = new ClassFile(new DataInputStream(new ByteArrayInputStream(i.getData())));
@@ -170,12 +170,11 @@ public class Agent {
         return inst;
     }
 
-    public static Set<Extension> getIntegrationInfo(ClassLoader clr) {
+    private static Set<Extension> getIntegrationInfo(ClassLoader clr) {
         final ServiceLoader<Extension> loader = ServiceLoader.load(Extension.class, clr);
-        final Set<Extension> integrations = new HashSet<Extension>();
-        final Iterator<Extension> it = loader.iterator();
-        while (it.hasNext()) {
-            integrations.add(it.next());
+        final Set<Extension> integrations = new HashSet<>();
+        for (Extension aLoader : loader) {
+            integrations.add(aLoader);
         }
         return integrations;
     }

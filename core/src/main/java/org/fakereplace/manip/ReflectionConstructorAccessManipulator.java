@@ -58,7 +58,7 @@ class ReflectionConstructorAccessManipulator implements ClassManipulator {
     }
 
     public boolean transformClass(ClassFile file, ClassLoader loader, boolean modifiableClass, final Set<MethodInfo> modifiedMethods) {
-        Set<Integer> methodCallLocations = new HashSet<Integer>();
+        Set<Integer> methodCallLocations = new HashSet<>();
         Integer constructorReflectionLocation = null;
         // first we need to scan the constant pool looking for
         // CONSTANT_method_info_ref structures

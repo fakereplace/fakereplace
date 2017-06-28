@@ -99,7 +99,7 @@ public class MainTransformer implements ClassFileTransformer {
     private boolean logClassRetransformation;
 
     public MainTransformer(Set<Extension> extension) {
-        Map<String, Extension> integrationClassTriggers = new HashMap<String, Extension>();
+        Map<String, Extension> integrationClassTriggers = new HashMap<>();
         for (Extension i : extension) {
             for (String j : i.getIntegrationTriggerClassNames()) {
                 integrationClassTriggers.put(j.replace(".", "/"), i);

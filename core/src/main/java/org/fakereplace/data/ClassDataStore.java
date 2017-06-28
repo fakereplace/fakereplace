@@ -31,9 +31,9 @@ public class ClassDataStore {
 
     private static final ClassDataStore INSTANCE = new ClassDataStore();
 
-    private final Map<String, Class<?>> proxyNameToReplacedClass = new ConcurrentHashMap<String, Class<?>>();
-    private final Map<String, FieldAccessor> proxyNameToFieldAccessor = new ConcurrentHashMap<String, FieldAccessor>();
-    private final Map<String, MethodData> proxyNameToMethodData = new ConcurrentHashMap<String, MethodData>();
+    private final Map<String, Class<?>> proxyNameToReplacedClass = new ConcurrentHashMap<>();
+    private final Map<String, FieldAccessor> proxyNameToFieldAccessor = new ConcurrentHashMap<>();
+    private final Map<String, MethodData> proxyNameToMethodData = new ConcurrentHashMap<>();
     private final Set<ClassIdentifier> replacedClasses = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
     private ClassDataStore() {
@@ -95,7 +95,7 @@ public class ClassDataStore {
                         saveClassData(loader, className, new BaseClassData(cls));
                     } else {
                         Class<?> cls = Class.forName(className);
-                        saveClassData(loader, className, new BaseClassData(cls));
+                        saveClassData(null, className, new BaseClassData(cls));
                     }
                 } catch (ClassNotFoundException e) {
                     return null;
@@ -105,8 +105,7 @@ public class ClassDataStore {
             }
         }
 
-        BaseClassData cd = map.get(className);
-        return cd;
+        return map.get(className);
     }
 
     public Class<?> getRealClassFromProxyName(String proxyName) {

@@ -26,13 +26,13 @@ public class ClassDataBuilder {
 
     private final BaseClassData baseData;
 
-    private final Set<FieldData> fakeFields = new HashSet<FieldData>();
+    private final Set<FieldData> fakeFields = new HashSet<>();
 
-    private final Set<MethodData> fakeMethods = new HashSet<MethodData>();
+    private final Set<MethodData> fakeMethods = new HashSet<>();
 
-    private final Set<MethodData> removedMethods = new HashSet<MethodData>();
+    private final Set<MethodData> removedMethods = new HashSet<>();
 
-    private final Set<FieldData> removedFields = new HashSet<FieldData>();
+    private final Set<FieldData> removedFields = new HashSet<>();
 
     public ClassDataBuilder(BaseClassData b) {
         if (b == null) {

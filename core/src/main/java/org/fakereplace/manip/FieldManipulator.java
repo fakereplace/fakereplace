@@ -50,7 +50,7 @@ class FieldManipulator implements ClassManipulator {
     /**
      * added field information by class
      */
-    private final ManipulationDataStore<AddedFieldData> data = new ManipulationDataStore<AddedFieldData>();
+    private final ManipulationDataStore<AddedFieldData> data = new ManipulationDataStore<>();
 
     public void addField(AddedFieldData dt) {
         data.add(dt.getClassName(), dt);
@@ -61,7 +61,7 @@ class FieldManipulator implements ClassManipulator {
         if (addedFieldData.isEmpty()) {
             return false;
         }
-        Map<Integer, AddedFieldData> fieldAccessLocations = new HashMap<Integer, AddedFieldData>();
+        Map<Integer, AddedFieldData> fieldAccessLocations = new HashMap<>();
         // first we need to scan the constant pool looking for
         // CONST_Fieldref structures
         ConstPool pool = file.getConstPool();

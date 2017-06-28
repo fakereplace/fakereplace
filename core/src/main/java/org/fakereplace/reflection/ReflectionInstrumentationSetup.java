@@ -30,15 +30,15 @@ import org.fakereplace.manip.Manipulator;
 public class ReflectionInstrumentationSetup {
 
     private static final String CLASS = Class.class.getName();
-    public static final String METHOD = Method.class.getName();
-    public static final String CONSTRUCTOR = Constructor.class.getName();
-    public static final String FIELD = Field.class.getName();
-    public static final String ANNOTATED_ELEMENT = AnnotatedElement.class.getName();
+    private static final String METHOD = Method.class.getName();
+    private static final String CONSTRUCTOR = Constructor.class.getName();
+    private static final String FIELD = Field.class.getName();
+    private static final String ANNOTATED_ELEMENT = AnnotatedElement.class.getName();
 
-    public static final String ANNOTATION_REFLECTION = AnnotationReflection.class.getName();
-    public static final String METHOD_REFLECTION = MethodReflection.class.getName();
-    public static final String FIELD_REFLECTION = FieldReflection.class.getName();
-    public static final String CONSTRUCTOR_REFLECTION = ConstructorReflection.class.getName();
+    private static final String ANNOTATION_REFLECTION = AnnotationReflection.class.getName();
+    private static final String METHOD_REFLECTION = MethodReflection.class.getName();
+    private static final String FIELD_REFLECTION = FieldReflection.class.getName();
+    private static final String CONSTRUCTOR_REFLECTION = ConstructorReflection.class.getName();
 
     public static void setup(Manipulator manipulator) {
         // initilize the reflection manipulation

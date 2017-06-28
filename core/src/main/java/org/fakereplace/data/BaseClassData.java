@@ -58,9 +58,8 @@ public class BaseClassData {
         this.loader = loader;
         superClassName = file.getSuperclass();
         boolean finalMethod = false;
-        Set<MethodData> meths = new HashSet<MethodData>();
+        Set<MethodData> meths = new HashSet<>();
         for (Object o : file.getMethods()) {
-            String methodClassName = className;
             MethodInfo m = (MethodInfo) o;
             MemberType type = MemberType.NORMAL;
             if ((m.getDescriptor().equals(Constants.ADDED_METHOD_DESCRIPTOR) && m.getName().equals(Constants.ADDED_METHOD_NAME))
@@ -71,7 +70,7 @@ public class BaseClassData {
                 finalMethod = true;
             }
 
-            MethodData md = new MethodData(m.getName(), m.getDescriptor(), methodClassName, type, m.getAccessFlags(), finalMethod);
+            MethodData md = new MethodData(m.getName(), m.getDescriptor(), className, type, m.getAccessFlags(), finalMethod);
             meths.add(md);
         }
         this.methods = Collections.unmodifiableSet(meths);
@@ -94,7 +93,7 @@ public class BaseClassData {
         } else {
             superClassName = null;
         }
-        Set<MethodData> meths = new HashSet<MethodData>();
+        Set<MethodData> meths = new HashSet<>();
         for (Method m : cls.getDeclaredMethods()) {
             MemberType type = MemberType.NORMAL;
             final String descriptor = DescriptorUtils.getDescriptor(m);
@@ -116,7 +115,7 @@ public class BaseClassData {
         }
 
         this.methods = Collections.unmodifiableSet(meths);
-        List<FieldData> fieldData = new ArrayList<FieldData>();
+        List<FieldData> fieldData = new ArrayList<>();
         for (Field m : cls.getDeclaredFields()) {
             fieldData.add(new FieldData(m));
         }

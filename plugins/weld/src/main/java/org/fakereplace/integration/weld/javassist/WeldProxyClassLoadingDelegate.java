@@ -42,11 +42,11 @@ public class WeldProxyClassLoadingDelegate {
         }
     };
 
-    public static final void beginProxyRegeneration() {
+    public static void beginProxyRegeneration() {
         MAGIC_IN_PROGRESS.set(true);
     }
 
-    public static final void endProxyRegeneration() {
+    public static void endProxyRegeneration() {
         MAGIC_IN_PROGRESS.remove();
     }
 

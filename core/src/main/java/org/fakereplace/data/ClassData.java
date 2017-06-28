@@ -38,7 +38,7 @@ public class ClassData {
 
     private static final MethodData NULL_METHOD_DATA = new MethodData("", "", "", null, 0, false);
 
-    private static Function<Method, MethodData> METHOD_RESOLVER = from -> {
+    private static final Function<Method, MethodData> METHOD_RESOLVER = from -> {
         ClassData dta = ClassDataStore.instance().getModifiedClassData(from.getDeclaringClass().getClassLoader(), from.getDeclaringClass().getName());
         if (dta == null) {
             return NULL_METHOD_DATA;
@@ -57,7 +57,7 @@ public class ClassData {
     private final Map<String, Map<String, Set<MethodData>>> methods = Collections.synchronizedMap(new HashMap<>());
     private final Map<Method, MethodData> methodsByMethod = Collections.synchronizedMap(new HashMap<>());
     private final Map<String, FieldData> fields = Collections.synchronizedMap(new HashMap<>());
-    private final Set<MethodData> methodSet = new HashSet<MethodData>();
+    private final Set<MethodData> methodSet = new HashSet<>();
     private final ClassLoader loader;
     private final String superClassName;
     private final boolean signitureModified;
@@ -169,14 +169,14 @@ public class ClassData {
         return internalName;
     }
 
-    public void addMethod(MethodData data) {
+    private void addMethod(MethodData data) {
 
         if (!methods.containsKey(data.getMethodName())) {
-            methods.put(data.getMethodName(), new HashMap<String, Set<MethodData>>());
+            methods.put(data.getMethodName(), new HashMap<>());
         }
         Map<String, Set<MethodData>> mts = methods.get(data.getMethodName());
         if (!mts.containsKey(data.getArgumentDescriptor())) {
-            mts.put(data.getArgumentDescriptor(), new HashSet<MethodData>());
+            mts.put(data.getArgumentDescriptor(), new HashSet<>());
         }
         Set<MethodData> rr = mts.get(data.getArgumentDescriptor());
         rr.add(data);
@@ -189,16 +189,16 @@ public class ClassData {
      */
     public void replaceMethod(MethodData data) {
         if (!methods.containsKey(data.getMethodName())) {
-            methods.put(data.getMethodName(), new HashMap<String, Set<MethodData>>());
+            methods.put(data.getMethodName(), new HashMap<>());
         }
         Map<String, Set<MethodData>> mts = methods.get(data.getMethodName());
-        Set<MethodData> rr = new HashSet<MethodData>();
+        Set<MethodData> rr = new HashSet<>();
         mts.put(data.getArgumentDescriptor(), rr);
         rr.add(data);
 
     }
 
-    public void addField(FieldData data) {
+    private void addField(FieldData data) {
         fields.put(data.getName(), data);
     }
 

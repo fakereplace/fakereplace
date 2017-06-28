@@ -123,7 +123,7 @@ public class FieldReplacementTransformer implements FakereplaceTransformer {
 
         ListIterator<?> it = file.getFields().listIterator();
 
-        List<AddedFieldData> addedFields = new ArrayList<AddedFieldData>();
+        List<AddedFieldData> addedFields = new ArrayList<>();
 
         final Set<FieldData> toRemove = new HashSet<>();
         final Set<FieldProxyInfo> toAdd = new HashSet<>();
@@ -179,7 +179,7 @@ public class FieldReplacementTransformer implements FakereplaceTransformer {
                     old.setAccessFlags(md.getAccessFlags());
                     file.addField(old);
                     old.addAttribute(AnnotationReplacer.duplicateAnnotationsAttribute(file.getConstPool(), field));
-                } catch (DuplicateMemberException | SecurityException | ClassNotFoundException | NoSuchFieldException e) {
+                } catch (DuplicateMemberException | SecurityException | NoSuchFieldException e) {
                     // this should not happen
                     throw new RuntimeException(e);
                 }

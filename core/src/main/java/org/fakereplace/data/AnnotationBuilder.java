@@ -127,13 +127,11 @@ public class AnnotationBuilder {
             e.setType(type.getName());
             return e;
         } else if (type.isAnnotation()) {
-            AnnotationMemberValue a = new AnnotationMemberValue(cp);
-            return a;
+            return new AnnotationMemberValue(cp);
         } else if (type.isArray()) {
             Class<?> arrayType = type.getComponentType();
             MemberValue arrayval = createEmptyMemberValue(arrayType, cp);
-            ArrayMemberValue ret = new ArrayMemberValue(arrayval, cp);
-            return ret;
+            return new ArrayMemberValue(arrayval, cp);
         }
         throw new RuntimeException("Invalid array type " + type + " with no value ");
     }

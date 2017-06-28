@@ -51,9 +51,7 @@ public class ConstructorReflection {
                 Reflection.ensureMemberAccess(caller, method.getDeclaringClass(), null, method.getModifiers());
             }
             return invoke.newInstance(data.getMethodNo(), ar, null);
-        } catch (NoSuchMethodException e) {
-            throw new RuntimeException(e);
-        } catch (SecurityException e) {
+        } catch (NoSuchMethodException | SecurityException e) {
             throw new RuntimeException(e);
         }
     }
@@ -66,7 +64,7 @@ public class ConstructorReflection {
                 return clazz.getDeclaredConstructors();
             }
             Constructor<?>[] meth = clazz.getDeclaredConstructors();
-            List<Constructor<?>> visible = new ArrayList<Constructor<?>>(meth.length);
+            List<Constructor<?>> visible = new ArrayList<>(meth.length);
             for (int i = 0; i < meth.length; ++i) {
                 if (meth[i].getParameterTypes().length != 3 || !meth[i].getParameterTypes()[2].equals(ConstructorArgument.class)) {
                     visible.add(meth[i]);
@@ -103,7 +101,7 @@ public class ConstructorReflection {
             }
 
             Constructor<?>[] meth = clazz.getConstructors();
-            List<Constructor<?>> visible = new ArrayList<Constructor<?>>(meth.length);
+            List<Constructor<?>> visible = new ArrayList<>(meth.length);
             for (int i = 0; i < meth.length; ++i) {
                 if (meth[i].getParameterTypes().length != 3 || !meth[i].getParameterTypes()[2].equals(ConstructorArgument.class)) {
                     visible.add(meth[i]);
@@ -141,25 +139,21 @@ public class ConstructorReflection {
         ClassData cd = ClassDataStore.instance().getModifiedClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
 
         if (cd == null || !cd.isReplaceable()) {
-            Constructor<?> meth = clazz.getConstructor(parameters);
-            return meth;
+            return clazz.getConstructor(parameters);
         }
         String args = '(' + DescriptorUtils.classArrayToDescriptorString(parameters) + ')';
         MethodData md = cd.getMethodData("<init>", args);
         if (md == null) {
-            Constructor<?> meth = clazz.getConstructor(parameters);
-            return meth;
+            return clazz.getConstructor(parameters);
         }
 
         switch (md.getType()) {
             case NORMAL:
-                Constructor<?> meth = clazz.getConstructor(parameters);
-                return meth;
+                return clazz.getConstructor(parameters);
             case FAKE_CONSTRUCTOR:
                 try {
                     Class<?> c = clazz.getClassLoader().loadClass(md.getClassName());
-                    meth = c.getConstructor(parameters);
-                    return meth;
+                    return c.getConstructor(parameters);
                 } catch (NoSuchMethodException e) {
                     throw e;
                 } catch (Exception e) {
@@ -174,25 +168,21 @@ public class ConstructorReflection {
         ClassData cd = ClassDataStore.instance().getModifiedClassData(clazz.getClassLoader(), Descriptor.toJvmName(clazz.getName()));
 
         if (cd == null || !cd.isReplaceable()) {
-            Constructor<?> meth = clazz.getDeclaredConstructor(parameters);
-            return meth;
+            return clazz.getDeclaredConstructor(parameters);
         }
         String args = '(' + DescriptorUtils.classArrayToDescriptorString(parameters) + ')';
         MethodData md = cd.getMethodData("<init>", args);
         if (md == null) {
-            Constructor<?> meth = clazz.getDeclaredConstructor(parameters);
-            return meth;
+            return clazz.getDeclaredConstructor(parameters);
         }
 
         switch (md.getType()) {
             case NORMAL:
-                Constructor<?> meth = clazz.getDeclaredConstructor(parameters);
-                return meth;
+                return clazz.getDeclaredConstructor(parameters);
             case FAKE_CONSTRUCTOR:
                 try {
                     Class<?> c = clazz.getClassLoader().loadClass(md.getClassName());
-                    meth = c.getDeclaredConstructor(parameters);
-                    return meth;
+                    return c.getDeclaredConstructor(parameters);
                 } catch (NoSuchMethodException e) {
                     throw e;
                 } catch (Exception e) {

@@ -18,7 +18,7 @@
 package a.org.fakereplace.test.replacement.interfacemethod;
 
 public interface SomeInterface1 {
-    public String existing();
+    String existing();
 
-    public String added();
+    String added();
 }

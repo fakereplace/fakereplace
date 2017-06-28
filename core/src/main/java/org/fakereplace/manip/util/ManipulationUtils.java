@@ -157,25 +157,31 @@ public class ManipulationUtils {
         String[] params = DescriptorUtils.descriptorStringToParameterArray(constructorToCall.getDescriptor());
         for (String p : params) {
             // int char short boolean byte
-            if (p.equals("I") || p.equals("C") || p.equals("S") || p.equals("Z") || p.equals("B")) {
-                // push integer 0
-                code.add(Opcode.ICONST_0);
-            }
-            // long
-            else if (p.equals("J")) {
-                code.add(Opcode.LCONST_0);
-            }
-            // double
-            else if (p.equals("D")) {
-                code.add(Opcode.DCONST_0);
-            }
-            // float
-            else if (p.equals("F")) {
-                code.add(Opcode.FCONST_0);
-            }
-            // arrays and reference types
-            else {
-                code.add(Opcode.ACONST_NULL);
+            switch (p) {
+                case "I":
+                case "C":
+                case "S":
+                case "Z":
+                case "B":
+                    // push integer 0
+                    code.add(Opcode.ICONST_0);
+                    break;
+                // long
+                case "J":
+                    code.add(Opcode.LCONST_0);
+                    break;
+                // double
+                case "D":
+                    code.add(Opcode.DCONST_0);
+                    break;
+                // float
+                case "F":
+                    code.add(Opcode.FCONST_0);
+                    break;
+                // arrays and reference types
+                default:
+                    code.add(Opcode.ACONST_NULL);
+                    break;
             }
         }
         // all our args should be pushed onto the stack, call the constructor

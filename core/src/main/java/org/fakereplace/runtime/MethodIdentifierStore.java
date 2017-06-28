@@ -33,7 +33,7 @@ public class MethodIdentifierStore {
 
     private static final MethodIdentifierStore INSTANCE = new MethodIdentifierStore();
 
-    private final Map<String, Map<String, Integer>> data = new HashMap<String, Map<String, Integer>>();
+    private final Map<String, Map<String, Integer>> data = new HashMap<>();
 
     private int methodNo = 0;
 
@@ -43,7 +43,7 @@ public class MethodIdentifierStore {
 
     public synchronized int getMethodNumber(String name, String descriptor) {
         if (!data.containsKey(name)) {
-            data.put(name, new HashMap<String, Integer>());
+            data.put(name, new HashMap<>());
         }
         Map<String, Integer> im = data.get(name);
         if (!im.containsKey(descriptor)) {

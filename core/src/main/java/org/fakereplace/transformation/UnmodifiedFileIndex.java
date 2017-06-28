@@ -45,7 +45,7 @@ import org.fakereplace.logging.Logger;
  */
 class UnmodifiedFileIndex {
 
-    private static String VERSION = "1.0";
+    private static final String VERSION = "1.0";
 
     private static final Logger log = Logger.getLogger(UnmodifiedFileIndex.class);
 
