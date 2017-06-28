@@ -37,16 +37,10 @@ import java.util.concurrent.CopyOnWriteArraySet;
  * @author stuart
  */
 public class ManipulationDataStore<T extends ClassLoaderFiltered<T>> {
-    private final ClassLoader NULL_CLASS_LOADER = new ClassLoader() {
-    };
-
 
     private final Map<ClassLoader, ConcurrentMap<String, Set<T>>> cldata = Collections.synchronizedMap(new WeakHashMap<>());
 
     public Map<String, Set<T>> getManipulationData(ClassLoader loader) {
-        if (loader == null) {
-            loader = NULL_CLASS_LOADER;
-        }
         Map<String, Set<T>> ret = new HashMap<String, Set<T>>();
         for (Entry<ClassLoader, ConcurrentMap<String, Set<T>>> centry : cldata.entrySet()) {
             for (Entry<String, Set<T>> e : centry.getValue().entrySet()) {
@@ -65,9 +59,6 @@ public class ManipulationDataStore<T extends ClassLoaderFiltered<T>> {
 
     public void add(String name, T mdata) {
         ClassLoader loader = mdata.getClassLoader();
-        if (loader == null) {
-            loader = NULL_CLASS_LOADER;
-        }
         ConcurrentMap<String, Set<T>> data = cldata.computeIfAbsent(loader, classLoader -> new ConcurrentHashMap<>());
         Set<T> store = data.get(name);
         if(store == null) {
@@ -111,9 +102,6 @@ public class ManipulationDataStore<T extends ClassLoaderFiltered<T>> {
     }
 
     public void remove(String className, ClassLoader classLoader) {
-        if (classLoader == null) {
-            classLoader = NULL_CLASS_LOADER;
-        }
         Map<String, Set<T>> data = cldata.get(classLoader);
         if (data.containsKey(className)) {
             Set<T> set = data.get(className);
@@ -126,10 +114,5 @@ public class ManipulationDataStore<T extends ClassLoaderFiltered<T>> {
             }
         }
     }
-
-    public Map<ClassLoader, ConcurrentMap<String, Set<T>>> getRawData() {
-        return cldata;
-    }
-
 
 }

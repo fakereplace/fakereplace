@@ -16,3 +16,6 @@ notifications:
     recipients:
       stuart.w.douglas@gmail.com
       
+cache:
+  directories:
+  - $HOME/.m2

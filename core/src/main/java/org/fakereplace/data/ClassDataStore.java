@@ -36,12 +36,6 @@ public class ClassDataStore {
     private final Map<String, MethodData> proxyNameToMethodData = new ConcurrentHashMap<String, MethodData>();
     private final Set<ClassIdentifier> replacedClasses = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
-    /**
-     * takes the place of the null key on ConcurrentHashMap
-     */
-    private static final ClassLoader NULL_LOADER = new ClassLoader() {
-    };
-
     private ClassDataStore() {
 
     }
@@ -60,27 +54,18 @@ public class ClassDataStore {
 
     public void saveClassData(ClassLoader loader, String className, ClassDataBuilder data) {
         className = className.replace('/', '.');
-        if (loader == null) {
-            loader = NULL_LOADER;
-        }
         Map<String, ClassData> map = ClassLoaderData.get(loader).getClassData();
         map.put(className, data.buildClassData());
     }
 
     public void saveClassData(ClassLoader loader, String className, BaseClassData data) {
         className = className.replace('/', '.');
-        if (loader == null) {
-            loader = NULL_LOADER;
-        }
         Map<String, BaseClassData> map = ClassLoaderData.get(loader).getBaseClassData();
         map.put(className, data);
     }
 
     public ClassData getModifiedClassData(ClassLoader loader, String className) {
         className = className.replace('/', '.');
-        if (loader == null) {
-            loader = NULL_LOADER;
-        }
         Map<String, ClassData> map = ClassLoaderData.get(loader).getClassData();
         ClassData cd = map.get(className);
         if (cd == null) {
@@ -99,16 +84,13 @@ public class ClassDataStore {
 
     public BaseClassData getBaseClassData(ClassLoader loader, String className) {
         className = className.replace('/', '.');
-        if (loader == null) {
-            loader = NULL_LOADER;
-        }
         Map<String, BaseClassData> map = ClassLoaderData.get(loader).getBaseClassData();
         if (!map.containsKey(className)) {
             // if this is a class that is not being instrumented it is safe to
             // load the class and get the data
             if (BuiltinClassData.skipInstrumentation(className)) {
                 try {
-                    if (loader != NULL_LOADER) {
+                    if (loader != null) {
                         Class<?> cls = loader.loadClass(className);
                         saveClassData(loader, className, new BaseClassData(cls));
                     } else {

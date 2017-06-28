@@ -107,12 +107,10 @@ class FakeMethodCallManipulator implements ClassManipulator {
 
                     }
                 }
-                if (!handled && !className.equals(file.getName()) && CurrentEnvironment.getEnvironment().isClassReplaceable(className, loader)) {
+                if (loader != null && !handled && !className.equals(file.getName()) && CurrentEnvironment.getEnvironment().isClassReplaceable(className, loader)) {
                     //may be an added method
                     //if the field does not actually exist yet we just assume it is about to come into existence
                     //and rewrite it anyway
-
-
                     BaseClassData data = ClassDataStore.instance().getBaseClassData(loader, className);
                     if(data != null) {
                         boolean noClassData = false;

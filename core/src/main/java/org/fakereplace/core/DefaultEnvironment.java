@@ -60,11 +60,10 @@ public class DefaultEnvironment implements Environment {
         if(className == null) {
             return false; //lambdas
         }
-        className = className.replace("/", ".");
-        // if no packages are given, replace all classes.
-        if (replaceablePackages.length == 0) {
-            return true;
+        if(loader == null) {
+            return false;
         }
+        className = className.replace("/", ".");
         for (String i : replaceablePackages) {
             if (className.startsWith(i)) {
                 log.trace(className + " is replaceable as it belongs to " + i);
@@ -75,15 +74,14 @@ public class DefaultEnvironment implements Environment {
             log.trace(className + " is replaceable as it is a proxy");
             return true;
         }
-        if (loader != null) {
-            URL u = loader.getResource(className.replace('.', '/') + ".class");
-            if (u != null) {
-                if (u.getProtocol().equals("file") || u.getProtocol().equals("vfsfile")) {
-                    log.trace(className + " is replaceable as it is exploded");
-                    return true;
-                }
+        URL u = loader.getResource(className.replace('.', '/') + ".class");
+        if (u != null) {
+            if (u.getProtocol().equals("file") || u.getProtocol().equals("vfsfile")) {
+                log.trace(className + " is replaceable as it is exploded");
+                return true;
             }
         }
+
         log.trace(className + " is not replaceable");
         return false;
     }
