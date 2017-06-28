@@ -210,9 +210,4 @@ public class StaticMethodTest {
         Assert.assertEquals(35, res[0]);
     }
 
-
-    @Test
-    public void testStringNoReflection() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-        Assert.assertEquals("hello", new StaticAccessingClass().getString());
-    }
 }

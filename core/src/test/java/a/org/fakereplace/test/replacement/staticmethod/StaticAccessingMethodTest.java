@@ -135,4 +135,9 @@ public class StaticAccessingMethodTest {
         Boolean res = (Boolean) m.invoke(null, false);
         Assert.assertTrue(res.booleanValue());
     }
+
+    @Test
+    public void testStringNoReflection() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+        Assert.assertEquals("hello", new StaticAccessingClass().getString());
+    }
 }
