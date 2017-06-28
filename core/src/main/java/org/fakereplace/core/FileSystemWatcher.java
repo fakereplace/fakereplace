@@ -18,6 +18,7 @@
 package org.fakereplace.core;
 
 import javassist.bytecode.ClassFile;
+import org.fakereplace.data.ClassLoaderData;
 import org.fakereplace.replacement.AddedClass;
 import org.fakereplace.util.FileReader;
 import org.fakereplace.util.MD5;
@@ -38,7 +39,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.WeakHashMap;
 
 
 /**
@@ -48,15 +48,15 @@ import java.util.WeakHashMap;
  *
  * @author Stuart Douglas
  */
-public class FileSystemWatcher {
+class FileSystemWatcher {
 
     private final WatchServiceFileSystemWatcher watcher = new WatchServiceFileSystemWatcher();
 
-    private final Map<ClassLoader, Callback> callbacks = new WeakHashMap<>();
     private final Set<File> registered = new HashSet<>();
 
     private final Map<String, String> hashes = new HashMap<>();
 
+    private final ClassLoaderData.AttachmentKey<Callback> callbackAttachmentKey = new ClassLoaderData.AttachmentKey<>();
 
     private final class Callback implements WatchServiceFileSystemWatcher.FileChangeCallback  {
 
@@ -100,7 +100,7 @@ public class FileSystemWatcher {
         }
     }
 
-    public synchronized void addClassFile(String className, ClassLoader classLoader) {
+    synchronized void addClassFile(String className, ClassLoader classLoader) {
         if(classLoader == null) {
             return;
         }
@@ -133,9 +133,10 @@ public class FileSystemWatcher {
         }
         registered.add(file);
 
-        Callback callback = callbacks.get(classLoader);
+        ClassLoaderData classLoaderData = ClassLoaderData.get(classLoader);
+        Callback callback = classLoaderData.getAttachment(callbackAttachmentKey);
         if(callback == null) {
-            callbacks.put(classLoader, callback = new Callback(classLoader));
+            classLoaderData.putAttachment(callbackAttachmentKey, callback = new Callback(classLoader));
         }
         watcher.watchPath(file, callback);
     }

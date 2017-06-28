@@ -32,10 +32,17 @@ import java.util.WeakHashMap;
  */
 public class ClassLoaderData {
 
+    public static final class AttachmentKey<T> {
+
+    }
+
     private static final Map<ClassLoader, ClassLoaderData> DATA = Collections.synchronizedMap(new WeakHashMap<>());
 
     private final Map<String, ClassData> classData = Collections.synchronizedMap(new HashMap<>());
     private final Map<String, BaseClassData> baseClassData = Collections.synchronizedMap(new HashMap<>());
+    private final Map<String, byte[]> proxyDefinitions = Collections.synchronizedMap(new HashMap<>());
+    private final Map<AttachmentKey, Object> attachments = Collections.synchronizedMap(new HashMap<>());
+
 
     public static ClassLoaderData get(ClassLoader loader) {
         return DATA.computeIfAbsent(loader, (l) -> new ClassLoaderData());
@@ -47,5 +54,17 @@ public class ClassLoaderData {
 
     public Map<String, BaseClassData> getBaseClassData() {
         return baseClassData;
+    }
+
+    public Map<String, byte[]> getProxyDefinitions() {
+        return proxyDefinitions;
+    }
+
+    public <T> void putAttachment(AttachmentKey<T> attachmentKey, T value) {
+        attachments.put(attachmentKey, value);
+    }
+
+    public <T> T getAttachment(AttachmentKey<T> attachmentKey) {
+        return (T) attachments.get(attachmentKey);
     }
 }

@@ -17,13 +17,11 @@
 
 package org.fakereplace.classloading;
 
-import java.util.Collections;
 import java.util.Map;
-import java.util.WeakHashMap;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.fakereplace.core.Constants;
+import org.fakereplace.data.ClassLoaderData;
 
 /**
  * This class holds proxy definitions, that are later loaded by the relevant ClassLoaders
@@ -31,23 +29,20 @@ import org.fakereplace.core.Constants;
  * @author stuart
  */
 public class ProxyDefinitionStore {
-    private static final Map<ClassLoader, Map<String, byte[]>> proxyDefinitions = Collections.synchronizedMap(new WeakHashMap<>());
-
     private static final AtomicLong proxyNo = new AtomicLong();
 
     public static byte[] getProxyDefinition(ClassLoader classLoader, String name) {
-        Map<String, byte[]> def = proxyDefinitions.computeIfAbsent(classLoader, c -> new ConcurrentHashMap<>());
+        Map<String, byte[]> def = ClassLoaderData.get(classLoader).getProxyDefinitions();
         return def.get(name);
     }
 
     public static void saveProxyDefinition(ClassLoader classLoader, String className, byte[] data) {
-        Map<String, byte[]> def = proxyDefinitions.computeIfAbsent(classLoader, c -> new ConcurrentHashMap<>());
+        Map<String, byte[]> def = ClassLoaderData.get(classLoader).getProxyDefinitions();
         def.put(className, data);
     }
 
     /**
      * Returns a unique proxy name
-     *
      */
     public static String getProxyName() {
         return Constants.GENERATED_CLASS_PACKAGE + ".ProxyClass" + proxyNo.incrementAndGet();
