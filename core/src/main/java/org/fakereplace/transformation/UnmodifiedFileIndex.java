@@ -48,7 +48,7 @@ import org.fakereplace.logging.Logger;
  *
  * @author Stuart Douglas
  */
-public class UnmodifiedFileIndex {
+class UnmodifiedFileIndex {
 
     private static String VERSION = "1.0";
 
@@ -57,6 +57,10 @@ public class UnmodifiedFileIndex {
     private static final Set<String> index = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
     private static Timer writeTimer = null;
+
+    static {
+        loadIndex();
+    }
 
     public static void loadIndex() {
         final File file = getFile();

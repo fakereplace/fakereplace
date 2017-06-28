@@ -29,7 +29,6 @@
     <properties>
         <arquillian.version>1.1.8.Final</arquillian.version>
         <arquillian.weld-se.version>1.0.0.CR9</arquillian.weld-se.version>
-        <fakereplace.google.collections.version>1.0.1.Final</fakereplace.google.collections.version>
         <javassist.version>3.21.0-GA</javassist.version>
         <wildfly.version>10.1.0.Final</wildfly.version>
         <jsf-api.version>1.2_13</jsf-api.version>
@@ -205,12 +204,6 @@
                 <groupId>org.apache.maven</groupId>
                 <artifactId>maven-plugin-api</artifactId>
                 <version>${maven-plugin-api.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.fakereplace.fakereplace-google-collections</groupId>
-                <artifactId>fakereplace-google-collections</artifactId>
-                <version>${fakereplace.google.collections.version}</version>
             </dependency>
 
             <dependency>

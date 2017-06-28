@@ -17,10 +17,10 @@
 
 package org.fakereplace.runtime;
 
+import java.util.Collections;
 import java.util.Map;
+import java.util.WeakHashMap;
 
-import org.fakereplace.com.google.common.base.Function;
-import org.fakereplace.com.google.common.collect.MapMaker;
 import org.fakereplace.util.NullSafeConcurrentHashMap;
 
 /**
@@ -30,23 +30,25 @@ import org.fakereplace.util.NullSafeConcurrentHashMap;
  * @author Stuart Douglas
  */
 public class FieldDataStore {
-    private static final Map<Object, Map<Integer, Object>> fieldData = new MapMaker().weakKeys().makeComputingMap(from -> new NullSafeConcurrentHashMap<Integer, Object>());
+    private static final Map<Object, Map<Integer, Object>> fieldData = Collections.synchronizedMap(new WeakHashMap<>());
 
     public static Object getValue(Object instance, int field) {
-        Object ret = fieldData.get(instance).get(field);
-        if(ret != null) {
-            return ret;
-        } else {
-            String type = FieldReferenceDataStore.instance().getFieldDescriptor(field);
-            if(type.length() == 1) {
-                return 0;
-            } else {
-                return null;
+        Map<Integer, Object> map = fieldData.get(instance);
+        if(map != null) {
+            Object ret = map.get(field);
+            if(ret != null) {
+                return ret;
             }
+        }
+        String type = FieldReferenceDataStore.instance().getFieldDescriptor(field);
+        if(type.length() == 1) {
+            return 0;
+        } else {
+            return null;
         }
     }
 
     public static void setValue(Object instance, Object value, int field) {
-        fieldData.get(instance).put(field, value);
+        fieldData.computeIfAbsent(instance, (e) -> new NullSafeConcurrentHashMap<>()).put(field, value);
     }
 }

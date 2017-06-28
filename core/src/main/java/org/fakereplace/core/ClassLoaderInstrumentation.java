@@ -20,7 +20,6 @@ package org.fakereplace.core;
 import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ConcurrentMap;
 
 import javassist.bytecode.BadBytecode;
 import javassist.bytecode.Bytecode;
@@ -29,34 +28,15 @@ import javassist.bytecode.CodeIterator;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.Opcode;
 import org.fakereplace.classloading.ClassLookupManager;
-import org.fakereplace.com.google.common.collect.MapMaker;
 import org.fakereplace.util.JumpMarker;
 import org.fakereplace.util.JumpUtils;
 
 public class ClassLoaderInstrumentation {
 
-    private static final ConcurrentMap<Class, Object> instrumentedLoaders = new MapMaker().weakKeys().makeMap();
-
-    public static synchronized void instrumentClassLoaderIfRequired(final Class<?> classLoader) {
-        if (ClassLoader.class.isAssignableFrom(classLoader)) {
-            if (!instrumentedLoaders.containsKey(classLoader)) {
-
-                try {
-                    Agent.getInstrumentation().retransformClasses(classLoader);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                instrumentedLoaders.put(classLoader, ClassLoaderInstrumentation.class);
-
-            }
-        }
-    }
-
     /**
      * This method instruments class loaders so that they can load our helper
      * classes.
      */
-
     public static boolean redefineClassLoader(ClassFile classFile, Set<MethodInfo> modifiedMethods) throws BadBytecode {
         boolean modified = false;
         for (MethodInfo method : (List<MethodInfo>) classFile.getMethods()) {

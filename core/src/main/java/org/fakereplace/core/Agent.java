@@ -44,7 +44,6 @@ import org.fakereplace.replacement.MethodReplacementTransformer;
 import org.fakereplace.server.FakereplaceServer;
 import org.fakereplace.transformation.ClassLoaderTransformer;
 import org.fakereplace.transformation.MainTransformer;
-import org.fakereplace.transformation.UnmodifiedFileIndex;
 import javassist.bytecode.ClassFile;
 
 /**
@@ -67,9 +66,6 @@ public class Agent {
         inst = i;
 
         final Set<Extension> extension = getIntegrationInfo(ClassLoader.getSystemClassLoader());
-
-        //initialise the unmodified file index
-        UnmodifiedFileIndex.loadIndex();
 
         //first we need to instrument the class loaders
         final Set<Class> cls = new HashSet<Class>();

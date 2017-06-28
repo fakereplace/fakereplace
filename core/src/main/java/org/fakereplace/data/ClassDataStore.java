@@ -21,14 +21,10 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import org.fakereplace.classloading.ClassIdentifier;
 import org.fakereplace.core.BuiltinClassData;
-import org.fakereplace.com.google.common.collect.MapMaker;
-import org.fakereplace.manip.util.MapFunction;
 import org.fakereplace.reflection.FieldAccessor;
 
 public class ClassDataStore {
@@ -37,8 +33,6 @@ public class ClassDataStore {
 
     private final Map<String, Class<?>> proxyNameToReplacedClass = new ConcurrentHashMap<String, Class<?>>();
     private final Map<String, FieldAccessor> proxyNameToFieldAccessor = new ConcurrentHashMap<String, FieldAccessor>();
-    private final Map<ClassLoader, ConcurrentMap<String, ClassData>> classData = new MapMaker().weakKeys().makeComputingMap(new MapFunction<ClassLoader, String, ClassData>(false));
-    private final Map<ClassLoader, ConcurrentMap<String, BaseClassData>> baseClassData = new MapMaker().weakKeys().makeComputingMap(new MapFunction<ClassLoader, String, BaseClassData>(false));
     private final Map<String, MethodData> proxyNameToMethodData = new ConcurrentHashMap<String, MethodData>();
     private final Set<ClassIdentifier> replacedClasses = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
@@ -69,7 +63,7 @@ public class ClassDataStore {
         if (loader == null) {
             loader = NULL_LOADER;
         }
-        Map<String, ClassData> map = classData.get(loader);
+        Map<String, ClassData> map = ClassLoaderData.get(loader).getClassData();
         map.put(className, data.buildClassData());
     }
 
@@ -78,7 +72,7 @@ public class ClassDataStore {
         if (loader == null) {
             loader = NULL_LOADER;
         }
-        Map<String, BaseClassData> map = baseClassData.get(loader);
+        Map<String, BaseClassData> map = ClassLoaderData.get(loader).getBaseClassData();
         map.put(className, data);
     }
 
@@ -87,7 +81,7 @@ public class ClassDataStore {
         if (loader == null) {
             loader = NULL_LOADER;
         }
-        Map<String, ClassData> map = classData.get(loader);
+        Map<String, ClassData> map = ClassLoaderData.get(loader).getClassData();
         ClassData cd = map.get(className);
         if (cd == null) {
             BaseClassData dd = getBaseClassData(loader, className);
@@ -108,7 +102,7 @@ public class ClassDataStore {
         if (loader == null) {
             loader = NULL_LOADER;
         }
-        Map<String, BaseClassData> map = baseClassData.get(loader);
+        Map<String, BaseClassData> map = ClassLoaderData.get(loader).getBaseClassData();
         if (!map.containsKey(className)) {
             // if this is a class that is not being instrumented it is safe to
             // load the class and get the data

@@ -19,13 +19,13 @@ package org.fakereplace.data;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
-import org.fakereplace.com.google.common.base.Function;
-import org.fakereplace.com.google.common.collect.MapMaker;
 import org.fakereplace.util.DescriptorUtils;
 
 /**
@@ -36,18 +36,33 @@ import org.fakereplace.util.DescriptorUtils;
  */
 public class ClassData {
 
+    private static final MethodData NULL_METHOD_DATA = new MethodData("", "", "", null, 0, false);
+
+    private static Function<Method, MethodData> METHOD_RESOLVER = from -> {
+        ClassData dta = ClassDataStore.instance().getModifiedClassData(from.getDeclaringClass().getClassLoader(), from.getDeclaringClass().getName());
+        if (dta == null) {
+            return NULL_METHOD_DATA;
+        }
+        String descriptor = DescriptorUtils.getDescriptor(from);
+        for (MethodData m : dta.getMethods()) {
+            if (m.getMethodName().equals(from.getName()) && descriptor.equals(m.getDescriptor())) {
+                return m;
+            }
+        }
+        return NULL_METHOD_DATA;
+    };
+
     private final String className;
     private final String internalName;
-    private final Map<String, Map<String, Set<MethodData>>> methods = new MapMaker().makeMap();
-    private final Map<Method, MethodData> methodsByMethod = new MapMaker().makeComputingMap(new MethodResolver());
-    private final Map<String, FieldData> fields = new MapMaker().makeMap();
+    private final Map<String, Map<String, Set<MethodData>>> methods = Collections.synchronizedMap(new HashMap<>());
+    private final Map<Method, MethodData> methodsByMethod = Collections.synchronizedMap(new HashMap<>());
+    private final Map<String, FieldData> fields = Collections.synchronizedMap(new HashMap<>());
     private final Set<MethodData> methodSet = new HashSet<MethodData>();
     private final ClassLoader loader;
     private final String superClassName;
     private final boolean signitureModified;
     private final boolean replaceable;
 
-    private static final MethodData NULL_METHOD_DATA = new MethodData("", "", "", null, 0, false);
 
     ClassData(BaseClassData data, Set<MethodData> addMethods, Set<MethodData> removedMethods, Set<FieldData> addedFields, Set<FieldData> removedFields) {
         className = data.getClassName();
@@ -90,7 +105,7 @@ public class ClassData {
     }
 
     public MethodData getData(Method method) {
-        MethodData res = methodsByMethod.get(method);
+        MethodData res = methodsByMethod.computeIfAbsent(method, METHOD_RESOLVER);
         if (res == NULL_METHOD_DATA) {
             return null;
         }
@@ -214,24 +229,6 @@ public class ClassData {
         return ms.iterator().next();
     }
 
-    private static class MethodResolver implements Function<Method, MethodData> {
-
-        public MethodData apply(Method from) {
-            ClassData dta = ClassDataStore.instance().getModifiedClassData(from.getDeclaringClass().getClassLoader(), from.getDeclaringClass().getName());
-            if (dta == null) {
-                return NULL_METHOD_DATA;
-            }
-            String descriptor = DescriptorUtils.getDescriptor(from);
-            for (MethodData m : dta.getMethods()) {
-                if (m.getMethodName().equals(from.getName()) && descriptor.equals(m.getDescriptor())) {
-                    return m;
-                }
-            }
-            return NULL_METHOD_DATA;
-
-        }
-
-    }
 
     public boolean isReplaceable() {
         return replaceable;

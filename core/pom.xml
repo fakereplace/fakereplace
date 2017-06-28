@@ -41,11 +41,6 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
         </dependency>
-
-        <dependency>
-            <groupId>org.fakereplace.fakereplace-google-collections</groupId>
-            <artifactId>fakereplace-google-collections</artifactId>
-        </dependency>
     </dependencies>
 
 

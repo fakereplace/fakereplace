@@ -19,10 +19,10 @@ package org.fakereplace.data;
 
 import java.util.Collections;
 import java.util.Set;
+import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import org.fakereplace.com.google.common.collect.MapMaker;
 
 /**
  * This class is responsible for tracking instances of certain classes as they
@@ -37,7 +37,7 @@ public class InstanceTracker {
     public static void add(String type, Object object) {
         Set<Object> set = data.get(type);
         if(set == null) {
-            set = Collections.newSetFromMap(new MapMaker().weakKeys().<Object, Boolean>makeMap());
+            set = Collections.newSetFromMap(Collections.synchronizedMap(new WeakHashMap<>()));
             Set<Object> existing = data.putIfAbsent(type, set);
             if(existing != null) {
                 set = existing;

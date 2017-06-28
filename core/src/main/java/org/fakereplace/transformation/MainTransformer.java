@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -47,7 +48,6 @@ import org.fakereplace.api.Extension;
 import org.fakereplace.api.NewClassData;
 import org.fakereplace.api.environment.CurrentEnvironment;
 import org.fakereplace.api.environment.Environment;
-import org.fakereplace.com.google.common.collect.MapMaker;
 import org.fakereplace.core.Agent;
 import org.fakereplace.core.AgentOption;
 import org.fakereplace.core.AgentOptions;
@@ -80,7 +80,7 @@ public class MainTransformer implements ClassFileTransformer {
 
     private final Set<String> loadedClassChangeAwares = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
 
-    private static final Set<ClassLoader> integrationClassloader = Collections.newSetFromMap(new MapMaker().weakKeys().<ClassLoader, Boolean>makeMap());
+    private static final Set<ClassLoader> integrationClassloader = Collections.newSetFromMap(Collections.synchronizedMap(new WeakHashMap<>()));
 
     private final List<ChangedClass> changedClasses = new CopyOnWriteArrayList<>();
     private final List<NewClassData> addedClasses = new CopyOnWriteArrayList<>();

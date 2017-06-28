@@ -20,23 +20,24 @@ package org.fakereplace.integration.weld;
 import org.fakereplace.api.ChangedClass;
 import org.fakereplace.api.ClassChangeAware;
 import org.fakereplace.api.NewClassData;
-import org.fakereplace.com.google.common.collect.MapMaker;
 import org.fakereplace.integration.weld.javassist.WeldProxyClassLoadingDelegate;
 
 import javax.enterprise.inject.spi.Bean;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
 
 public class WeldClassChangeAware implements ClassChangeAware {
 
     /**
      * proxy factories, key by by a weak reference to their bean object to prevent a memory leak.
      */
-    private static final Map<Object, Object> proxyFactories = new MapMaker().weakKeys().makeMap();
+    private static final Map<Object, Object> proxyFactories = Collections.synchronizedMap(new WeakHashMap<>());
 
     @Override
     public void afterChange(List<ChangedClass> changed, List<NewClassData> added) {

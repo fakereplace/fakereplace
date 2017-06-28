@@ -17,16 +17,17 @@
 
 package org.fakereplace.manip.util;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArraySet;
-
-import org.fakereplace.com.google.common.collect.MapMaker;
 
 /**
  * class that figures out which maniluation should be applied based on the
@@ -39,7 +40,8 @@ public class ManipulationDataStore<T extends ClassLoaderFiltered<T>> {
     private final ClassLoader NULL_CLASS_LOADER = new ClassLoader() {
     };
 
-    private final Map<ClassLoader, ConcurrentMap<String, Set<T>>> cldata = new MapMaker().weakKeys().makeComputingMap(new MapFunction<ClassLoader, String, Set<T>>(false));
+
+    private final Map<ClassLoader, ConcurrentMap<String, Set<T>>> cldata = Collections.synchronizedMap(new WeakHashMap<>());
 
     public Map<String, Set<T>> getManipulationData(ClassLoader loader) {
         if (loader == null) {
@@ -66,7 +68,7 @@ public class ManipulationDataStore<T extends ClassLoaderFiltered<T>> {
         if (loader == null) {
             loader = NULL_CLASS_LOADER;
         }
-        ConcurrentMap<String, Set<T>> data = cldata.get(loader);
+        ConcurrentMap<String, Set<T>> data = cldata.computeIfAbsent(loader, classLoader -> new ConcurrentHashMap<>());
         Set<T> store = data.get(name);
         if(store == null) {
             store = new CopyOnWriteArraySet<T>();

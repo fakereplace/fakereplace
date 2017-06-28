@@ -20,12 +20,13 @@ package org.fakereplace.core;
 import org.fakereplace.api.ChangedClass;
 import org.fakereplace.api.ClassChangeAware;
 import org.fakereplace.api.NewClassData;
-import org.fakereplace.com.google.common.collect.MapMaker;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
 
 public class ClassChangeNotifier {
 
@@ -39,7 +40,7 @@ public class ClassChangeNotifier {
     };
 
 
-    private final Map<ClassLoader, Set<ClassChangeAware>> classChangeAwares = new MapMaker().weakKeys().makeMap();
+    private final Map<ClassLoader, Set<ClassChangeAware>> classChangeAwares = Collections.synchronizedMap(new WeakHashMap<>());
 
     public void add(ClassChangeAware aware) {
         if (!classChangeAwares.containsKey(aware.getClass().getClassLoader())) {
