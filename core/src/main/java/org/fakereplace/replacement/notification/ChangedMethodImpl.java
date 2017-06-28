@@ -17,13 +17,13 @@
 
 package org.fakereplace.replacement.notification;
 
-import org.fakereplace.api.ChangedAnnotation;
-import org.fakereplace.api.ChangedMethod;
-
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+
+import org.fakereplace.api.ChangedAnnotation;
+import org.fakereplace.api.ChangedMethod;
 
 /**
  * @author Stuart Douglas

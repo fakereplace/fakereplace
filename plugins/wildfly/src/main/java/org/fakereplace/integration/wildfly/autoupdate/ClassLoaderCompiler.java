@@ -17,22 +17,6 @@
 
 package org.fakereplace.integration.wildfly.autoupdate;
 
-import org.jboss.modules.ModuleClassLoader;
-import org.jboss.modules.ModuleLoadException;
-import org.jboss.modules.Resource;
-import org.jboss.modules.filter.PathFilter;
-
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.NestingKind;
-import javax.tools.FileObject;
-import javax.tools.ForwardingJavaFileManager;
-import javax.tools.JavaCompiler;
-import javax.tools.JavaFileManager;
-import javax.tools.JavaFileObject;
-import javax.tools.JavaFileObject.Kind;
-import javax.tools.StandardJavaFileManager;
-import javax.tools.StandardLocation;
-import javax.tools.ToolProvider;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
@@ -61,6 +45,22 @@ import java.util.Map;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.stream.Collectors;
+import javax.lang.model.element.Modifier;
+import javax.lang.model.element.NestingKind;
+import javax.tools.FileObject;
+import javax.tools.ForwardingJavaFileManager;
+import javax.tools.JavaCompiler;
+import javax.tools.JavaFileManager;
+import javax.tools.JavaFileObject;
+import javax.tools.JavaFileObject.Kind;
+import javax.tools.StandardJavaFileManager;
+import javax.tools.StandardLocation;
+import javax.tools.ToolProvider;
+
+import org.jboss.modules.ModuleClassLoader;
+import org.jboss.modules.ModuleLoadException;
+import org.jboss.modules.Resource;
+import org.jboss.modules.filter.PathFilter;
 
 /**
  * Class that handles compilation of source files

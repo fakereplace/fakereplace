@@ -17,13 +17,13 @@
 
 package org.fakereplace.integration.wildfly.autoupdate;
 
-import org.junit.Test;
-
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
+
+import org.junit.Test;
 
 /**
  * @author Stuart Douglas

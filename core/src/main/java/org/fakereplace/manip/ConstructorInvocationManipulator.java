@@ -39,7 +39,7 @@ import javassist.bytecode.ConstPool;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.Opcode;
 
-public class ConstructorInvocationManipulator implements ClassManipulator {
+class ConstructorInvocationManipulator implements ClassManipulator {
 
     private static final Logger log = Logger.getLogger(ConstructorInvocationManipulator.class);
 

@@ -21,15 +21,15 @@ import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.Set;
 
+import org.fakereplace.classloading.ClassLookupManager;
+import org.fakereplace.util.JumpMarker;
+import org.fakereplace.util.JumpUtils;
 import javassist.bytecode.BadBytecode;
 import javassist.bytecode.Bytecode;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.CodeIterator;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.Opcode;
-import org.fakereplace.classloading.ClassLookupManager;
-import org.fakereplace.util.JumpMarker;
-import org.fakereplace.util.JumpUtils;
 
 public class ClassLoaderInstrumentation {
 

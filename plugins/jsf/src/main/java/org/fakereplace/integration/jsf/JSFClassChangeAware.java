@@ -17,13 +17,6 @@
 
 package org.fakereplace.integration.jsf;
 
-import org.fakereplace.api.ChangedClass;
-import org.fakereplace.api.ClassChangeAware;
-import org.fakereplace.api.NewClassData;
-import org.fakereplace.data.InstanceTracker;
-import org.fakereplace.logging.Logger;
-import org.jboss.el.cache.BeanPropertiesCache;
-
 import java.beans.Introspector;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -31,6 +24,13 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.fakereplace.api.ChangedClass;
+import org.fakereplace.api.ClassChangeAware;
+import org.fakereplace.api.NewClassData;
+import org.fakereplace.data.InstanceTracker;
+import org.fakereplace.logging.Logger;
+import org.jboss.el.cache.BeanPropertiesCache;
 
 public class JSFClassChangeAware implements ClassChangeAware {
 

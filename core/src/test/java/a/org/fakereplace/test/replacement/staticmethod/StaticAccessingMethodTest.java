@@ -20,10 +20,10 @@ package a.org.fakereplace.test.replacement.staticmethod;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import a.org.fakereplace.test.util.ClassReplacer;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import a.org.fakereplace.test.util.ClassReplacer;
 
 public class StaticAccessingMethodTest {
     @BeforeClass

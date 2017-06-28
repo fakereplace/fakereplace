@@ -61,6 +61,10 @@ public class DefaultEnvironment implements Environment {
             return false; //lambdas
         }
         className = className.replace("/", ".");
+        // if no packages are given, replace all classes.
+        if (replaceablePackages.length == 0) {
+            return true;
+        }
         for (String i : replaceablePackages) {
             if (className.startsWith(i)) {
                 log.trace(className + " is replaceable as it belongs to " + i);

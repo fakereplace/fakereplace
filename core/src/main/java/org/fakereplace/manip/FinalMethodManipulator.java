@@ -19,21 +19,21 @@ package org.fakereplace.manip;
 
 import java.util.Set;
 
+import org.fakereplace.core.Constants;
+import org.fakereplace.data.ModifiedMethod;
 import javassist.bytecode.AccessFlag;
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.AttributeInfo;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.annotation.Annotation;
-import org.fakereplace.core.Constants;
-import org.fakereplace.data.ModifiedMethod;
 
 /**
  * manipulator that removes the final attribute from methods
  *
  * @author Stuart Douglas
  */
-public class FinalMethodManipulator implements ClassManipulator {
+class FinalMethodManipulator implements ClassManipulator {
 
     public void clearRewrites(String className, ClassLoader classLoader) {
 

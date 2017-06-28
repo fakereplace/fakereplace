@@ -19,7 +19,9 @@ package org.fakereplace.data;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.WeakHashMap;
 
 /**
@@ -66,5 +68,16 @@ public class ClassLoaderData {
 
     public <T> T getAttachment(AttachmentKey<T> attachmentKey) {
         return (T) attachments.get(attachmentKey);
+    }
+
+    public static <T> Set<T> allAttachment(AttachmentKey<T> attachmentKey) {
+        HashSet<T> ret = new HashSet<>();
+        for (ClassLoaderData val : DATA.values()) {
+            T data = (T) val.attachments.get(attachmentKey);
+            if (data != null) {
+                ret.add(data);
+            }
+        }
+        return ret;
     }
 }

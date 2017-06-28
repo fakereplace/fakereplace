@@ -23,12 +23,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import a.org.fakereplace.test.replacement.instancefield.FieldClass;
-import a.org.fakereplace.test.replacement.instancefield.FieldClass1;
-import javassist.ClassPool;
-import javassist.CtClass;
 import org.fakereplace.core.Agent;
 import org.fakereplace.replacement.AddedClass;
+import javassist.ClassPool;
+import javassist.CtClass;
 
 public class ClassReplacer {
 

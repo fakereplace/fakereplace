@@ -17,8 +17,7 @@
 
 package org.fakereplace.integration.wildfly.hibernate5;
 
-import org.jipijapa.plugin.spi.PersistenceUnitService;
-
+import java.util.Map;
 import javax.persistence.Cache;
 import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
@@ -28,7 +27,8 @@ import javax.persistence.Query;
 import javax.persistence.SynchronizationType;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.metamodel.Metamodel;
-import java.util.Map;
+
+import org.jipijapa.plugin.spi.PersistenceUnitService;
 
 /**
  * @author Stuart Douglas

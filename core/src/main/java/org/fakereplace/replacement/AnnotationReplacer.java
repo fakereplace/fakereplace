@@ -18,21 +18,14 @@
 package org.fakereplace.replacement;
 
 import java.lang.annotation.Annotation;
-import java.lang.instrument.IllegalClassFormatException;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.security.ProtectionDomain;
 
-import javassist.bytecode.AnnotationsAttribute;
-import javassist.bytecode.BadBytecode;
-import javassist.bytecode.ClassFile;
-import javassist.bytecode.ConstPool;
-import javassist.bytecode.DuplicateMemberException;
-import javassist.bytecode.ParameterAnnotationsAttribute;
 import org.fakereplace.data.AnnotationBuilder;
-import org.fakereplace.data.AnnotationDataStore;
-import org.fakereplace.transformation.FakereplaceTransformer;
+import javassist.bytecode.AnnotationsAttribute;
+import javassist.bytecode.ConstPool;
+import javassist.bytecode.ParameterAnnotationsAttribute;
 
 class AnnotationReplacer {
 

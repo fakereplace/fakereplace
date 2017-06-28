@@ -29,21 +29,6 @@ import java.util.HashSet;
 import java.util.ListIterator;
 import java.util.Set;
 
-import javassist.bytecode.AccessFlag;
-import javassist.bytecode.AnnotationsAttribute;
-import javassist.bytecode.AttributeInfo;
-import javassist.bytecode.BadBytecode;
-import javassist.bytecode.Bytecode;
-import javassist.bytecode.ClassFile;
-import javassist.bytecode.CodeAttribute;
-import javassist.bytecode.CodeIterator;
-import javassist.bytecode.ConstPool;
-import javassist.bytecode.DuplicateMemberException;
-import javassist.bytecode.ExceptionsAttribute;
-import javassist.bytecode.MethodInfo;
-import javassist.bytecode.Opcode;
-import javassist.bytecode.ParameterAnnotationsAttribute;
-import javassist.bytecode.SignatureAttribute;
 import org.fakereplace.classloading.ProxyDefinitionStore;
 import org.fakereplace.core.BuiltinClassData;
 import org.fakereplace.core.Constants;
@@ -63,6 +48,21 @@ import org.fakereplace.runtime.MethodIdentifierStore;
 import org.fakereplace.transformation.FakereplaceTransformer;
 import org.fakereplace.util.AccessFlagUtils;
 import org.fakereplace.util.DescriptorUtils;
+import javassist.bytecode.AccessFlag;
+import javassist.bytecode.AnnotationsAttribute;
+import javassist.bytecode.AttributeInfo;
+import javassist.bytecode.BadBytecode;
+import javassist.bytecode.Bytecode;
+import javassist.bytecode.ClassFile;
+import javassist.bytecode.CodeAttribute;
+import javassist.bytecode.CodeIterator;
+import javassist.bytecode.ConstPool;
+import javassist.bytecode.DuplicateMemberException;
+import javassist.bytecode.ExceptionsAttribute;
+import javassist.bytecode.MethodInfo;
+import javassist.bytecode.Opcode;
+import javassist.bytecode.ParameterAnnotationsAttribute;
+import javassist.bytecode.SignatureAttribute;
 
 public class MethodReplacementTransformer implements FakereplaceTransformer {
 

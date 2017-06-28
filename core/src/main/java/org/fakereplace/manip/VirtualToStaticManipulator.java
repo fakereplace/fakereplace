@@ -22,22 +22,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.fakereplace.logging.Logger;
+import org.fakereplace.manip.data.VirtualToStaticData;
+import org.fakereplace.manip.util.ManipulationDataStore;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.CodeIterator;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.MethodInfo;
-import org.fakereplace.api.environment.CurrentEnvironment;
-import org.fakereplace.core.Transformer;
-import org.fakereplace.data.BaseClassData;
-import org.fakereplace.data.ClassDataStore;
-import org.fakereplace.data.FieldData;
-import org.fakereplace.data.MethodData;
-import org.fakereplace.logging.Logger;
-import org.fakereplace.manip.data.AddedFieldData;
-import org.fakereplace.manip.data.VirtualToStaticData;
-import org.fakereplace.manip.util.ManipulationDataStore;
-import org.fakereplace.runtime.FieldReferenceDataStore;
-import org.fakereplace.runtime.MethodIdentifierStore;
 
 public class VirtualToStaticManipulator implements ClassManipulator {
 

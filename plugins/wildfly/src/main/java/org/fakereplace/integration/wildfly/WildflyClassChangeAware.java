@@ -16,16 +16,16 @@
  */
 package org.fakereplace.integration.wildfly;
 
+import java.lang.reflect.Array;
+import java.lang.reflect.Field;
+import java.util.List;
+import java.util.Set;
+
 import org.fakereplace.api.ChangedClass;
 import org.fakereplace.api.ClassChangeAware;
 import org.fakereplace.api.NewClassData;
 import org.fakereplace.data.InstanceTracker;
 import org.fakereplace.logging.Logger;
-
-import java.lang.reflect.Array;
-import java.lang.reflect.Field;
-import java.util.List;
-import java.util.Set;
 
 /**
  * @author Stuart Douglas

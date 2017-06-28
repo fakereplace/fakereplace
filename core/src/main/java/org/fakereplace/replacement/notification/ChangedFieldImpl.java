@@ -17,12 +17,12 @@
 
 package org.fakereplace.replacement.notification;
 
-import org.fakereplace.api.ChangedAnnotation;
-import org.fakereplace.api.ChangedField;
-
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.Set;
+
+import org.fakereplace.api.ChangedAnnotation;
+import org.fakereplace.api.ChangedField;
 
 /**
  * @author Stuart Douglas

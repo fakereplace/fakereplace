@@ -20,7 +20,6 @@ package org.fakereplace.integration.resteasy;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.servlet.ServletContext;
 
 /**

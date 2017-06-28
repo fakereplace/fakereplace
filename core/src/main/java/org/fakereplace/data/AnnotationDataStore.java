@@ -17,19 +17,6 @@
 
 package org.fakereplace.data;
 
-import javassist.bytecode.AccessFlag;
-import javassist.bytecode.AnnotationsAttribute;
-import javassist.bytecode.AttributeInfo;
-import javassist.bytecode.Bytecode;
-import javassist.bytecode.ClassFile;
-import javassist.bytecode.MethodInfo;
-import javassist.bytecode.Opcode;
-import javassist.bytecode.ParameterAnnotationsAttribute;
-import org.fakereplace.api.ChangeType;
-import org.fakereplace.replacement.notification.ChangedAnnotationImpl;
-import org.fakereplace.classloading.ProxyDefinitionStore;
-import org.fakereplace.replacement.notification.ChangedClassImpl;
-
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -43,6 +30,19 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.fakereplace.api.ChangeType;
+import org.fakereplace.classloading.ProxyDefinitionStore;
+import org.fakereplace.replacement.notification.ChangedAnnotationImpl;
+import org.fakereplace.replacement.notification.ChangedClassImpl;
+import javassist.bytecode.AccessFlag;
+import javassist.bytecode.AnnotationsAttribute;
+import javassist.bytecode.AttributeInfo;
+import javassist.bytecode.Bytecode;
+import javassist.bytecode.ClassFile;
+import javassist.bytecode.MethodInfo;
+import javassist.bytecode.Opcode;
+import javassist.bytecode.ParameterAnnotationsAttribute;
 
 /**
  * Stores information about the annotations on reloaded classes

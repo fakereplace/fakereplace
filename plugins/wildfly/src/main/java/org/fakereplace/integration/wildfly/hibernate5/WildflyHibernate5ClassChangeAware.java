@@ -17,6 +17,13 @@
 
 package org.fakereplace.integration.wildfly.hibernate5;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
+import javax.persistence.Entity;
+
 import org.fakereplace.api.ChangedClass;
 import org.fakereplace.api.ClassChangeAware;
 import org.fakereplace.api.NewClassData;
@@ -31,13 +38,6 @@ import org.jboss.msc.service.ServiceTarget;
 import org.jboss.msc.service.StartContext;
 import org.jboss.msc.service.StartException;
 import org.jboss.msc.service.StopContext;
-
-import javax.persistence.Entity;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author Stuart Douglas

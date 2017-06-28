@@ -17,12 +17,6 @@
 
 package org.fakereplace.integration.weld;
 
-import org.fakereplace.api.ChangedClass;
-import org.fakereplace.api.ClassChangeAware;
-import org.fakereplace.api.NewClassData;
-import org.fakereplace.integration.weld.javassist.WeldProxyClassLoadingDelegate;
-
-import javax.enterprise.inject.spi.Bean;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -31,6 +25,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
+import javax.enterprise.inject.spi.Bean;
+
+import org.fakereplace.api.ChangedClass;
+import org.fakereplace.api.ClassChangeAware;
+import org.fakereplace.api.NewClassData;
+import org.fakereplace.integration.weld.javassist.WeldProxyClassLoadingDelegate;
 
 public class WeldClassChangeAware implements ClassChangeAware {
 

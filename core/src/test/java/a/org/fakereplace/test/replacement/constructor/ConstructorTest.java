@@ -23,11 +23,11 @@ import java.lang.reflect.ParameterizedType;
 import java.util.List;
 import java.util.Set;
 
-import a.org.fakereplace.test.replacement.constructor.other.Creator;
-import a.org.fakereplace.test.util.ClassReplacer;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import a.org.fakereplace.test.replacement.constructor.other.Creator;
+import a.org.fakereplace.test.util.ClassReplacer;
 
 public class ConstructorTest {
     @BeforeClass

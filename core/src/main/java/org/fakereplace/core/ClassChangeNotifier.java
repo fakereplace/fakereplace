@@ -17,16 +17,14 @@
 
 package org.fakereplace.core;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.fakereplace.api.ChangedClass;
 import org.fakereplace.api.ClassChangeAware;
 import org.fakereplace.api.NewClassData;
-
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.WeakHashMap;
+import org.fakereplace.data.ClassLoaderData;
 
 public class ClassChangeNotifier {
 
@@ -39,14 +37,15 @@ public class ClassChangeNotifier {
         }
     };
 
-
-    private final Map<ClassLoader, Set<ClassChangeAware>> classChangeAwares = Collections.synchronizedMap(new WeakHashMap<>());
+    private final ClassLoaderData.AttachmentKey<Set<ClassChangeAware>> classChangeAwares = new ClassLoaderData.AttachmentKey<>();
 
     public void add(ClassChangeAware aware) {
-        if (!classChangeAwares.containsKey(aware.getClass().getClassLoader())) {
-            classChangeAwares.put(aware.getClass().getClassLoader(), new HashSet<ClassChangeAware>());
+        ClassLoaderData cd = ClassLoaderData.get(aware.getClass().getClassLoader());
+        Set<ClassChangeAware> set = cd.getAttachment(classChangeAwares);
+        if(set == null) {
+            cd.putAttachment(classChangeAwares, set = new HashSet<>());
         }
-        classChangeAwares.get(aware.getClass().getClassLoader()).add(aware);
+        set.add(aware);
     }
 
      public void afterChange(List<ChangedClass> changed, List<NewClassData> newClasses) {
@@ -54,7 +53,7 @@ public class ClassChangeNotifier {
             NOTIFICATION_IN_PROGRESS.set(true);
             try {
                 Class<?>[] a = new Class[0];
-                for (Set<ClassChangeAware> c : classChangeAwares.values()) {
+                for (Set<ClassChangeAware> c : ClassLoaderData.allAttachment(classChangeAwares)) {
                     for (ClassChangeAware i : c) {
                         try {
                             i.afterChange(changed, newClasses);

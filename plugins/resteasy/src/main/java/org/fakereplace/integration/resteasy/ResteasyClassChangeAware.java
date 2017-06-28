@@ -17,21 +17,21 @@
 
 package org.fakereplace.integration.resteasy;
 
-import javassist.bytecode.AnnotationsAttribute;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import javax.ws.rs.Path;
+
 import org.fakereplace.api.ChangedClass;
 import org.fakereplace.api.ClassChangeAware;
 import org.fakereplace.api.NewClassData;
 import org.fakereplace.data.InstanceTracker;
 import org.fakereplace.logging.Logger;
-
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.ws.rs.Path;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import javassist.bytecode.AnnotationsAttribute;
 
 public class ResteasyClassChangeAware implements ClassChangeAware {
 

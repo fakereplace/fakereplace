@@ -17,11 +17,11 @@
 
 package org.fakereplace.integration.wildfly.autoupdate;
 
-import io.undertow.server.HandlerWrapper;
-import io.undertow.server.HttpHandler;
-import io.undertow.server.HttpServerExchange;
-import io.undertow.util.Headers;
-import io.undertow.util.RedirectBuilder;
+import java.util.ArrayDeque;
+import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicLong;
+
 import org.fakereplace.classloading.ClassLookupManager;
 import org.jboss.as.server.CurrentServiceContainer;
 import org.jboss.as.server.deployment.DeploymentCompleteServiceProcessor;
@@ -33,11 +33,11 @@ import org.jboss.msc.service.AbstractServiceListener;
 import org.jboss.msc.service.ServiceContainer;
 import org.jboss.msc.service.ServiceController;
 import org.jboss.msc.service.ServiceName;
-
-import java.util.ArrayDeque;
-import java.util.Map;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicLong;
+import io.undertow.server.HandlerWrapper;
+import io.undertow.server.HttpHandler;
+import io.undertow.server.HttpServerExchange;
+import io.undertow.util.Headers;
+import io.undertow.util.RedirectBuilder;
 
 /**
  * @author Stuart Douglas

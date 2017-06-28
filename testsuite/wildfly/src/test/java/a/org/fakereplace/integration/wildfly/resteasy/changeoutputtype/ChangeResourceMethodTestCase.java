@@ -16,10 +16,10 @@
  */
 package a.org.fakereplace.integration.wildfly.resteasy.changeoutputtype;
 
+import static org.junit.Assert.assertEquals;
+
 import java.net.URL;
 
-import a.org.fakereplace.testsuite.shared.HttpUtils;
-import a.org.fakereplace.testsuite.shared.RemoteClassReplacer;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -33,8 +33,8 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import static org.junit.Assert.assertEquals;
+import a.org.fakereplace.testsuite.shared.HttpUtils;
+import a.org.fakereplace.testsuite.shared.RemoteClassReplacer;
 
 /**
  * Tests changing a JAX-RS method from a String to a JAXB object

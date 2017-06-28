@@ -17,7 +17,9 @@
 
 package org.fakereplace.util;
 
-import com.sun.nio.file.SensitivityWatchEventModifier;
+import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
+import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
+import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,9 +44,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
-import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
-import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
+import com.sun.nio.file.SensitivityWatchEventModifier;
 
 public class WatchServiceFileSystemWatcher implements Runnable, AutoCloseable {
 

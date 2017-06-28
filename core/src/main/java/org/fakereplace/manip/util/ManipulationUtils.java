@@ -17,16 +17,13 @@
 
 package org.fakereplace.manip.util;
 
+import org.fakereplace.util.DescriptorUtils;
 import javassist.bytecode.BadBytecode;
 import javassist.bytecode.Bytecode;
 import javassist.bytecode.ClassFile;
-import javassist.bytecode.CodeAttribute;
 import javassist.bytecode.CodeIterator;
-import javassist.bytecode.DuplicateMemberException;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.Opcode;
-import org.fakereplace.data.MethodData;
-import org.fakereplace.util.DescriptorUtils;
 
 /**
  * Class that holds various static helper methods that manipulate the bytecode

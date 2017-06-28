@@ -24,15 +24,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.fakereplace.logging.Logger;
+import org.fakereplace.util.JumpMarker;
+import org.fakereplace.util.JumpUtils;
 import javassist.bytecode.Bytecode;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.CodeIterator;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.Opcode;
-import org.fakereplace.logging.Logger;
-import org.fakereplace.util.JumpMarker;
-import org.fakereplace.util.JumpUtils;
 
 /**
  * manipulator that replaces Field.set* / Field.get* with the following:
@@ -46,7 +46,7 @@ import org.fakereplace.util.JumpUtils;
  *
  * @author stuart
  */
-public class ReflectionFieldAccessManipulator implements ClassManipulator {
+class ReflectionFieldAccessManipulator implements ClassManipulator {
 
     private static final Logger log = Logger.getLogger(ReflectionFieldAccessManipulator.class);
 
@@ -56,7 +56,7 @@ public class ReflectionFieldAccessManipulator implements ClassManipulator {
 
     }
 
-    public ReflectionFieldAccessManipulator() {
+    ReflectionFieldAccessManipulator() {
         // field access setters
         setupData("set", "(Ljava/lang/Object;Ljava/lang/Object;)V", "(Ljava/lang/reflect/Field;Ljava/lang/Object;Ljava/lang/Object;)V", true, false);
         setupData("setBoolean", "(Ljava/lang/Object;Z)V", "(Ljava/lang/reflect/Field;Ljava/lang/Object;Z)V", true, false);

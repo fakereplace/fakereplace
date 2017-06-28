@@ -22,16 +22,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.fakereplace.logging.Logger;
+import org.fakereplace.reflection.ConstructorReflection;
+import org.fakereplace.util.JumpMarker;
+import org.fakereplace.util.JumpUtils;
 import javassist.bytecode.Bytecode;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.CodeIterator;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.Opcode;
-import org.fakereplace.logging.Logger;
-import org.fakereplace.reflection.ConstructorReflection;
-import org.fakereplace.util.JumpMarker;
-import org.fakereplace.util.JumpUtils;
 
 /**
  * manipulator that replaces Method.invokewith the following:
@@ -45,11 +45,11 @@ import org.fakereplace.util.JumpUtils;
  *
  * @author stuart
  */
-public class ReflectionConstructorAccessManipulator implements ClassManipulator {
+class ReflectionConstructorAccessManipulator implements ClassManipulator {
 
-    public static final String METHOD_NAME = "newInstance";
-    public static final String REPLACED_METHOD_DESCRIPTOR = "(Ljava/lang/reflect/Constructor;[Ljava/lang/Object;)Ljava/lang/Object;";
-    public static final String METHOD_DESCRIPTOR = "([Ljava/lang/Object;)Ljava/lang/Object;";
+    private static final String METHOD_NAME = "newInstance";
+    private static final String REPLACED_METHOD_DESCRIPTOR = "(Ljava/lang/reflect/Constructor;[Ljava/lang/Object;)Ljava/lang/Object;";
+    private static final String METHOD_DESCRIPTOR = "([Ljava/lang/Object;)Ljava/lang/Object;";
 
     private static final Logger log = Logger.getLogger(ConstructorInvocationManipulator.class);
 

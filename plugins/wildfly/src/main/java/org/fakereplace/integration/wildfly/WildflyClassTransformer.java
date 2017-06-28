@@ -17,6 +17,13 @@
 
 package org.fakereplace.integration.wildfly;
 
+import java.lang.instrument.IllegalClassFormatException;
+import java.security.ProtectionDomain;
+import java.util.List;
+import java.util.Set;
+
+import org.fakereplace.replacement.notification.ChangedClassImpl;
+import org.fakereplace.transformation.FakereplaceTransformer;
 import javassist.bytecode.BadBytecode;
 import javassist.bytecode.Bytecode;
 import javassist.bytecode.ClassFile;
@@ -24,13 +31,6 @@ import javassist.bytecode.CodeAttribute;
 import javassist.bytecode.CodeIterator;
 import javassist.bytecode.DuplicateMemberException;
 import javassist.bytecode.MethodInfo;
-import org.fakereplace.replacement.notification.ChangedClassImpl;
-import org.fakereplace.transformation.FakereplaceTransformer;
-
-import java.lang.instrument.IllegalClassFormatException;
-import java.security.ProtectionDomain;
-import java.util.List;
-import java.util.Set;
 
 /**
  * @author Stuart Douglas

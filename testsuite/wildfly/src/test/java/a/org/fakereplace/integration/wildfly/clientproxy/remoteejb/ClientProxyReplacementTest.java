@@ -17,7 +17,11 @@
 
 package a.org.fakereplace.integration.wildfly.clientproxy.remoteejb;
 
-import a.org.fakereplace.testsuite.shared.RemoteClassReplacer;
+import java.util.Properties;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -28,11 +32,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import java.util.Properties;
+import a.org.fakereplace.testsuite.shared.RemoteClassReplacer;
 
 /**
  * @author Stuart Douglas

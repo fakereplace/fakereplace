@@ -26,12 +26,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javassist.ClassPool;
-import javassist.CtClass;
 import org.fakereplace.client.ClassData;
 import org.fakereplace.client.ContentSource;
 import org.fakereplace.client.FakeReplaceClient;
 import org.fakereplace.client.ResourceData;
+import javassist.ClassPool;
+import javassist.CtClass;
 
 public class RemoteClassReplacer {
 

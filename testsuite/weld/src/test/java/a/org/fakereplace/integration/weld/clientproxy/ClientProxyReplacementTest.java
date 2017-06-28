@@ -19,7 +19,6 @@ package a.org.fakereplace.integration.weld.clientproxy;
 
 import javax.inject.Inject;
 
-import a.org.fakereplace.testsuite.shared.ClassReplacer;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -29,6 +28,7 @@ import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import a.org.fakereplace.testsuite.shared.ClassReplacer;
 
 /**
  * @author Stuart Douglas

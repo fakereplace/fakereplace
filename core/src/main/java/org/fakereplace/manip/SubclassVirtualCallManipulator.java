@@ -20,16 +20,16 @@ package org.fakereplace.manip;
 import java.util.Map;
 import java.util.Set;
 
-import javassist.bytecode.BadBytecode;
-import javassist.bytecode.Bytecode;
-import javassist.bytecode.ClassFile;
-import javassist.bytecode.MethodInfo;
-import javassist.bytecode.Opcode;
 import org.fakereplace.manip.data.SubclassVirtualCallData;
 import org.fakereplace.manip.util.ManipulationDataStore;
 import org.fakereplace.manip.util.ManipulationUtils;
 import org.fakereplace.runtime.VirtualDelegator;
 import org.fakereplace.util.DescriptorUtils;
+import javassist.bytecode.BadBytecode;
+import javassist.bytecode.Bytecode;
+import javassist.bytecode.ClassFile;
+import javassist.bytecode.MethodInfo;
+import javassist.bytecode.Opcode;
 
 /**
  * this manipulator adds code that looks like:
@@ -48,11 +48,11 @@ import org.fakereplace.util.DescriptorUtils;
  *
  * @author stuart
  */
-public class SubclassVirtualCallManipulator implements ClassManipulator {
+class SubclassVirtualCallManipulator implements ClassManipulator {
 
     private final ManipulationDataStore<SubclassVirtualCallData> data = new ManipulationDataStore<SubclassVirtualCallData>();
 
-    public void addClassData(String className, ClassLoader classLoader, String parentClassName, ClassLoader parentClassLoader, String methodName, String methodDesc) {
+    void addClassData(String className, ClassLoader classLoader, String parentClassName, ClassLoader parentClassLoader, String methodName, String methodDesc) {
         data.add(parentClassName, new SubclassVirtualCallData(parentClassLoader, parentClassName, methodName, methodDesc));
         VirtualDelegator.add(classLoader, className, methodName, methodDesc);
     }

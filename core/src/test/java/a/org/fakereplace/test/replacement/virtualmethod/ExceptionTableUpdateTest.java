@@ -20,8 +20,8 @@ package a.org.fakereplace.test.replacement.virtualmethod;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import a.org.fakereplace.test.util.ClassReplacer;
 import org.junit.Test;
+import a.org.fakereplace.test.util.ClassReplacer;
 
 public class ExceptionTableUpdateTest {
     @Test

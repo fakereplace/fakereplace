@@ -27,12 +27,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.fakereplace.core.Constants;
+import org.fakereplace.util.DescriptorUtils;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.Descriptor;
 import javassist.bytecode.FieldInfo;
 import javassist.bytecode.MethodInfo;
-import org.fakereplace.core.Constants;
-import org.fakereplace.util.DescriptorUtils;
 
 /**
  * This class holds everything there is to know about a class that has been seen

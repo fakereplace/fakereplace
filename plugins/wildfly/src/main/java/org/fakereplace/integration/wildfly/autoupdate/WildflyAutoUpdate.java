@@ -17,10 +17,6 @@
 
 package org.fakereplace.integration.wildfly.autoupdate;
 
-import org.fakereplace.core.Agent;
-import org.fakereplace.replacement.AddedClass;
-import org.jboss.modules.ModuleClassLoader;
-
 import java.io.IOException;
 import java.lang.instrument.ClassDefinition;
 import java.net.URL;
@@ -35,6 +31,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.stream.Collectors;
+
+import org.fakereplace.core.Agent;
+import org.fakereplace.replacement.AddedClass;
+import org.jboss.modules.ModuleClassLoader;
 
 /**
  * Class that is responsible for handling the wildfly automatic updates. Automatic updates are triggered by web requests,

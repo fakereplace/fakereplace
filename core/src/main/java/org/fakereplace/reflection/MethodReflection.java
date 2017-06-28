@@ -23,8 +23,6 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
-import javassist.bytecode.AccessFlag;
-import javassist.bytecode.Descriptor;
 import org.fakereplace.core.Constants;
 import org.fakereplace.data.ClassData;
 import org.fakereplace.data.ClassDataStore;
@@ -32,6 +30,8 @@ import org.fakereplace.data.MemberType;
 import org.fakereplace.data.MethodData;
 import org.fakereplace.data.ModifiedMethod;
 import org.fakereplace.util.DescriptorUtils;
+import javassist.bytecode.AccessFlag;
+import javassist.bytecode.Descriptor;
 import sun.reflect.Reflection;
 
 /**

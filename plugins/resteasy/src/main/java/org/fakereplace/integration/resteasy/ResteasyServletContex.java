@@ -17,10 +17,6 @@
 
 package org.fakereplace.integration.resteasy;
 
-import javax.servlet.RequestDispatcher;
-import javax.servlet.Servlet;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -30,6 +26,10 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.Servlet;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 
 /**
  * @author Stuart Douglas

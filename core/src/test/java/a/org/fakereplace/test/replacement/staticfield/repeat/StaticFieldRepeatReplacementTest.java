@@ -17,11 +17,11 @@
 
 package a.org.fakereplace.test.replacement.staticfield.repeat;
 
-import a.org.fakereplace.test.util.ClassReplacer;
+import java.lang.reflect.Field;
+
 import org.junit.Assert;
 import org.junit.Test;
-
-import java.lang.reflect.Field;
+import a.org.fakereplace.test.util.ClassReplacer;
 
 public class StaticFieldRepeatReplacementTest {
     @Test

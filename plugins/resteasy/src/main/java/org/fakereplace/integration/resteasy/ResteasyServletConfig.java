@@ -17,12 +17,12 @@
 
 package org.fakereplace.integration.resteasy;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 
 /**
  * @author Stuart Douglas

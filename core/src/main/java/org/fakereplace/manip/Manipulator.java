@@ -17,17 +17,14 @@
 
 package org.fakereplace.manip;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import javassist.ClassPool;
-import javassist.LoaderClassPath;
+import org.fakereplace.manip.data.AddedFieldData;
+import org.fakereplace.manip.data.FakeMethodCallData;
 import javassist.bytecode.BadBytecode;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.MethodInfo;
-import org.fakereplace.manip.data.AddedFieldData;
-import org.fakereplace.manip.data.FakeMethodCallData;
 
 /**
  * Class that maintains a set of manipulations to apply to classes
@@ -46,7 +43,7 @@ public class Manipulator {
     private final ReflectionMethodAccessManipulator reflectionMethodAccessManipulator = new ReflectionMethodAccessManipulator();
     private final FakeMethodCallManipulator fakeMethodCallManipulator = new FakeMethodCallManipulator();
 
-    private final Set<ClassManipulator> manipulators = new CopyOnWriteArraySet<ClassManipulator>();
+    private final Set<ClassManipulator> manipulators = new CopyOnWriteArraySet<>();
 
     public Manipulator() {
         manipulators.add(virtualToStaticManipulator);

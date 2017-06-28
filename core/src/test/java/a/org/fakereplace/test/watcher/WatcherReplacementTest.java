@@ -17,13 +17,13 @@
 
 package a.org.fakereplace.test.watcher;
 
-import javassist.ClassPool;
-import javassist.CtClass;
-import org.junit.Assert;
-import org.junit.Test;
-
 import java.io.File;
 import java.io.FileOutputStream;
+
+import org.junit.Assert;
+import org.junit.Test;
+import javassist.ClassPool;
+import javassist.CtClass;
 
 public class WatcherReplacementTest {
     @Test

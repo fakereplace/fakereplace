@@ -18,7 +18,6 @@
 package a.org.fakereplace.testsuite.shared;
 
 import java.io.IOException;
-
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.UnsupportedCallbackException;

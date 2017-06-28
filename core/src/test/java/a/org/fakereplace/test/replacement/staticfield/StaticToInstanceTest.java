@@ -19,10 +19,10 @@ package a.org.fakereplace.test.replacement.staticfield;
 
 import java.lang.reflect.Field;
 
-import a.org.fakereplace.test.util.ClassReplacer;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import a.org.fakereplace.test.util.ClassReplacer;
 
 /**
  * when changing instance fields to static existing reference will still

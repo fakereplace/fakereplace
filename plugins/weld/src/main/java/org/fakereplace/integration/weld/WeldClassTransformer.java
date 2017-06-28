@@ -19,23 +19,20 @@ package org.fakereplace.integration.weld;
 
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javassist.ClassPool;
-import javassist.LoaderClassPath;
-import javassist.bytecode.BadBytecode;
-import javassist.bytecode.Bytecode;
-import javassist.bytecode.ClassFile;
-import javassist.bytecode.CodeIterator;
-import javassist.bytecode.MethodInfo;
 import org.fakereplace.integration.weld.javassist.WeldProxyClassLoadingDelegate;
 import org.fakereplace.logging.Logger;
 import org.fakereplace.manip.VirtualToStaticManipulator;
 import org.fakereplace.replacement.notification.ChangedClassImpl;
 import org.fakereplace.transformation.FakereplaceTransformer;
 import org.fakereplace.util.DescriptorUtils;
+import javassist.bytecode.BadBytecode;
+import javassist.bytecode.Bytecode;
+import javassist.bytecode.ClassFile;
+import javassist.bytecode.CodeIterator;
+import javassist.bytecode.MethodInfo;
 
 /**
  * @author Stuart Douglas

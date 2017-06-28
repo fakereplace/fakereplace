@@ -16,6 +16,16 @@
  */
 package org.fakereplace.integration.wildfly;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.WeakHashMap;
+
 import org.fakereplace.api.environment.ChangedClasses;
 import org.fakereplace.api.environment.Environment;
 import org.fakereplace.core.DefaultEnvironment;
@@ -30,16 +40,6 @@ import org.jboss.modules.ModuleIdentifier;
 import org.jboss.msc.service.ServiceController;
 import org.jboss.msc.service.ServiceName;
 import org.jboss.vfs.VirtualFile;
-
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.WeakHashMap;
 
 /**
  * @author Stuart Douglas

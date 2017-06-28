@@ -17,11 +17,11 @@
 
 package org.fakereplace.replacement.notification;
 
+import java.lang.annotation.Annotation;
+
 import org.fakereplace.api.AnnotationTarget;
 import org.fakereplace.api.ChangeType;
 import org.fakereplace.api.ChangedAnnotation;
-
-import java.lang.annotation.Annotation;
 
 /**
  * A modified annotation

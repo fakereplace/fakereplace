@@ -17,9 +17,9 @@
 
 package a.org.fakereplace.test.replacement.lambda;
 
-import org.fakereplace.util.NoInstrument;
-
 import java.util.concurrent.Callable;
+
+import org.fakereplace.util.NoInstrument;
 
 @NoInstrument
 public class LambdaClass1 {

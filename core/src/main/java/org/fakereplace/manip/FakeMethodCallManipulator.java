@@ -51,7 +51,7 @@ import javassist.bytecode.Opcode;
 /**
  * Manipulator that handles fake method call invocations
  */
-public class FakeMethodCallManipulator implements ClassManipulator {
+class FakeMethodCallManipulator implements ClassManipulator {
 
     private final ManipulationDataStore<FakeMethodCallData> data = new ManipulationDataStore<>();
 
@@ -61,7 +61,7 @@ public class FakeMethodCallManipulator implements ClassManipulator {
         data.remove(className, loader);
     }
 
-    public void addFakeMethodCall(FakeMethodCallData methodInfo) {
+    void addFakeMethodCall(FakeMethodCallData methodInfo) {
         data.add(methodInfo.getClassName(), methodInfo);
     }
 

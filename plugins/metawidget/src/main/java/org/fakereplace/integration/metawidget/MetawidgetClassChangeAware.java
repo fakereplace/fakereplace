@@ -17,16 +17,16 @@
 
 package org.fakereplace.integration.metawidget;
 
-import org.fakereplace.api.ChangedClass;
-import org.fakereplace.api.ClassChangeAware;
-import org.fakereplace.api.NewClassData;
-import org.fakereplace.data.InstanceTracker;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.fakereplace.api.ChangedClass;
+import org.fakereplace.api.ClassChangeAware;
+import org.fakereplace.api.NewClassData;
+import org.fakereplace.data.InstanceTracker;
 
 public class MetawidgetClassChangeAware implements ClassChangeAware {
 

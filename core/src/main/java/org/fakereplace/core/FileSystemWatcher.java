@@ -17,13 +17,6 @@
 
 package org.fakereplace.core;
 
-import javassist.bytecode.ClassFile;
-import org.fakereplace.data.ClassLoaderData;
-import org.fakereplace.replacement.AddedClass;
-import org.fakereplace.util.FileReader;
-import org.fakereplace.util.MD5;
-import org.fakereplace.util.WatchServiceFileSystemWatcher;
-
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.File;
@@ -39,6 +32,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.fakereplace.data.ClassLoaderData;
+import org.fakereplace.replacement.AddedClass;
+import org.fakereplace.util.FileReader;
+import org.fakereplace.util.MD5;
+import org.fakereplace.util.WatchServiceFileSystemWatcher;
+import javassist.bytecode.ClassFile;
 
 
 /**

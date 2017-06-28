@@ -22,10 +22,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javassist.ClassPool;
-import javassist.CtClass;
 import org.fakereplace.core.Agent;
 import org.fakereplace.replacement.AddedClass;
+import javassist.ClassPool;
+import javassist.CtClass;
 
 public class ClassReplacer {
 

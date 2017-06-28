@@ -41,7 +41,7 @@ import javassist.bytecode.ConstPool;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.Opcode;
 
-public class FieldManipulator implements ClassManipulator {
+class FieldManipulator implements ClassManipulator {
 
     private static final String FIELD_DATA_STORE_CLASS = FieldDataStore.class.getName();
 

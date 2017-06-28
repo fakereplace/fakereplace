@@ -23,6 +23,8 @@ import java.security.ProtectionDomain;
 import java.util.List;
 import java.util.Set;
 
+import org.fakereplace.replacement.notification.ChangedClassImpl;
+import org.fakereplace.transformation.FakereplaceTransformer;
 import javassist.bytecode.AccessFlag;
 import javassist.bytecode.BadBytecode;
 import javassist.bytecode.Bytecode;
@@ -31,8 +33,6 @@ import javassist.bytecode.DuplicateMemberException;
 import javassist.bytecode.FieldInfo;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.Opcode;
-import org.fakereplace.replacement.notification.ChangedClassImpl;
-import org.fakereplace.transformation.FakereplaceTransformer;
 
 /**
  * @author Stuart Douglas
