@@ -58,10 +58,10 @@ public class JSFClassChangeAware implements ClassChangeAware {
         for (Object i : data) {
             clearBeanElResolver(i);
         }
-        clearPropertiesCache(changed);
+        clearPropertiesCache();
     }
 
-    private void clearPropertiesCache(List<ChangedClass> changed) {
+    private void clearPropertiesCache() {
         try {
             BeanPropertiesCache.SoftConcurrentHashMap properties = BeanPropertiesCache.getProperties();
             properties.clear();

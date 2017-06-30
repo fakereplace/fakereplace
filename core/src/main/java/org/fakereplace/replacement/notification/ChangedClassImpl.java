@@ -24,34 +24,19 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.fakereplace.api.Changed;
 import org.fakereplace.api.ChangedAnnotation;
 import org.fakereplace.api.ChangedClass;
-import org.fakereplace.api.ChangedField;
-import org.fakereplace.api.ChangedMethod;
 
 /**
  * @author Stuart Douglas
  */
 public class ChangedClassImpl implements ChangedClass {
 
-    private final Set<ChangedAnnotation> changedClassAnnotations = new HashSet<>();
     private final Map<Class<? extends Annotation>, Set<ChangedAnnotation>> changedAnnotationsByType = new HashMap<>();
-    private final Set<Changed<ChangedField>> fields = new HashSet<>();
-    private final Set<Changed<ChangedMethod>> methods = new HashSet<>();
     private final Class<?> changedClass;
 
     public ChangedClassImpl(final Class<?> changedClass) {
         this.changedClass = changedClass;
-    }
-
-    /**
-     *
-     * @return The changed class level annotations
-     */
-    @Override
-    public Set<ChangedAnnotation> getChangedClassAnnotations() {
-        return Collections.unmodifiableSet(changedClassAnnotations);
     }
 
     /**
@@ -70,22 +55,11 @@ public class ChangedClassImpl implements ChangedClass {
     }
 
     @Override
-    public Set<Changed<ChangedField>> getFields() {
-        return Collections.unmodifiableSet(fields);
-    }
-
-    @Override
-    public Set<Changed<ChangedMethod>> getMethods() {
-        return Collections.unmodifiableSet(methods);
-    }
-
-    @Override
     public Class<?> getChangedClass() {
         return changedClass;
     }
 
     public void changeClassAnnotation(final ChangedAnnotation annotation) {
-        changedClassAnnotations.add(annotation);
         changedAnnotation(annotation);
     }
 
@@ -98,10 +72,7 @@ public class ChangedClassImpl implements ChangedClass {
     @Override
     public String toString() {
         return "ChangedClassImpl{" +
-                "changedClassAnnotations=" + changedClassAnnotations +
                 ", changedAnnotationsByType=" + changedAnnotationsByType +
-                ", fields=" + fields +
-                ", methods=" + methods +
                 ", changedClass=" + changedClass +
                 '}';
     }
