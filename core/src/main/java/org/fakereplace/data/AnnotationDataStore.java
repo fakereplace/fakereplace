@@ -32,7 +32,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.fakereplace.api.ChangeType;
-import org.fakereplace.classloading.ProxyDefinitionStore;
+import org.fakereplace.core.ProxyDefinitionStore;
 import org.fakereplace.replacement.notification.ChangedAnnotationImpl;
 import org.fakereplace.replacement.notification.ChangedClassImpl;
 import javassist.bytecode.AccessFlag;

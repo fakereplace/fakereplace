@@ -20,9 +20,6 @@ package org.fakereplace.manip;
 import java.util.Map;
 import java.util.Set;
 
-import org.fakereplace.manip.data.SubclassVirtualCallData;
-import org.fakereplace.manip.util.ManipulationDataStore;
-import org.fakereplace.manip.util.ManipulationUtils;
 import org.fakereplace.runtime.VirtualDelegator;
 import org.fakereplace.util.DescriptorUtils;
 import javassist.bytecode.BadBytecode;

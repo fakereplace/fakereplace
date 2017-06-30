@@ -32,7 +32,6 @@ import java.util.Set;
 
 import org.fakereplace.Extension;
 import org.fakereplace.api.NewClassData;
-import org.fakereplace.classloading.ClassLookupManager;
 import org.fakereplace.data.BaseClassData;
 import org.fakereplace.data.ClassDataBuilder;
 import org.fakereplace.data.ClassDataStore;
@@ -88,7 +87,7 @@ public class Agent {
         mainTransformer.addTransformer(new AnnotationTransformer());
         mainTransformer.addTransformer(new FieldReplacementTransformer());
         mainTransformer.addTransformer(new MethodReplacementTransformer());
-        mainTransformer.addTransformer(new Transformer(extension));
+        mainTransformer.addTransformer(new Transformer());
         mainTransformer.setRetransformationStarted(false);
         mainTransformer.setLogClassRetransformation(true);
 

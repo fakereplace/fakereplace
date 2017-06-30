@@ -19,18 +19,13 @@ package org.fakereplace.core;
 
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.fakereplace.Extension;
 import org.fakereplace.api.environment.CurrentEnvironment;
 import org.fakereplace.data.BaseClassData;
 import org.fakereplace.data.ClassDataStore;
-import org.fakereplace.data.InstanceTracker;
 import org.fakereplace.manip.Manipulator;
-import org.fakereplace.manip.util.ManipulationUtils;
+import org.fakereplace.manip.ManipulationUtils;
 import org.fakereplace.reflection.ReflectionInstrumentationSetup;
 import org.fakereplace.replacement.notification.ChangedClassImpl;
 import org.fakereplace.util.NoInstrument;
@@ -40,7 +35,6 @@ import javassist.bytecode.BadBytecode;
 import javassist.bytecode.Bytecode;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.CodeAttribute;
-import javassist.bytecode.CodeIterator;
 import javassist.bytecode.DuplicateMemberException;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.Opcode;
@@ -55,38 +49,20 @@ public class Transformer implements FakereplaceTransformer {
 
     private static final Manipulator manipulator = new Manipulator();
 
-    private final Set<String> trackedInstances = new HashSet<>();
-
-    private final List<FakereplaceTransformer> integrationTransformers = new CopyOnWriteArrayList<>();
-
     /**
      * TODO: Move this elsewhere
      */
     private final FileSystemWatcher watcher = new FileSystemWatcher();
 
 
-    Transformer(Set<Extension> extension) {
+    Transformer() {
         ReflectionInstrumentationSetup.setup(manipulator);
-        for (Extension i : extension) {
-            trackedInstances.addAll(i.getTrackedInstanceClassNames());
-            if(i instanceof InternalExtension) {
-                List<FakereplaceTransformer> t = ((InternalExtension)i).getTransformers();
-                if (t != null) {
-                    integrationTransformers.addAll(t);
-                }
-            }
-        }
     }
 
     public boolean transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, ClassFile file, Set<Class<?>> classesToRetransform, ChangedClassImpl changedClass, Set<MethodInfo> modifiedMethods) throws IllegalClassFormatException, BadBytecode, DuplicateMemberException {
         boolean modified = false;
         if (classBeingRedefined != null) {
             ClassDataStore.instance().markClassReplaced(classBeingRedefined);
-        }
-        for (FakereplaceTransformer i : integrationTransformers) {
-            if (i.transform(loader, className, classBeingRedefined, protectionDomain, file, classesToRetransform, changedClass, modifiedMethods)) {
-                modified = true;
-            }
         }
         // we do not instrument any classes from fakereplace
         // if we did we get an endless loop
@@ -109,11 +85,6 @@ public class Transformer implements FakereplaceTransformer {
                     return modified;
                 }
             }
-        }
-
-        if (trackedInstances.contains(file.getName())) {
-            makeTrackedInstance(file);
-            modified = true;
         }
 
         final boolean replaceable = CurrentEnvironment.getEnvironment().isClassReplaceable(className, loader);
@@ -246,23 +217,4 @@ public class Transformer implements FakereplaceTransformer {
         return manipulator;
     }
 
-    /**
-     * modifies a class so that all created instances are registered with
-     * InstanceTracker
-     *
-     */
-    public void makeTrackedInstance(ClassFile file) throws BadBytecode {
-        for (MethodInfo m : (List<MethodInfo>) file.getMethods()) {
-            if (m.getName().equals("<init>")) {
-                Bytecode code = new Bytecode(file.getConstPool());
-                code.addLdc(file.getName());
-                code.addAload(0);
-                code.addInvokestatic(InstanceTracker.class.getName(), "add", "(Ljava/lang/String;Ljava/lang/Object;)V");
-                CodeIterator it = m.getCodeAttribute().iterator();
-                it.skipConstructor();
-                it.insert(code.get());
-                m.getCodeAttribute().computeMaxStack();
-            }
-        }
-    }
 }

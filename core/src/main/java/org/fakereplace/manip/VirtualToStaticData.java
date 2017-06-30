@@ -18,9 +18,7 @@
 /**
  *
  */
-package org.fakereplace.manip.data;
-
-import org.fakereplace.manip.util.ClassLoaderFiltered;
+package org.fakereplace.manip;
 
 public class VirtualToStaticData implements ClassLoaderFiltered<VirtualToStaticData> {
     private final String oldClass;

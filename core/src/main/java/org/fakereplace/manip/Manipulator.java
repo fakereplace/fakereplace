@@ -20,9 +20,6 @@ package org.fakereplace.manip;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import org.fakereplace.manip.data.AddedFieldData;
-import org.fakereplace.manip.data.FakeMethodCallData;
-import javassist.bytecode.BadBytecode;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.MethodInfo;
 

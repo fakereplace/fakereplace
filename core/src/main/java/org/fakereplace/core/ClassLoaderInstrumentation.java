@@ -21,7 +21,6 @@ import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.Set;
 
-import org.fakereplace.classloading.ClassLookupManager;
 import org.fakereplace.util.JumpMarker;
 import org.fakereplace.util.JumpUtils;
 import javassist.bytecode.BadBytecode;

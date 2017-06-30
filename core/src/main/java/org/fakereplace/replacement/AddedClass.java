@@ -17,8 +17,6 @@
 
 package org.fakereplace.replacement;
 
-import org.fakereplace.classloading.ClassIdentifier;
-
 public class AddedClass {
     private final String className;
     private final byte[] data;

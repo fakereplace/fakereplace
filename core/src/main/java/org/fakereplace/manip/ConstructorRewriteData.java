@@ -18,9 +18,8 @@
 /**
  *
  */
-package org.fakereplace.manip.data;
+package org.fakereplace.manip;
 
-import org.fakereplace.manip.util.ClassLoaderFiltered;
 import org.fakereplace.util.DescriptorUtils;
 
 public class ConstructorRewriteData implements ClassLoaderFiltered<ConstructorRewriteData> {

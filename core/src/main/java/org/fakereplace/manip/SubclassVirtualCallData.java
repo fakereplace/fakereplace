@@ -15,9 +15,7 @@
  *  limitations under the License.
  */
 
-package org.fakereplace.manip.data;
-
-import org.fakereplace.manip.util.ClassLoaderFiltered;
+package org.fakereplace.manip;
 
 public class SubclassVirtualCallData implements ClassLoaderFiltered<SubclassVirtualCallData> {
 

@@ -29,7 +29,7 @@ import java.util.HashSet;
 import java.util.ListIterator;
 import java.util.Set;
 
-import org.fakereplace.classloading.ProxyDefinitionStore;
+import org.fakereplace.core.ProxyDefinitionStore;
 import org.fakereplace.core.BuiltinClassData;
 import org.fakereplace.core.Constants;
 import org.fakereplace.core.Transformer;
@@ -39,10 +39,10 @@ import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.data.MemberType;
 import org.fakereplace.data.MethodData;
 import org.fakereplace.logging.Logger;
-import org.fakereplace.manip.data.FakeMethodCallData;
-import org.fakereplace.manip.util.Boxing;
-import org.fakereplace.manip.util.ManipulationUtils;
-import org.fakereplace.manip.util.ManipulationUtils.MethodReturnRewriter;
+import org.fakereplace.manip.FakeMethodCallData;
+import org.fakereplace.util.Boxing;
+import org.fakereplace.manip.ManipulationUtils;
+import org.fakereplace.manip.ManipulationUtils.MethodReturnRewriter;
 import org.fakereplace.replacement.notification.ChangedClassImpl;
 import org.fakereplace.runtime.MethodIdentifierStore;
 import org.fakereplace.core.FakereplaceTransformer;
@@ -333,7 +333,7 @@ public class MethodReplacementTransformer implements FakereplaceTransformer {
         // now we need to make sure the function is returning an object
         // rewriteFakeMethod makes sure that the return type is properly boxed
         if (!constructor) {
-            MethodReturnRewriter.rewriteFakeMethod(addedMethod.iterator(), mInfo.getDescriptor());
+            rewriteFakeMethod(addedMethod.iterator(), mInfo.getDescriptor());
         }
 
     }
@@ -788,6 +788,62 @@ public class MethodReplacementTransformer implements FakereplaceTransformer {
             }
         }
         return true;
+    }
+
+
+    private static void rewriteFakeMethod(CodeIterator methodBody, String methodDescriptor) {
+        String ret = DescriptorUtils.getReturnType(methodDescriptor);
+        // if the return type is larger than one then it is not a primitive
+        // so it does not need to be boxed
+        if (ret.length() != 1) {
+            return;
+        }
+        // void methods are special
+        if (ret.equals("V")) {
+
+            while (methodBody.hasNext()) {
+                try {
+                    int index = methodBody.next();
+                    int opcode = methodBody.byteAt(index);
+                    // replace a RETURN opcode with
+                    // ACONST_NULL
+                    // ARETURN
+                    // to return a null value
+                    if (opcode == Opcode.RETURN) {
+                        Bytecode code = new Bytecode(methodBody.get().getConstPool());
+                        methodBody.writeByte(Opcode.ARETURN, index);
+                        code.add(Opcode.ACONST_NULL);
+                        methodBody.insertAt(index, code.get());
+
+                    }
+                } catch (BadBytecode e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        } else {
+            while (methodBody.hasNext()) {
+                try {
+                    int index = methodBody.next();
+                    int opcode = methodBody.byteAt(index);
+
+                    switch (opcode) {
+                        case Opcode.IRETURN:
+                        case Opcode.LRETURN:
+                        case Opcode.DRETURN:
+                        case Opcode.FRETURN:
+                            // write a NOP over the old return instruction
+                            // insert the boxing code to get an object on the stack
+                            methodBody.writeByte(Opcode.ARETURN, index);
+                            Bytecode b = new Bytecode(methodBody.get().getConstPool());
+                            Boxing.box(b, ret.charAt(0));
+                            methodBody.insertAt(index, b.get());
+
+                    }
+                } catch (BadBytecode e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
     }
 
     private static final class FakeMethod {

@@ -23,7 +23,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
-import org.fakereplace.classloading.ClassIdentifier;
+import org.fakereplace.core.ClassIdentifier;
 import org.fakereplace.core.BuiltinClassData;
 import org.fakereplace.reflection.FieldAccessor;
 

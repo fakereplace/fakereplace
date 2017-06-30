@@ -23,26 +23,35 @@ import java.net.URL;
 import java.security.ProtectionDomain;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.fakereplace.Extension;
 import org.fakereplace.api.ClassChangeAware;
 import org.fakereplace.api.environment.CurrentEnvironment;
 import org.fakereplace.api.environment.Environment;
+import org.fakereplace.data.InstanceTracker;
 import org.fakereplace.logging.Logger;
 import org.fakereplace.replacement.notification.ChangedClassImpl;
 import javassist.bytecode.BadBytecode;
+import javassist.bytecode.Bytecode;
 import javassist.bytecode.ClassFile;
+import javassist.bytecode.CodeIterator;
 import javassist.bytecode.DuplicateMemberException;
 import javassist.bytecode.MethodInfo;
 
 /**
+ * Transformer that handles Fakereplace plugins
+ *
+ *
  * @author Stuart Douglas
  */
-public class IntegrationActivationTransformer implements FakereplaceTransformer {
+class IntegrationActivationTransformer implements FakereplaceTransformer {
 
     private final Map<String, Extension> integrationClassTriggers;
 
@@ -50,9 +59,22 @@ public class IntegrationActivationTransformer implements FakereplaceTransformer 
 
     private static final Set<ClassLoader> integrationClassloader = Collections.newSetFromMap(Collections.synchronizedMap(new WeakHashMap<>()));
 
+    private final List<FakereplaceTransformer> integrationTransformers = new CopyOnWriteArrayList<>();
 
-    public IntegrationActivationTransformer(Set<Extension> extension) {
+    private final Set<String> trackedInstances = new HashSet<>();
+
+
+    IntegrationActivationTransformer(Set<Extension> extension) {
         Map<String, Extension> integrationClassTriggers = new HashMap<>();
+        for (Extension i : extension) {
+            trackedInstances.addAll(i.getTrackedInstanceClassNames());
+            if(i instanceof InternalExtension) {
+                List<FakereplaceTransformer> t = ((InternalExtension)i).getTransformers();
+                if (t != null) {
+                    integrationTransformers.addAll(t);
+                }
+            }
+        }
         for (Extension i : extension) {
             for (String j : i.getIntegrationTriggerClassNames()) {
                 integrationClassTriggers.put(j.replace(".", "/"), i);
@@ -63,6 +85,17 @@ public class IntegrationActivationTransformer implements FakereplaceTransformer 
 
     @Override
     public boolean transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, ClassFile file, Set<Class<?>> classesToRetransform, ChangedClassImpl changedClass, Set<MethodInfo> modifiedMethods) throws IllegalClassFormatException, BadBytecode, DuplicateMemberException {
+        boolean modified = false;
+        for (FakereplaceTransformer i : integrationTransformers) {
+            if (i.transform(loader, className, classBeingRedefined, protectionDomain, file, classesToRetransform, changedClass, modifiedMethods)) {
+                modified = true;
+            }
+        }
+
+        if (trackedInstances.contains(file.getName())) {
+            makeTrackedInstance(file);
+            modified = true;
+        }
 
         if (integrationClassTriggers.containsKey(className)) {
             integrationClassloader.add(loader);
@@ -93,7 +126,7 @@ public class IntegrationActivationTransformer implements FakereplaceTransformer 
                 }
             }
         }
-        return false;
+        return modified;
     }
 
     public static byte[] getIntegrationClass(ClassLoader c, String name) {
@@ -108,6 +141,26 @@ public class IntegrationActivationTransformer implements FakereplaceTransformer 
             return org.fakereplace.util.FileReader.readFileBytes(resource.openStream());
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * modifies a class so that all created instances are registered with
+     * InstanceTracker
+     *
+     */
+    public void makeTrackedInstance(ClassFile file) throws BadBytecode {
+        for (MethodInfo m : (List<MethodInfo>) file.getMethods()) {
+            if (m.getName().equals("<init>")) {
+                Bytecode code = new Bytecode(file.getConstPool());
+                code.addLdc(file.getName());
+                code.addAload(0);
+                code.addInvokestatic(InstanceTracker.class.getName(), "add", "(Ljava/lang/String;Ljava/lang/Object;)V");
+                CodeIterator it = m.getCodeAttribute().iterator();
+                it.skipConstructor();
+                it.insert(code.get());
+                m.getCodeAttribute().computeMaxStack();
+            }
         }
     }
 }

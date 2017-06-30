@@ -15,14 +15,10 @@
  *  limitations under the License.
  */
 
-package org.fakereplace.classloading;
+package org.fakereplace.core;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import org.fakereplace.core.Constants;
-import org.fakereplace.core.IntegrationActivationTransformer;
-import org.fakereplace.core.MainTransformer;
 
 /**
  * this class is responsible for serving up classes to instrumented ClassLoaders

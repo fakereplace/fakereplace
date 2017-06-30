@@ -15,7 +15,7 @@
  *  limitations under the License.
  */
 
-package org.fakereplace.manip.util;
+package org.fakereplace.manip;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -36,7 +36,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
  * @param <T>
  * @author stuart
  */
-public class ManipulationDataStore<T extends ClassLoaderFiltered<T>> {
+class ManipulationDataStore<T extends ClassLoaderFiltered<T>> {
 
     private final Map<ClassLoader, ConcurrentMap<String, Set<T>>> cldata = Collections.synchronizedMap(new WeakHashMap<>());
 

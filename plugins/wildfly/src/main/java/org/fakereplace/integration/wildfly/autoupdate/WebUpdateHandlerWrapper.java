@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.fakereplace.classloading.ClassLookupManager;
+import org.fakereplace.core.ClassLookupManager;
 import org.jboss.as.server.CurrentServiceContainer;
 import org.jboss.as.server.deployment.DeploymentCompleteServiceProcessor;
 import org.jboss.as.server.deployment.Services;

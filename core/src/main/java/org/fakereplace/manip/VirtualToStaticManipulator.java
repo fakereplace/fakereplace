@@ -23,8 +23,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.fakereplace.logging.Logger;
-import org.fakereplace.manip.data.VirtualToStaticData;
-import org.fakereplace.manip.util.ManipulationDataStore;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.CodeIterator;
 import javassist.bytecode.ConstPool;

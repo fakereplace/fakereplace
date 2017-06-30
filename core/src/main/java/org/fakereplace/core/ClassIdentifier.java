@@ -18,7 +18,7 @@
 /**
  *
  */
-package org.fakereplace.classloading;
+package org.fakereplace.core;
 
 public class ClassIdentifier {
     private final String className;

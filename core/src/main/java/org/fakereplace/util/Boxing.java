@@ -15,7 +15,7 @@
  *  limitations under the License.
  */
 
-package org.fakereplace.manip.util;
+package org.fakereplace.util;
 
 import javassist.bytecode.Bytecode;
 

@@ -55,9 +55,6 @@ import javassist.bytecode.ClassFile;
  */
 class FileSystemWatcher {
 
-
-    private static final Logger log = Logger.getLogger(FileSystemWatcher.class);
-
     private final WatchServiceFileSystemWatcher watcher = new WatchServiceFileSystemWatcher();
 
     private final Set<Path> registered = new HashSet<>();

@@ -15,8 +15,9 @@
  *  limitations under the License.
  */
 
-package org.fakereplace.manip.util;
+package org.fakereplace.manip;
 
+import org.fakereplace.util.Boxing;
 import org.fakereplace.util.DescriptorUtils;
 import javassist.bytecode.BadBytecode;
 import javassist.bytecode.Bytecode;
@@ -43,60 +44,6 @@ public class ManipulationUtils {
      */
     public static class MethodReturnRewriter {
 
-        public static void rewriteFakeMethod(CodeIterator methodBody, String methodDescriptor) {
-            String ret = DescriptorUtils.getReturnType(methodDescriptor);
-            // if the return type is larger than one then it is not a primitive
-            // so it does not need to be boxed
-            if (ret.length() != 1) {
-                return;
-            }
-            // void methods are special
-            if (ret.equals("V")) {
-
-                while (methodBody.hasNext()) {
-                    try {
-                        int index = methodBody.next();
-                        int opcode = methodBody.byteAt(index);
-                        // replace a RETURN opcode with
-                        // ACONST_NULL
-                        // ARETURN
-                        // to return a null value
-                        if (opcode == Opcode.RETURN) {
-                            Bytecode code = new Bytecode(methodBody.get().getConstPool());
-                            methodBody.writeByte(Opcode.ARETURN, index);
-                            code.add(Opcode.ACONST_NULL);
-                            methodBody.insertAt(index, code.get());
-
-                        }
-                    } catch (BadBytecode e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            } else {
-                while (methodBody.hasNext()) {
-                    try {
-                        int index = methodBody.next();
-                        int opcode = methodBody.byteAt(index);
-
-                        switch (opcode) {
-                            case Opcode.IRETURN:
-                            case Opcode.LRETURN:
-                            case Opcode.DRETURN:
-                            case Opcode.FRETURN:
-                                // write a NOP over the old return instruction
-                                // insert the boxing code to get an object on the stack
-                                methodBody.writeByte(Opcode.ARETURN, index);
-                                Bytecode b = new Bytecode(methodBody.get().getConstPool());
-                                Boxing.box(b, ret.charAt(0));
-                                methodBody.insertAt(index, b.get());
-
-                        }
-                    } catch (BadBytecode e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            }
-        }
 
         /**
          * Gets the correct return instruction for a proxy method

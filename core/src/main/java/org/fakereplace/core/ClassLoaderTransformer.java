@@ -31,18 +31,13 @@ import javassist.bytecode.MethodInfo;
  *
  * @author stuart
  */
-public class ClassLoaderTransformer implements FakereplaceTransformer {
-
-
-    public ClassLoaderTransformer() {
-
-    }
+class ClassLoaderTransformer implements FakereplaceTransformer {
 
     @Override
     public boolean transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final ClassFile file, Set<Class<?>> classesToRetransform, ChangedClassImpl changedClass, Set<MethodInfo> modifiedMethods) throws IllegalClassFormatException, BadBytecode {
         if (classBeingRedefined != null && ClassLoader.class.isAssignableFrom(classBeingRedefined)) {
             return ClassLoaderInstrumentation.redefineClassLoader(file, modifiedMethods);
-        } else if (classBeingRedefined == null && className != null && className.endsWith("ClassLoader")) {
+        } else if (classBeingRedefined == null && className != null && className.endsWith("ClassLoader")) { //TODO: fix this
             return ClassLoaderInstrumentation.redefineClassLoader(file, modifiedMethods);
         }
         return false;

@@ -26,6 +26,10 @@ import org.fakereplace.core.AgentOptions;
 /**
  * The default logger, just uses System.out and System.err
  *
+ * Due to issues with initializing j.u.l logging too early this is all
+ * we can do for now, it could potentially be enhanced to used JUL once
+ * it has been initialized
+ *
  * @author Stuart Douglas
  */
 class DefaultLogManager implements LogManager {

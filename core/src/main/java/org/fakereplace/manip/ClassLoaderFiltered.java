@@ -15,7 +15,7 @@
  *  limitations under the License.
  */
 
-package org.fakereplace.manip.util;
+package org.fakereplace.manip;
 
 /**
  * Represents an object that can be filtered by classloader

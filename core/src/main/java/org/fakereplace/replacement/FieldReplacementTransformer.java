@@ -31,14 +31,14 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
 
-import org.fakereplace.classloading.ProxyDefinitionStore;
+import org.fakereplace.core.ProxyDefinitionStore;
 import org.fakereplace.core.Transformer;
 import org.fakereplace.data.AnnotationDataStore;
 import org.fakereplace.data.BaseClassData;
 import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.data.FieldData;
 import org.fakereplace.data.MemberType;
-import org.fakereplace.manip.data.AddedFieldData;
+import org.fakereplace.manip.AddedFieldData;
 import org.fakereplace.reflection.FieldAccessor;
 import org.fakereplace.replacement.notification.ChangedClassImpl;
 import org.fakereplace.runtime.FieldReferenceDataStore;

@@ -15,12 +15,11 @@
  *  limitations under the License.
  */
 
-package org.fakereplace.classloading;
+package org.fakereplace.core;
 
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.fakereplace.core.Constants;
 import org.fakereplace.data.ClassLoaderData;
 
 /**
