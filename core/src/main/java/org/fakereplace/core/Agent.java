@@ -41,8 +41,6 @@ import org.fakereplace.replacement.AnnotationTransformer;
 import org.fakereplace.replacement.FieldReplacementTransformer;
 import org.fakereplace.replacement.MethodReplacementTransformer;
 import org.fakereplace.server.FakereplaceServer;
-import org.fakereplace.transformation.ClassLoaderTransformer;
-import org.fakereplace.transformation.MainTransformer;
 import javassist.bytecode.ClassFile;
 
 /**
@@ -75,7 +73,7 @@ public class Agent {
         }
 
         final ClassLoaderTransformer classLoaderTransformer = new ClassLoaderTransformer();
-        final MainTransformer mainTransformer = new MainTransformer(extension);
+        final MainTransformer mainTransformer = new MainTransformer();
         Agent.mainTransformer = mainTransformer;
         inst.addTransformer(mainTransformer, true);
 
@@ -86,6 +84,7 @@ public class Agent {
         } catch (UnmodifiableClassException e) {
             e.printStackTrace();
         }
+        mainTransformer.addTransformer(new IntegrationActivationTransformer(extension));
         mainTransformer.addTransformer(new AnnotationTransformer());
         mainTransformer.addTransformer(new FieldReplacementTransformer());
         mainTransformer.addTransformer(new MethodReplacementTransformer());

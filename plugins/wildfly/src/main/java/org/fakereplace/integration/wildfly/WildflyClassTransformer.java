@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.fakereplace.replacement.notification.ChangedClassImpl;
-import org.fakereplace.transformation.FakereplaceTransformer;
+import org.fakereplace.core.FakereplaceTransformer;
 import javassist.bytecode.BadBytecode;
 import javassist.bytecode.Bytecode;
 import javassist.bytecode.ClassFile;

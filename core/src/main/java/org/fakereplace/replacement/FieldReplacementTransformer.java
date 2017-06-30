@@ -42,7 +42,7 @@ import org.fakereplace.manip.data.AddedFieldData;
 import org.fakereplace.reflection.FieldAccessor;
 import org.fakereplace.replacement.notification.ChangedClassImpl;
 import org.fakereplace.runtime.FieldReferenceDataStore;
-import org.fakereplace.transformation.FakereplaceTransformer;
+import org.fakereplace.core.FakereplaceTransformer;
 import javassist.bytecode.AccessFlag;
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.AttributeInfo;

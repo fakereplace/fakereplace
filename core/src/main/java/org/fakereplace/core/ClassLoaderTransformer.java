@@ -15,13 +15,12 @@
  *  limitations under the License.
  */
 
-package org.fakereplace.transformation;
+package org.fakereplace.core;
 
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
 import java.util.Set;
 
-import org.fakereplace.core.ClassLoaderInstrumentation;
 import org.fakereplace.replacement.notification.ChangedClassImpl;
 import javassist.bytecode.BadBytecode;
 import javassist.bytecode.ClassFile;

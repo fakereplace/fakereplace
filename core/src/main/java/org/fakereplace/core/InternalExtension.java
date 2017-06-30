@@ -20,9 +20,15 @@ package org.fakereplace.core;
 import java.util.List;
 
 import org.fakereplace.Extension;
-import org.fakereplace.transformation.FakereplaceTransformer;
 
 /**
+ * An extension that is packaged with fakereplace, and needs to use its internal class
+ * transformation abilities.
+ *
+ * It is expected that 3rd party extensions will not need to use this API, as they have
+ * control over the original classes. It is also problematic due to the javassist
+ * shading.
+ *
  * @author Stuart Douglas
  */
 public interface InternalExtension extends Extension {

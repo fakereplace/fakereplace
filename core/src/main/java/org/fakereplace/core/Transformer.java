@@ -33,7 +33,6 @@ import org.fakereplace.manip.Manipulator;
 import org.fakereplace.manip.util.ManipulationUtils;
 import org.fakereplace.reflection.ReflectionInstrumentationSetup;
 import org.fakereplace.replacement.notification.ChangedClassImpl;
-import org.fakereplace.transformation.FakereplaceTransformer;
 import org.fakereplace.util.NoInstrument;
 import javassist.bytecode.AccessFlag;
 import javassist.bytecode.AnnotationsAttribute;
@@ -53,7 +52,6 @@ import javassist.bytecode.Opcode;
  * @author stuart
  */
 public class Transformer implements FakereplaceTransformer {
-
 
     private static final Manipulator manipulator = new Manipulator();
 

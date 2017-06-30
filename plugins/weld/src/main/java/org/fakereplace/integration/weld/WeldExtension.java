@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.fakereplace.core.InternalExtension;
-import org.fakereplace.transformation.FakereplaceTransformer;
+import org.fakereplace.core.FakereplaceTransformer;
 
 public class WeldExtension implements InternalExtension {
 

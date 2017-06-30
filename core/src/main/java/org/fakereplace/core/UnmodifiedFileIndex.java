@@ -15,7 +15,7 @@
  *  limitations under the License.
  */
 
-package org.fakereplace.transformation;
+package org.fakereplace.core;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -33,8 +33,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.fakereplace.core.AgentOption;
-import org.fakereplace.core.AgentOptions;
 import org.fakereplace.logging.Logger;
 
 /**

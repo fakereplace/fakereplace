@@ -14,7 +14,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.fakereplace.transformation;
+package org.fakereplace.core;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -48,11 +48,6 @@ import org.fakereplace.Extension;
 import org.fakereplace.api.NewClassData;
 import org.fakereplace.api.environment.CurrentEnvironment;
 import org.fakereplace.api.environment.Environment;
-import org.fakereplace.core.Agent;
-import org.fakereplace.core.AgentOption;
-import org.fakereplace.core.AgentOptions;
-import org.fakereplace.core.ClassChangeNotifier;
-import org.fakereplace.core.DefaultEnvironment;
 import org.fakereplace.logging.Logger;
 import org.fakereplace.replacement.notification.ChangedClassImpl;
 import org.fakereplace.util.DescriptorUtils;
@@ -76,12 +71,6 @@ public class MainTransformer implements ClassFileTransformer {
 
     private volatile FakereplaceTransformer[] transformers = {};
 
-    private final Map<String, Extension> integrationClassTriggers;
-
-    private final Set<String> loadedClassChangeAwares = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
-
-    private static final Set<ClassLoader> integrationClassloader = Collections.newSetFromMap(Collections.synchronizedMap(new WeakHashMap<>()));
-
     private final List<ChangedClass> changedClasses = new CopyOnWriteArrayList<>();
     private final List<NewClassData> addedClasses = new CopyOnWriteArrayList<>();
     private volatile long integrationTime;
@@ -98,15 +87,6 @@ public class MainTransformer implements ClassFileTransformer {
 
     private boolean logClassRetransformation;
 
-    public MainTransformer(Set<Extension> extension) {
-        Map<String, Extension> integrationClassTriggers = new HashMap<>();
-        for (Extension i : extension) {
-            for (String j : i.getIntegrationTriggerClassNames()) {
-                integrationClassTriggers.put(j.replace(".", "/"), i);
-            }
-        }
-        this.integrationClassTriggers = integrationClassTriggers;
-    }
 
     @Override
     public byte[] transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final byte[] classfileBuffer) throws IllegalClassFormatException {
@@ -125,34 +105,6 @@ public class MainTransformer implements ClassFileTransformer {
         ChangedClassImpl changedClass = null;
         if (classBeingRedefined != null) {
             changedClass = new ChangedClassImpl(classBeingRedefined);
-        }
-        if (integrationClassTriggers.containsKey(className)) {
-            integrationClassloader.add(loader);
-            // we need to load the class in another thread
-            // otherwise it will not go through the javaagent
-            final Extension extension = integrationClassTriggers.get(className);
-            if (!loadedClassChangeAwares.contains(extension.getClassChangeAwareName())) {
-                loadedClassChangeAwares.add(extension.getClassChangeAwareName());
-                try {
-                    Class<?> clazz = Class.forName(extension.getClassChangeAwareName(), true, loader);
-                    final Object intance = clazz.newInstance();
-                    if (intance instanceof ClassChangeAware) {
-                        ClassChangeNotifier.instance().add((ClassChangeAware) intance);
-                    }
-                    final String newEnv = extension.getEnvironment();
-                    if (newEnv != null) {
-                        final Class<?> envClass = Class.forName(newEnv, true, loader);
-                        final Environment newEnvironment = (Environment) envClass.newInstance();
-                        if (environment instanceof DefaultEnvironment) {
-                            CurrentEnvironment.setEnvironment(newEnvironment);
-                        } else {
-                            Logger.getLogger(MainTransformer.class).error("Could not set environment to " + newEnvironment + " it has already been changed to " + environment);
-                        }
-                    }
-                } catch (Throwable e) {
-                    e.printStackTrace();
-                }
-            }
         }
 
         boolean changed = false;
@@ -291,22 +243,6 @@ public class MainTransformer implements ClassFileTransformer {
             }
         }
         this.transformers = transformers;
-    }
-
-
-    public static byte[] getIntegrationClass(ClassLoader c, String name) {
-        if (!integrationClassloader.contains(c)) {
-            return null;
-        }
-        URL resource = ClassLoader.getSystemClassLoader().getResource(name.replace('.', '/') + ".class");
-        if (resource == null) {
-            throw new RuntimeException("Could not load integration class " + name);
-        }
-        try (InputStream in = resource.openStream()) {
-            return org.fakereplace.util.FileReader.readFileBytes(resource.openStream());
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public void runIntegration() {

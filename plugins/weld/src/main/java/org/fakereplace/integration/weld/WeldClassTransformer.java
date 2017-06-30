@@ -26,7 +26,7 @@ import org.fakereplace.integration.weld.javassist.WeldProxyClassLoadingDelegate;
 import org.fakereplace.logging.Logger;
 import org.fakereplace.manip.VirtualToStaticManipulator;
 import org.fakereplace.replacement.notification.ChangedClassImpl;
-import org.fakereplace.transformation.FakereplaceTransformer;
+import org.fakereplace.core.FakereplaceTransformer;
 import org.fakereplace.util.DescriptorUtils;
 import javassist.bytecode.BadBytecode;
 import javassist.bytecode.Bytecode;

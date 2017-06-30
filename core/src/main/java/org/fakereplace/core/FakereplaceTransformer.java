@@ -14,7 +14,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.fakereplace.transformation;
+package org.fakereplace.core;
 
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;

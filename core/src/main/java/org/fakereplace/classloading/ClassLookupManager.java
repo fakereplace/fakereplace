@@ -21,7 +21,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.fakereplace.core.Constants;
-import org.fakereplace.transformation.MainTransformer;
+import org.fakereplace.core.IntegrationActivationTransformer;
+import org.fakereplace.core.MainTransformer;
 
 /**
  * this class is responsible for serving up classes to instrumented ClassLoaders
@@ -42,7 +43,7 @@ public class ClassLookupManager {
             return ProxyDefinitionStore.getProxyDefinition(loader, className);
         }
         if (className.startsWith("org.fakereplace.integration")) {
-            return MainTransformer.getIntegrationClass(loader, className);
+            return IntegrationActivationTransformer.getIntegrationClass(loader, className);
         }
         return classData.get(new ClassIdentifier(className, loader));
     }

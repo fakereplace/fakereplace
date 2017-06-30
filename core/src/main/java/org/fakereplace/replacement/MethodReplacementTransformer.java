@@ -45,7 +45,7 @@ import org.fakereplace.manip.util.ManipulationUtils;
 import org.fakereplace.manip.util.ManipulationUtils.MethodReturnRewriter;
 import org.fakereplace.replacement.notification.ChangedClassImpl;
 import org.fakereplace.runtime.MethodIdentifierStore;
-import org.fakereplace.transformation.FakereplaceTransformer;
+import org.fakereplace.core.FakereplaceTransformer;
 import org.fakereplace.util.AccessFlagUtils;
 import org.fakereplace.util.DescriptorUtils;
 import javassist.bytecode.AccessFlag;
