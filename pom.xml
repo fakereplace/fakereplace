@@ -80,6 +80,7 @@
 
     <modules>
         <module>build-config</module>
+        <module>api</module>
         <module>core</module>
         <module>client</module>
         <module>dist</module>
@@ -93,6 +94,11 @@
 
             <!-- Project Dependencies -->
 
+            <dependency>
+                <groupId>org.fakereplace</groupId>
+                <artifactId>fakereplace-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.fakereplace</groupId>
                 <artifactId>fakereplace</artifactId>

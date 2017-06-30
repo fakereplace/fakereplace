@@ -23,10 +23,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.fakereplace.api.Extension;
+import org.fakereplace.core.InternalExtension;
 import org.fakereplace.transformation.FakereplaceTransformer;
 
-public class WeldExtension implements Extension {
+public class WeldExtension implements InternalExtension {
 
     @Override
     public String getClassChangeAwareName() {

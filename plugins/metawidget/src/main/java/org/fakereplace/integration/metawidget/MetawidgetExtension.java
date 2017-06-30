@@ -19,11 +19,9 @@ package org.fakereplace.integration.metawidget;
 
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
-import org.fakereplace.api.Extension;
-import org.fakereplace.transformation.FakereplaceTransformer;
+import org.fakereplace.Extension;
 
 public class MetawidgetExtension implements Extension {
 
@@ -58,11 +56,6 @@ public class MetawidgetExtension implements Extension {
     @Override
     public Set<String> getTrackedInstanceClassNames() {
         return classNames;
-    }
-
-    @Override
-    public List<FakereplaceTransformer> getTransformers() {
-        return Collections.emptyList();
     }
 
 }

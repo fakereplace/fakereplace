@@ -27,11 +27,10 @@ import java.lang.instrument.ClassDefinition;
 import java.lang.instrument.Instrumentation;
 import java.lang.instrument.UnmodifiableClassException;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.ServiceLoader;
 import java.util.Set;
 
-import org.fakereplace.api.Extension;
+import org.fakereplace.Extension;
 import org.fakereplace.api.NewClassData;
 import org.fakereplace.classloading.ClassLookupManager;
 import org.fakereplace.data.BaseClassData;

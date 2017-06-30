@@ -23,10 +23,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.fakereplace.api.Extension;
+import org.fakereplace.core.InternalExtension;
 import org.fakereplace.transformation.FakereplaceTransformer;
 
-public class WildflyExtension implements Extension {
+public class WildflyExtension implements InternalExtension {
 
     public static final String RESOURCE_CACHE_CLASS = "org.apache.naming.resources.ResourceCache";
 

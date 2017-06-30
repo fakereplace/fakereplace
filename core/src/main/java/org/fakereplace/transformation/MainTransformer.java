@@ -44,7 +44,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.fakereplace.api.ChangedClass;
 import org.fakereplace.api.ClassChangeAware;
-import org.fakereplace.api.Extension;
+import org.fakereplace.Extension;
 import org.fakereplace.api.NewClassData;
 import org.fakereplace.api.environment.CurrentEnvironment;
 import org.fakereplace.api.environment.Environment;

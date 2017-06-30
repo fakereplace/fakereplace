@@ -23,10 +23,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.fakereplace.api.Extension;
+import org.fakereplace.core.InternalExtension;
 import org.fakereplace.transformation.FakereplaceTransformer;
 
-public class ResteasyExtension implements Extension {
+public class ResteasyExtension implements InternalExtension {
 
     public static final String FILTER_DISPATCHER = "org.jboss.resteasy.plugins.server.servlet.FilterDispatcher";
     public static final String SERVLET_DISPATCHER = "org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher";

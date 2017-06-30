@@ -15,32 +15,25 @@
  *  limitations under the License.
  */
 
-package org.fakereplace.integration.jsf;
+package org.fakereplace.core;
 
-import java.util.Collections;
-import java.util.Set;
+import java.util.List;
 
 import org.fakereplace.Extension;
+import org.fakereplace.transformation.FakereplaceTransformer;
 
-public class JsfExtension implements Extension {
+/**
+ * @author Stuart Douglas
+ */
+public interface InternalExtension extends Extension {
 
-    @Override
-    public String getClassChangeAwareName() {
-        return "org.fakereplace.integration.jsf.JSFClassChangeAware";
-    }
 
-    @Override
-    public Set<String> getIntegrationTriggerClassNames() {
-        return Collections.singleton("javax.faces.webapp.FacesServlet");
-    }
-
-    @Override
-    public String getEnvironment() {
-        return null;
-    }
-
-    @Override
-    public Set<String> getTrackedInstanceClassNames() {
-        return Collections.singleton("javax.el.BeanELResolver");
-    }
+    /**
+     * Integrations have a change to transform classes
+     * They get to see the class before any manipulation is
+     * done to it.
+     * They do not get to transform reloaded classes.
+     *
+     */
+    List<FakereplaceTransformer> getTransformers();
 }

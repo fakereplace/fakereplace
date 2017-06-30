@@ -15,13 +15,9 @@
  *  limitations under the License.
  */
 
-package org.fakereplace.api;
+package org.fakereplace;
 
-import java.util.List;
 import java.util.Set;
-
-import org.fakereplace.api.environment.Environment;
-import org.fakereplace.transformation.FakereplaceTransformer;
 
 /**
  * Integrations need to implement this service to tell the transformer
@@ -33,16 +29,6 @@ import org.fakereplace.transformation.FakereplaceTransformer;
  */
 public interface Extension {
 
-
-
-    /**
-     * Integrations have a change to transform classes
-     * They get to see the class before any manipulation is
-     * done to it.
-     * They do not get to transform reloaded classes.
-     *
-     */
-    List<FakereplaceTransformer> getTransformers();
 
     /**
      * returns the name of the ClassChangeAware object
@@ -67,10 +53,10 @@ public interface Extension {
     Set<String> getIntegrationTriggerClassNames();
 
     /**
-     * Gets the {@link Environment} this extension provides, or null if it does
+     * Gets the name of the {@code org.fakereplace.api.environment.Environment} this extension provides, or null if it does
      * not override the environment.
      *
-     * Only one active extension can override the environment.
+     * Only one active extension can override the environment, the first extension to be triggered will take precedence
      */
     String getEnvironment();
 

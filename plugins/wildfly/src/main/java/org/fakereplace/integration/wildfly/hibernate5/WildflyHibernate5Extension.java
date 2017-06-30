@@ -23,10 +23,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.fakereplace.api.Extension;
+import org.fakereplace.core.InternalExtension;
 import org.fakereplace.transformation.FakereplaceTransformer;
 
-public class WildflyHibernate5Extension implements Extension {
+public class WildflyHibernate5Extension implements InternalExtension {
 
     public static final String PERSISTENCE_UNIT_SERVICE = "org.jboss.as.jpa.service.PersistenceUnitServiceImpl";
     public static final String PERSISTENCE_PHASE_ONE_SERVICE = "org.jboss.as.jpa.service.PhaseOnePersistenceUnitServiceImpl";

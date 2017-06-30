@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.fakereplace.api.Extension;
+import org.fakereplace.Extension;
 import org.fakereplace.api.environment.CurrentEnvironment;
 import org.fakereplace.data.BaseClassData;
 import org.fakereplace.data.ClassDataStore;
@@ -71,9 +71,11 @@ public class Transformer implements FakereplaceTransformer {
         ReflectionInstrumentationSetup.setup(manipulator);
         for (Extension i : extension) {
             trackedInstances.addAll(i.getTrackedInstanceClassNames());
-            List<FakereplaceTransformer> t = i.getTransformers();
-            if (t != null) {
-                integrationTransformers.addAll(t);
+            if(i instanceof InternalExtension) {
+                List<FakereplaceTransformer> t = ((InternalExtension)i).getTransformers();
+                if (t != null) {
+                    integrationTransformers.addAll(t);
+                }
             }
         }
     }
