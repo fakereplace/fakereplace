@@ -39,7 +39,7 @@ import javassist.bytecode.ConstPool;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.Opcode;
 
-class FieldManipulator implements ClassManipulator {
+public class FieldManipulator implements ClassManipulator {
 
     private static final String FIELD_DATA_STORE_CLASS = FieldDataStore.class.getName();
 
@@ -191,4 +191,50 @@ class FieldManipulator implements ClassManipulator {
         data.remove(className, loader);
     }
 
+    /**
+     * Stores information about an added instance field.
+     *
+     * @author stuart
+     */
+    public static class AddedFieldData implements ClassLoaderFiltered<AddedFieldData> {
+        private final int arrayIndex;
+        private final String name;
+        private final String descriptor;
+        private final String className;
+        private final ClassLoader classLoader;
+
+        public AddedFieldData(int arrayIndex, String name, String descriptor, String className, ClassLoader classLoader) {
+            super();
+            this.arrayIndex = arrayIndex;
+            this.name = name;
+            this.descriptor = descriptor;
+            this.className = className;
+            this.classLoader = classLoader;
+        }
+
+        public int getArrayIndex() {
+            return arrayIndex;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getDescriptor() {
+            return descriptor;
+        }
+
+        public String getClassName() {
+            return className;
+        }
+
+        public ClassLoader getClassLoader() {
+            return classLoader;
+        }
+
+        public AddedFieldData getInstance() {
+            return this;
+        }
+
+    }
 }

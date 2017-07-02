@@ -64,7 +64,7 @@ public class Manipulator {
         constructorInvocationManipulator.rewriteConstructorCalls(clazz, descriptor, methodNo, classLoader);
     }
 
-    public void rewriteInstanceFieldAccess(AddedFieldData data) {
+    public void rewriteInstanceFieldAccess(FieldManipulator.AddedFieldData data) {
         instanceFieldManapulator.addField(data);
     }
 
@@ -85,7 +85,7 @@ public class Manipulator {
         virtualToStaticManipulator.replaceVirtualMethodInvokationWithLocal(oldClass, methodName, newMethodName, methodDesc, newStaticMethodDesc, classLoader);
     }
 
-    public void addFakeMethodCallRewrite(FakeMethodCallData fakeMethodCallData) {
+    public void addFakeMethodCallRewrite(FakeMethodCallManipulator.FakeMethodCallData fakeMethodCallData) {
         fakeMethodCallManipulator.addFakeMethodCall(fakeMethodCallData);
     }
 

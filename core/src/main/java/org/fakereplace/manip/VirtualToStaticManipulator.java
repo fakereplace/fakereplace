@@ -30,7 +30,7 @@ import javassist.bytecode.MethodInfo;
 
 public class VirtualToStaticManipulator implements ClassManipulator {
 
-    private final ManipulationDataStore<VirtualToStaticData> data = new ManipulationDataStore<>();
+    private final ManipulationDataStore<Data> data = new ManipulationDataStore<>();
 
     private final Logger log = Logger.getLogger(VirtualToStaticManipulator.class);
 
@@ -46,20 +46,20 @@ public class VirtualToStaticManipulator implements ClassManipulator {
      *
      */
     public void replaceVirtualMethodInvokationWithStatic(String oldClass, String newClass, String methodName, String methodDesc, String newStaticMethodDesc, ClassLoader classLoader) {
-        VirtualToStaticData d = new VirtualToStaticData(oldClass, newClass, methodName, methodDesc, newStaticMethodDesc, null, classLoader);
+        Data d = new Data(oldClass, newClass, methodName, methodDesc, newStaticMethodDesc, null, classLoader);
         data.add(oldClass, d);
     }
 
     public void replaceVirtualMethodInvokationWithLocal(String oldClass, String methodName, String newMethodName, String methodDesc, String newStaticMethodDesc, ClassLoader classLoader) {
-        VirtualToStaticData d = new VirtualToStaticData(oldClass, null, methodName, methodDesc, newStaticMethodDesc, newMethodName, classLoader);
+        Data d = new Data(oldClass, null, methodName, methodDesc, newStaticMethodDesc, newMethodName, classLoader);
         data.add(oldClass, d);
     }
 
     public boolean transformClass(ClassFile file, ClassLoader loader, boolean modifiableClass, final Set<MethodInfo> modifiedMethods) {
-        final Map<String, Set<VirtualToStaticData>> virtualToStaticMethod = data.getManipulationData(loader);
-        final Map<Integer, VirtualToStaticData> methodCallLocations = new HashMap<>();
-        final Map<VirtualToStaticData, Integer> newClassPoolLocations = new HashMap<>();
-        final Map<VirtualToStaticData, Integer> newCallLocations = new HashMap<>();
+        final Map<String, Set<Data>> virtualToStaticMethod = data.getManipulationData(loader);
+        final Map<Integer, Data> methodCallLocations = new HashMap<>();
+        final Map<Data, Integer> newClassPoolLocations = new HashMap<>();
+        final Map<Data, Integer> newCallLocations = new HashMap<>();
         // first we need to scan the constant pool looking for
         // CONSTANT_method_info_ref structures
         ConstPool pool = file.getConstPool();
@@ -77,7 +77,7 @@ public class VirtualToStaticManipulator implements ClassManipulator {
                     methodName = pool.getInterfaceMethodrefName(i);
                 }
                 if (virtualToStaticMethod.containsKey(className)) {
-                    for (VirtualToStaticData data : virtualToStaticMethod.get(className)) {
+                    for (Data data : virtualToStaticMethod.get(className)) {
                         if (methodName.equals(data.getMethodName()) && methodDesc.equals(data.getMethodDesc())) {
                             // store the location in the const pool of the method ref
                             methodCallLocations.put(i, data);
@@ -130,7 +130,7 @@ public class VirtualToStaticManipulator implements ClassManipulator {
                             // if the method call is one of the methods we are
                             // replacing
                             if (methodCallLocations.containsKey(val)) {
-                                VirtualToStaticData data = methodCallLocations.get(val);
+                                Data data = methodCallLocations.get(val);
                                 // change the call to an invokestatic
                                 it.writeByte(CodeIterator.INVOKESTATIC, index);
                                 // change the method that is being called
@@ -156,4 +156,86 @@ public class VirtualToStaticManipulator implements ClassManipulator {
         }
     }
 
+    private static class Data implements ClassLoaderFiltered<Data> {
+        private final String oldClass;
+        private final String newClass;
+        private final String methodName;
+        private final String newMethodName;
+        private final String methodDesc;
+        private final String newStaticMethodDesc;
+        private final ClassLoader classLoader;
+
+        public Data(String oldClass, String newClass, String methodName, String methodDesc, String newStaticMethodDesc, String newMethodName, ClassLoader classLoader) {
+            this.oldClass = oldClass;
+            this.newClass = newClass;
+            this.methodName = methodName;
+            if (newMethodName == null) {
+                this.newMethodName = methodName;
+            } else {
+                this.newMethodName = newMethodName;
+            }
+            this.methodDesc = methodDesc;
+            this.newStaticMethodDesc = newStaticMethodDesc;
+            this.classLoader = classLoader;
+        }
+
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            sb.append(oldClass);
+            sb.append(" ");
+            sb.append(newClass);
+            sb.append(" ");
+            sb.append(methodName);
+            sb.append(" ");
+            sb.append(methodDesc);
+            sb.append(" ");
+            sb.append(newStaticMethodDesc);
+
+            return sb.toString();
+        }
+
+        public boolean equals(Object o) {
+            if (o.getClass().isAssignableFrom(Data.class)) {
+                Data i = (Data) o;
+                return oldClass.equals(i.oldClass) && newClass.equals(i.newClass) && methodName.equals(i.methodName) && methodDesc.equals(i.methodDesc) && newStaticMethodDesc.equals(i.newStaticMethodDesc);
+            }
+            return false;
+        }
+
+        public int hashCode() {
+            return toString().hashCode();
+        }
+
+        public String getOldClass() {
+            return oldClass;
+        }
+
+        public String getNewClass() {
+            return newClass;
+        }
+
+        public String getMethodName() {
+            return methodName;
+        }
+
+        public String getNewMethodName() {
+            return newMethodName;
+        }
+
+        public String getMethodDesc() {
+            return methodDesc;
+        }
+
+        public String getNewStaticMethodDesc() {
+            return newStaticMethodDesc;
+        }
+
+        public ClassLoader getClassLoader() {
+            return classLoader;
+        }
+
+        public Data getInstance() {
+            return this;
+        }
+    }
 }

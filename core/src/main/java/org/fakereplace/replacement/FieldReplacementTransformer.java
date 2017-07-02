@@ -38,7 +38,7 @@ import org.fakereplace.data.BaseClassData;
 import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.data.FieldData;
 import org.fakereplace.data.MemberType;
-import org.fakereplace.manip.AddedFieldData;
+import org.fakereplace.manip.FieldManipulator;
 import org.fakereplace.reflection.FieldAccessor;
 import org.fakereplace.replacement.notification.ChangedClassImpl;
 import org.fakereplace.runtime.FieldReferenceDataStore;
@@ -123,7 +123,7 @@ public class FieldReplacementTransformer implements FakereplaceTransformer {
 
         ListIterator<?> it = file.getFields().listIterator();
 
-        List<AddedFieldData> addedFields = new ArrayList<>();
+        List<FieldManipulator.AddedFieldData> addedFields = new ArrayList<>();
 
         final Set<FieldData> toRemove = new HashSet<>();
         final Set<FieldProxyInfo> toAdd = new HashSet<>();
@@ -153,7 +153,7 @@ public class FieldReplacementTransformer implements FakereplaceTransformer {
             // This is a newly added field.
             if (md == null) {
                 int fieldNo = addField(loader, m, toAdd, oldClass);
-                addedFields.add(new AddedFieldData(fieldNo, m.getName(), m.getDescriptor(), file.getName(), loader));
+                addedFields.add(new FieldManipulator.AddedFieldData(fieldNo, m.getName(), m.getDescriptor(), file.getName(), loader));
                 it.remove();
             } else {
                 fields.remove(md);
@@ -185,7 +185,7 @@ public class FieldReplacementTransformer implements FakereplaceTransformer {
                 }
             }
         }
-        for (AddedFieldData a : addedFields) {
+        for (FieldManipulator.AddedFieldData a : addedFields) {
             Transformer.getManipulator().rewriteInstanceFieldAccess(a);
         }
         ClassDataStore.instance().modifyCurrentData(loader, file.getName(), (builder) -> {

@@ -29,6 +29,7 @@ import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.data.MethodData;
 import org.fakereplace.logging.Logger;
 import org.fakereplace.runtime.MethodIdentifierStore;
+import org.fakereplace.util.DescriptorUtils;
 import javassist.bytecode.Bytecode;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.CodeIterator;
@@ -158,4 +159,58 @@ class ConstructorInvocationManipulator implements ClassManipulator {
         }
     }
 
+    private static class ConstructorRewriteData implements ClassLoaderFiltered<ConstructorRewriteData> {
+        private final String clazz;
+        private final String methodDesc;
+        private final String[] parameters;
+        private final int methodNo;
+        private final ClassLoader classLoader;
+
+        ConstructorRewriteData(String clazz, String methodDesc, int methodNo, ClassLoader classLoader) {
+            this.clazz = clazz;
+            this.methodDesc = methodDesc;
+            this.methodNo = methodNo;
+            parameters = DescriptorUtils.descriptorStringToParameterArray(methodDesc);
+            this.classLoader = classLoader;
+        }
+
+        public String toString() {
+            StringBuilder sb = new StringBuilder(ConstructorRewriteData.class.getName() + " ");
+            sb.append(clazz);
+            sb.append(" ");
+            sb.append(methodDesc);
+            sb.append(" ");
+            sb.append(methodNo);
+
+            return sb.toString();
+        }
+
+        public int hashCode() {
+            return toString().hashCode();
+        }
+
+        public String getClazz() {
+            return clazz;
+        }
+
+        public String getMethodDesc() {
+            return methodDesc;
+        }
+
+        public String[] getParameters() {
+            return parameters;
+        }
+
+        public int getMethodNo() {
+            return methodNo;
+        }
+
+        public ClassLoader getClassLoader() {
+            return classLoader;
+        }
+
+        public ConstructorRewriteData getInstance() {
+            return this;
+        }
+    }
 }

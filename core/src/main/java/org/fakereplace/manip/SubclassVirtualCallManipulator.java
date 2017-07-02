@@ -47,10 +47,10 @@ import javassist.bytecode.Opcode;
  */
 class SubclassVirtualCallManipulator implements ClassManipulator {
 
-    private final ManipulationDataStore<SubclassVirtualCallData> data = new ManipulationDataStore<>();
+    private final ManipulationDataStore<Data> data = new ManipulationDataStore<>();
 
     void addClassData(String className, ClassLoader classLoader, String parentClassName, ClassLoader parentClassLoader, String methodName, String methodDesc) {
-        data.add(parentClassName, new SubclassVirtualCallData(parentClassLoader, parentClassName, methodName, methodDesc));
+        data.add(parentClassName, new Data(parentClassLoader, parentClassName, methodName, methodDesc));
         VirtualDelegator.add(classLoader, className, methodName, methodDesc);
     }
 
@@ -62,10 +62,10 @@ class SubclassVirtualCallManipulator implements ClassManipulator {
 
     public boolean transformClass(ClassFile file, ClassLoader loader, boolean modifiableClass, final Set<MethodInfo> modifiedMethods) {
         boolean modified = false;
-        Map<String, Set<SubclassVirtualCallData>> loaderData = data.getManipulationData(loader);
+        Map<String, Set<Data>> loaderData = data.getManipulationData(loader);
         if (loaderData.containsKey(file.getName())) {
-            Set<SubclassVirtualCallData> d = loaderData.get(file.getName());
-            for (SubclassVirtualCallData s : d) {
+            Set<Data> d = loaderData.get(file.getName());
+            for (Data s : d) {
                 for (Object m : file.getMethods()) {
                     MethodInfo method = (MethodInfo) m;
                     if (method.getName().equals(s.getMethodName()) && method.getDescriptor().equals(s.getMethodDesc())) {
@@ -139,4 +139,81 @@ class SubclassVirtualCallManipulator implements ClassManipulator {
         return modified;
     }
 
+    private static class Data implements ClassLoaderFiltered<Data> {
+
+        private final ClassLoader classLoader;
+        private final String className;
+        private final String methodName;
+        private final String methodDesc;
+
+        public Data(ClassLoader classLoader, String className, String methodName, String methodDesc) {
+            this.classLoader = classLoader;
+            this.className = className;
+            this.methodName = methodName;
+            this.methodDesc = methodDesc;
+        }
+
+        public Data getInstance() {
+            return this;
+        }
+
+        public ClassLoader getClassLoader() {
+            return classLoader;
+        }
+
+        public String getClassName() {
+            return className;
+        }
+
+        public String getMethodName() {
+            return methodName;
+        }
+
+        public String getMethodDesc() {
+            return methodDesc;
+        }
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + ((className == null) ? 0 : className.hashCode());
+            result = prime * result + ((methodDesc == null) ? 0 : methodDesc.hashCode());
+            result = prime * result + ((methodName == null) ? 0 : methodName.hashCode());
+            return result;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            Data other = (Data) obj;
+            if (classLoader == null) {
+                if (other.classLoader != null)
+                    return false;
+            } else if (!classLoader.equals(other.classLoader))
+                return false;
+            if (className == null) {
+                if (other.className != null)
+                    return false;
+            } else if (!className.equals(other.className))
+                return false;
+            if (methodDesc == null) {
+                if (other.methodDesc != null)
+                    return false;
+            } else if (!methodDesc.equals(other.methodDesc))
+                return false;
+            if (methodName == null) {
+                if (other.methodName != null)
+                    return false;
+            } else if (!methodName.equals(other.methodName))
+                return false;
+            return true;
+        }
+
+    }
 }

@@ -39,10 +39,9 @@ import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.data.MemberType;
 import org.fakereplace.data.MethodData;
 import org.fakereplace.logging.Logger;
-import org.fakereplace.manip.FakeMethodCallData;
+import org.fakereplace.manip.FakeMethodCallManipulator;
 import org.fakereplace.util.Boxing;
 import org.fakereplace.manip.ManipulationUtils;
-import org.fakereplace.manip.ManipulationUtils.MethodReturnRewriter;
 import org.fakereplace.replacement.notification.ChangedClassImpl;
 import org.fakereplace.runtime.MethodIdentifierStore;
 import org.fakereplace.core.FakereplaceTransformer;
@@ -248,7 +247,7 @@ public class MethodReplacementTransformer implements FakereplaceTransformer {
             }
             String proxyName = generateProxyInvocationBytecode(mInfo, methodCount, file.getName(), loader, staticMethod, file.isInterface());
             ClassDataStore.instance().registerProxyName(oldClass, proxyName);
-            Transformer.getManipulator().addFakeMethodCallRewrite(new FakeMethodCallData(file.getName(), mInfo.getName(), mInfo.getDescriptor(), staticMethod ? FakeMethodCallData.Type.STATIC : file.isInterface() ? FakeMethodCallData.Type.INTERFACE : FakeMethodCallData.Type.VIRTUAL, loader, methodCount, proxyName));
+            Transformer.getManipulator().addFakeMethodCallRewrite(new FakeMethodCallManipulator.FakeMethodCallData(file.getName(), mInfo.getName(), mInfo.getDescriptor(), staticMethod ? FakeMethodCallManipulator.FakeMethodCallData.Type.STATIC : file.isInterface() ? FakeMethodCallManipulator.FakeMethodCallData.Type.INTERFACE : FakeMethodCallManipulator.FakeMethodCallData.Type.VIRTUAL, loader, methodCount, proxyName));
 
             builder.add(new FakeMethod(mInfo.getName(), proxyName,  mInfo.getDescriptor(), mInfo.getAccessFlags()));
             if (!staticMethod) {
