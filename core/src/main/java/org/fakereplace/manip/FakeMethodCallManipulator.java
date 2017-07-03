@@ -50,7 +50,7 @@ import javassist.bytecode.Opcode;
  */
 public class FakeMethodCallManipulator implements ClassManipulator {
 
-    private final ManipulationDataStore<FakeMethodCallData> data = new ManipulationDataStore<>();
+    private final ManipulationDataStore<Data> data = new ManipulationDataStore<>();
 
     private final Logger log = Logger.getLogger(FakeMethodCallManipulator.class);
 
@@ -58,17 +58,17 @@ public class FakeMethodCallManipulator implements ClassManipulator {
         data.remove(className, loader);
     }
 
-    void addFakeMethodCall(FakeMethodCallData methodInfo) {
-        data.add(methodInfo.getClassName(), methodInfo);
+    void addFakeMethodCall(String className, String methodName, String methodDesc, Type type, ClassLoader classLoader, int methodNumber, String proxyName) {
+        data.add(className, new Data(className, methodName, methodDesc, type, classLoader, methodNumber, proxyName));
     }
 
     public boolean transformClass(ClassFile file, ClassLoader loader, boolean modifiableClass, final Set<MethodInfo> modifiedMethods) {
         if(!Agent.isRetransformationStarted()) {
             return false;
         }
-        final Map<String, Set<FakeMethodCallData>> knownFakeMethods = data.getManipulationData(loader);
+        final Map<String, Set<Data>> knownFakeMethods = data.getManipulationData(loader);
         //methods that are known to need a rewrite to a generated static method
-        final Map<Integer, FakeMethodCallData> knownFakeMethodCallLocations = new HashMap<>();
+        final Map<Integer, Data> knownFakeMethodCallLocations = new HashMap<>();
         //methods that may need a rewrite to a generated static method
         final Map<Integer, AddedMethodInfo> potentialFakeMethodCallLocations = new HashMap<>();
         // first we need to scan the constant pool looking for
@@ -92,7 +92,7 @@ public class FakeMethodCallManipulator implements ClassManipulator {
                 }
                 boolean handled = false;
                 if (knownFakeMethods.containsKey(className)) {
-                    for (FakeMethodCallData data : knownFakeMethods.get(className)) {
+                    for (Data data : knownFakeMethods.get(className)) {
                         if (methodName.equals(data.getMethodName()) && methodDesc.equals(data.getMethodDesc())) {
                             // store the location in the const pool of the method ref
                             knownFakeMethodCallLocations.put(i, data);
@@ -194,10 +194,10 @@ public class FakeMethodCallManipulator implements ClassManipulator {
                             // replacing
                             if(potentialFakeMethodCallLocations.containsKey(val)) {
                                 AddedMethodInfo methodInfo = potentialFakeMethodCallLocations.get(val);
-                                FakeMethodCallData data = new FakeMethodCallData(methodInfo.className, methodInfo.name, methodInfo.desc, op == Opcode.INVOKESTATIC ? FakeMethodCallData.Type.STATIC : op == Opcode.INVOKEINTERFACE ? FakeMethodCallData.Type.INTERFACE : FakeMethodCallData.Type.VIRTUAL, loader, methodInfo.number, null);
+                                Data data = new Data(methodInfo.className, methodInfo.name, methodInfo.desc, op == Opcode.INVOKESTATIC ? Type.STATIC : op == Opcode.INVOKEINTERFACE ? Type.INTERFACE : Type.VIRTUAL, loader, methodInfo.number, null);
                                 handleFakeMethodCall(file, modifiedMethods, m, it, index, op, data);
                             } else if (knownFakeMethodCallLocations.containsKey(val)) {
-                                FakeMethodCallData data = knownFakeMethodCallLocations.get(val);
+                                Data data = knownFakeMethodCallLocations.get(val);
                                 handleFakeMethodCall(file, modifiedMethods, m, it, index, op, data);
 
                             }
@@ -216,7 +216,7 @@ public class FakeMethodCallManipulator implements ClassManipulator {
         }
     }
 
-    private void handleLambdas(ClassFile file, Map<Integer, FakeMethodCallData> knownFakeMethodCallLocations, ConstPool pool) {
+    private void handleLambdas(ClassFile file, Map<Integer, Data> knownFakeMethodCallLocations, ConstPool pool) {
         //check the bootstrapmethod's attribute
         //this makes lambda support work
         AttributeInfo bootstrapMethods = file.getAttribute(BootstrapMethodsAttribute.tag);
@@ -245,7 +245,7 @@ public class FakeMethodCallManipulator implements ClassManipulator {
                                     //the lambda references a new method
 
                                     replaceBootstrap = true;
-                                    FakeMethodCallData target = knownFakeMethodCallLocations.get(methodRefArg);
+                                    Data target = knownFakeMethodCallLocations.get(methodRefArg);
                                     String type = pool.getMethodrefType(methodRefArg);
                                     String name = pool.getMethodrefName(methodRefArg);
                                     if(kind != ConstPool.REF_invokeStatic) {
@@ -279,7 +279,7 @@ public class FakeMethodCallManipulator implements ClassManipulator {
         }
     }
 
-    private void handleFakeMethodCall(ClassFile file, Set<MethodInfo> modifiedMethods, MethodInfo m, CodeIterator it, int index, int op, FakeMethodCallData data) throws BadBytecode {
+    private void handleFakeMethodCall(ClassFile file, Set<MethodInfo> modifiedMethods, MethodInfo m, CodeIterator it, int index, int op, Data data) throws BadBytecode {
         //NOP out the whole thing
         it.writeByte(CodeIterator.NOP, index );
         it.writeByte(CodeIterator.NOP, index + 1);
@@ -290,7 +290,7 @@ public class FakeMethodCallManipulator implements ClassManipulator {
             it.writeByte(CodeIterator.NOP, index + 4);
         }
         //now we write some bytecode to invoke it directly
-        final boolean staticMethod = data.getType() == FakeMethodCallData.Type.STATIC;
+        final boolean staticMethod = data.getType() == Type.STATIC;
         Bytecode byteCode = new Bytecode(file.getConstPool());
 
         // stick the method number in the const pool then load it onto the
@@ -303,7 +303,7 @@ public class FakeMethodCallManipulator implements ClassManipulator {
         // invoke the added method
         if (staticMethod) {
             byteCode.addInvokestatic(data.getClassName(), Constants.ADDED_STATIC_METHOD_NAME, "(I[Ljava/lang/Object;)Ljava/lang/Object;");
-        } else if (data.getType() == FakeMethodCallData.Type.INTERFACE) {
+        } else if (data.getType() == Type.INTERFACE) {
             byteCode.addInvokeinterface(data.getClassName(), Constants.ADDED_METHOD_NAME, "(I[Ljava/lang/Object;)Ljava/lang/Object;", 3);
         } else {
             byteCode.addInvokevirtual(data.getClassName(), Constants.ADDED_METHOD_NAME, "(I[Ljava/lang/Object;)Ljava/lang/Object;");
@@ -319,6 +319,10 @@ public class FakeMethodCallManipulator implements ClassManipulator {
         }
         it.insertEx(byteCode.get());
         modifiedMethods.add(m);
+    }
+
+    public enum Type {
+        VIRTUAL, STATIC, INTERFACE
     }
 
 
@@ -339,7 +343,7 @@ public class FakeMethodCallManipulator implements ClassManipulator {
     /**
      * @author Stuart Douglas
      */
-    public static class FakeMethodCallData implements ClassLoaderFiltered<FakeMethodCallData> {
+    private static class Data implements ClassLoaderFiltered<Data> {
         private final String className;
         private final String methodName;
         private final String methodDesc;
@@ -348,7 +352,7 @@ public class FakeMethodCallManipulator implements ClassManipulator {
         private final int methodNumber;
         private final String proxyName;
 
-        public FakeMethodCallData(String className, String methodName, String methodDesc, Type type, ClassLoader classLoader, int methodNumber, String proxyName) {
+        public Data(String className, String methodName, String methodDesc, Type type, ClassLoader classLoader, int methodNumber, String proxyName) {
             this.className = className;
             this.methodName = methodName;
             this.methodDesc = methodDesc;
@@ -403,7 +407,7 @@ public class FakeMethodCallManipulator implements ClassManipulator {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
 
-            FakeMethodCallData that = (FakeMethodCallData) o;
+            Data that = (Data) o;
 
             if (className != null ? !className.equals(that.className) : that.className != null) return false;
             if (methodName != null ? !methodName.equals(that.methodName) : that.methodName != null) return false;
@@ -424,12 +428,9 @@ public class FakeMethodCallManipulator implements ClassManipulator {
             return result;
         }
 
-        public FakeMethodCallData getInstance() {
+        public Data getInstance() {
             return this;
         }
 
-        public enum Type {
-            VIRTUAL, STATIC, INTERFACE
-        }
     }
 }

@@ -48,18 +48,18 @@ public class FieldManipulator implements ClassManipulator {
     /**
      * added field information by class
      */
-    private final ManipulationDataStore<AddedFieldData> data = new ManipulationDataStore<>();
+    private final ManipulationDataStore<Data> data = new ManipulationDataStore<>();
 
-    public void addField(AddedFieldData dt) {
-        data.add(dt.getClassName(), dt);
+    public void addField(int arrayIndex, String name, String descriptor, String className, ClassLoader classLoader) {
+        data.add(className, new Data(arrayIndex, name, descriptor, className, classLoader));
     }
 
     public boolean transformClass(ClassFile file, ClassLoader loader, boolean modifiableClass, final Set<MethodInfo> modifiedMethods) {
-        Map<String, Set<AddedFieldData>> addedFieldData = data.getManipulationData(loader);
+        Map<String, Set<Data>> addedFieldData = data.getManipulationData(loader);
         if (addedFieldData.isEmpty()) {
             return false;
         }
-        Map<Integer, AddedFieldData> fieldAccessLocations = new HashMap<>();
+        Map<Integer, Data> fieldAccessLocations = new HashMap<>();
         // first we need to scan the constant pool looking for
         // CONST_Fieldref structures
         ConstPool pool = file.getConstPool();
@@ -71,7 +71,7 @@ public class FieldManipulator implements ClassManipulator {
                 String descriptor = pool.getFieldrefType(i);
                 boolean handled = false;
                 if (addedFieldData.containsKey(className)) {
-                    for (AddedFieldData data : addedFieldData.get(className)) {
+                    for (Data data : addedFieldData.get(className)) {
                         if (fieldName.equals(data.getName())) {
                             // store the location in the const pool of the method ref
                             fieldAccessLocations.put(i, data);
@@ -92,9 +92,9 @@ public class FieldManipulator implements ClassManipulator {
                             //this is a new field
                             //lets deal with it
                             int fieldNo = FieldReferenceDataStore.instance().getFieldNo(fieldName, descriptor);
-                            AddedFieldData fieldData = new AddedFieldData(fieldNo, fieldName, descriptor, className, loader);
+                            Data fieldData = new Data(fieldNo, fieldName, descriptor, className, loader);
                             fieldAccessLocations.put(i, fieldData);
-                            Transformer.getManipulator().rewriteInstanceFieldAccess(fieldData);
+                            Transformer.getManipulator().rewriteInstanceFieldAccess(fieldNo, fieldName, descriptor, className, loader);
                             addedFieldData = this.data.getManipulationData(loader);
 
                         }
@@ -123,7 +123,7 @@ public class FieldManipulator implements ClassManipulator {
                             int val = it.s16bitAt(index + 1);
                             // if the field access is for an added field
                             if (fieldAccessLocations.containsKey(val)) {
-                                AddedFieldData data = fieldAccessLocations.get(val);
+                                Data data = fieldAccessLocations.get(val);
                                 int arrayPos = file.getConstPool().addIntegerInfo(data.getArrayIndex());
                                 // write over the field access with nop
                                 it.writeByte(Opcode.NOP, index);
@@ -196,14 +196,14 @@ public class FieldManipulator implements ClassManipulator {
      *
      * @author stuart
      */
-    public static class AddedFieldData implements ClassLoaderFiltered<AddedFieldData> {
+    private static class Data implements ClassLoaderFiltered<Data> {
         private final int arrayIndex;
         private final String name;
         private final String descriptor;
         private final String className;
         private final ClassLoader classLoader;
 
-        public AddedFieldData(int arrayIndex, String name, String descriptor, String className, ClassLoader classLoader) {
+        public Data(int arrayIndex, String name, String descriptor, String className, ClassLoader classLoader) {
             super();
             this.arrayIndex = arrayIndex;
             this.name = name;
@@ -232,7 +232,7 @@ public class FieldManipulator implements ClassManipulator {
             return classLoader;
         }
 
-        public AddedFieldData getInstance() {
+        public Data getInstance() {
             return this;
         }
 

@@ -64,8 +64,8 @@ public class Manipulator {
         constructorInvocationManipulator.rewriteConstructorCalls(clazz, descriptor, methodNo, classLoader);
     }
 
-    public void rewriteInstanceFieldAccess(FieldManipulator.AddedFieldData data) {
-        instanceFieldManapulator.addField(data);
+    public void rewriteInstanceFieldAccess(int arrayIndex, String name, String descriptor, String className, ClassLoader classLoader) {
+        instanceFieldManapulator.addField(arrayIndex, name, descriptor, className, classLoader);
     }
 
     public void rewriteSubclassCalls(String className, ClassLoader classLoader, String parentName, ClassLoader parentClassLoader, String methodName, String methodDesc) {
@@ -85,8 +85,8 @@ public class Manipulator {
         virtualToStaticManipulator.replaceVirtualMethodInvokationWithLocal(oldClass, methodName, newMethodName, methodDesc, newStaticMethodDesc, classLoader);
     }
 
-    public void addFakeMethodCallRewrite(FakeMethodCallManipulator.FakeMethodCallData fakeMethodCallData) {
-        fakeMethodCallManipulator.addFakeMethodCall(fakeMethodCallData);
+    public void addFakeMethodCallRewrite(String className, String methodName, String methodDesc, FakeMethodCallManipulator.Type type, ClassLoader classLoader, int methodNumber, String proxyName) {
+        fakeMethodCallManipulator.addFakeMethodCall(className, methodName, methodDesc, type, classLoader, methodNumber, proxyName);
     }
 
     public boolean transformClass(ClassFile file, ClassLoader classLoader, boolean modifiable, Set<MethodInfo> modifiedMethods) {

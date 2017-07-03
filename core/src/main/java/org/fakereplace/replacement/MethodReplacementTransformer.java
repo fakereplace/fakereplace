@@ -247,7 +247,7 @@ public class MethodReplacementTransformer implements FakereplaceTransformer {
             }
             String proxyName = generateProxyInvocationBytecode(mInfo, methodCount, file.getName(), loader, staticMethod, file.isInterface());
             ClassDataStore.instance().registerProxyName(oldClass, proxyName);
-            Transformer.getManipulator().addFakeMethodCallRewrite(new FakeMethodCallManipulator.FakeMethodCallData(file.getName(), mInfo.getName(), mInfo.getDescriptor(), staticMethod ? FakeMethodCallManipulator.FakeMethodCallData.Type.STATIC : file.isInterface() ? FakeMethodCallManipulator.FakeMethodCallData.Type.INTERFACE : FakeMethodCallManipulator.FakeMethodCallData.Type.VIRTUAL, loader, methodCount, proxyName));
+            Transformer.getManipulator().addFakeMethodCallRewrite(file.getName(), mInfo.getName(), mInfo.getDescriptor(), staticMethod ? FakeMethodCallManipulator.Type.STATIC : file.isInterface() ? FakeMethodCallManipulator.Type.INTERFACE : FakeMethodCallManipulator.Type.VIRTUAL, loader, methodCount, proxyName);
 
             builder.add(new FakeMethod(mInfo.getName(), proxyName,  mInfo.getDescriptor(), mInfo.getAccessFlags()));
             if (!staticMethod) {

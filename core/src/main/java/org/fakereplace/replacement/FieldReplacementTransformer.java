@@ -123,7 +123,6 @@ public class FieldReplacementTransformer implements FakereplaceTransformer {
 
         ListIterator<?> it = file.getFields().listIterator();
 
-        List<FieldManipulator.AddedFieldData> addedFields = new ArrayList<>();
 
         final Set<FieldData> toRemove = new HashSet<>();
         final Set<FieldProxyInfo> toAdd = new HashSet<>();
@@ -153,7 +152,7 @@ public class FieldReplacementTransformer implements FakereplaceTransformer {
             // This is a newly added field.
             if (md == null) {
                 int fieldNo = addField(loader, m, toAdd, oldClass);
-                addedFields.add(new FieldManipulator.AddedFieldData(fieldNo, m.getName(), m.getDescriptor(), file.getName(), loader));
+                Transformer.getManipulator().rewriteInstanceFieldAccess(fieldNo, m.getName(), m.getDescriptor(), file.getName(), loader);
                 it.remove();
             } else {
                 fields.remove(md);
@@ -184,9 +183,6 @@ public class FieldReplacementTransformer implements FakereplaceTransformer {
                     throw new RuntimeException(e);
                 }
             }
-        }
-        for (FieldManipulator.AddedFieldData a : addedFields) {
-            Transformer.getManipulator().rewriteInstanceFieldAccess(a);
         }
         ClassDataStore.instance().modifyCurrentData(loader, file.getName(), (builder) -> {
             for (FieldProxyInfo field : toAdd) {
