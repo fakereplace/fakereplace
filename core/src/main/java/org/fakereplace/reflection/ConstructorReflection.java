@@ -47,8 +47,8 @@ public class ConstructorReflection {
                 ar = new Object[0];
             }
             if (!Modifier.isPublic(method.getModifiers()) && !method.isAccessible()) {
-                Class<?> caller = sun.reflect.Reflection.getCallerClass(2);
-                Reflection.ensureMemberAccess(caller, method.getDeclaringClass(), null, method.getModifiers());
+                Class<?> caller = AccessVerification.getCallerClass(2);
+                AccessVerification.ensureMemberAccess(caller, method.getDeclaringClass(), method.getModifiers());
             }
             return invoke.newInstance(data.getMethodNo(), ar, null);
         } catch (NoSuchMethodException | SecurityException e) {

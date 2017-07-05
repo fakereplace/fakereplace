@@ -201,7 +201,7 @@ public class FieldReflection {
         FieldAccessor accessor = ClassDataStore.instance().getFieldAccessor(f.getDeclaringClass().getName());
         if (!Modifier.isPublic(f.getModifiers()) && !f.isAccessible()) {
             Class<?> caller = findCallerClass();
-            Reflection.ensureMemberAccess(caller, accessor.getDeclaringClass(), null, f.getModifiers());
+            AccessVerification.ensureMemberAccess(caller, accessor.getDeclaringClass(), f.getModifiers());
         }
         accessor.set(object, val);
     }
@@ -210,7 +210,7 @@ public class FieldReflection {
         FieldAccessor accessor = ClassDataStore.instance().getFieldAccessor(f.getDeclaringClass().getName());
         if (!Modifier.isPublic(f.getModifiers()) && !f.isAccessible()) {
             Class<?> caller = findCallerClass();
-            Reflection.ensureMemberAccess(caller, accessor.getDeclaringClass(), null, f.getModifiers());
+            AccessVerification.ensureMemberAccess(caller, accessor.getDeclaringClass(), f.getModifiers());
         }
         accessor.set(object, val);
     }
@@ -219,7 +219,7 @@ public class FieldReflection {
         FieldAccessor accessor = ClassDataStore.instance().getFieldAccessor(f.getDeclaringClass().getName());
         if (!Modifier.isPublic(f.getModifiers()) && !f.isAccessible()) {
             Class<?> caller = findCallerClass();
-            Reflection.ensureMemberAccess(caller, accessor.getDeclaringClass(), null, f.getModifiers());
+            AccessVerification.ensureMemberAccess(caller, accessor.getDeclaringClass(), f.getModifiers());
         }
         accessor.set(object, val);
     }
@@ -228,7 +228,7 @@ public class FieldReflection {
         FieldAccessor accessor = ClassDataStore.instance().getFieldAccessor(f.getDeclaringClass().getName());
         if (!Modifier.isPublic(f.getModifiers()) && !f.isAccessible()) {
             Class<?> caller = findCallerClass();
-            Reflection.ensureMemberAccess(caller, accessor.getDeclaringClass(), null, f.getModifiers());
+            AccessVerification.ensureMemberAccess(caller, accessor.getDeclaringClass(), f.getModifiers());
         }
         accessor.set(object, val);
     }
@@ -237,7 +237,7 @@ public class FieldReflection {
         FieldAccessor accessor = ClassDataStore.instance().getFieldAccessor(f.getDeclaringClass().getName());
         if (!Modifier.isPublic(f.getModifiers()) && !f.isAccessible()) {
             Class<?> caller = findCallerClass();
-            Reflection.ensureMemberAccess(caller, accessor.getDeclaringClass(), null, f.getModifiers());
+            AccessVerification.ensureMemberAccess(caller, accessor.getDeclaringClass(), f.getModifiers());
         }
         accessor.set(object, val);
     }
@@ -246,7 +246,7 @@ public class FieldReflection {
         FieldAccessor accessor = ClassDataStore.instance().getFieldAccessor(f.getDeclaringClass().getName());
         if (!Modifier.isPublic(f.getModifiers()) && !f.isAccessible()) {
             Class<?> caller = findCallerClass();
-            Reflection.ensureMemberAccess(caller, accessor.getDeclaringClass(), null, f.getModifiers());
+            AccessVerification.ensureMemberAccess(caller, accessor.getDeclaringClass(), f.getModifiers());
         }
         accessor.set(object, val);
     }
@@ -255,7 +255,7 @@ public class FieldReflection {
         FieldAccessor accessor = ClassDataStore.instance().getFieldAccessor(f.getDeclaringClass().getName());
         if (!Modifier.isPublic(f.getModifiers()) && !f.isAccessible()) {
             Class<?> caller = findCallerClass();
-            Reflection.ensureMemberAccess(caller, accessor.getDeclaringClass(), null, f.getModifiers());
+            AccessVerification.ensureMemberAccess(caller, accessor.getDeclaringClass(), f.getModifiers());
         }
         accessor.set(object, val);
     }
@@ -264,7 +264,7 @@ public class FieldReflection {
         FieldAccessor accessor = ClassDataStore.instance().getFieldAccessor(f.getDeclaringClass().getName());
         if (!Modifier.isPublic(f.getModifiers()) && !f.isAccessible()) {
             Class<?> caller = findCallerClass();
-            Reflection.ensureMemberAccess(caller, accessor.getDeclaringClass(), null, f.getModifiers());
+            AccessVerification.ensureMemberAccess(caller, accessor.getDeclaringClass(), f.getModifiers());
         }
         accessor.set(object, val);
     }
@@ -273,7 +273,7 @@ public class FieldReflection {
         FieldAccessor accessor = ClassDataStore.instance().getFieldAccessor(f.getDeclaringClass().getName());
         if (!Modifier.isPublic(f.getModifiers()) && !f.isAccessible()) {
             Class<?> caller = findCallerClass();
-            Reflection.ensureMemberAccess(caller, accessor.getDeclaringClass(), null, f.getModifiers());
+            AccessVerification.ensureMemberAccess(caller, accessor.getDeclaringClass(), f.getModifiers());
         }
         accessor.set(object, val);
     }
@@ -282,7 +282,7 @@ public class FieldReflection {
         FieldAccessor accessor = ClassDataStore.instance().getFieldAccessor(f.getDeclaringClass().getName());
         if (!Modifier.isPublic(f.getModifiers()) && !f.isAccessible()) {
             Class<?> caller = findCallerClass();
-            Reflection.ensureMemberAccess(caller, accessor.getDeclaringClass(), null, f.getModifiers());
+            AccessVerification.ensureMemberAccess(caller, accessor.getDeclaringClass(), f.getModifiers());
         }
         return accessor.get(object);
     }
@@ -291,7 +291,7 @@ public class FieldReflection {
         FieldAccessor accessor = ClassDataStore.instance().getFieldAccessor(f.getDeclaringClass().getName());
         if (!Modifier.isPublic(f.getModifiers()) && !f.isAccessible()) {
             Class<?> caller = findCallerClass();
-            Reflection.ensureMemberAccess(caller, accessor.getDeclaringClass(), null, f.getModifiers());
+            AccessVerification.ensureMemberAccess(caller, accessor.getDeclaringClass(), f.getModifiers());
         }
         return (Boolean) accessor.get(object);
     }
@@ -300,7 +300,7 @@ public class FieldReflection {
         FieldAccessor accessor = ClassDataStore.instance().getFieldAccessor(f.getDeclaringClass().getName());
         if (!Modifier.isPublic(f.getModifiers()) && !f.isAccessible()) {
             Class<?> caller = findCallerClass();
-            Reflection.ensureMemberAccess(caller, accessor.getDeclaringClass(), null, f.getModifiers());
+            AccessVerification.ensureMemberAccess(caller, accessor.getDeclaringClass(), f.getModifiers());
         }
         return (Byte) accessor.get(object);
 
@@ -310,7 +310,7 @@ public class FieldReflection {
         FieldAccessor accessor = ClassDataStore.instance().getFieldAccessor(f.getDeclaringClass().getName());
         if (!Modifier.isPublic(f.getModifiers()) && !f.isAccessible()) {
             Class<?> caller = findCallerClass();
-            Reflection.ensureMemberAccess(caller, accessor.getDeclaringClass(), null, f.getModifiers());
+            AccessVerification.ensureMemberAccess(caller, accessor.getDeclaringClass(), f.getModifiers());
         }
         return (Character) accessor.get(object);
 
@@ -320,7 +320,7 @@ public class FieldReflection {
         FieldAccessor accessor = ClassDataStore.instance().getFieldAccessor(f.getDeclaringClass().getName());
         if (!Modifier.isPublic(f.getModifiers()) && !f.isAccessible()) {
             Class<?> caller = findCallerClass();
-            Reflection.ensureMemberAccess(caller, accessor.getDeclaringClass(), null, f.getModifiers());
+            AccessVerification.ensureMemberAccess(caller, accessor.getDeclaringClass(), f.getModifiers());
         }
         return (Double) accessor.get(object);
     }
@@ -329,7 +329,7 @@ public class FieldReflection {
         FieldAccessor accessor = ClassDataStore.instance().getFieldAccessor(f.getDeclaringClass().getName());
         if (!Modifier.isPublic(f.getModifiers()) && !f.isAccessible()) {
             Class<?> caller = findCallerClass();
-            Reflection.ensureMemberAccess(caller, accessor.getDeclaringClass(), null, f.getModifiers());
+            AccessVerification.ensureMemberAccess(caller, accessor.getDeclaringClass(), f.getModifiers());
         }
         return (Float) accessor.get(object);
     }
@@ -338,7 +338,7 @@ public class FieldReflection {
         FieldAccessor accessor = ClassDataStore.instance().getFieldAccessor(f.getDeclaringClass().getName());
         if (!Modifier.isPublic(f.getModifiers()) && !f.isAccessible()) {
             Class<?> caller = findCallerClass();
-            Reflection.ensureMemberAccess(caller, accessor.getDeclaringClass(), null, f.getModifiers());
+            AccessVerification.ensureMemberAccess(caller, accessor.getDeclaringClass(), f.getModifiers());
         }
         return (Integer) accessor.get(object);
     }
@@ -347,7 +347,7 @@ public class FieldReflection {
         FieldAccessor accessor = ClassDataStore.instance().getFieldAccessor(f.getDeclaringClass().getName());
         if (!Modifier.isPublic(f.getModifiers()) && !f.isAccessible()) {
             Class<?> caller = findCallerClass();
-            Reflection.ensureMemberAccess(caller, accessor.getDeclaringClass(), null, f.getModifiers());
+            AccessVerification.ensureMemberAccess(caller, accessor.getDeclaringClass(), f.getModifiers());
         }
         return (Long) accessor.get(object);
     }
@@ -356,16 +356,16 @@ public class FieldReflection {
         FieldAccessor accessor = ClassDataStore.instance().getFieldAccessor(f.getDeclaringClass().getName());
         if (!Modifier.isPublic(f.getModifiers()) && !f.isAccessible()) {
             Class<?> caller = findCallerClass();
-            Reflection.ensureMemberAccess(caller, accessor.getDeclaringClass(), null, f.getModifiers());
+            AccessVerification.ensureMemberAccess(caller, accessor.getDeclaringClass(), f.getModifiers());
         }
         return (Short) accessor.get(object);
     }
 
 
     private static Class findCallerClass() {
-        Class<?> c =  Reflection.getCallerClass(3);
+        Class<?> c =  AccessVerification.getCallerClass(3);
         if(c == FieldReflection.class) {
-            return Reflection.getCallerClass(4);
+            return AccessVerification.getCallerClass(4);
         }
         return c;
     }

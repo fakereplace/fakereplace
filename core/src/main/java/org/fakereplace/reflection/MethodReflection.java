@@ -65,8 +65,8 @@ public class MethodReflection {
 
     private static Object invokeWithPermissionCheck(final Method permissionCheckMethod, final Method method, final Object instance, final Object[] params) throws IllegalAccessException, InvocationTargetException {
         if (!Modifier.isPublic(permissionCheckMethod.getModifiers()) && !permissionCheckMethod.isAccessible()) {
-            Class<?> caller = sun.reflect.Reflection.getCallerClass(2);
-            Reflection.ensureMemberAccess(caller, permissionCheckMethod.getDeclaringClass(), null, permissionCheckMethod.getModifiers());
+            Class<?> caller = AccessVerification.getCallerClass(2);
+            AccessVerification.ensureMemberAccess(caller, permissionCheckMethod.getDeclaringClass(), permissionCheckMethod.getModifiers());
             try {
                 //we need to lookup a new method
                 //which is very yuck
