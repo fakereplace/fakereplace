@@ -20,12 +20,10 @@ package org.fakereplace.reflection;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.security.AccessController;
-import java.security.PrivilegedExceptionAction;
 import java.util.function.Function;
 
+import org.fakereplace.core.ProxyDefinitionStore;
 import javassist.bytecode.AccessFlag;
 import javassist.bytecode.BadBytecode;
 import javassist.bytecode.Bytecode;
@@ -52,7 +50,7 @@ class AccessVerification {
         try {
             Class.forName("sun.reflect.Reflection");
             //JDK8
-            String classname = AccessVerification.class.getName() + "$GetCallerProxy";
+            String classname = ProxyDefinitionStore.getProxyName();
             ClassFile cf = new ClassFile(false, classname, null);
             cf.setAccessFlags(AccessFlag.PUBLIC);
             cf.setInterfaces(new String[]{Function.class.getName()});
@@ -71,7 +69,7 @@ class AccessVerification {
             b = new Bytecode(m.getConstPool(), 2, 2);
             b.addAload(1);
             b.addCheckcast(Integer.class.getName());
-            b.addInvokevirtual(Integer.class.getName(),"intValue", "()I" );
+            b.addInvokevirtual(Integer.class.getName(), "intValue", "()I");
             b.addIconst(1);
             b.add(Opcode.IADD);
             b.addInvokestatic("sun.reflect.Reflection", "getCallerClass", "(I)Ljava/lang/Class;");
@@ -83,32 +81,15 @@ class AccessVerification {
             ByteArrayOutputStream bytes = new ByteArrayOutputStream();
             DataOutputStream dos = new DataOutputStream(bytes);
             cf.write(dos);
-            Class<?> clazz = defineClass(classname, bytes.toByteArray());
+            ProxyDefinitionStore.saveProxyDefinition(ClassLoader.getSystemClassLoader(), classname, bytes.toByteArray());
+            Class<?> clazz = Class.forName(classname, true, ClassLoader.getSystemClassLoader());
             caller = (Function<Integer, Class<?>>) clazz.newInstance();
-        } catch (ClassNotFoundException|DuplicateMemberException|BadBytecode e) {
+        } catch (ClassNotFoundException | DuplicateMemberException | BadBytecode e) {
             e.printStackTrace();
         } catch (IOException | IllegalAccessException | InstantiationException e) {
             throw new RuntimeException(e); //should never happen
         }
         GET_CALLER = caller;
-    }
-
-    private static Class<?> defineClass(String name, byte[] data) {
-        try {
-            Method defineClass1 = AccessController.doPrivileged((PrivilegedExceptionAction<Method>) () -> {
-                Class<?> cl = Class.forName("java.lang.ClassLoader", false, null);
-                Method define = cl.getDeclaredMethod("defineClass", new Class[]{String.class, byte[].class, int.class,
-                        int.class});
-                define.setAccessible(true);
-                return define;
-            });
-            Object[] args = new Object[]{name.replace('/', '.'), data, new Integer(0), new Integer(data.length)};
-            return (Class<?>) defineClass1.invoke(ClassLoader.getSystemClassLoader(), args);
-        } catch (RuntimeException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
     static void ensureMemberAccess(Class<?> caller, Class<?> declaring, int modifiers) throws IllegalAccessException {

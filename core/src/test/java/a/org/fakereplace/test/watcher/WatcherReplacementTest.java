@@ -24,6 +24,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import javassist.ClassPool;
 import javassist.CtClass;
+import javassist.LoaderClassPath;
 
 public class WatcherReplacementTest {
     @Test
@@ -32,7 +33,7 @@ public class WatcherReplacementTest {
         int val0 = re.value();
         Assert.assertEquals("Test setup wrong", 0 , val0);
         ClassPool pool = new ClassPool();
-        pool.appendSystemPath();
+        pool.appendClassPath(new LoaderClassPath(getClass().getClassLoader()));
         CtClass nc = pool.get(WatcherRep1.class.getName());
 
         if (nc.isFrozen()) {

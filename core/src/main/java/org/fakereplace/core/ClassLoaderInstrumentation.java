@@ -101,7 +101,7 @@ public class ClassLoaderInstrumentation {
                 jumpEnd.mark();
                 b.add(Opcode.POP);
 
-                if (!classFile.getName().startsWith("java.") && !classFile.getName().startsWith("com.sun") && !classFile.getName().startsWith("sun")) {
+                if (!classFile.getName().startsWith("java.") && !classFile.getName().startsWith("com.sun") && !classFile.getName().startsWith("sun")&& !classFile.getName().startsWith("jdk.internal")) {
                     //now we need to check if this is a fakereplace class
                     //and if so always delegate to the appropriate loader
                     b.addAload(1);
