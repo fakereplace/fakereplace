@@ -17,14 +17,99 @@
 
 package org.fakereplace.reflection;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.security.AccessController;
+import java.security.PrivilegedExceptionAction;
+import java.util.function.Function;
 
-import sun.reflect.Reflection;
+import javassist.bytecode.AccessFlag;
+import javassist.bytecode.BadBytecode;
+import javassist.bytecode.Bytecode;
+import javassist.bytecode.ClassFile;
+import javassist.bytecode.DuplicateMemberException;
+import javassist.bytecode.MethodInfo;
+import javassist.bytecode.Opcode;
 
 /**
  * @author Stuart Douglas
  */
 class AccessVerification {
+
+    /**
+     * The way to do this has changed between JDK8 and JDK9.
+     * <p>
+     * To make it compile on both we generate an accessor at runtime using javassist
+     */
+    private static final Function<Integer, Class<?>> GET_CALLER;
+
+    static {
+
+        Function<Integer, Class<?>> caller = null;
+        try {
+            Class.forName("sun.reflect.Reflection");
+            //JDK8
+            String classname = AccessVerification.class.getName() + "$GetCallerProxy";
+            ClassFile cf = new ClassFile(false, classname, null);
+            cf.setAccessFlags(AccessFlag.PUBLIC);
+            cf.setInterfaces(new String[]{Function.class.getName()});
+            MethodInfo m = new MethodInfo(cf.getConstPool(), "<init>", "()V");
+            m.setAccessFlags(AccessFlag.PUBLIC);
+            Bytecode b = new Bytecode(m.getConstPool(), 1, 1);
+            b.addAload(0);
+            b.addInvokespecial(Object.class.getName(), "<init>", "()V");
+            b.add(Opcode.RETURN);
+            m.setCodeAttribute(b.toCodeAttribute());
+            m.getCodeAttribute().computeMaxStack();
+            cf.addMethod(m);
+
+            m = new MethodInfo(cf.getConstPool(), "apply", "(Ljava/lang/Object;)Ljava/lang/Object;");
+            m.setAccessFlags(AccessFlag.PUBLIC);
+            b = new Bytecode(m.getConstPool(), 2, 2);
+            b.addAload(1);
+            b.addCheckcast(Integer.class.getName());
+            b.addInvokevirtual(Integer.class.getName(),"intValue", "()I" );
+            b.addIconst(1);
+            b.add(Opcode.IADD);
+            b.addInvokestatic("sun.reflect.Reflection", "getCallerClass", "(I)Ljava/lang/Class;");
+            b.add(Opcode.ARETURN);
+            m.setCodeAttribute(b.toCodeAttribute());
+            m.getCodeAttribute().computeMaxStack();
+            cf.addMethod(m);
+
+            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+            DataOutputStream dos = new DataOutputStream(bytes);
+            cf.write(dos);
+            Class<?> clazz = defineClass(classname, bytes.toByteArray());
+            caller = (Function<Integer, Class<?>>) clazz.newInstance();
+        } catch (ClassNotFoundException|DuplicateMemberException|BadBytecode e) {
+            e.printStackTrace();
+        } catch (IOException | IllegalAccessException | InstantiationException e) {
+            throw new RuntimeException(e); //should never happen
+        }
+        GET_CALLER = caller;
+    }
+
+    private static Class<?> defineClass(String name, byte[] data) {
+        try {
+            Method defineClass1 = AccessController.doPrivileged((PrivilegedExceptionAction<Method>) () -> {
+                Class<?> cl = Class.forName("java.lang.ClassLoader", false, null);
+                Method define = cl.getDeclaredMethod("defineClass", new Class[]{String.class, byte[].class, int.class,
+                        int.class});
+                define.setAccessible(true);
+                return define;
+            });
+            Object[] args = new Object[]{name.replace('/', '.'), data, new Integer(0), new Integer(data.length)};
+            return (Class<?>) defineClass1.invoke(ClassLoader.getSystemClassLoader(), args);
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     static void ensureMemberAccess(Class<?> caller, Class<?> declaring, int modifiers) throws IllegalAccessException {
         if (caller != null && declaring != null) {
@@ -116,6 +201,6 @@ class AccessVerification {
     }
 
     static Class<?> getCallerClass(int pos) {
-        return Reflection.getCallerClass(pos);
+        return GET_CALLER.apply(pos + 1);
     }
 }
