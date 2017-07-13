@@ -128,7 +128,11 @@ public class MainTransformer implements ClassFileTransformer {
                 try {
                     if (!modifiedMethods.isEmpty()) {
                         ClassPool classPool = new ClassPool();
-                        classPool.appendClassPath(new LoaderClassPath(loader));
+                        if(loader == null) {
+                            classPool.appendClassPath(new LoaderClassPath(ClassLoader.getSystemClassLoader()));
+                        } else {
+                            classPool.appendClassPath(new LoaderClassPath(loader));
+                        }
                         classPool.appendSystemPath();
                         for (MethodInfo method : modifiedMethods) {
                             if (method.getCodeAttribute() != null) {

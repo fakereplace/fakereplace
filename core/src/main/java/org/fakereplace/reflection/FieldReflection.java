@@ -30,7 +30,6 @@ import org.fakereplace.data.FieldData;
 import org.fakereplace.data.MemberType;
 import javassist.bytecode.AccessFlag;
 import javassist.bytecode.Descriptor;
-import sun.reflect.Reflection;
 
 /**
  * Class that handles access to re-written fields.

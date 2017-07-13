@@ -32,7 +32,6 @@ import org.fakereplace.data.ModifiedMethod;
 import org.fakereplace.util.DescriptorUtils;
 import javassist.bytecode.AccessFlag;
 import javassist.bytecode.Descriptor;
-import sun.reflect.Reflection;
 
 /**
  * This class has some method related reflection calls delegated to it at

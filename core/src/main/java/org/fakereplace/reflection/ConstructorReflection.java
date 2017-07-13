@@ -32,7 +32,6 @@ import org.fakereplace.data.MethodData;
 import org.fakereplace.util.DescriptorUtils;
 import javassist.bytecode.AccessFlag;
 import javassist.bytecode.Descriptor;
-import sun.reflect.Reflection;
 
 public class ConstructorReflection {
 
