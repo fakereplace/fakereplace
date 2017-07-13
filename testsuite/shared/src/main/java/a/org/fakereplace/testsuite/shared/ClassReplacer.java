@@ -26,6 +26,7 @@ import org.fakereplace.core.Agent;
 import org.fakereplace.replacement.AddedClass;
 import javassist.ClassPool;
 import javassist.CtClass;
+import javassist.LoaderClassPath;
 
 public class ClassReplacer {
 
@@ -38,7 +39,7 @@ public class ClassReplacer {
     private final ClassPool pool = new ClassPool();
 
     public ClassReplacer() {
-        pool.appendSystemPath();
+        pool.appendClassPath(new LoaderClassPath(ClassReplacer.class.getClassLoader()));
     }
 
     public void queueClassForReplacement(Class<?> oldClass, Class<?> newClass) {

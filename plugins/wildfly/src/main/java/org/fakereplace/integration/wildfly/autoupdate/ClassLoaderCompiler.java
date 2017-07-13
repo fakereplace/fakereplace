@@ -195,11 +195,12 @@ public class ClassLoaderCompiler {
         }
     }
 
-    private class ClassLoaderJavaFileManager implements JavaFileManager {
+    private class ClassLoaderJavaFileManager extends ForwardingJavaFileManager<StandardJavaFileManager> {
 
         private final JavaFileManager standardJavaFileManager;
 
         private ClassLoaderJavaFileManager(StandardJavaFileManager standardJavaFileManager) {
+            super(standardJavaFileManager);
             this.standardJavaFileManager = new ForwardingJavaFileManager<JavaFileManager>(standardJavaFileManager) {
                 @Override
                 public JavaFileObject getJavaFileForOutput(Location location, String className, Kind kind, FileObject sibling) throws IOException {
@@ -318,7 +319,9 @@ public class ClassLoaderCompiler {
                     }
                 } else {
                     Kind kind;
-                    if (file.toString().endsWith(".java")) {
+                    if(file.toString().endsWith("module-info.java")) {
+                        continue;
+                    } else if (file.toString().endsWith(".java")) {
                         kind = Kind.SOURCE;
                     } else if (file.toString().endsWith(".class")) {
                         kind = Kind.CLASS;
@@ -340,7 +343,13 @@ public class ClassLoaderCompiler {
             if (file instanceof ZipJavaFileObject) {
                 return ((ZipJavaFileObject) file).binaryName();
             }
-            return standardJavaFileManager.inferBinaryName(location, file);
+            String s = standardJavaFileManager.inferBinaryName(location, file);
+            if(s.equals("module-info")) {
+                //TODO: I have no idea how this should work, but without it everything falls apart
+                //once JDK9 is final there should hopefully me more info on this
+                return location.getName() + ".module-info";
+            }
+            return s;
         }
 
         @Override
