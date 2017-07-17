@@ -37,7 +37,6 @@
     <modules>
         <module>jsf</module>
         <module>metawidget</module>
-        <module>maven</module>
         <module>wildfly</module>
         <module>weld</module>
         <module>resteasy</module>

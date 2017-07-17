@@ -23,8 +23,7 @@ pickup on these changes and re-load its metadata. To this end Fakereplace integr
 * **Hibernate** (This restarts the EMF if an entity is modified, this is still experimental)
 * **Resteasy**
 
-It also provides Wildfly integration, and a maven plugin to allow maven to automatically replace classes after it has
-compiled them.
+It also provides Wildfly integration.
 
 Getting Fakereplace
 -------------------
@@ -84,53 +83,6 @@ Fakereplace will then scan your source directory for changes, and attempt to aut
 ### Have Fakereplace watch your class files
 
 If you are using an exploded type deployment where the class files are on the file system rather than in a jar then Wildfly will automatically watch them for changes and attempt to replace them if they are modified.
-
-### Using the maven plugin
-
-Fakereplace also provides a maven plugin that communicates with Fakereplace over a socket.
-
-Using the maven plugin
-----------------------
-
-You will need to tell Fakereplace to start the socket server to be notified of changes. To do this add
-the 'server' option to the fakereplace option string (e.g. ``-javaagent:/path/to/fakereplace.jar=server`).
-
-You should see the following on startup:
-
-`
-Fakereplace listening on port 6555
-`
-
-To actually a hot deployment via the maven plugin add the following to your projects
-pom.xml:
-
-
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.fakereplace</groupId>
-            <artifactId>fakereplace-maven-plugin</artifactId>
-            <version>1.0.0.Alpha4</version>
-            <executions>
-              <execution>
-                <phase>package</phase>
-                <goals>
-                  <goal>fakereplace</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-
-And then run
-
-`
-mvn package
-`
-
-to perform the hot replacement.
-
 
 Supported Options
 -----------------

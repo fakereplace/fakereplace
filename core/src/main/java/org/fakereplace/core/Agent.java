@@ -39,7 +39,6 @@ import org.fakereplace.replacement.AddedClass;
 import org.fakereplace.replacement.AnnotationTransformer;
 import org.fakereplace.replacement.FieldReplacementTransformer;
 import org.fakereplace.replacement.MethodReplacementTransformer;
-import org.fakereplace.server.FakereplaceServer;
 import javassist.bytecode.ClassFile;
 
 /**
@@ -90,21 +89,6 @@ public class Agent {
         mainTransformer.addTransformer(new Transformer());
         mainTransformer.setRetransformationStarted(false);
         mainTransformer.setLogClassRetransformation(true);
-
-        //start the server
-        String portString = AgentOptions.getOption(AgentOption.SERVER);
-
-        if(portString == null || !portString.equals("-1")) {
-            if(portString == null) {
-                portString = "6555";
-            }
-            Thread thread = new Thread(new FakereplaceServer(Integer.parseInt(portString)));
-            thread.setDaemon(true);
-            thread.setName("Fakereplace Thread");
-            thread.start();
-        } else {
-            System.out.println("Fakereplace is running.");
-        }
     }
 
     public static void redefine(ClassDefinition[] classes, AddedClass[] addedData) throws UnmodifiableClassException, ClassNotFoundException {

@@ -17,16 +17,8 @@
 
 package org.fakereplace.core;
 
-import java.io.IOException;
 import java.net.URL;
-import java.net.URLConnection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
-import org.fakereplace.api.environment.ChangedClasses;
 import org.fakereplace.api.environment.Environment;
 import org.fakereplace.logging.Logger;
 
@@ -41,9 +33,6 @@ public class DefaultEnvironment implements Environment {
 
     private static final String[] replaceablePackages;
 
-    private final Map<String, Long> timestamps = new ConcurrentHashMap<>();
-    private final Map<String, ClassLoader> loaders = new ConcurrentHashMap<>();
-
     public static final DefaultEnvironment INSTANCE = new DefaultEnvironment();
 
     static {
@@ -57,10 +46,10 @@ public class DefaultEnvironment implements Environment {
 
     @Override
     public boolean isClassReplaceable(String className, ClassLoader loader) {
-        if(className == null) {
+        if (className == null) {
             return false; //lambdas
         }
-        if(loader == null) {
+        if (loader == null) {
             return false;
         }
         className = className.replace("/", ".");
@@ -84,52 +73,5 @@ public class DefaultEnvironment implements Environment {
 
         log.trace(className + " is not replaceable");
         return false;
-    }
-
-    public void recordTimestamp(String className, ClassLoader loader) {
-        log.trace("Recording timestamp for " + className);
-        if (loader == null) {
-            return;
-        }
-        final URL file = loader.getResource(className.replace(".", "/") + ".class");
-        className = className.replace("/", ".");
-        if (file != null) {
-            URLConnection connection;
-            try {
-                connection = file.openConnection();
-                timestamps.put(className, connection.getLastModified());
-                loaders.put(className, loader);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-
-    public ChangedClasses getUpdatedClasses(final String deploymentName, Map<String, Long> updatedClasses) {
-        final Set<Class<?>> ret = new HashSet<>();
-        ClassLoader loader = null;
-        for (Map.Entry<String, Long> entry : updatedClasses.entrySet()) {
-            if (timestamps.containsKey(entry.getKey()) && timestamps.get(entry.getKey()) < entry.getValue()) {
-                loader = loaders.get(entry.getKey());
-                try {
-                    ret.add(loader.loadClass(entry.getKey()));
-                    timestamps.put(entry.getKey(), entry.getValue());
-                } catch (ClassNotFoundException e) {
-                    log.error("Could not load class " + entry, e);
-                }
-            }
-        }
-        return new ChangedClasses(ret, Collections.<String>emptySet(), loader);
-    }
-
-    @Override
-    public Set<String> getUpdatedResources(final String deploymentName, final Map<String, Long> updatedResources) {
-        return Collections.emptySet();
-    }
-
-    @Override
-    public void updateResource(final String archiveName, final Map<String, byte[]> replacedResources) {
-
     }
 }

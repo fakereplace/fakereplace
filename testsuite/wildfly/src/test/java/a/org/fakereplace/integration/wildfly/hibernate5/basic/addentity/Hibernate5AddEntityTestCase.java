@@ -32,7 +32,7 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import a.org.fakereplace.testsuite.shared.RemoteClassReplacer;
+import a.org.fakereplace.integration.wildfly.arquillian.RemoteClassReplacer;
 
 /**
  * @author Stuart Douglas

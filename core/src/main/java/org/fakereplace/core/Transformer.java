@@ -96,7 +96,6 @@ public class Transformer implements FakereplaceTransformer {
             if ((AccessFlag.ENUM & file.getAccessFlags()) == 0 && (AccessFlag.ANNOTATION & file.getAccessFlags()) == 0) {
                 modified = true;
 
-                CurrentEnvironment.getEnvironment().recordTimestamp(className, loader);
                 watcher.addClassFile(className, loader);
                 if (file.isInterface()) {
                     addAbstractMethodForInstrumentation(file);

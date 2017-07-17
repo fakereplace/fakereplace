@@ -27,7 +27,6 @@ public enum AgentOption {
     DUMP_DIR("dump-dir"),
     PACKAGES("packages"),
     LOG("log"),
-    SERVER("server", "-1"),
     NO_INDEX("no-index")
     ;
 

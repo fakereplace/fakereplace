@@ -15,33 +15,35 @@
  *  limitations under the License.
  */
 
-package a.org.fakereplace.testsuite.shared;
+package a.org.fakereplace.integration.wildfly.arquillian;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Date;
+import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.fakereplace.client.ClassData;
-import org.fakereplace.client.ContentSource;
-import org.fakereplace.client.FakeReplaceClient;
-import org.fakereplace.client.ResourceData;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.InputStreamEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import a.org.fakereplace.testsuite.shared.HttpUtils;
 import javassist.ClassPool;
 import javassist.CtClass;
 
 public class RemoteClassReplacer {
 
-    private final Map<String, String> nameReplacements = new HashMap<String, String>();
+    private final Map<String, String> nameReplacements = new HashMap<>();
 
-    private final Map<Class<?>, Class<?>> queuedClassReplacements = new HashMap<Class<?>, Class<?>>();
+    private final Map<Class<?>, Class<?>> queuedClassReplacements = new HashMap<>();
 
     private final Set<Class<?>> addedClasses = new HashSet<Class<?>>();
 
-    private final Map<String, ResourceData> replacedResources = new HashMap<String, ResourceData>();
+    private final Map<String, byte[]> replacedResources = new HashMap<>();
 
     private final ClassPool pool = new ClassPool();
 
@@ -53,25 +55,20 @@ public class RemoteClassReplacer {
         queuedClassReplacements.put(oldClass, newClass);
     }
 
-    public void queueResourceForReplacement(final Class<?> packageClass, final String old, final String newResource) {
-        replacedResources.put(old, new ResourceData(old, new Date().getTime(), new ContentSource() {
-            @Override
-            public byte[] getData() throws IOException {
-                final InputStream stream = packageClass.getResource(newResource).openStream();
-                try {
-                    ByteArrayOutputStream bs = new ByteArrayOutputStream();
-                    int read;
-                    byte[] buff = new byte[512];
-                    while ((read = stream.read(buff)) != -1) {
-                        bs.write(buff, 0, read);
-                    }
-                    return bs.toByteArray();
-                } finally {
-                    stream.close();
-                }
+    public void queueResourceForReplacement(final Class<?> packageClass, final String old, final String newResource) throws IOException {
 
+        final InputStream stream = packageClass.getResource(newResource).openStream();
+        try {
+            ByteArrayOutputStream bs = new ByteArrayOutputStream();
+            int read;
+            byte[] buff = new byte[512];
+            while ((read = stream.read(buff)) != -1) {
+                bs.write(buff, 0, read);
             }
-        }));
+            replacedResources.put(old, bs.toByteArray());
+        } finally {
+            stream.close();
+        }
     }
 
     public void addNewClass(Class<?> definition) {
@@ -81,7 +78,7 @@ public class RemoteClassReplacer {
 
     public void replaceQueuedClasses(final String deploymentName) {
         try {
-            final Map<String, ClassData> classes = new HashMap<String, ClassData>();
+            final Map<String, byte[]> classes = new HashMap<>();
             for (Class<?> o : queuedClassReplacements.keySet()) {
                 Class<?> n = queuedClassReplacements.get(o);
                 String newName = o.getName();
@@ -103,8 +100,17 @@ public class RemoteClassReplacer {
                 }
                 nc.setName(o.getName());
                 final byte[] data = nc.toBytecode();
-                classes.put(o.getName(), new ClassData(o.getName(), System.currentTimeMillis() + 100, () -> data));
+                classes.put(o.getName(), data);
             }
+            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+            ObjectOutputStream out = new ObjectOutputStream(bytes);
+            out.writeUTF(deploymentName);
+            out.writeInt(classes.size());
+            for (Map.Entry<String, byte[]> e : classes.entrySet()) {
+                out.writeUTF(e.getKey());
+                out.writeObject(e.getValue());
+            }
+            classes.clear();
             for (Class<?> o : addedClasses) {
                 CtClass nc = pool.get(o.getName());
 
@@ -117,9 +123,29 @@ public class RemoteClassReplacer {
                     nc.replaceClassName(newName, oldName);
                 }
                 final byte[] data = nc.toBytecode();
-                classes.put(o.getName(), new ClassData(o.getName(), System.currentTimeMillis() + 100, () -> data));
+                classes.put(o.getName(), data);
             }
-            FakeReplaceClient.run(deploymentName, classes, replacedResources);
+            out.writeInt(addedClasses.size());
+            for (Map.Entry<String, byte[]> e : classes.entrySet()) {
+                out.writeUTF(e.getKey());
+                out.writeObject(e.getValue());
+            }
+            out.writeInt(replacedResources.size());
+            for (Map.Entry<String, byte[]> e : replacedResources.entrySet()) {
+                out.writeUTF(e.getKey());
+                out.writeObject(e.getValue());
+            }
+            out.close();
+
+            HttpPost post = new HttpPost("http://localhost:8080/fakereplace/update"); //TODO: should not be hard coded
+            post.setEntity(new InputStreamEntity(new ByteArrayInputStream(bytes.toByteArray())));
+            DefaultHttpClient client = new DefaultHttpClient();
+            HttpResponse result = client.execute(post);
+            String body = HttpUtils.getContent(result);
+            if (result.getStatusLine().getStatusCode() != 200) {
+                throw new RuntimeException(result.getStatusLine().getStatusCode() + body);
+            }
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

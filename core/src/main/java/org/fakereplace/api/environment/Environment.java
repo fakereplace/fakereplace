@@ -16,22 +16,11 @@
  */
 package org.fakereplace.api.environment;
 
-import java.util.Map;
-import java.util.Set;
-
 /**
  * @author Stuart Douglas
  */
 public interface Environment {
 
     boolean isClassReplaceable(final String className, final ClassLoader loader);
-
-    void recordTimestamp(final String className, final ClassLoader loader);
-
-    ChangedClasses getUpdatedClasses(final String deploymentName, final Map<String, Long> updatedClasses);
-
-    Set<String> getUpdatedResources(final String deploymentName, final Map<String, Long> updatedResources);
-
-    void updateResource(final String archiveName, Map<String, byte[]> replacedResources);
 
 }
