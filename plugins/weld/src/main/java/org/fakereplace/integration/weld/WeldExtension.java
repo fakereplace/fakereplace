@@ -19,12 +19,11 @@ package org.fakereplace.integration.weld;
 
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.fakereplace.core.InternalExtension;
 import org.fakereplace.core.FakereplaceTransformer;
+import org.fakereplace.core.InternalExtension;
 
 public class WeldExtension implements InternalExtension {
 
@@ -39,17 +38,7 @@ public class WeldExtension implements InternalExtension {
     }
 
     @Override
-    public String getEnvironment() {
-        return null;
-    }
-
-    @Override
-    public Set<String> getTrackedInstanceClassNames() {
-        return new HashSet<String>();
-    }
-
-    @Override
     public List<FakereplaceTransformer> getTransformers() {
-        return Collections.<FakereplaceTransformer>singletonList(new WeldClassTransformer());
+        return Collections.singletonList(new WeldClassTransformer());
     }
 }

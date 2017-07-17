@@ -25,15 +25,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.fakereplace.api.environment.CurrentEnvironment;
-import org.fakereplace.core.Agent;
 import org.fakereplace.core.Constants;
+import org.fakereplace.core.Fakereplace;
 import org.fakereplace.data.BaseClassData;
 import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.data.MethodData;
 import org.fakereplace.logging.Logger;
-import org.fakereplace.util.Boxing;
 import org.fakereplace.runtime.MethodIdentifierStore;
+import org.fakereplace.util.Boxing;
 import org.fakereplace.util.DescriptorUtils;
 import javassist.bytecode.AttributeInfo;
 import javassist.bytecode.BadBytecode;
@@ -63,7 +62,7 @@ public class FakeMethodCallManipulator implements ClassManipulator {
     }
 
     public boolean transformClass(ClassFile file, ClassLoader loader, boolean modifiableClass, final Set<MethodInfo> modifiedMethods) {
-        if(!Agent.isRetransformationStarted()) {
+        if (!Fakereplace.isRetransformationStarted()) {
             return false;
         }
         final Map<String, Set<Data>> knownFakeMethods = data.getManipulationData(loader);
@@ -87,7 +86,7 @@ public class FakeMethodCallManipulator implements ClassManipulator {
                     methodDesc = pool.getInterfaceMethodrefType(i);
                     methodName = pool.getInterfaceMethodrefName(i);
                 }
-                if(methodName.equals("<clinit>") || methodName.equals("<init>")) {
+                if (methodName.equals("<clinit>") || methodName.equals("<init>")) {
                     continue;
                 }
                 boolean handled = false;
@@ -104,26 +103,26 @@ public class FakeMethodCallManipulator implements ClassManipulator {
 
                     }
                 }
-                if (loader != null && !handled && !className.equals(file.getName()) && CurrentEnvironment.getEnvironment().isClassReplaceable(className, loader)) {
+                if (loader != null && !handled && !className.equals(file.getName()) && Fakereplace.isClassReplaceable(className, loader)) {
                     //may be an added method
                     //if the field does not actually exist yet we just assume it is about to come into existence
                     //and rewrite it anyway
                     BaseClassData data = ClassDataStore.instance().getBaseClassData(loader, className);
-                    if(data != null) {
+                    if (data != null) {
                         boolean noClassData = false;
                         MethodData method = null;
                         try {
                             Class<?> mainClass = loader.loadClass(className);
                             Set<Class> allClasses = new HashSet<>();
                             addToAllClasses(mainClass, allClasses);
-                            for(Class clazz : allClasses) {
+                            for (Class clazz : allClasses) {
                                 data = ClassDataStore.instance().getBaseClassData(clazz.getClassLoader(), clazz.getName());
-                                if(data == null) {
+                                if (data == null) {
                                     noClassData = true;
                                     break;
                                 }
                                 method = data.getMethodOrConstructor(methodName, methodDesc);
-                                if(method != null) {
+                                if (method != null) {
                                     break;
                                 }
                             }
@@ -192,7 +191,7 @@ public class FakeMethodCallManipulator implements ClassManipulator {
                             int val = it.s16bitAt(index + 1);
                             // if the method call is one of the methods we are
                             // replacing
-                            if(potentialFakeMethodCallLocations.containsKey(val)) {
+                            if (potentialFakeMethodCallLocations.containsKey(val)) {
                                 AddedMethodInfo methodInfo = potentialFakeMethodCallLocations.get(val);
                                 Data data = new Data(methodInfo.className, methodInfo.name, methodInfo.desc, op == Opcode.INVOKESTATIC ? Type.STATIC : op == Opcode.INVOKEINTERFACE ? Type.INTERFACE : Type.VIRTUAL, loader, methodInfo.number, null);
                                 handleFakeMethodCall(file, modifiedMethods, m, it, index, op, data);
@@ -220,26 +219,26 @@ public class FakeMethodCallManipulator implements ClassManipulator {
         //check the bootstrapmethod's attribute
         //this makes lambda support work
         AttributeInfo bootstrapMethods = file.getAttribute(BootstrapMethodsAttribute.tag);
-        if(bootstrapMethods instanceof BootstrapMethodsAttribute) {
+        if (bootstrapMethods instanceof BootstrapMethodsAttribute) {
             BootstrapMethodsAttribute boot = (BootstrapMethodsAttribute) bootstrapMethods;
             boolean replaceBootstrap = false;
             BootstrapMethodsAttribute.BootstrapMethod[] replacement = boot.getMethods();
-            for(BootstrapMethodsAttribute.BootstrapMethod method : replacement) {
+            for (BootstrapMethodsAttribute.BootstrapMethod method : replacement) {
 
                 //initial support for lambda replacement
                 //first we look for all invocations on LambdaMetafactory
                 int kind = pool.getMethodHandleKind(method.methodRef);
-                if(kind == ConstPool.REF_invokeStatic) {
+                if (kind == ConstPool.REF_invokeStatic) {
                     int nameAndType = pool.getMethodHandleIndex(method.methodRef);
                     String className = pool.getMethodrefClassName(nameAndType);
                     String methodName = pool.getMethodrefName(nameAndType);
-                    if(className.equals(LambdaMetafactory.class.getName())) {
-                        if(methodName.equals("metafactory")) {
+                    if (className.equals(LambdaMetafactory.class.getName())) {
+                        if (methodName.equals("metafactory")) {
                             //we have a lambda instance
                             //does it reference a new method
                             int methodHandleArg = method.arguments[1];
                             kind = pool.getMethodHandleKind(methodHandleArg);
-                            if(kind == ConstPool.REF_invokeStatic || kind == ConstPool.REF_invokeVirtual || kind == ConstPool.REF_invokeSpecial) {
+                            if (kind == ConstPool.REF_invokeStatic || kind == ConstPool.REF_invokeVirtual || kind == ConstPool.REF_invokeSpecial) {
                                 int methodRefArg = pool.getMethodHandleIndex(methodHandleArg);
                                 if (knownFakeMethodCallLocations.containsKey(methodRefArg)) {
                                     //the lambda references a new method
@@ -248,7 +247,7 @@ public class FakeMethodCallManipulator implements ClassManipulator {
                                     Data target = knownFakeMethodCallLocations.get(methodRefArg);
                                     String type = pool.getMethodrefType(methodRefArg);
                                     String name = pool.getMethodrefName(methodRefArg);
-                                    if(kind != ConstPool.REF_invokeStatic) {
+                                    if (kind != ConstPool.REF_invokeStatic) {
                                         type = "(" + DescriptorUtils.extToInt(file.getName()) + type.substring(1);
                                     }
 
@@ -263,16 +262,16 @@ public class FakeMethodCallManipulator implements ClassManipulator {
                     }
                 }
             }
-            if(replaceBootstrap) {
+            if (replaceBootstrap) {
                 file.addAttribute(new BootstrapMethodsAttribute(file.getConstPool(), replacement));
             }
         }
     }
 
     private void addToAllClasses(Class<?> clazz, Set<Class> allClasses) {
-        while ( clazz != null) {
+        while (clazz != null) {
             allClasses.add(clazz);
-            for(Class<?> iface : clazz.getInterfaces()) {
+            for (Class<?> iface : clazz.getInterfaces()) {
                 addToAllClasses(iface, allClasses);
             }
             clazz = clazz.getSuperclass();
@@ -281,7 +280,7 @@ public class FakeMethodCallManipulator implements ClassManipulator {
 
     private void handleFakeMethodCall(ClassFile file, Set<MethodInfo> modifiedMethods, MethodInfo m, CodeIterator it, int index, int op, Data data) throws BadBytecode {
         //NOP out the whole thing
-        it.writeByte(CodeIterator.NOP, index );
+        it.writeByte(CodeIterator.NOP, index);
         it.writeByte(CodeIterator.NOP, index + 1);
         it.writeByte(CodeIterator.NOP, index + 2);
         if (op == CodeIterator.INVOKEINTERFACE) {
@@ -310,9 +309,9 @@ public class FakeMethodCallManipulator implements ClassManipulator {
         }
         // cast it to the appropriate type and return it
         String returnType = DescriptorUtils.getReturnType(data.getMethodDesc());
-        if(returnType.length() == 1 && !returnType.equals("V")) {
+        if (returnType.length() == 1 && !returnType.equals("V")) {
             Boxing.unbox(byteCode, returnType.charAt(0));
-        } else if(returnType.equals("V")) {
+        } else if (returnType.equals("V")) {
             byteCode.add(Opcode.POP);
         } else {
             byteCode.addCheckcast(returnType.substring(1, returnType.length() - 1));

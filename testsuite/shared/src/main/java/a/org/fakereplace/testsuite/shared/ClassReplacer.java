@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.fakereplace.core.Agent;
+import org.fakereplace.core.Fakereplace;
 import org.fakereplace.replacement.AddedClass;
 import javassist.ClassPool;
 import javassist.CtClass;
@@ -106,9 +106,9 @@ public class ClassReplacer {
             }
 
             if (useFakereplace) {
-                Agent.redefine(definitions, newClasses);
+                Fakereplace.redefine(definitions, newClasses);
             } else {
-                Agent.getInstrumentation().redefineClasses(definitions);
+                Fakereplace.getInstrumentation().redefineClasses(definitions);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);

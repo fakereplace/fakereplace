@@ -14,24 +14,20 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.fakereplace.integration.wildfly;
-
-import org.fakereplace.api.environment.Environment;
-import org.fakereplace.core.DefaultEnvironment;
-import org.jboss.modules.ModuleClassLoader;
+package org.fakereplace;
 
 /**
+ * Interface that selects which classes are replaceable.
+ *
  * @author Stuart Douglas
  */
-public class WildflyEnvironment implements Environment {
+public interface ReplaceableClassSelector {
 
-    @Override
-    public boolean isClassReplaceable(final String className, final ClassLoader loader) {
-        if (loader instanceof ModuleClassLoader) {
-            if (((ModuleClassLoader) loader).getModule().getIdentifier().toString().startsWith("deployment.")) {
-                return true;
-            }
-        }
-        return DefaultEnvironment.INSTANCE.isClassReplaceable(className, loader);
-    }
+    /**
+     * @param className The class name
+     * @param loader The class loader
+     * @return <code>true</code> if this class should be hot replaceable with fakereplace
+     */
+    boolean isClassReplaceable(final String className, final ClassLoader loader);
+
 }

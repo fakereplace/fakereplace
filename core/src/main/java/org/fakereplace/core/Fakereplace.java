@@ -27,10 +27,13 @@ import java.lang.instrument.ClassDefinition;
 import java.lang.instrument.Instrumentation;
 import java.lang.instrument.UnmodifiableClassException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.ServiceLoader;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.fakereplace.Extension;
+import org.fakereplace.ReplaceableClassSelector;
 import org.fakereplace.api.NewClassData;
 import org.fakereplace.data.BaseClassData;
 import org.fakereplace.data.ClassDataBuilder;
@@ -46,13 +49,15 @@ import javassist.bytecode.ClassFile;
  *
  * @author stuart
  */
-public class Agent {
+public class Fakereplace {
 
     private static final Class[] EMPTY_CL_ARRAY = new Class[0];
 
     private static volatile Instrumentation inst;
 
     private static volatile MainTransformer mainTransformer;
+
+    private static List<ReplaceableClassSelector> replaceableClassSelectors = new CopyOnWriteArrayList<>();
 
 
     public static void premain(java.lang.String s, java.lang.instrument.Instrumentation i) {
@@ -61,6 +66,8 @@ public class Agent {
         inst = i;
 
         final Set<Extension> extension = getIntegrationInfo(ClassLoader.getSystemClassLoader());
+
+        replaceableClassSelectors.add(DefaultReplaceableClassSelector.INSTANCE);
 
         //first we need to instrument the class loaders
         final Set<Class> cls = new HashSet<>();
@@ -72,7 +79,7 @@ public class Agent {
 
         final ClassLoaderTransformer classLoaderTransformer = new ClassLoaderTransformer();
         final MainTransformer mainTransformer = new MainTransformer();
-        Agent.mainTransformer = mainTransformer;
+        Fakereplace.mainTransformer = mainTransformer;
         inst.addTransformer(mainTransformer, true);
 
         mainTransformer.addTransformer(classLoaderTransformer);
@@ -108,7 +115,6 @@ public class Agent {
                     ClassDataStore.instance().saveClassData(i.getDefinitionClass().getClassLoader(), i.getDefinitionClass().getName(), new ClassDataBuilder(baseClassData));
                 }
             }
-            // re-write the classes so their field
             for (AddedClass c : addedData) {
                 ClassLookupManager.addClassInfo(c.getClassName(), c.getLoader(), c.getData());
             }
@@ -162,5 +168,18 @@ public class Agent {
 
     public static boolean isRetransformationStarted() {
         return mainTransformer.isRetransformationStarted();
+    }
+
+    public static boolean isClassReplaceable(String className, ClassLoader classLoader) {
+        for(ReplaceableClassSelector env : replaceableClassSelectors) {
+            if(env.isClassReplaceable(className, classLoader)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static void addReplaceableClassSelector(ReplaceableClassSelector replaceableClassSelector) {
+        replaceableClassSelectors.add(replaceableClassSelector);
     }
 }

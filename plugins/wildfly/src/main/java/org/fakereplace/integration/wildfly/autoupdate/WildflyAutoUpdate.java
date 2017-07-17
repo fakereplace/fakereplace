@@ -32,7 +32,7 @@ import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.stream.Collectors;
 
-import org.fakereplace.core.Agent;
+import org.fakereplace.core.Fakereplace;
 import org.fakereplace.replacement.AddedClass;
 import org.jboss.modules.ModuleClassLoader;
 
@@ -122,7 +122,7 @@ public class WildflyAutoUpdate {
                         byteMap.put(className, compiler.getOutput().get(className).toByteArray());
                     }
                     try {
-                        Agent.redefine(classDefinition, addedClass);
+                        Fakereplace.redefine(classDefinition, addedClass);
                     } catch (Exception e) {
                         System.err.println("Hot replace failed, redeploy required" + e.getMessage());
                         return Result.REDEPLOY_REQUIRED;

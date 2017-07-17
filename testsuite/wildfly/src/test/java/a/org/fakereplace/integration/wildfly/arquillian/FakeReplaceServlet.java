@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.fakereplace.core.Agent;
+import org.fakereplace.core.Fakereplace;
 import org.fakereplace.replacement.AddedClass;
 import org.jboss.as.server.CurrentServiceContainer;
 import org.jboss.as.server.deployment.Attachments;
@@ -39,7 +39,6 @@ import org.jboss.as.server.deployment.Services;
 import org.jboss.as.server.deployment.module.ResourceRoot;
 import org.jboss.modules.Module;
 import org.jboss.modules.ModuleClassLoader;
-import org.jboss.modules.ModuleLoadException;
 import org.jboss.msc.service.ServiceController;
 import org.jboss.msc.service.ServiceName;
 import org.jboss.vfs.VirtualFile;
@@ -86,7 +85,7 @@ public class FakeReplaceServlet extends HttpServlet {
                 resources.put(resourceName, data);
             }
             updateResource(resources, deploymentService);
-            Agent.redefine(definitions, added);
+            Fakereplace.redefine(definitions, added);
         } catch (ClassNotFoundException | UnmodifiableClassException e) {
             throw new ServletException(e);
         }

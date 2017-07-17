@@ -22,12 +22,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.fakereplace.Extension;
+import org.fakereplace.ReplaceableClassSelector;
 
 public class MetawidgetExtension implements Extension {
 
-    public static final String BASE_PROPERTY_STYLE = "org.metawidget.inspector.impl.propertystyle.BasePropertyStyle";
-    public static final String BASE_ACTION_STYLE = "org.metawidget.inspector.impl.actionstyle.BaseActionStyle";
-
+    static final String BASE_PROPERTY_STYLE = "org.metawidget.inspector.impl.propertystyle.BasePropertyStyle";
+    static final String BASE_ACTION_STYLE = "org.metawidget.inspector.impl.actionstyle.BaseActionStyle";
 
     private static final Set<String> classNames;
 
@@ -46,11 +46,6 @@ public class MetawidgetExtension implements Extension {
     @Override
     public Set<String> getIntegrationTriggerClassNames() {
         return classNames;
-    }
-
-    @Override
-    public String getEnvironment() {
-        return null;
     }
 
     @Override

@@ -14,29 +14,24 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
+package org.fakereplace.integration.wildfly;
 
-package org.fakereplace.api.environment;
-
-import org.fakereplace.core.DefaultEnvironment;
+import org.fakereplace.ReplaceableClassSelector;
+import org.fakereplace.core.DefaultReplaceableClassSelector;
+import org.jboss.modules.ModuleClassLoader;
 
 /**
- * Holds the current environment.
- *
  * @author Stuart Douglas
  */
-public class CurrentEnvironment {
+public class WildflyReplaceableClassSelector implements ReplaceableClassSelector {
 
-    protected static volatile Environment environment = new DefaultEnvironment();
-
-    /**
-     *
-     * @return The current environment
-     */
-    public static Environment getEnvironment() {
-        return environment;
-    }
-
-    public static void setEnvironment(final Environment environment) {
-        CurrentEnvironment.environment = environment;
+    @Override
+    public boolean isClassReplaceable(final String className, final ClassLoader loader) {
+        if (loader instanceof ModuleClassLoader) {
+            if (((ModuleClassLoader) loader).getModule().getIdentifier().toString().startsWith("deployment.")) {
+                return true;
+            }
+        }
+        return false;
     }
 }

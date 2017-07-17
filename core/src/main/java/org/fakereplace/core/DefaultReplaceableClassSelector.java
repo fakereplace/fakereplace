@@ -19,7 +19,7 @@ package org.fakereplace.core;
 
 import java.net.URL;
 
-import org.fakereplace.api.environment.Environment;
+import org.fakereplace.ReplaceableClassSelector;
 import org.fakereplace.logging.Logger;
 
 /**
@@ -27,13 +27,13 @@ import org.fakereplace.logging.Logger;
  *
  * @author stuart
  */
-public class DefaultEnvironment implements Environment {
+public class DefaultReplaceableClassSelector implements ReplaceableClassSelector {
 
-    private static final Logger log = Logger.getLogger(DefaultEnvironment.class);
+    private static final Logger log = Logger.getLogger(DefaultReplaceableClassSelector.class);
 
     private static final String[] replaceablePackages;
 
-    public static final DefaultEnvironment INSTANCE = new DefaultEnvironment();
+    public static final DefaultReplaceableClassSelector INSTANCE = new DefaultReplaceableClassSelector();
 
     static {
         String plist = AgentOptions.getOption(AgentOption.PACKAGES);

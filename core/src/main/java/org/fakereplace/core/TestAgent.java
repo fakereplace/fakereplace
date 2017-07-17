@@ -30,6 +30,6 @@ public class TestAgent  {
         if(s == null || !s.contains("testRun")) {
             throw new IllegalStateException("You should not use Fakereplace core directly, you should use the fakereplace.jar found in the dist directory.");
         }
-        Agent.premain(s, i);
+        Fakereplace.premain(s, i);
     }
 }

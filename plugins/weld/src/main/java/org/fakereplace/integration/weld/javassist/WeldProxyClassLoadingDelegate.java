@@ -20,7 +20,7 @@ package org.fakereplace.integration.weld.javassist;
 import java.lang.instrument.ClassDefinition;
 import java.security.ProtectionDomain;
 
-import org.fakereplace.core.Agent;
+import org.fakereplace.core.Fakereplace;
 import org.fakereplace.replacement.AddedClass;
 import org.jboss.classfilewriter.ClassFile;
 import org.jboss.classfilewriter.util.ByteArrayDataOutputStream;
@@ -65,7 +65,7 @@ public class WeldProxyClassLoadingDelegate {
                 try {
                     ByteArrayDataOutputStream bs = new ByteArrayDataOutputStream();
                     ct.write(bs);
-                    Agent.redefine(new ClassDefinition[]{new ClassDefinition(originalProxyClass, bs.getBytes())}, new AddedClass[0], false);
+                    Fakereplace.redefine(new ClassDefinition[]{new ClassDefinition(originalProxyClass, bs.getBytes())}, new AddedClass[0], false);
                     return originalProxyClass;
                 } catch (Exception e) {
                     throw new RuntimeException("Failed " + ct.getName(), e);

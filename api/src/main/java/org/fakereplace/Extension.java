@@ -17,6 +17,7 @@
 
 package org.fakereplace;
 
+import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -41,7 +42,9 @@ public interface Extension {
      * itself with the ClassChangeNotifier
      *
      */
-    String getClassChangeAwareName();
+    default String getClassChangeAwareName() {
+        return null;
+    }
 
     /**
      * If a classloader loads one of these classes it enables
@@ -50,19 +53,25 @@ public interface Extension {
      * This also means that the classloader that loaded
      * the class will be intrumented to load classes from the integration.
      */
-    Set<String> getIntegrationTriggerClassNames();
-
-    /**
-     * Gets the name of the {@code org.fakereplace.api.environment.Environment} this extension provides, or null if it does
-     * not override the environment.
-     *
-     * Only one active extension can override the environment, the first extension to be triggered will take precedence
-     */
-    String getEnvironment();
+    default Set<String> getIntegrationTriggerClassNames() {
+        return Collections.emptySet();
+    }
 
     /**
      * get a list of classes that should be turned into tracked instances.
      *
      */
-    Set<String> getTrackedInstanceClassNames();
+    default Set<String> getTrackedInstanceClassNames() {
+        return Collections.emptySet();
+    }
+
+    /**
+     * Returns the name of a selector that can be used to determine which classes are replaceable, or null if this
+     * extension does not provide this functionality
+     *
+     * @return The name of a {@link ReplaceableClassSelector} that determines which classes are replaceable
+     */
+    default String getReplaceableClassSelectorName() {
+        return null;
+    }
 }

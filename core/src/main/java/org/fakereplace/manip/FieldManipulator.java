@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.fakereplace.api.environment.CurrentEnvironment;
+import org.fakereplace.core.Fakereplace;
 import org.fakereplace.core.Transformer;
 import org.fakereplace.data.BaseClassData;
 import org.fakereplace.data.ClassDataStore;
@@ -81,7 +81,7 @@ public class FieldManipulator implements ClassManipulator {
 
                     }
                 }
-                if (!handled && CurrentEnvironment.getEnvironment().isClassReplaceable(className, loader)) {
+                if (!handled && Fakereplace.isClassReplaceable(className, loader)) {
                     //may be an added field
                     //if the field does not actually exist yet we just assume it is about to come into existence
                     //and rewrite it anyway

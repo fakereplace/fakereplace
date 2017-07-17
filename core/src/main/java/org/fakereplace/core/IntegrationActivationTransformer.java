@@ -32,11 +32,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.fakereplace.Extension;
+import org.fakereplace.ReplaceableClassSelector;
 import org.fakereplace.api.ClassChangeAware;
-import org.fakereplace.api.environment.CurrentEnvironment;
-import org.fakereplace.api.environment.Environment;
 import org.fakereplace.data.InstanceTracker;
-import org.fakereplace.logging.Logger;
 import org.fakereplace.replacement.notification.ChangedClassImpl;
 import javassist.bytecode.BadBytecode;
 import javassist.bytecode.Bytecode;
@@ -47,7 +45,6 @@ import javassist.bytecode.MethodInfo;
 
 /**
  * Transformer that handles Fakereplace plugins
- *
  *
  * @author Stuart Douglas
  */
@@ -68,8 +65,8 @@ class IntegrationActivationTransformer implements FakereplaceTransformer {
         Map<String, Extension> integrationClassTriggers = new HashMap<>();
         for (Extension i : extension) {
             trackedInstances.addAll(i.getTrackedInstanceClassNames());
-            if(i instanceof InternalExtension) {
-                List<FakereplaceTransformer> t = ((InternalExtension)i).getTransformers();
+            if (i instanceof InternalExtension) {
+                List<FakereplaceTransformer> t = ((InternalExtension) i).getTransformers();
                 if (t != null) {
                     integrationTransformers.addAll(t);
                 }
@@ -110,16 +107,11 @@ class IntegrationActivationTransformer implements FakereplaceTransformer {
                     if (intance instanceof ClassChangeAware) {
                         ClassChangeNotifier.instance().add((ClassChangeAware) intance);
                     }
-                    final String newEnv = extension.getEnvironment();
-                    if (newEnv != null) {
-                        final Environment environment = CurrentEnvironment.getEnvironment();
-                        final Class<?> envClass = Class.forName(newEnv, true, loader);
-                        final Environment newEnvironment = (Environment) envClass.newInstance();
-                        if (environment instanceof DefaultEnvironment) {
-                            CurrentEnvironment.setEnvironment(newEnvironment);
-                        } else {
-                            Logger.getLogger(MainTransformer.class).error("Could not set environment to " + newEnvironment + " it has already been changed to " + environment);
-                        }
+                    final String replaceableClassSelectorName = extension.getReplaceableClassSelectorName();
+                    if (replaceableClassSelectorName != null) {
+                        final Class<?> envClass = Class.forName(replaceableClassSelectorName, true, loader);
+                        final ReplaceableClassSelector selector = (ReplaceableClassSelector) envClass.newInstance();
+                        Fakereplace.addReplaceableClassSelector(selector);
                     }
                 } catch (Throwable e) {
                     e.printStackTrace();
@@ -147,7 +139,6 @@ class IntegrationActivationTransformer implements FakereplaceTransformer {
     /**
      * modifies a class so that all created instances are registered with
      * InstanceTracker
-     *
      */
     public void makeTrackedInstance(ClassFile file) throws BadBytecode {
         for (MethodInfo m : (List<MethodInfo>) file.getMethods()) {

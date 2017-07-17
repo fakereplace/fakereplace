@@ -19,12 +19,10 @@ package org.fakereplace.core;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.instrument.ClassDefinition;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -38,7 +36,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.fakereplace.data.ClassLoaderData;
-import org.fakereplace.logging.Logger;
 import org.fakereplace.replacement.AddedClass;
 import org.fakereplace.util.FileReader;
 import org.fakereplace.util.MD5;
@@ -98,7 +95,7 @@ class FileSystemWatcher {
                         }
                     }
                 }
-                Agent.redefine(changedClasses.toArray(new ClassDefinition[changedClasses.size()]), addedClasses.toArray(new AddedClass[addedClasses.size()]));
+                Fakereplace.redefine(changedClasses.toArray(new ClassDefinition[changedClasses.size()]), addedClasses.toArray(new AddedClass[addedClasses.size()]));
             } catch (Exception e) {
                 e.printStackTrace();
             }

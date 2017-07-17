@@ -35,12 +35,8 @@ public class JsfExtension implements Extension {
     }
 
     @Override
-    public String getEnvironment() {
-        return null;
-    }
-
-    @Override
     public Set<String> getTrackedInstanceClassNames() {
         return Collections.singleton("javax.el.BeanELResolver");
     }
+
 }

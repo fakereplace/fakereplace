@@ -22,8 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.fakereplace.api.environment.CurrentEnvironment;
 import org.fakereplace.core.Constants;
+import org.fakereplace.core.Fakereplace;
 import org.fakereplace.data.BaseClassData;
 import org.fakereplace.data.ClassDataStore;
 import org.fakereplace.data.MethodData;
@@ -69,7 +69,7 @@ class ConstructorInvocationManipulator implements ClassManipulator {
                 String className = pool.getMethodrefClassName(i);
                 String methodDesc = pool.getMethodrefType(i);
                 String methodName = pool.getMethodrefName(i);
-                if(methodName.equals("<init>")) {
+                if (methodName.equals("<init>")) {
                     if (constructorRewrites.containsKey(className)) {
                         for (ConstructorRewriteData data : constructorRewrites.get(className)) {
                             if (methodDesc.equals(data.getMethodDesc())) {
@@ -83,7 +83,7 @@ class ConstructorInvocationManipulator implements ClassManipulator {
                         }
                     }
 
-                    if (!handled && CurrentEnvironment.getEnvironment().isClassReplaceable(className, loader)) {
+                    if (!handled && Fakereplace.isClassReplaceable(className, loader)) {
                         //may be an added field
                         //if the field does not actually exist yet we just assume it is about to come into existence
                         //and rewrite it anyway

@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.fakereplace.ReplaceableClassSelector;
 import org.fakereplace.core.InternalExtension;
 import org.fakereplace.core.FakereplaceTransformer;
 
@@ -31,7 +32,7 @@ public class WildflyExtension implements InternalExtension {
     public static final String RESOURCE_CACHE_CLASS = "org.apache.naming.resources.ResourceCache";
 
     private static final String CLASS_CHANGE_AWARE = "org.fakereplace.integration.wildfly.WildflyClassChangeAware";
-    public static final String JBOSSAS_ENVIRONMENT = "org.fakereplace.integration.wildfly.WildflyEnvironment";
+    public static final String REPLACEABLE_CLASS_SELECTOR = "org.fakereplace.integration.wildfly.WildflyReplaceableClassSelector";
 
     @Override
     public String getClassChangeAwareName() {
@@ -44,13 +45,13 @@ public class WildflyExtension implements InternalExtension {
     }
 
     @Override
-    public String getEnvironment() {
-        return JBOSSAS_ENVIRONMENT;
+    public Set<String> getTrackedInstanceClassNames() {
+        return new HashSet<>(Arrays.asList(new String[]{RESOURCE_CACHE_CLASS}));
     }
 
     @Override
-    public Set<String> getTrackedInstanceClassNames() {
-        return new HashSet<String>(Arrays.asList(new String[]{RESOURCE_CACHE_CLASS}));
+    public String getReplaceableClassSelectorName() {
+        return REPLACEABLE_CLASS_SELECTOR;
     }
 
     @Override

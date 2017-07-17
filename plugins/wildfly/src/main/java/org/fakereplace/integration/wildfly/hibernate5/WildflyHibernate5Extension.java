@@ -23,13 +23,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.fakereplace.core.InternalExtension;
 import org.fakereplace.core.FakereplaceTransformer;
+import org.fakereplace.core.InternalExtension;
 
 public class WildflyHibernate5Extension implements InternalExtension {
 
-    public static final String PERSISTENCE_UNIT_SERVICE = "org.jboss.as.jpa.service.PersistenceUnitServiceImpl";
-    public static final String PERSISTENCE_PHASE_ONE_SERVICE = "org.jboss.as.jpa.service.PhaseOnePersistenceUnitServiceImpl";
+    static final String PERSISTENCE_UNIT_SERVICE = "org.jboss.as.jpa.service.PersistenceUnitServiceImpl";
+    static final String PERSISTENCE_PHASE_ONE_SERVICE = "org.jboss.as.jpa.service.PhaseOnePersistenceUnitServiceImpl";
 
     private static final String CLASS_CHANGE_AWARE = "org.fakereplace.integration.wildfly.hibernate5.WildflyHibernate5ClassChangeAware";
 
@@ -41,11 +41,6 @@ public class WildflyHibernate5Extension implements InternalExtension {
     @Override
     public Set<String> getIntegrationTriggerClassNames() {
         return Collections.singleton(PERSISTENCE_UNIT_SERVICE);
-    }
-
-    @Override
-    public String getEnvironment() {
-        return null;
     }
 
     @Override

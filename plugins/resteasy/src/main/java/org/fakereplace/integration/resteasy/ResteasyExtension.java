@@ -23,13 +23,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.fakereplace.core.InternalExtension;
 import org.fakereplace.core.FakereplaceTransformer;
+import org.fakereplace.core.InternalExtension;
 
 public class ResteasyExtension implements InternalExtension {
 
-    public static final String FILTER_DISPATCHER = "org.jboss.resteasy.plugins.server.servlet.FilterDispatcher";
-    public static final String SERVLET_DISPATCHER = "org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher";
+    static final String FILTER_DISPATCHER = "org.jboss.resteasy.plugins.server.servlet.FilterDispatcher";
+    static final String SERVLET_DISPATCHER = "org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher";
 
     @Override
     public String getClassChangeAwareName() {
@@ -38,12 +38,7 @@ public class ResteasyExtension implements InternalExtension {
 
     @Override
     public Set<String> getIntegrationTriggerClassNames() {
-        return new HashSet<String>(Arrays.asList(new String[] {FILTER_DISPATCHER, SERVLET_DISPATCHER}));
-    }
-
-    @Override
-    public String getEnvironment() {
-        return null;
+        return new HashSet<String>(Arrays.asList(new String[]{FILTER_DISPATCHER, SERVLET_DISPATCHER}));
     }
 
     @Override
@@ -56,6 +51,6 @@ public class ResteasyExtension implements InternalExtension {
 
     @Override
     public List<FakereplaceTransformer> getTransformers() {
-        return Collections.<FakereplaceTransformer>singletonList(new ResteasyTransformer());
+        return Collections.singletonList(new ResteasyTransformer());
     }
 }

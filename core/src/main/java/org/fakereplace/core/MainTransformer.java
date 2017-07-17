@@ -23,31 +23,20 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.lang.instrument.UnmodifiableClassException;
-import java.net.URL;
 import java.security.ProtectionDomain;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.WeakHashMap;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.fakereplace.api.ChangedClass;
-import org.fakereplace.api.ClassChangeAware;
-import org.fakereplace.Extension;
 import org.fakereplace.api.NewClassData;
-import org.fakereplace.api.environment.CurrentEnvironment;
-import org.fakereplace.api.environment.Environment;
 import org.fakereplace.logging.Logger;
 import org.fakereplace.replacement.notification.ChangedClassImpl;
 import org.fakereplace.util.DescriptorUtils;
@@ -94,8 +83,7 @@ public class MainTransformer implements ClassFileTransformer {
             //TODO: deal with lambdas
             return classfileBuffer;
         }
-        final Environment environment = CurrentEnvironment.getEnvironment();
-        boolean replaceable = environment.isClassReplaceable(className, loader);
+        boolean replaceable = Fakereplace.isClassReplaceable(className, loader);
         if (classBeingRedefined != null) {
             retransformationStarted = true;
             if (logClassRetransformation && replaceable) {
@@ -190,7 +178,7 @@ public class MainTransformer implements ClassFileTransformer {
                     }
                     Thread t = new Thread(() -> {
                         try {
-                            Agent.getInstrumentation().retransformClasses(classesToRetransform.toArray(new Class[classesToRetransform.size()]));
+                            Fakereplace.getInstrumentation().retransformClasses(classesToRetransform.toArray(new Class[classesToRetransform.size()]));
                         } catch (UnmodifiableClassException e) {
                             log.error("Failed to retransform classes", e);
                         } finally {

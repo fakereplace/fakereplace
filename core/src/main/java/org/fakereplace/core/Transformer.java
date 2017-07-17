@@ -21,11 +21,10 @@ import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
 import java.util.Set;
 
-import org.fakereplace.api.environment.CurrentEnvironment;
 import org.fakereplace.data.BaseClassData;
 import org.fakereplace.data.ClassDataStore;
-import org.fakereplace.manip.Manipulator;
 import org.fakereplace.manip.ManipulationUtils;
+import org.fakereplace.manip.Manipulator;
 import org.fakereplace.reflection.ReflectionInstrumentationSetup;
 import org.fakereplace.replacement.notification.ChangedClassImpl;
 import org.fakereplace.util.NoInstrument;
@@ -87,7 +86,7 @@ public class Transformer implements FakereplaceTransformer {
             }
         }
 
-        final boolean replaceable = CurrentEnvironment.getEnvironment().isClassReplaceable(className, loader);
+        final boolean replaceable = Fakereplace.isClassReplaceable(className, loader);
         if (manipulator.transformClass(file, loader, replaceable, modifiedMethods)) {
             modified = true;
         }
@@ -117,7 +116,6 @@ public class Transformer implements FakereplaceTransformer {
 
     /**
      * Adds a method to a class that re can redefine when the class is reloaded
-     *
      */
     public void addMethodForInstrumentation(ClassFile file) {
         try {
@@ -177,7 +175,6 @@ public class Transformer implements FakereplaceTransformer {
 
     /**
      * Adds a method to a class that re can redefine when the class is reloaded
-     *
      */
     public void addAbstractMethodForInstrumentation(ClassFile file) {
         try {
