@@ -27,7 +27,6 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>org.fakereplace</groupId>
     <artifactId>fakereplace-api</artifactId>
     <name>Fakereplace Plugin API</name>
     <version>1.0.0.Alpha6-SNAPSHOT</version>

@@ -105,13 +105,7 @@ class ManipulationDataStore<T extends ClassLoaderFiltered<T>> {
         Map<String, Set<T>> data = cldata.get(classLoader);
         if (data.containsKey(className)) {
             Set<T> set = data.get(className);
-            Iterator<T> i = set.iterator();
-            while (i.hasNext()) {
-                T val = i.next();
-                if (val.getClassLoader() == classLoader) {
-                    i.remove();
-                }
-            }
+            set.removeIf(val -> val.getClassLoader() == classLoader);
         }
     }
 

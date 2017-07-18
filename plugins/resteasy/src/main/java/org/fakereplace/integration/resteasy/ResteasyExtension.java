@@ -38,12 +38,12 @@ public class ResteasyExtension implements InternalExtension {
 
     @Override
     public Set<String> getIntegrationTriggerClassNames() {
-        return new HashSet<String>(Arrays.asList(new String[]{FILTER_DISPATCHER, SERVLET_DISPATCHER}));
+        return new HashSet<>(Arrays.asList(new String[]{FILTER_DISPATCHER, SERVLET_DISPATCHER}));
     }
 
     @Override
     public Set<String> getTrackedInstanceClassNames() {
-        Set<String> ret = new HashSet<String>();
+        Set<String> ret = new HashSet<>();
         ret.add(FILTER_DISPATCHER);
         ret.add(SERVLET_DISPATCHER);
         return ret;

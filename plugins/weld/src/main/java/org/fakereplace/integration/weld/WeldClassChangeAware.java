@@ -44,7 +44,7 @@ public class WeldClassChangeAware implements ClassChangeAware {
         ClassLoader oldCl = null;
         WeldProxyClassLoadingDelegate.beginProxyRegeneration();
         try {
-            final Set<ChangedClass> changedClasses = new HashSet<ChangedClass>(changed);
+            final Set<ChangedClass> changedClasses = new HashSet<>(changed);
 
             //Hack to re-generate the weld client proxies
             for (final Object instance : proxyFactories.values()) {

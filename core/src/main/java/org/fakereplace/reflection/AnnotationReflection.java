@@ -43,7 +43,7 @@ public class AnnotationReflection {
         return false;
     }
 
-    public static boolean isAnnotationPresent(Class<?> clazz, Class anType) {
+    public static boolean isAnnotationPresent(Class<?> clazz, Class<? extends Annotation> anType) {
         if (anType.isAnnotationPresent(Inherited.class) && heiracheyChanged(clazz)) {
             Class<?> c = clazz;
             while (c != null && c != Object.class) {
@@ -70,7 +70,7 @@ public class AnnotationReflection {
         return clazz.isAnnotationPresent(anType);
     }
 
-    public static Annotation getAnnotation(Class<?> clazz, Class anType) {
+    public static Annotation getAnnotation(Class<?> clazz, Class<? extends Annotation> anType) {
         if (anType.isAnnotationPresent(Inherited.class) && heiracheyChanged(clazz)) {
             Annotation result = null;
             Class<?> c = clazz;
@@ -105,7 +105,7 @@ public class AnnotationReflection {
             } else {
                 pres = clazz.getDeclaredAnnotations();
             }
-            List<Annotation> result = new ArrayList<Annotation>();
+            List<Annotation> result = new ArrayList<>();
             result.addAll(Arrays.asList(pres));
             Class<?> c = clazz.getSuperclass();
             while (c != Object.class && c != null) {
@@ -138,7 +138,7 @@ public class AnnotationReflection {
         return clazz.getDeclaredAnnotations();
     }
 
-    public static boolean isAnnotationPresent(Field clazz, Class anType) {
+    public static boolean isAnnotationPresent(Field clazz, Class<? extends Annotation> anType) {
         if (AnnotationDataStore.isFieldDataRecorded(clazz)) {
 
             return AnnotationDataStore.isFieldAnnotationPresent(clazz, anType);
@@ -146,7 +146,7 @@ public class AnnotationReflection {
         return clazz.isAnnotationPresent(anType);
     }
 
-    public static Annotation getAnnotation(Field clazz, Class anType) {
+    public static Annotation getAnnotation(Field clazz, Class<? extends Annotation> anType) {
         if (AnnotationDataStore.isFieldDataRecorded(clazz)) {
 
             return AnnotationDataStore.getFieldAnnotation(clazz, anType);
@@ -168,7 +168,7 @@ public class AnnotationReflection {
         return clazz.getDeclaredAnnotations();
     }
 
-    public static boolean isAnnotationPresent(Method clazz, Class anType) {
+    public static boolean isAnnotationPresent(Method clazz, Class<? extends Annotation> anType) {
         if (AnnotationDataStore.isMethodDataRecorded(clazz)) {
 
             return AnnotationDataStore.isMethodAnnotationPresent(clazz, anType);
@@ -176,7 +176,7 @@ public class AnnotationReflection {
         return clazz.isAnnotationPresent(anType);
     }
 
-    public static Annotation getAnnotation(Method clazz, Class anType) {
+    public static Annotation getAnnotation(Method clazz, Class<? extends Annotation> anType) {
         if (AnnotationDataStore.isMethodDataRecorded(clazz)) {
 
             return AnnotationDataStore.getMethodAnnotation(clazz, anType);
@@ -271,7 +271,7 @@ public class AnnotationReflection {
 
     // constructors
 
-    public static boolean isAnnotationPresent(Constructor<?> clazz, Class anType) {
+    public static boolean isAnnotationPresent(Constructor<?> clazz, Class<? extends Annotation> anType) {
         if (AnnotationDataStore.isConstructorDataRecorded(clazz)) {
 
             return AnnotationDataStore.isConstructorAnnotationPresent(clazz, anType);
@@ -279,7 +279,7 @@ public class AnnotationReflection {
         return clazz.isAnnotationPresent(anType);
     }
 
-    public static Annotation getAnnotation(Constructor<?> clazz, Class anType) {
+    public static Annotation getAnnotation(Constructor<?> clazz, Class<? extends Annotation> anType) {
         if (AnnotationDataStore.isConstructorDataRecorded(clazz)) {
 
             return AnnotationDataStore.getConstructorAnnotation(clazz, anType);
@@ -310,7 +310,7 @@ public class AnnotationReflection {
 
     // AnnotatedElement
 
-    public static boolean isAnnotationPresent(AnnotatedElement clazz, Class anType) {
+    public static boolean isAnnotationPresent(AnnotatedElement clazz, Class<? extends Annotation> anType) {
         if (clazz instanceof Class<?>) {
             return isAnnotationPresent((Class) clazz, anType);
         } else if (clazz instanceof Field) {
@@ -323,7 +323,7 @@ public class AnnotationReflection {
         return clazz.isAnnotationPresent(anType);
     }
 
-    public static Annotation getAnnotation(AnnotatedElement clazz, Class anType) {
+    public static Annotation getAnnotation(AnnotatedElement clazz, Class<? extends Annotation> anType) {
         if (clazz instanceof Class<?>) {
             return getAnnotation((Class) clazz, anType);
         } else if (clazz instanceof Field) {

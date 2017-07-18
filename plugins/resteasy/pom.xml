@@ -27,7 +27,6 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>org.fakereplace</groupId>
     <artifactId>fakereplace-resteasy</artifactId>
     <name>Fakereplace Resteasy Integration</name>
     <version>1.0.0.Alpha6-SNAPSHOT</version>

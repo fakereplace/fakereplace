@@ -27,7 +27,6 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>org.fakereplace</groupId>
     <artifactId>fakereplace-metawidget</artifactId>
     <name>Fakereplace MetaWidget Integration</name>
     <version>1.0.0.Alpha6-SNAPSHOT</version>

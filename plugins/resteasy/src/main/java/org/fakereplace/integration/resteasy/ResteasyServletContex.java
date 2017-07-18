@@ -92,16 +92,19 @@ public class ResteasyServletContex implements ServletContext {
         return delegate.getNamedDispatcher(s);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public Servlet getServlet(String s) throws ServletException {
         return delegate.getServlet(s);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public Enumeration getServlets() {
         return delegate.getServlets();
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public Enumeration getServletNames() {
         return delegate.getServletNames();
@@ -112,6 +115,7 @@ public class ResteasyServletContex implements ServletContext {
         delegate.log(s);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void log(Exception e, String s) {
         delegate.log(e, s);

@@ -36,7 +36,7 @@ public class HttpUtils {
             StringBuilder builder = new StringBuilder();
             BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
             char[] buff = new char[512];
-            int read = -1;
+            int read;
             while ((read = reader.read(buff)) != -1) {
                 builder.append(buff, 0, read);
             }

@@ -233,14 +233,11 @@ public class ClassLoaderCompiler {
                     ModuleClassLoader mcl = (ModuleClassLoader) classLoader;
                     final String packageWithSlashes = packageName.replace(".", "/");
                     try {
-                        Iterator<Resource> resources = mcl.getModule().iterateResources(new PathFilter() {
-                            @Override
-                            public boolean accept(String path) {
-                                if(recurse) {
-                                    return path.startsWith(packageWithSlashes);
-                                } else {
-                                    return path.equals(packageWithSlashes);
-                                }
+                        Iterator<Resource> resources = mcl.getModule().iterateResources(path -> {
+                            if(recurse) {
+                                return path.startsWith(packageWithSlashes);
+                            } else {
+                                return path.equals(packageWithSlashes);
                             }
                         });
                         while (resources.hasNext()) {

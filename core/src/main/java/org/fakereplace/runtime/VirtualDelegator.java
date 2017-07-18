@@ -39,13 +39,7 @@ public class VirtualDelegator {
     }
 
     public static void clear(ClassLoader classLoader, String className) {
-        Iterator<VirtualDelegatorData> it = delegatingMethods.iterator();
-        while (it.hasNext()) {
-            VirtualDelegatorData i = it.next();
-            if (i.getLoader() == classLoader && className.equals(i.getClassName())) {
-                it.remove();
-            }
-        }
+        delegatingMethods.removeIf(i -> i.getLoader() == classLoader && className.equals(i.getClassName()));
     }
 
     public static boolean contains(Object val, String callingClassName, String methodName, String methodDesc) {

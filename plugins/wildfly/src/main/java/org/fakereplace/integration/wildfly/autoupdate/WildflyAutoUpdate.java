@@ -105,10 +105,7 @@ public class WildflyAutoUpdate {
                     System.out.println("Fakereplace detected the following source files have been changed: " + toUpdate);
                     ClassLoaderCompiler compiler = new ClassLoaderCompiler(classLoader, base, toUpdate);
                     compiler.compile();
-                    Map<String, byte[]> byteMap = REPLACED_CLASSES.get(classLoader);
-                    if(byteMap == null) {
-                        REPLACED_CLASSES.put(classLoader, byteMap = new HashMap<>());
-                    }
+                    Map<String, byte[]> byteMap = REPLACED_CLASSES.computeIfAbsent(classLoader, k -> new HashMap<>());
                     AddedClass[] addedClass = new AddedClass[added.size()];
                     for (int i = 0; i < added.size(); ++i) {
                         String className = added.get(i);

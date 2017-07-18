@@ -36,6 +36,7 @@ public class ClassLoaderInstrumentation {
      * This method instruments class loaders so that they can load our helper
      * classes.
      */
+    @SuppressWarnings("unchecked")
     public static boolean redefineClassLoader(ClassFile classFile, Set<MethodInfo> modifiedMethods) throws BadBytecode {
         boolean modified = false;
         for (MethodInfo method : (List<MethodInfo>) classFile.getMethods()) {

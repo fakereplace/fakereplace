@@ -27,7 +27,6 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <groupId>org.fakereplace</groupId>
     <artifactId>fakereplace-testsuite-shared</artifactId>
     <name>Fakereplace Shared Test artifacts</name>
     <version>1.0.0.Alpha6-SNAPSHOT</version>

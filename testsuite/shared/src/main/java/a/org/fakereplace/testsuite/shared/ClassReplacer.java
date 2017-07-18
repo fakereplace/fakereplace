@@ -30,11 +30,11 @@ import javassist.LoaderClassPath;
 
 public class ClassReplacer {
 
-    private final Map<String, String> nameReplacements = new HashMap<String, String>();
+    private final Map<String, String> nameReplacements = new HashMap<>();
 
-    private final Map<Class<?>, Class<?>> queuedClassReplacements = new HashMap<Class<?>, Class<?>>();
+    private final Map<Class<?>, Class<?>> queuedClassReplacements = new HashMap<>();
 
-    private final Map<Class<?>, String> addedClasses = new HashMap<Class<?>, String>();
+    private final Map<Class<?>, String> addedClasses = new HashMap<>();
 
     private final ClassPool pool = new ClassPool();
 

@@ -35,12 +35,7 @@ import javassist.CannotCompileException;
  */
 public class WeldProxyClassLoadingDelegate {
 
-    private static final ThreadLocal<Boolean> MAGIC_IN_PROGRESS = new ThreadLocal<Boolean>() {
-        @Override
-        protected Boolean initialValue() {
-            return false;
-        }
-    };
+    private static final ThreadLocal<Boolean> MAGIC_IN_PROGRESS = ThreadLocal.withInitial(() -> false);
 
     public static void beginProxyRegeneration() {
         MAGIC_IN_PROGRESS.set(true);

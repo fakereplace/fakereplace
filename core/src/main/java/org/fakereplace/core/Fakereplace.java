@@ -179,7 +179,7 @@ public class Fakereplace {
         return false;
     }
 
-    public static void addReplaceableClassSelector(ReplaceableClassSelector replaceableClassSelector) {
+    static void addReplaceableClassSelector(ReplaceableClassSelector replaceableClassSelector) {
         replaceableClassSelectors.add(replaceableClassSelector);
     }
 }

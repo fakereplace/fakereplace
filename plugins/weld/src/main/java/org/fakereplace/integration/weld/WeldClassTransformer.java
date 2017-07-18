@@ -22,11 +22,11 @@ import java.security.ProtectionDomain;
 import java.util.List;
 import java.util.Set;
 
+import org.fakereplace.core.FakereplaceTransformer;
 import org.fakereplace.integration.weld.javassist.WeldProxyClassLoadingDelegate;
 import org.fakereplace.logging.Logger;
 import org.fakereplace.manip.VirtualToStaticManipulator;
 import org.fakereplace.replacement.notification.ChangedClassImpl;
-import org.fakereplace.core.FakereplaceTransformer;
 import org.fakereplace.util.DescriptorUtils;
 import javassist.bytecode.BadBytecode;
 import javassist.bytecode.Bytecode;
@@ -45,9 +45,7 @@ public class WeldClassTransformer implements FakereplaceTransformer {
     @Override
     public boolean transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, ClassFile file, Set<Class<?>> classesToRetransform, ChangedClassImpl changedClass, Set<MethodInfo> modifiedMethods) throws IllegalClassFormatException, BadBytecode {
 
-        /**
-         * Hack up the proxy factory so it stores the proxy ClassFile. We need this to regenerate proxies.
-         */
+        //Hack up the proxy factory so it stores the proxy ClassFile. We need this to regenerate proxies.
         if (file.getName().equals(ORG_JBOSS_WELD_BEAN_PROXY_PROXY_FACTORY)) {
             for (final MethodInfo method : (List<MethodInfo>) file.getMethods()) {
                 if (method.getName().equals("createProxyClass")) {

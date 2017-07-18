@@ -66,10 +66,12 @@ public class ClassLoaderData {
         attachments.put(attachmentKey, value);
     }
 
+    @SuppressWarnings("unchecked")
     public <T> T getAttachment(AttachmentKey<T> attachmentKey) {
         return (T) attachments.get(attachmentKey);
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> Set<T> allAttachment(AttachmentKey<T> attachmentKey) {
         HashSet<T> ret = new HashSet<>();
         for (ClassLoaderData val : DATA.values()) {

@@ -180,18 +180,15 @@ public class VirtualToStaticManipulator implements ClassManipulator {
         }
 
         public String toString() {
-            StringBuilder sb = new StringBuilder();
-            sb.append(oldClass);
-            sb.append(" ");
-            sb.append(newClass);
-            sb.append(" ");
-            sb.append(methodName);
-            sb.append(" ");
-            sb.append(methodDesc);
-            sb.append(" ");
-            sb.append(newStaticMethodDesc);
-
-            return sb.toString();
+            return oldClass +
+                    " " +
+                    newClass +
+                    " " +
+                    methodName +
+                    " " +
+                    methodDesc +
+                    " " +
+                    newStaticMethodDesc;
         }
 
         public boolean equals(Object o) {

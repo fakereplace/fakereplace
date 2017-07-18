@@ -622,7 +622,7 @@ public class MethodReplacementTransformer implements FakereplaceTransformer {
                 virtualCodeAttribute = b.toCodeAttribute();
                 virtMethod.setCodeAttribute(virtualCodeAttribute);
 
-                MethodInfo m = new MethodInfo(file.getConstPool(), Constants.ADDED_STATIC_METHOD_NAME, Constants.ADDED_STATIC_METHOD_DESCRIPTOR);
+                MethodInfo m = new MethodInfo(file.getConstPool(), Constants.ADDED_STATIC_METHOD_NAME, Constants.ADDED_METHOD_DESCRIPTOR);
                 modifiedMethods.add(m);
                 m.setAccessFlags(AccessFlag.PUBLIC | AccessFlag.STATIC | AccessFlag.SYNTHETIC);
                 b = new Bytecode(file.getConstPool(), 0, 3);

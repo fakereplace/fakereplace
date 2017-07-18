@@ -63,7 +63,7 @@ public class BaseClassData {
             MethodInfo m = (MethodInfo) o;
             MemberType type = MemberType.NORMAL;
             if ((m.getDescriptor().equals(Constants.ADDED_METHOD_DESCRIPTOR) && m.getName().equals(Constants.ADDED_METHOD_NAME))
-                    || (m.getDescriptor().equals(Constants.ADDED_STATIC_METHOD_DESCRIPTOR) && m.getName().equals(Constants.ADDED_STATIC_METHOD_NAME))
+                    || (m.getDescriptor().equals(Constants.ADDED_METHOD_DESCRIPTOR) && m.getName().equals(Constants.ADDED_STATIC_METHOD_NAME))
                     || (m.getDescriptor().equals(Constants.ADDED_CONSTRUCTOR_DESCRIPTOR))) {
                 type = MemberType.ADDED_SYSTEM;
             } else if (m.getAttribute(Constants.FINAL_METHOD_ATTRIBUTE) != null) {
@@ -98,7 +98,7 @@ public class BaseClassData {
             MemberType type = MemberType.NORMAL;
             final String descriptor = DescriptorUtils.getDescriptor(m);
             if ((descriptor.equals(Constants.ADDED_METHOD_DESCRIPTOR) && m.getName().equals(Constants.ADDED_METHOD_NAME))
-                    || (descriptor.equals(Constants.ADDED_STATIC_METHOD_DESCRIPTOR) && m.getName().equals(Constants.ADDED_STATIC_METHOD_NAME))) {
+                    || (descriptor.equals(Constants.ADDED_METHOD_DESCRIPTOR) && m.getName().equals(Constants.ADDED_STATIC_METHOD_NAME))) {
                 type = MemberType.ADDED_SYSTEM;
             }
             MethodData md = new MethodData(m.getName(), descriptor, cls.getName(), type, m.getModifiers(), false);

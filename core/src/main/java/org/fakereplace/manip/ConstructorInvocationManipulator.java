@@ -175,14 +175,11 @@ class ConstructorInvocationManipulator implements ClassManipulator {
         }
 
         public String toString() {
-            StringBuilder sb = new StringBuilder(ConstructorRewriteData.class.getName() + " ");
-            sb.append(clazz);
-            sb.append(" ");
-            sb.append(methodDesc);
-            sb.append(" ");
-            sb.append(methodNo);
-
-            return sb.toString();
+            return ConstructorRewriteData.class.getName() + " " + clazz +
+                    " " +
+                    methodDesc +
+                    " " +
+                    methodNo;
         }
 
         public int hashCode() {

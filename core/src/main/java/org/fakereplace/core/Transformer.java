@@ -144,7 +144,7 @@ public class Transformer implements FakereplaceTransformer {
             // e.printStackTrace();
         }
         try {
-            MethodInfo m = new MethodInfo(file.getConstPool(), Constants.ADDED_STATIC_METHOD_NAME, Constants.ADDED_STATIC_METHOD_DESCRIPTOR);
+            MethodInfo m = new MethodInfo(file.getConstPool(), Constants.ADDED_STATIC_METHOD_NAME, Constants.ADDED_METHOD_DESCRIPTOR);
             m.setAccessFlags(AccessFlag.PUBLIC | AccessFlag.STATIC | AccessFlag.SYNTHETIC);
             Bytecode b = new Bytecode(file.getConstPool(), 5, 3);
             b.addNew(NoSuchMethodError.class.getName());

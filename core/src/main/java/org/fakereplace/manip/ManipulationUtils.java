@@ -19,10 +19,8 @@ package org.fakereplace.manip;
 
 import org.fakereplace.util.Boxing;
 import org.fakereplace.util.DescriptorUtils;
-import javassist.bytecode.BadBytecode;
 import javassist.bytecode.Bytecode;
 import javassist.bytecode.ClassFile;
-import javassist.bytecode.CodeIterator;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.Opcode;
 

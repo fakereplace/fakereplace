@@ -17,7 +17,6 @@
 
 package org.fakereplace.integration.wildfly.hibernate5;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
@@ -46,14 +45,12 @@ public class WildflyHibernate5ClassChangeAware implements ClassChangeAware {
 
     @Override
     public void afterChange(final List<ChangedClass> changed, final List<NewClassData> added) {
-        final Set<Class<?>> changedClasses = new HashSet<Class<?>>();
         boolean replace = false;
         for (ChangedClass changedClass : changed) {
             if (changedClass.getChangedClass().isAnnotationPresent(Entity.class) ||
                     !changedClass.getChangedAnnotationsByType(Entity.class).isEmpty()) {
                 replace = true;
             }
-            changedClasses.add(changedClass.getChangedClass());
         }
         if (!replace) {
             return;
@@ -72,7 +69,7 @@ public class WildflyHibernate5ClassChangeAware implements ClassChangeAware {
                 for (PersistenceUnitServiceImpl puService : puServices) {
                     try {
                         //make sure the service is started before stopping
-                        if(puService.getExecutorInjector().getOptionalValue() != null) {
+                        if (puService.getExecutorInjector().getOptionalValue() != null) {
                             doServiceStop(puService);
                         }
                     } catch (Exception e) {
@@ -92,7 +89,7 @@ public class WildflyHibernate5ClassChangeAware implements ClassChangeAware {
                 for (PersistenceUnitServiceImpl puService : puServices) {
                     try {
                         //make sure the service is started before stopping
-                        if(puService.getExecutorInjector().getOptionalValue() != null) {
+                        if (puService.getExecutorInjector().getOptionalValue() != null) {
                             doServiceStart(puService);
                         }
                     } catch (Exception e) {
@@ -136,7 +133,7 @@ public class WildflyHibernate5ClassChangeAware implements ClassChangeAware {
                 command.run();
             }
         });
-        if(async.get()) {
+        if (async.get()) {
             stopLatch.await();
         }
     }
@@ -183,7 +180,7 @@ public class WildflyHibernate5ClassChangeAware implements ClassChangeAware {
             }
         });
 
-        if(async.get()) {
+        if (async.get()) {
             startLatch.await();
         }
     }

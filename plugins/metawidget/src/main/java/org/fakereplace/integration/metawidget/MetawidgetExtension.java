@@ -22,7 +22,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.fakereplace.Extension;
-import org.fakereplace.ReplaceableClassSelector;
 
 public class MetawidgetExtension implements Extension {
 
@@ -32,7 +31,7 @@ public class MetawidgetExtension implements Extension {
     private static final Set<String> classNames;
 
     static {
-        Set<String> ret = new HashSet<String>();
+        Set<String> ret = new HashSet<>();
         ret.add(BASE_ACTION_STYLE);
         ret.add(BASE_PROPERTY_STYLE);
         classNames = Collections.unmodifiableSet(ret);

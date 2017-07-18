@@ -17,7 +17,6 @@
 package org.fakereplace.integration.wildfly;
 
 import org.fakereplace.ReplaceableClassSelector;
-import org.fakereplace.core.DefaultReplaceableClassSelector;
 import org.jboss.modules.ModuleClassLoader;
 
 /**

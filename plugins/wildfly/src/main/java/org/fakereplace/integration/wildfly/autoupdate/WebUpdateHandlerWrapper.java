@@ -170,7 +170,7 @@ public class WebUpdateHandlerWrapper implements HandlerWrapper {
             exchange.getQueryParameters().put(QUERY_STRING, value);
             value.addLast(count);
             exchange.getResponseHeaders().put(Headers.LOCATION, RedirectBuilder.redirect(exchange, exchange.getRelativePath(), true));
-            exchange.setResponseCode(302);
+            exchange.setStatusCode(302);
             return true;
         }
     }
