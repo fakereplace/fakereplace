@@ -31,7 +31,7 @@ public class WildflyExtension implements InternalExtension {
     public static final String RESOURCE_CACHE_CLASS = "org.apache.naming.resources.ResourceCache";
 
     private static final String CLASS_CHANGE_AWARE = "org.fakereplace.integration.wildfly.WildflyClassChangeAware";
-    public static final String REPLACEABLE_CLASS_SELECTOR = "org.fakereplace.integration.wildfly.WildflyReplaceableClassSelector";
+    private static final String REPLACEABLE_CLASS_SELECTOR = "org.fakereplace.integration.wildfly.WildflyReplaceableClassSelector";
 
     @Override
     public String getClassChangeAwareName() {

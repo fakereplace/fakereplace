@@ -35,8 +35,8 @@ import javassist.bytecode.AnnotationsAttribute;
 
 public class ResteasyClassChangeAware implements ClassChangeAware {
 
-    public static final String RESOURCES = "resteasy.scanned.resources";
-    final Logger logger = Logger.getLogger(ResteasyClassChangeAware.class);
+    private static final String RESOURCES = "resteasy.scanned.resources";
+    private final Logger logger = Logger.getLogger(ResteasyClassChangeAware.class);
 
     @Override
     public void afterChange(final List<ChangedClass> changed, final List<NewClassData> added) {

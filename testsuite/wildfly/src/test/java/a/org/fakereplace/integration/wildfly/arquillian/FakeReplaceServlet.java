@@ -54,7 +54,6 @@ public class FakeReplaceServlet extends HttpServlet {
         try {
             ObjectInputStream in = new ObjectInputStream(req.getInputStream());
             String deployment = in.readUTF();
-            ModuleClassLoader loader = (ModuleClassLoader) getClass().getClassLoader();
 
             ServiceController<DeploymentUnit> deploymentService = deploymentService(deployment);
 
@@ -86,7 +85,7 @@ public class FakeReplaceServlet extends HttpServlet {
             }
             updateResource(resources, deploymentService);
             Fakereplace.redefine(definitions, added);
-        } catch (ClassNotFoundException | UnmodifiableClassException e) {
+        } catch (ClassNotFoundException e) {
             throw new ServletException(e);
         }
 

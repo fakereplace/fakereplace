@@ -30,13 +30,13 @@ import org.fakereplace.data.InstanceTracker;
 
 public class MetawidgetClassChangeAware implements ClassChangeAware {
 
-    private static Method remove;
+    private static final Method remove;
 
     static {
         try {
             remove = Map.class.getMethod("remove", Object.class);
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 

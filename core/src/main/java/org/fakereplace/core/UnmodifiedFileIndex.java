@@ -55,7 +55,7 @@ class UnmodifiedFileIndex {
         loadIndex();
     }
 
-    public static void loadIndex() {
+    private static void loadIndex() {
         final File file = getFile();
         if(file == null) {
             return;

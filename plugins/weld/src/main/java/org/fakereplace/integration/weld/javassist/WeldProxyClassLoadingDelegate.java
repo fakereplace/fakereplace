@@ -53,7 +53,7 @@ public class WeldProxyClassLoadingDelegate {
         return classLoader.loadClass(className);
     }
 
-    public static Class toClass(ClassFile ct, ClassLoader loader, ProtectionDomain domain) throws CannotCompileException {
+    public static Class toClass(ClassFile ct, ClassLoader loader, ProtectionDomain domain) {
         if (MAGIC_IN_PROGRESS.get()) {
             try {
                 final Class<?> originalProxyClass = loader.loadClass(ct.getName());

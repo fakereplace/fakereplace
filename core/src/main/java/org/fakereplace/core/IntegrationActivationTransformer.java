@@ -140,7 +140,7 @@ class IntegrationActivationTransformer implements FakereplaceTransformer {
      * modifies a class so that all created instances are registered with
      * InstanceTracker
      */
-    public void makeTrackedInstance(ClassFile file) throws BadBytecode {
+    private void makeTrackedInstance(ClassFile file) throws BadBytecode {
         for (MethodInfo m : (List<MethodInfo>) file.getMethods()) {
             if (m.getName().equals("<init>")) {
                 Bytecode code = new Bytecode(file.getConstPool());

@@ -57,7 +57,7 @@ public class Fakereplace {
 
     private static volatile MainTransformer mainTransformer;
 
-    private static List<ReplaceableClassSelector> replaceableClassSelectors = new CopyOnWriteArrayList<>();
+    private static final List<ReplaceableClassSelector> replaceableClassSelectors = new CopyOnWriteArrayList<>();
 
 
     public static void premain(java.lang.String s, java.lang.instrument.Instrumentation i) {
@@ -98,7 +98,7 @@ public class Fakereplace {
         mainTransformer.setLogClassRetransformation(true);
     }
 
-    public static void redefine(ClassDefinition[] classes, AddedClass[] addedData) throws UnmodifiableClassException, ClassNotFoundException {
+    public static void redefine(ClassDefinition[] classes, AddedClass[] addedData) {
         redefine(classes, addedData, true);
     }
 

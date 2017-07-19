@@ -44,9 +44,9 @@ import io.undertow.util.RedirectBuilder;
  */
 public class WebUpdateHandlerWrapper implements HandlerWrapper {
 
-    public static final int UPDATE_INTERVAL = 1000;
+    private static final int UPDATE_INTERVAL = 1000;
 
-    public static final String DEPLOYMENT = "deployment.";
+    private static final String DEPLOYMENT = "deployment.";
 
     private static final String QUERY_STRING = "fakereplaceRestartCount"; //query string used to force a reload
 

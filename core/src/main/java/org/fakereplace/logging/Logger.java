@@ -27,7 +27,7 @@ public class Logger {
 
     private static final String TRACE = "trace";
 
-    private static volatile LogManager logManager = new DefaultLogManager();
+    private static final LogManager logManager = new DefaultLogManager();
 
     public Logger(final Class<?> clazz) {
         this.clazz = clazz;

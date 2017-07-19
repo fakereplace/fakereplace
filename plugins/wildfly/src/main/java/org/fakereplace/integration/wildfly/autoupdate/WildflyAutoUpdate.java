@@ -44,11 +44,11 @@ import org.jboss.modules.ModuleClassLoader;
 public class WildflyAutoUpdate {
 
 
-    public static final String FAKEREPLACE_SOURCE_PATHS = "fakereplace.source-paths.";
+    private static final String FAKEREPLACE_SOURCE_PATHS = "fakereplace.source-paths.";
 
 
     private static final Map<String, Long> replacedTimestamps = new HashMap<>();
-    public static final String DEPLOYMENT = "deployment.";
+    private static final String DEPLOYMENT = "deployment.";
 
     private static final Map<ClassLoader, Map<String, byte[]>> REPLACED_CLASSES = new WeakHashMap<>();
 
@@ -63,7 +63,7 @@ public class WildflyAutoUpdate {
         if (sourcePaths == null) {
             return Result.NO_CHANGE;
         }
-        List<Path> paths = Arrays.asList(sourcePaths.split(",")).stream().map((s) -> Paths.get(s)).collect(Collectors.toList());
+        List<Path> paths = Arrays.stream(sourcePaths.split(",")).map((s) -> Paths.get(s)).collect(Collectors.toList());
 
         try {
             for (Path base : paths) {

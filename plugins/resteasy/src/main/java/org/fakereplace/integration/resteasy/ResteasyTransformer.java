@@ -41,13 +41,13 @@ public class ResteasyTransformer implements FakereplaceTransformer {
 
     public static final String FIELD_NAME = "__CONFIG";
     public static final String PARAMETER_FIELD_NAME = "__PARAMS";
-    public static final String FILTER_FIELD_TYPE = "Ljavax/servlet/FilterConfig;";
-    public static final String SERVLET_FIELD_TYPE = "Ljavax/servlet/ServletConfig;";
-    public static final String CONTEXT_PARAMS = "org.fakereplace.integration.resteasy.ResteasyContextParams";
-    public static final String SET_TYPE = "Ljava/util/Set;";
-    public static final String INIT_METHOD_DESC = "(Ljavax/servlet/ServletContext;Ljava/util/Set;)Ljava/util/Set;";
-    public static final String RESTEASY_FILTER_CONFIG = "org.fakereplace.integration.resteasy.ResteasyFilterConfig";
-    public static final String RESTEASY_SERVLET_CONFIG = "org.fakereplace.integration.resteasy.ResteasyServletConfig";
+    private static final String FILTER_FIELD_TYPE = "Ljavax/servlet/FilterConfig;";
+    private static final String SERVLET_FIELD_TYPE = "Ljavax/servlet/ServletConfig;";
+    private static final String CONTEXT_PARAMS = "org.fakereplace.integration.resteasy.ResteasyContextParams";
+    private static final String SET_TYPE = "Ljava/util/Set;";
+    private static final String INIT_METHOD_DESC = "(Ljavax/servlet/ServletContext;Ljava/util/Set;)Ljava/util/Set;";
+    private static final String RESTEASY_FILTER_CONFIG = "org.fakereplace.integration.resteasy.ResteasyFilterConfig";
+    private static final String RESTEASY_SERVLET_CONFIG = "org.fakereplace.integration.resteasy.ResteasyServletConfig";
 
     @Override
     public boolean transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final ClassFile file, Set<Class<?>> classesToRetransform, ChangedClassImpl changedClass, Set<MethodInfo> modifiedMethods) throws IllegalClassFormatException, BadBytecode {

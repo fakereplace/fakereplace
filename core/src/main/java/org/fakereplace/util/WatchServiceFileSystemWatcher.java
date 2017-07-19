@@ -50,7 +50,7 @@ public class WatchServiceFileSystemWatcher implements Runnable, AutoCloseable {
 
     private static final AtomicInteger threadIdCounter = new AtomicInteger(0);
     private static final int WAIT_TIME = Integer.getInteger("fakereplace.wait-time", 500);
-    public static final String THREAD_NAME = "fakereplace-file-watcher";
+    private static final String THREAD_NAME = "fakereplace-file-watcher";
 
     private WatchService watchService;
     private final Map<Path, PathData> files = Collections.synchronizedMap(new HashMap<>());

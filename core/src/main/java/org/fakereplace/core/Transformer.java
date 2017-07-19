@@ -117,7 +117,7 @@ public class Transformer implements FakereplaceTransformer {
     /**
      * Adds a method to a class that re can redefine when the class is reloaded
      */
-    public void addMethodForInstrumentation(ClassFile file) {
+    private void addMethodForInstrumentation(ClassFile file) {
         try {
             MethodInfo m = new MethodInfo(file.getConstPool(), Constants.ADDED_METHOD_NAME, Constants.ADDED_METHOD_DESCRIPTOR);
             m.setAccessFlags(AccessFlag.PUBLIC | AccessFlag.SYNTHETIC);
@@ -160,7 +160,7 @@ public class Transformer implements FakereplaceTransformer {
         }
     }
 
-    public static void addStaticConstructorForInstrumentation(ClassFile file) {
+    private static void addStaticConstructorForInstrumentation(ClassFile file) {
         try {
             MethodInfo m = new MethodInfo(file.getConstPool(), "<clinit>", "()V");
             m.setAccessFlags(AccessFlag.PUBLIC | AccessFlag.STATIC);
@@ -176,7 +176,7 @@ public class Transformer implements FakereplaceTransformer {
     /**
      * Adds a method to a class that re can redefine when the class is reloaded
      */
-    public void addAbstractMethodForInstrumentation(ClassFile file) {
+    private void addAbstractMethodForInstrumentation(ClassFile file) {
         try {
             MethodInfo m = new MethodInfo(file.getConstPool(), Constants.ADDED_METHOD_NAME, Constants.ADDED_METHOD_DESCRIPTOR);
             m.setAccessFlags(AccessFlag.PUBLIC | AccessFlag.ABSTRACT | AccessFlag.SYNTHETIC);
@@ -186,7 +186,7 @@ public class Transformer implements FakereplaceTransformer {
         }
     }
 
-    void addConstructorForInstrumentation(ClassFile file) {
+    private void addConstructorForInstrumentation(ClassFile file) {
 
         MethodInfo ret = new MethodInfo(file.getConstPool(), "<init>", Constants.ADDED_CONSTRUCTOR_DESCRIPTOR);
         Bytecode code = new Bytecode(file.getConstPool());

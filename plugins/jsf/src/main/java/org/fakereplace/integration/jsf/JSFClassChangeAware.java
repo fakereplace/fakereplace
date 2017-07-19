@@ -36,7 +36,7 @@ public class JSFClassChangeAware implements ClassChangeAware {
 
     private static final Logger log = Logger.getLogger(JSFClassChangeAware.class);
 
-    Field getField(Class<?> clazz, String name) throws NoSuchFieldException {
+    private Field getField(Class<?> clazz, String name) throws NoSuchFieldException {
         if (clazz == Object.class)
             throw new NoSuchFieldException();
         try {
@@ -74,7 +74,7 @@ public class JSFClassChangeAware implements ClassChangeAware {
         }
     }
 
-    public void clearBeanElResolver(Object r) {
+    private void clearBeanElResolver(Object r) {
         try {
             try {
                 Field cacheField = getField(r.getClass(), "cache");
