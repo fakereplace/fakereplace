@@ -27,7 +27,7 @@
     </parent>
 
     <properties>
-        <arquillian.version>1.1.8.Final</arquillian.version>
+        <arquillian.version>1.1.13.Final</arquillian.version>
         <arquillian.weld-se.version>1.0.0.CR9</arquillian.weld-se.version>
         <javassist.version>3.21.0-GA</javassist.version>
         <wildfly.version>10.1.0.Final</wildfly.version>

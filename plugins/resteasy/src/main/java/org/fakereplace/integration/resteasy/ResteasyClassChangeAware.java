@@ -75,7 +75,7 @@ public class ResteasyClassChangeAware implements ClassChangeAware {
                             for(String add : addedResources) {
                                 res.append(",").append(add);
                             }
-                            ResteasyServletContex sc = new ResteasyServletContex(config.getServletContext());
+                            ResteasyServletContext sc = new ResteasyServletContext(config.getServletContext());
                             sc.getInitParams().put(RESOURCES, res.toString());
                             config.setServletContext(sc);
                         }
@@ -104,7 +104,7 @@ public class ResteasyClassChangeAware implements ClassChangeAware {
                             for(String add : addedResources) {
                                 res.append(",").append(add);
                             }
-                            ResteasyServletContex sc = new ResteasyServletContex(config.getServletContext());
+                            ResteasyServletContext sc = new ResteasyServletContext(config.getServletContext());
                             sc.getInitParams().put(RESOURCES, res.toString());
                             config.setServletContext(sc);
                         }

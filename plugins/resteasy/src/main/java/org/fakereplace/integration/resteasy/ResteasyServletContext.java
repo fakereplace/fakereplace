@@ -34,12 +34,12 @@ import javax.servlet.ServletException;
 /**
  * @author Stuart Douglas
  */
-public class ResteasyServletContex implements ServletContext {
+public class ResteasyServletContext implements ServletContext {
 
     private final ServletContext delegate;
     private final Map<String, String> initParams = new HashMap<>();
 
-    public ResteasyServletContex(ServletContext delegate) {
+    public ResteasyServletContext(ServletContext delegate) {
         this.delegate = delegate;
     }
 
