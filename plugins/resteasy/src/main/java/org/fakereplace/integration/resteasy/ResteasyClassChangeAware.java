@@ -71,14 +71,12 @@ public class ResteasyClassChangeAware implements ClassChangeAware {
                     final ResteasyServletConfig config = (ResteasyServletConfig) servlet.getClass().getField(ResteasyTransformer.FIELD_NAME).get(servlet);
                     if(config.getClassLoader() == classLoader) {
                         StringBuilder res = new StringBuilder(config.getServletContext().getInitParameter(RESOURCES));
-                        if(res != null) {
-                            for(String add : addedResources) {
-                                res.append(",").append(add);
-                            }
-                            ResteasyServletContext sc = new ResteasyServletContext(config.getServletContext());
-                            sc.getInitParams().put(RESOURCES, res.toString());
-                            config.setServletContext(sc);
+                        for(String add : addedResources) {
+                            res.append(",").append(add);
                         }
+                        ResteasyServletContext sc = new ResteasyServletContext(config.getServletContext());
+                        sc.getInitParams().put(RESOURCES, res.toString());
+                        config.setServletContext(sc);
                         final Set<String> doNotClear = (Set<String>) servlet.getClass().getField(ResteasyTransformer.PARAMETER_FIELD_NAME).get(servlet);
                         clearContext(config.getServletContext(), doNotClear);
                         final ClassLoader old = Thread.currentThread().getContextClassLoader();
@@ -100,14 +98,12 @@ public class ResteasyClassChangeAware implements ClassChangeAware {
                     if(config.getClassLoader() == classLoader) {
 
                         StringBuilder res = new StringBuilder((String) config.getServletContext().getAttribute(RESOURCES));
-                        if(res != null) {
-                            for(String add : addedResources) {
-                                res.append(",").append(add);
-                            }
-                            ResteasyServletContext sc = new ResteasyServletContext(config.getServletContext());
-                            sc.getInitParams().put(RESOURCES, res.toString());
-                            config.setServletContext(sc);
+                        for(String add : addedResources) {
+                            res.append(",").append(add);
                         }
+                        ResteasyServletContext sc = new ResteasyServletContext(config.getServletContext());
+                        sc.getInitParams().put(RESOURCES, res.toString());
+                        config.setServletContext(sc);
                         final Set<String> doNotClear = (Set<String>) filter.getClass().getField(ResteasyTransformer.PARAMETER_FIELD_NAME).get(filter);
                         clearContext(config.getServletContext(), doNotClear);
                         final ClassLoader old = Thread.currentThread().getContextClassLoader();
