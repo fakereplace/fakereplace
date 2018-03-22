@@ -95,6 +95,7 @@ class IntegrationActivationTransformer implements FakereplaceTransformer {
         }
 
         if (integrationClassTriggers.containsKey(className)) {
+            modified = true;
             integrationClassloader.add(loader);
             // we need to load the class in another thread
             // otherwise it will not go through the javaagent
