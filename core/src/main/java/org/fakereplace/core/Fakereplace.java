@@ -42,6 +42,7 @@ import org.fakereplace.replacement.AddedClass;
 import org.fakereplace.replacement.AnnotationTransformer;
 import org.fakereplace.replacement.FieldReplacementTransformer;
 import org.fakereplace.replacement.MethodReplacementTransformer;
+
 import javassist.bytecode.ClassFile;
 
 /**
@@ -94,6 +95,7 @@ public class Fakereplace {
         mainTransformer.addTransformer(new FieldReplacementTransformer());
         mainTransformer.addTransformer(new MethodReplacementTransformer());
         mainTransformer.addTransformer(new Transformer());
+        mainTransformer.addTransformer(new ClassInfoTransformer());
         mainTransformer.setRetransformationStarted(false);
         mainTransformer.setLogClassRetransformation(true);
     }
@@ -119,8 +121,8 @@ public class Fakereplace {
                 ClassLookupManager.addClassInfo(c.getClassName(), c.getLoader(), c.getData());
             }
             inst.redefineClasses(classes);
-            Introspector.flushCaches();
-            if(wait) {
+            clearJvmCaches();
+            if (wait) {
                 mainTransformer.waitForTasks();
             }
         } catch (Throwable e) {
@@ -153,6 +155,11 @@ public class Fakereplace {
         }
     }
 
+    private static void clearJvmCaches() {
+        Introspector.flushCaches();
+        ClassInfoTransformer.clearClassInfoCache();
+    }
+
     public static Instrumentation getInstrumentation() {
         return inst;
     }
@@ -171,8 +178,8 @@ public class Fakereplace {
     }
 
     public static boolean isClassReplaceable(String className, ClassLoader classLoader) {
-        for(ReplaceableClassSelector env : replaceableClassSelectors) {
-            if(env.isClassReplaceable(className, classLoader)) {
+        for (ReplaceableClassSelector env : replaceableClassSelectors) {
+            if (env.isClassReplaceable(className, classLoader)) {
                 return true;
             }
         }

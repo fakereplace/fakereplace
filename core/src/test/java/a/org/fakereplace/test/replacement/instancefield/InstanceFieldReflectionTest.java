@@ -17,6 +17,9 @@
 
 package a.org.fakereplace.test.replacement.instancefield;
 
+import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
 import java.lang.reflect.Field;
 
 import org.junit.Assert;
@@ -27,10 +30,18 @@ import a.org.fakereplace.test.util.ClassReplacer;
 public class InstanceFieldReflectionTest {
 
     @BeforeClass
-    public static void setup() {
+    public static void setup() throws IntrospectionException {
+        Introspector.getBeanInfo(InstanceFieldReflection.class);
         ClassReplacer c = new ClassReplacer();
         c.queueClassForReplacement(InstanceFieldReflection.class, InstanceFieldReflection1.class);
         c.replaceQueuedClasses();
+    }
+
+    @Test
+    public void testIntrospectorFlushesCache() throws IntrospectionException {
+
+        BeanInfo info = Introspector.getBeanInfo(InstanceFieldReflection.class);
+        Assert.assertEquals(5, info.getPropertyDescriptors().length);
     }
 
     @Test

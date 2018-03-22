@@ -17,7 +17,6 @@
 
 package org.fakereplace.integration.jsf;
 
-import java.beans.Introspector;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -49,11 +48,6 @@ public class JSFClassChangeAware implements ClassChangeAware {
 
     @Override
     public void afterChange(List<ChangedClass> changed, List<NewClassData> addedOO) {
-        try {
-            Introspector.flushCaches();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         Set<?> data = InstanceTracker.get("javax.el.BeanELResolver");
         for (Object i : data) {
             clearBeanElResolver(i);

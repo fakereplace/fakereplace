@@ -34,7 +34,7 @@ import javassist.bytecode.MethodInfo;
 class ClassLoaderTransformer implements FakereplaceTransformer {
 
     @Override
-    public boolean transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final ClassFile file, Set<Class<?>> classesToRetransform, ChangedClassImpl changedClass, Set<MethodInfo> modifiedMethods) throws IllegalClassFormatException, BadBytecode {
+    public boolean transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final ClassFile file, Set<Class<?>> classesToRetransform, ChangedClassImpl changedClass, Set<MethodInfo> modifiedMethods) throws BadBytecode {
         if (classBeingRedefined != null && ClassLoader.class.isAssignableFrom(classBeingRedefined)) {
             return ClassLoaderInstrumentation.redefineClassLoader(file, modifiedMethods);
         } else if (classBeingRedefined == null && className != null && className.endsWith("ClassLoader")) { //TODO: fix this
