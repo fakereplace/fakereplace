@@ -25,7 +25,6 @@ import org.fakereplace.replacement.AddedClass;
 import org.jboss.classfilewriter.ClassFile;
 import org.jboss.classfilewriter.util.ByteArrayDataOutputStream;
 import org.jboss.weld.util.bytecode.ClassFileUtils;
-import javassist.CannotCompileException;
 
 /**
  * The CDI proxyFactory has its class loading tasks delegated to this class, which can then have some magic applied

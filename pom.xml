@@ -30,11 +30,11 @@
         <arquillian.version>1.1.13.Final</arquillian.version>
         <arquillian.weld-se.version>1.0.0.CR9</arquillian.weld-se.version>
         <javassist.version>3.21.0-GA</javassist.version>
-        <wildfly.version>10.1.0.Final</wildfly.version>
+        <wildfly.version>12.0.0.Final</wildfly.version>
         <jsf-api.version>1.2_13</jsf-api.version>
         <servlet-api.version>2.4</servlet-api.version>
         <jboss.modules.version>1.5.1.Final</jboss.modules.version>
-        <junit.version>4.8.2</junit.version>
+        <junit.version>4.12</junit.version>
         <jboss-ejb-api_3.2_spec.version>1.0.0.Final</jboss-ejb-api_3.2_spec.version>
         <httpclient.version>4.1.3</httpclient.version>
         <checkstyle.plugin.version>2.15</checkstyle.plugin.version>
@@ -46,6 +46,8 @@
         <resteasy-jaxrs.version>3.0.12.Final</resteasy-jaxrs.version>
         <jboss-jaxrs-api_2.0_spec.version>1.0.0.Final</jboss-jaxrs-api_2.0_spec.version>
         <javax.transaction.api.version>1.2</javax.transaction.api.version>
+        <jboss-classfilewriter.version>1.2.1.Final</jboss-classfilewriter.version>
+        <slf4j-api.version>1.7.13</slf4j-api.version>
     </properties>
 
 
@@ -290,13 +292,18 @@
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
-                <version>1.7.13</version>
+                <version>${slf4j-api.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>javax.transaction</groupId>
                 <artifactId>javax.transaction-api</artifactId>
                 <version>${javax.transaction.api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.classfilewriter</groupId>
+                <artifactId>jboss-classfilewriter</artifactId>
+                <version>${jboss-classfilewriter.version}</version>
             </dependency>
 
         </dependencies>
