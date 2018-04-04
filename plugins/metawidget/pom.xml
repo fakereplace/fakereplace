@@ -23,13 +23,13 @@
     <parent>
         <artifactId>fakereplace-plugins-parent</artifactId>
         <groupId>org.fakereplace</groupId>
-        <version>1.0.0.Alpha6-SNAPSHOT</version>
+        <version>1.0.0.Alpha6</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>fakereplace-metawidget</artifactId>
     <name>Fakereplace MetaWidget Integration</name>
-    <version>1.0.0.Alpha6-SNAPSHOT</version>
+    <version>1.0.0.Alpha6</version>
 
     <dependencies>
         <dependency>

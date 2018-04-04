@@ -23,13 +23,13 @@
     <parent>
         <artifactId>fakereplace-testsuite-parent</artifactId>
         <groupId>org.fakereplace</groupId>
-        <version>1.0.0.Alpha6-SNAPSHOT</version>
+        <version>1.0.0.Alpha6</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>fakereplace-weld-tests</artifactId>
     <name>Fakereplace Weld Integration Tests</name>
-    <version>1.0.0.Alpha6-SNAPSHOT</version>
+    <version>1.0.0.Alpha6</version>
 
     <dependencies>
         <dependency>

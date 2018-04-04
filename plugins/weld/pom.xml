@@ -23,13 +23,13 @@
     <parent>
         <artifactId>fakereplace-plugins-parent</artifactId>
         <groupId>org.fakereplace</groupId>
-        <version>1.0.0.Alpha6-SNAPSHOT</version>
+        <version>1.0.0.Alpha6</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>fakereplace-weld</artifactId>
     <name>Fakereplace Weld Integration</name>
-    <version>1.0.0.Alpha6-SNAPSHOT</version>
+    <version>1.0.0.Alpha6</version>
     <url>http://maven.apache.org</url>
 
     <dependencies>
