@@ -35,6 +35,6 @@ public interface FakereplaceTransformer {
     /**
      * Transforms a class, returning true if any modifications where made
      */
-    boolean transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final ClassFile file, Set<Class<?>> classesToRetransform, ChangedClassImpl changedClass, Set<MethodInfo> modifiedMethods) throws IllegalClassFormatException, BadBytecode, DuplicateMemberException;
+    boolean transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final ClassFile file, Set<Class<?>> classesToRetransform, ChangedClassImpl changedClass, Set<MethodInfo> modifiedMethods, boolean replaceable) throws IllegalClassFormatException, BadBytecode, DuplicateMemberException;
 
 }

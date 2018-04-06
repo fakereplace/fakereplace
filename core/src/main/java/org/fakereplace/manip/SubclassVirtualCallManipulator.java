@@ -60,7 +60,7 @@ class SubclassVirtualCallManipulator implements ClassManipulator {
         VirtualDelegator.clear(classLoader, className);
     }
 
-    public boolean transformClass(ClassFile file, ClassLoader loader, boolean modifiableClass, final Set<MethodInfo> modifiedMethods) {
+    public boolean transformClass(ClassFile file, ClassLoader loader, boolean modifiableClass, final Set<MethodInfo> modifiedMethods, boolean replaceable) {
         boolean modified = false;
         Map<String, Set<Data>> loaderData = data.getManipulationData(loader);
         if (loaderData.containsKey(file.getName())) {

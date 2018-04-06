@@ -43,7 +43,7 @@ public class WildflyHibernate5ClassTransformer implements FakereplaceTransformer
     private static final String PROXY_NAME = "org.fakereplace.integration.wildfly.hibernate5.WildflyEntityManagerFactoryProxy";
 
     @Override
-    public boolean transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final ClassFile file, Set<Class<?>> classesToRetransform, ChangedClassImpl changedClass, Set<MethodInfo> modifiedMethods) throws IllegalClassFormatException, BadBytecode, DuplicateMemberException {
+    public boolean transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain, final ClassFile file, Set<Class<?>> classesToRetransform, ChangedClassImpl changedClass, Set<MethodInfo> modifiedMethods, boolean replaceable) throws IllegalClassFormatException, BadBytecode, DuplicateMemberException {
         if (file.getName().equals("org.jboss.as.jpa.service.PersistenceUnitServiceImpl")) {
             for (MethodInfo method : (List<MethodInfo>) file.getMethods()) {
                 if (method.getName().equals("getEntityManagerFactory")) {

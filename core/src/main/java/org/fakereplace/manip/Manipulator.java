@@ -89,13 +89,13 @@ public class Manipulator {
         fakeMethodCallManipulator.addFakeMethodCall(className, methodName, methodDesc, type, classLoader, methodNumber, proxyName);
     }
 
-    public boolean transformClass(ClassFile file, ClassLoader classLoader, boolean modifiable, Set<MethodInfo> modifiedMethods) {
+    public boolean transformClass(ClassFile file, ClassLoader classLoader, boolean modifiable, Set<MethodInfo> modifiedMethods, boolean replaceable) {
         try {
             boolean modified = false;
 
             // first we are going to transform virtual method calls to static ones
             for (ClassManipulator m : manipulators) {
-                if (m.transformClass(file, classLoader, modifiable, modifiedMethods)) {
+                if (m.transformClass(file, classLoader, modifiable, modifiedMethods, replaceable)) {
                     modified = true;
                 }
             }

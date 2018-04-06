@@ -74,4 +74,8 @@ public interface Extension {
     default String getReplaceableClassSelectorName() {
         return null;
     }
+
+    default void replaceableClassFileLoaded(String className, ClassLoader classLoader) {
+
+    }
 }

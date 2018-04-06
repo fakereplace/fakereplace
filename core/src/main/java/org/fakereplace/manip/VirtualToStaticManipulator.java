@@ -55,7 +55,7 @@ public class VirtualToStaticManipulator implements ClassManipulator {
         data.add(oldClass, d);
     }
 
-    public boolean transformClass(ClassFile file, ClassLoader loader, boolean modifiableClass, final Set<MethodInfo> modifiedMethods) {
+    public boolean transformClass(ClassFile file, ClassLoader loader, boolean modifiableClass, final Set<MethodInfo> modifiedMethods, boolean replaceable) {
         final Map<String, Set<Data>> virtualToStaticMethod = data.getManipulationData(loader);
         final Map<Integer, Data> methodCallLocations = new HashMap<>();
         final Map<Data, Integer> newClassPoolLocations = new HashMap<>();

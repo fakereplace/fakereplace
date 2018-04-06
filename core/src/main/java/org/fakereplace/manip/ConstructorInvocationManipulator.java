@@ -56,7 +56,7 @@ class ConstructorInvocationManipulator implements ClassManipulator {
         data.add(clazz, d);
     }
 
-    public boolean transformClass(ClassFile file, ClassLoader loader, boolean modifiableClass, final Set<MethodInfo> modifiedMethods) {
+    public boolean transformClass(ClassFile file, ClassLoader loader, boolean modifiableClass, final Set<MethodInfo> modifiedMethods, boolean replaceable) {
         Map<String, Set<ConstructorRewriteData>> constructorRewrites = new HashMap<>(data.getManipulationData(loader));
         Map<Integer, ConstructorRewriteData> methodCallLocations = new HashMap<>();
         // first we need to scan the constant pool looking for
@@ -83,7 +83,7 @@ class ConstructorInvocationManipulator implements ClassManipulator {
                         }
                     }
 
-                    if (!handled && Fakereplace.isClassReplaceable(className, loader)) {
+                    if (!handled && replaceable) {
                         //may be an added field
                         //if the field does not actually exist yet we just assume it is about to come into existence
                         //and rewrite it anyway

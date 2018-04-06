@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.lang.instrument.IllegalClassFormatException;
 import java.net.URL;
 import java.security.ProtectionDomain;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -60,6 +61,8 @@ class IntegrationActivationTransformer implements FakereplaceTransformer {
 
     private final Set<String> trackedInstances = new HashSet<>();
 
+    private final List<Extension> extensions;
+
 
     IntegrationActivationTransformer(Set<Extension> extension) {
         Map<String, Extension> integrationClassTriggers = new HashMap<>();
@@ -78,14 +81,20 @@ class IntegrationActivationTransformer implements FakereplaceTransformer {
             }
         }
         this.integrationClassTriggers = integrationClassTriggers;
+        this.extensions = new ArrayList<>(extension);
     }
 
     @Override
-    public boolean transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, ClassFile file, Set<Class<?>> classesToRetransform, ChangedClassImpl changedClass, Set<MethodInfo> modifiedMethods) throws IllegalClassFormatException, BadBytecode, DuplicateMemberException {
+    public boolean transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, ClassFile file, Set<Class<?>> classesToRetransform, ChangedClassImpl changedClass, Set<MethodInfo> modifiedMethods, boolean replaceable) throws IllegalClassFormatException, BadBytecode, DuplicateMemberException {
         boolean modified = false;
         for (FakereplaceTransformer i : integrationTransformers) {
-            if (i.transform(loader, className, classBeingRedefined, protectionDomain, file, classesToRetransform, changedClass, modifiedMethods)) {
+            if (i.transform(loader, className, classBeingRedefined, protectionDomain, file, classesToRetransform, changedClass, modifiedMethods, replaceable)) {
                 modified = true;
+            }
+        }
+        if(replaceable) {
+            for(Extension i : extensions) {
+                i.replaceableClassFileLoaded(className, loader);
             }
         }
 

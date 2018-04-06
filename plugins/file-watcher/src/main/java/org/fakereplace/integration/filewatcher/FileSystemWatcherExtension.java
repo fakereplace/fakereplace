@@ -15,16 +15,16 @@
  *  limitations under the License.
  */
 
-package org.fakereplace.manip;
+package org.fakereplace.integration.filewatcher;
 
-import java.util.Set;
+import org.fakereplace.Extension;
 
-import javassist.bytecode.ClassFile;
-import javassist.bytecode.MethodInfo;
+public class FileSystemWatcherExtension implements Extension {
 
-public interface ClassManipulator {
+    private final FileSystemWatcher watcher = new FileSystemWatcher();
 
-    void clearRewrites(String className, ClassLoader classLoader);
-
-    boolean transformClass(ClassFile file, ClassLoader loader, boolean modifiableClass, final Set<MethodInfo> modifiedMethods, boolean replaceable);
+    @Override
+    public void replaceableClassFileLoaded(String className, ClassLoader classLoader) {
+        watcher.addClassFile(className, classLoader);
+    }
 }

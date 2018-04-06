@@ -39,6 +39,7 @@
         <module>wildfly</module>
         <module>weld</module>
         <module>resteasy</module>
+        <module>file-watcher</module>
     </modules>
 
 </project>

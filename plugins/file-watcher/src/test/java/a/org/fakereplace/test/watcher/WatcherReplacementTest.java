@@ -44,19 +44,21 @@ public class WatcherReplacementTest {
         nc.setName(WatcherRep.class.getName());
         byte[] data = nc.toBytecode();
         File file = new File(WatcherRep.class.getClassLoader().getResource(WatcherRep.class.getName().replace(".", "/") + ".class").getFile());
-        System.out.println(file);
-        try (FileOutputStream out = new FileOutputStream(file)) {
-            out.write(data);
-        }
-        long start = System.currentTimeMillis();
-        do {
-            Thread.sleep(100);
-            if(re.value() == 1) {
-                break;
+        try {
+            System.out.println(file);
+            try (FileOutputStream out = new FileOutputStream(file)) {
+                out.write(data);
             }
-        } while (start + 5000 > System.currentTimeMillis());
-        Assert.assertEquals("WatcherRep was not replaced", 1, re.value());
-        file.delete();
-
+            long start = System.currentTimeMillis();
+            do {
+                Thread.sleep(100);
+                if (re.value() == 1) {
+                    break;
+                }
+            } while (start + 5000 > System.currentTimeMillis());
+            Assert.assertEquals("WatcherRep was not replaced", 1, re.value());
+        } finally {
+            file.delete();
+        }
     }
 }

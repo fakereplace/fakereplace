@@ -105,7 +105,7 @@ public class MainTransformer implements ClassFileTransformer {
             Set<MethodInfo> modifiedMethods = new HashSet<>();
             file = new ClassFile(new DataInputStream(new ByteArrayInputStream(classfileBuffer)));
             for (final FakereplaceTransformer transformer : transformers) {
-                if (transformer.transform(loader, className, classBeingRedefined, protectionDomain, file, classesToRetransform, changedClass, modifiedMethods)) {
+                if (transformer.transform(loader, className, classBeingRedefined, protectionDomain, file, classesToRetransform, changedClass, modifiedMethods, replaceable)) {
                     changed = true;
                 }
             }

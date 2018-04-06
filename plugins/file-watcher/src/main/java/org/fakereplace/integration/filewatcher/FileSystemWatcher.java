@@ -15,7 +15,7 @@
  *  limitations under the License.
  */
 
-package org.fakereplace.core;
+package org.fakereplace.integration.filewatcher;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
@@ -35,18 +35,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.fakereplace.core.Fakereplace;
 import org.fakereplace.data.ClassLoaderData;
 import org.fakereplace.replacement.AddedClass;
 import org.fakereplace.util.FileReader;
 import org.fakereplace.util.MD5;
-import org.fakereplace.util.WatchServiceFileSystemWatcher;
+
 import javassist.bytecode.ClassFile;
 
 
 /**
  * Class that is responsible for watching the file system and reporting on class change events.
  * <p>
- * Internally it uses {@link org.fakereplace.util.WatchServiceFileSystemWatcher} to watch the file system.
+ * Internally it uses {@link WatchServiceFileSystemWatcher} to watch the file system.
  *
  * @author Stuart Douglas
  */
@@ -60,7 +61,7 @@ class FileSystemWatcher {
 
     private final ClassLoaderData.AttachmentKey<Callback> callbackAttachmentKey = new ClassLoaderData.AttachmentKey<>();
 
-    private final class Callback implements WatchServiceFileSystemWatcher.FileChangeCallback  {
+    private final class Callback implements WatchServiceFileSystemWatcher.FileChangeCallback {
 
         private final ClassLoader classLoader;
 
@@ -80,15 +81,15 @@ class FileSystemWatcher {
                             ClassFile file = new ClassFile(new DataInputStream(new ByteArrayInputStream(bytes)));
                             addedClasses.add(new AddedClass(file.getName(), bytes, classLoader));
                         }
-                    } else if(change.getType() == WatchServiceFileSystemWatcher.FileChangeEvent.Type.MODIFIED) {
+                    } else if (change.getType() == WatchServiceFileSystemWatcher.FileChangeEvent.Type.MODIFIED) {
                         String hash = hashes.get(change.getFile().toAbsolutePath());
-                        if(hash == null) {
+                        if (hash == null) {
                             //class is not loaded yet
                             continue;
                         }
                         try (FileInputStream in = new FileInputStream(change.getFile().toFile())) {
                             byte[] bytes = FileReader.readFileBytes(in);
-                            if(!hash.equals(MD5.md5(bytes))) {
+                            if (!hash.equals(MD5.md5(bytes))) {
                                 ClassFile file = new ClassFile(new DataInputStream(new ByteArrayInputStream(bytes)));
                                 changedClasses.add(new ClassDefinition(classLoader.loadClass(file.getName()), bytes));
                             }
@@ -103,21 +104,21 @@ class FileSystemWatcher {
     }
 
     synchronized void addClassFile(String className, ClassLoader classLoader) {
-        if(classLoader == null) {
+        if (classLoader == null) {
             return;
         }
         URL resource = classLoader.getResource(className.replace(".", "/") + ".class");
-        if(resource == null) {
+        if (resource == null) {
             return;
         }
         Path file = Paths.get(resource.getFile());
-        if(!Files.exists(file)) {
+        if (!Files.exists(file)) {
             return;
         }
 
         int parentCount = 1;
-        for(int i = 0; i < className.length(); ++i) {
-            if(className.charAt(i) == '.' || className.charAt(i) == '/') {
+        for (int i = 0; i < className.length(); ++i) {
+            if (className.charAt(i) == '.' || className.charAt(i) == '/') {
                 parentCount++;
             }
         }
@@ -127,17 +128,17 @@ class FileSystemWatcher {
             e.printStackTrace();
             return;
         }
-        for(int i = 0; i < parentCount; ++i) {
+        for (int i = 0; i < parentCount; ++i) {
             file = file.getParent();
         }
-        if(registered.contains(file)) {
+        if (registered.contains(file)) {
             return;
         }
         registered.add(file);
 
         ClassLoaderData classLoaderData = ClassLoaderData.get(classLoader);
         Callback callback = classLoaderData.getAttachment(callbackAttachmentKey);
-        if(callback == null) {
+        if (callback == null) {
             classLoaderData.putAttachment(callbackAttachmentKey, callback = new Callback(classLoader));
         }
         watcher.watchPath(file, callback);

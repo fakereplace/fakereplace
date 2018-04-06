@@ -61,7 +61,7 @@ public class FakeMethodCallManipulator implements ClassManipulator {
         data.add(className, new Data(className, methodName, methodDesc, type, classLoader, methodNumber, proxyName));
     }
 
-    public boolean transformClass(ClassFile file, ClassLoader loader, boolean modifiableClass, final Set<MethodInfo> modifiedMethods) {
+    public boolean transformClass(ClassFile file, ClassLoader loader, boolean modifiableClass, final Set<MethodInfo> modifiedMethods, boolean replaceable) {
         if (!Fakereplace.isRetransformationStarted()) {
             return false;
         }
@@ -103,7 +103,7 @@ public class FakeMethodCallManipulator implements ClassManipulator {
 
                     }
                 }
-                if (loader != null && !handled && !className.equals(file.getName()) && Fakereplace.isClassReplaceable(className, loader)) {
+                if (loader != null && !handled && !className.equals(file.getName()) && replaceable) {
                     //may be an added method
                     //if the field does not actually exist yet we just assume it is about to come into existence
                     //and rewrite it anyway

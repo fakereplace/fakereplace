@@ -48,17 +48,12 @@ public class Transformer implements FakereplaceTransformer {
 
     private static final Manipulator manipulator = new Manipulator();
 
-    /**
-     * TODO: Move this elsewhere
-     */
-    private final FileSystemWatcher watcher = new FileSystemWatcher();
-
 
     Transformer() {
         ReflectionInstrumentationSetup.setup(manipulator);
     }
 
-    public boolean transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, ClassFile file, Set<Class<?>> classesToRetransform, ChangedClassImpl changedClass, Set<MethodInfo> modifiedMethods) throws IllegalClassFormatException, BadBytecode, DuplicateMemberException {
+    public boolean transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, ClassFile file, Set<Class<?>> classesToRetransform, ChangedClassImpl changedClass, Set<MethodInfo> modifiedMethods, boolean replaceable) throws IllegalClassFormatException, BadBytecode, DuplicateMemberException {
         boolean modified = false;
         if (classBeingRedefined != null) {
             ClassDataStore.instance().markClassReplaced(classBeingRedefined);
@@ -68,7 +63,7 @@ public class Transformer implements FakereplaceTransformer {
         // we also avoid instrumenting much of the java/lang and
         // java/io namespace except for java/lang/reflect/Proxy
         if (BuiltinClassData.skipInstrumentation(className)) {
-            if (classBeingRedefined != null && manipulator.transformClass(file, loader, false, modifiedMethods)) {
+            if (classBeingRedefined != null && manipulator.transformClass(file, loader, false, modifiedMethods, replaceable)) {
                 modified = true;
             }
             return modified;
@@ -86,8 +81,7 @@ public class Transformer implements FakereplaceTransformer {
             }
         }
 
-        final boolean replaceable = Fakereplace.isClassReplaceable(className, loader);
-        if (manipulator.transformClass(file, loader, replaceable, modifiedMethods)) {
+        if (manipulator.transformClass(file, loader, replaceable, modifiedMethods, replaceable)) {
             modified = true;
         }
 
@@ -95,7 +89,6 @@ public class Transformer implements FakereplaceTransformer {
             if ((AccessFlag.ENUM & file.getAccessFlags()) == 0 && (AccessFlag.ANNOTATION & file.getAccessFlags()) == 0) {
                 modified = true;
 
-                watcher.addClassFile(className, loader);
                 if (file.isInterface()) {
                     addAbstractMethodForInstrumentation(file);
                 } else {

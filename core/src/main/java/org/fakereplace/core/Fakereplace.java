@@ -133,7 +133,7 @@ public class Fakereplace {
                         ByteArrayInputStream bin = new ByteArrayInputStream(d.getDefinitionClassFile());
                         DataInputStream dis = new DataInputStream(bin);
                         final ClassFile file = new ClassFile(dis);
-                        Transformer.getManipulator().transformClass(file, d.getDefinitionClass().getClassLoader(), true, new HashSet<>());
+                        Transformer.getManipulator().transformClass(file, d.getDefinitionClass().getClassLoader(), true, new HashSet<>(), Fakereplace.isClassReplaceable(d.getDefinitionClass().getName(), d.getDefinitionClass().getClassLoader()));
                         String dumpDir = AgentOptions.getOption(AgentOption.DUMP_DIR);
                         if (dumpDir != null) {
                             FileOutputStream s = new FileOutputStream(dumpDir + '/' + d.getDefinitionClass().getName() + "1.class");

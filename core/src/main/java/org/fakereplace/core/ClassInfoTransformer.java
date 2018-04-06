@@ -40,7 +40,7 @@ public class ClassInfoTransformer implements FakereplaceTransformer {
     public static volatile Runnable clearAction;
 
     @Override
-    public boolean transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, ClassFile file, Set<Class<?>> classesToRetransform, ChangedClassImpl changedClass, Set<MethodInfo> modifiedMethods) throws IllegalClassFormatException, BadBytecode, DuplicateMemberException {
+    public boolean transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, ClassFile file, Set<Class<?>> classesToRetransform, ChangedClassImpl changedClass, Set<MethodInfo> modifiedMethods, boolean replaceable) throws IllegalClassFormatException, BadBytecode, DuplicateMemberException {
         if (className.equals("com/sun/beans/introspect/ClassInfo")) {
             file.addInterface(Runnable.class.getName());
             MethodInfo run = new MethodInfo(file.getConstPool(), "run", "()V");

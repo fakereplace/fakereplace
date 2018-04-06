@@ -43,7 +43,7 @@ public class WeldClassTransformer implements FakereplaceTransformer {
     public static final String WELD_PROXY_CLASS_LOADING_DELEGATE = "org.fakereplace.integration.weld.javassist.WeldProxyClassLoadingDelegate";
 
     @Override
-    public boolean transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, ClassFile file, Set<Class<?>> classesToRetransform, ChangedClassImpl changedClass, Set<MethodInfo> modifiedMethods) throws IllegalClassFormatException, BadBytecode {
+    public boolean transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, ClassFile file, Set<Class<?>> classesToRetransform, ChangedClassImpl changedClass, Set<MethodInfo> modifiedMethods, boolean replaceable) throws IllegalClassFormatException, BadBytecode {
 
         //Hack up the proxy factory so it stores the proxy ClassFile. We need this to regenerate proxies.
         if (file.getName().equals(ORG_JBOSS_WELD_BEAN_PROXY_PROXY_FACTORY)) {
@@ -54,7 +54,7 @@ public class WeldClassTransformer implements FakereplaceTransformer {
                     final VirtualToStaticManipulator virtualToStaticManipulator = new VirtualToStaticManipulator();
                     virtualToStaticManipulator.replaceVirtualMethodInvokationWithStatic(ClassLoader.class.getName(), WELD_PROXY_CLASS_LOADING_DELEGATE, "loadClass", "(Ljava/lang/String;)Ljava/lang/Class;", "(Ljava/lang/ClassLoader;Ljava/lang/String;)Ljava/lang/Class;", loader);
                     virtualToStaticManipulator.replaceVirtualMethodInvokationWithStatic("org.jboss.weld.util.bytecode.ClassFileUtils", WELD_PROXY_CLASS_LOADING_DELEGATE, "toClass", "(Lorg/jboss/classfilewriter/ClassFile;Ljava/lang/ClassLoader;Ljava/security/ProtectionDomain;)Ljava/lang/Class;", "(Lorg/jboss/classfilewriter/ClassFile;Ljava/lang/ClassLoader;Ljava/security/ProtectionDomain;)Ljava/lang/Class;", loader);
-                    virtualToStaticManipulator.transformClass(file, loader, true, modifiedMethods);
+                    virtualToStaticManipulator.transformClass(file, loader, true, modifiedMethods, replaceable);
                     return true;
                 } else if (method.getName().equals("<init>")) {
 

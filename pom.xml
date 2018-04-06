@@ -146,6 +146,11 @@
                 <artifactId>fakereplace-weld</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.fakereplace</groupId>
+                <artifactId>fakereplace-file-watcher</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
             <!-- External dependencies-->
             <!-- KEEP IN ALPHABETICAL ORDER-->

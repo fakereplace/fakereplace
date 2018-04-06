@@ -86,7 +86,7 @@ class ReflectionFieldAccessManipulator implements ClassManipulator {
         manipulationData.put(methodName, data);
     }
 
-    public boolean transformClass(ClassFile file, ClassLoader loader, boolean modifiableClass, final Set<MethodInfo> modifiedMethods) {
+    public boolean transformClass(ClassFile file, ClassLoader loader, boolean modifiableClass, final Set<MethodInfo> modifiedMethods, boolean replaceable) {
         Map<Integer, RewriteData> methodCallLocations = new HashMap<>();
         Map<RewriteData, Integer> newClassPoolLocations = new HashMap<>();
         Integer fieldAccessLocation = null;

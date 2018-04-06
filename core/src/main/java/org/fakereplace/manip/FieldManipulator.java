@@ -54,7 +54,7 @@ public class FieldManipulator implements ClassManipulator {
         data.add(className, new Data(arrayIndex, name, descriptor, className, classLoader));
     }
 
-    public boolean transformClass(ClassFile file, ClassLoader loader, boolean modifiableClass, final Set<MethodInfo> modifiedMethods) {
+    public boolean transformClass(ClassFile file, ClassLoader loader, boolean modifiableClass, final Set<MethodInfo> modifiedMethods, boolean replaceable) {
         Map<String, Set<Data>> addedFieldData = data.getManipulationData(loader);
         if (addedFieldData.isEmpty()) {
             return false;
@@ -81,7 +81,7 @@ public class FieldManipulator implements ClassManipulator {
 
                     }
                 }
-                if (!handled && Fakereplace.isClassReplaceable(className, loader)) {
+                if (!handled && replaceable) {
                     //may be an added field
                     //if the field does not actually exist yet we just assume it is about to come into existence
                     //and rewrite it anyway
