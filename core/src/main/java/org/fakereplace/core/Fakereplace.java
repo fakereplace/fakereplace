@@ -186,7 +186,10 @@ public class Fakereplace {
         return false;
     }
 
-    static void addReplaceableClassSelector(ReplaceableClassSelector replaceableClassSelector) {
+    public static void addReplaceableClassSelector(ReplaceableClassSelector replaceableClassSelector) {
         replaceableClassSelectors.add(replaceableClassSelector);
+    }
+    public static void removeReplaceableClassSelector(ReplaceableClassSelector replaceableClassSelector) {
+        replaceableClassSelectors.remove(replaceableClassSelector);
     }
 }
