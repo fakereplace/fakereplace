@@ -34,6 +34,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.fakereplace.Extension;
 import org.fakereplace.ReplaceableClassSelector;
+import org.fakereplace.api.ClassChangeAware;
 import org.fakereplace.api.NewClassData;
 import org.fakereplace.data.BaseClassData;
 import org.fakereplace.data.ClassDataBuilder;
@@ -59,6 +60,8 @@ public class Fakereplace {
     private static volatile MainTransformer mainTransformer;
 
     private static final List<ReplaceableClassSelector> replaceableClassSelectors = new CopyOnWriteArrayList<>();
+
+    private static final List<ClassChangeAware> classChangeAwares = new CopyOnWriteArrayList<>();
 
 
     public static void premain(java.lang.String s, java.lang.instrument.Instrumentation i) {
@@ -191,5 +194,17 @@ public class Fakereplace {
     }
     public static void removeReplaceableClassSelector(ReplaceableClassSelector replaceableClassSelector) {
         replaceableClassSelectors.remove(replaceableClassSelector);
+    }
+
+    public static void addClassChangeAware(ClassChangeAware classChangeAware) {
+        classChangeAwares.add(classChangeAware);
+    }
+
+    public static void removeClassChangeAware(ClassChangeAware classChangeAware) {
+        classChangeAwares.remove(classChangeAware);
+    }
+
+    static List<ClassChangeAware> getClassChangeAwares() {
+        return classChangeAwares;
     }
 }

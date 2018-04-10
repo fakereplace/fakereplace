@@ -37,13 +37,13 @@ public class ClassChangeNotifier {
     public void add(ClassChangeAware aware) {
         ClassLoaderData cd = ClassLoaderData.get(aware.getClass().getClassLoader());
         Set<ClassChangeAware> set = cd.getAttachment(classChangeAwares);
-        if(set == null) {
+        if (set == null) {
             cd.putAttachment(classChangeAwares, set = new HashSet<>());
         }
         set.add(aware);
     }
 
-     public void afterChange(List<ChangedClass> changed, List<NewClassData> newClasses) {
+    public void afterChange(List<ChangedClass> changed, List<NewClassData> newClasses) {
         if (!NOTIFICATION_IN_PROGRESS.get()) {
             NOTIFICATION_IN_PROGRESS.set(true);
             try {
@@ -55,6 +55,13 @@ public class ClassChangeNotifier {
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
+                    }
+                }
+                for (ClassChangeAware aware : Fakereplace.getClassChangeAwares()) {
+                    try {
+                        aware.afterChange(changed, newClasses);
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 }
             } finally {
