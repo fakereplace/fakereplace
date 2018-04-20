@@ -29,11 +29,13 @@ public class NewClassData {
     private final String className;
     private final ClassLoader classLoader;
     private final ClassFile classFile;
+    private final byte[] data;
 
-    public NewClassData(String className, ClassLoader classLoader, ClassFile classFile) {
+    public NewClassData(String className, ClassLoader classLoader, ClassFile classFile, byte[] data) {
         this.className = className;
         this.classLoader = classLoader;
         this.classFile = classFile;
+        this.data = data;
     }
 
     public String getClassName() {
@@ -46,6 +48,10 @@ public class NewClassData {
 
     public ClassFile getClassFile() {
         return classFile;
+    }
+
+    public byte[] getData() {
+        return data;
     }
 
     @Override

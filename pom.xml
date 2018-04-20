@@ -86,6 +86,7 @@
         <module>plugins</module>
         <module>testsuite/shared</module>
         <module>testsuite</module>
+        <module>partial-dist</module>
     </modules>
 
     <dependencyManagement>

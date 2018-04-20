@@ -111,7 +111,7 @@ public class Fakereplace {
         try {
             for (AddedClass i : addedData) {
                 ClassFile cf = new ClassFile(new DataInputStream(new ByteArrayInputStream(i.getData())));
-                mainTransformer.addNewClass(new NewClassData(i.getClassName(), i.getLoader(), cf));
+                mainTransformer.addNewClass(new NewClassData(i.getClassName(), i.getLoader(), cf, i.getData()));
             }
             for (ClassDefinition i : classes) {
                 ClassDataStore.instance().markClassReplaced(i.getDefinitionClass());

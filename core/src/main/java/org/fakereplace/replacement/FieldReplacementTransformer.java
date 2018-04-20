@@ -114,6 +114,9 @@ public class FieldReplacementTransformer implements FakereplaceTransformer {
         }
 
         BaseClassData data = ClassDataStore.instance().getBaseClassData(loader, Descriptor.toJvmName(file.getName()));
+        if(data == null) {
+            return false;
+        }
 
         Set<FieldData> fields = new LinkedHashSet<>();
         fields.addAll(data.getFields());
