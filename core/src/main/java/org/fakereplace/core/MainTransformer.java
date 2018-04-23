@@ -92,7 +92,7 @@ public class MainTransformer implements ClassFileTransformer {
         }
         ChangedClassImpl changedClass = null;
         if (classBeingRedefined != null) {
-            changedClass = new ChangedClassImpl(classBeingRedefined);
+            changedClass = new ChangedClassImpl(classBeingRedefined, classfileBuffer);
         }
 
         boolean changed = false;

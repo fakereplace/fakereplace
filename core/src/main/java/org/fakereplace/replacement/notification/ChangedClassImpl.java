@@ -34,9 +34,11 @@ public class ChangedClassImpl implements ChangedClass {
 
     private final Map<Class<? extends Annotation>, Set<ChangedAnnotation>> changedAnnotationsByType = new HashMap<>();
     private final Class<?> changedClass;
+    private final byte[] data;
 
-    public ChangedClassImpl(final Class<?> changedClass) {
+    public ChangedClassImpl(final Class<?> changedClass, byte[] data) {
         this.changedClass = changedClass;
+        this.data = data;
     }
 
     /**
@@ -57,6 +59,11 @@ public class ChangedClassImpl implements ChangedClass {
     @Override
     public Class<?> getChangedClass() {
         return changedClass;
+    }
+
+    @Override
+    public byte[] getData() {
+        return data;
     }
 
     public void changeClassAnnotation(final ChangedAnnotation annotation) {

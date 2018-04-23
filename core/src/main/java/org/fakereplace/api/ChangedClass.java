@@ -38,4 +38,10 @@ public interface ChangedClass extends AnnotationTarget {
      * @return The Class object of the changed class. Any changes will show up in reflective operations from instrumented code
      */
     Class<?> getChangedClass();
+
+    /**
+     *
+     * @return The bytes of the changed class
+     */
+    byte[] getData();
 }
