@@ -153,6 +153,23 @@ public class MainTransformer implements ClassFileTransformer {
                         }
                     }
                 } catch (BadBytecode e) {
+
+                    ByteArrayOutputStream bs = new ByteArrayOutputStream();
+        `            file.write(new DataOutputStream(bs));
+                    // dump the class for debugging purposes
+                    final String dumpDir = AgentOptions.getOption(AgentOption.DUMP_DIR);
+                    if (dumpDir != null) {
+                        try {
+                            File dump = new File(dumpDir + '/' + file.getName() + "$FAILED.class");
+                            dump.getParentFile().mkdirs();
+                            FileOutputStream s = new FileOutputStream(dump);
+                            DataOutputStream dos = new DataOutputStream(s);
+                            file.write(dos);
+                            s.close();
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
                     throw new RuntimeException(e);
                 }
                 ByteArrayOutputStream bs = new ByteArrayOutputStream();
