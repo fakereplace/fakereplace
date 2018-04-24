@@ -155,7 +155,7 @@ public class MainTransformer implements ClassFileTransformer {
                 } catch (BadBytecode e) {
 
                     ByteArrayOutputStream bs = new ByteArrayOutputStream();
-        `            file.write(new DataOutputStream(bs));
+                    file.write(new DataOutputStream(bs));
                     // dump the class for debugging purposes
                     final String dumpDir = AgentOptions.getOption(AgentOption.DUMP_DIR);
                     if (dumpDir != null) {
