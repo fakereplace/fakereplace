@@ -312,29 +312,29 @@ public class MethodReplacementTransformer implements FakereplaceTransformer {
 
         // now we need to insert our generated conditional at the start of the
         // new method
-        CodeIterator newInfo = ca.iterator();
-        newInfo.insert(bc.get());
-        // now insert the new method code at the beginning of the static method
-        // code attribute
-        addedMethod.iterator().insert(ca.getCode());
-
-        // update the exception table
-
-        int exOffset = bc.length() + addedCodeLength;
-        for (int i = 0; i < mInfo.getCodeAttribute().getExceptionTable().size(); ++i) {
-            int start = mInfo.getCodeAttribute().getExceptionTable().startPc(i) + exOffset;
-            int end = mInfo.getCodeAttribute().getExceptionTable().endPc(i) + exOffset;
-            int handler = mInfo.getCodeAttribute().getExceptionTable().handlerPc(i) + exOffset;
-            int type = mInfo.getCodeAttribute().getExceptionTable().catchType(i);
-            addedMethod.getExceptionTable().add(start, end, handler, type);
-        }
+        ca.iterator().insert(bc.get());
 
         // now we need to make sure the function is returning an object
         // rewriteFakeMethod makes sure that the return type is properly boxed
         if (!constructor) {
-            rewriteFakeMethod(addedMethod.iterator(), mInfo.getDescriptor());
+            rewriteFakeMethod(ca.iterator(), mInfo.getDescriptor());
         }
 
+
+        // now insert the new method code at the beginning of the static method
+        // code attribute
+        addedMethod.iterator().insertEx(ca.getCode());
+
+        // update the exception table
+
+
+        for (int i = 0; i < mInfo.getCodeAttribute().getExceptionTable().size(); ++i) {
+            int start = ca.getExceptionTable().startPc(i) ;
+            int end = ca.getExceptionTable().endPc(i) ;
+            int handler = ca.getExceptionTable().handlerPc(i) ;
+            int type = ca.getExceptionTable().catchType(i);
+            addedMethod.getExceptionTable().add(start, end, handler, type);
+        }
     }
 
     private static MethodInfo createRemovedMethod(ClassFile file, MethodData md, Class<?> oldClass, Set<MethodData> methodsToRemove) {

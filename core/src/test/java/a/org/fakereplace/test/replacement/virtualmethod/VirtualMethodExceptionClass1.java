@@ -43,4 +43,23 @@ public class VirtualMethodExceptionClass1 {
         }
         return 1;
     }
+
+
+
+    public int doStuff3(int param1, int param2, long anotherPram) {
+        int count = 1;
+        try {
+            count++;
+            if (a == 0) {
+                throw new Exception();
+            }
+            count++;
+            String s = new String("dfg");
+            System.out.println(s);
+        } catch (Exception e) {
+            count = 100;
+        }
+
+        return count;
+    }
 }
