@@ -23,13 +23,13 @@
     <parent>
         <artifactId>fakereplace-parent</artifactId>
         <groupId>org.fakereplace</groupId>
-        <version>1.0.0.Alpha7</version>
+        <version>1.0.0.Alpha8-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <artifactId>fakereplace-testsuite-shared</artifactId>
     <name>Fakereplace Shared Test artifacts</name>
-    <version>1.0.0.Alpha7</version>
+    <version>1.0.0.Alpha8-SNAPSHOT</version>
 
     <dependencies>
         <dependency>
