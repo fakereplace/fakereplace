@@ -81,7 +81,6 @@
 
     <modules>
         <module>build-config</module>
-        <module>agent</module>
         <module>api</module>
         <module>core</module>
         <module>dist</module>
