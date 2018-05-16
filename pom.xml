@@ -55,7 +55,7 @@
     <groupId>org.fakereplace</groupId>
     <artifactId>fakereplace-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.0.Alpha7-SNAPSHOT</version>
+    <version>1.0.0.Alpha7</version>
 
     <name>Fakereplace Parent</name>
     <url>http://fakereplace.org</url>

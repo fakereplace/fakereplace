@@ -23,13 +23,13 @@
     <parent>
         <artifactId>fakereplace-plugins-parent</artifactId>
         <groupId>org.fakereplace</groupId>
-        <version>1.0.0.Alpha7-SNAPSHOT</version>
+        <version>1.0.0.Alpha7</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>fakereplace-resteasy</artifactId>
     <name>Fakereplace Resteasy Integration</name>
-    <version>1.0.0.Alpha7-SNAPSHOT</version>
+    <version>1.0.0.Alpha7</version>
 
     <dependencies>
         <dependency>
