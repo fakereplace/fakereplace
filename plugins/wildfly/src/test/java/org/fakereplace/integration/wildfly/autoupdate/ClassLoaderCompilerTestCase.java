@@ -17,6 +17,7 @@
 
 package org.fakereplace.integration.wildfly.autoupdate;
 
+import java.io.File;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -34,9 +35,11 @@ public class ClassLoaderCompilerTestCase {
     public void testCompiler() throws Exception {
         try {
             URL baseUrl = getClass().getClassLoader().getResource(".");
-            Path base = Paths.get(baseUrl.getFile(), "../../src/test/java");
+            Path path = Paths.get(baseUrl.toURI());
+            Path base = path.resolve( ".." + File.separatorChar + ".." + File.separatorChar + "src" + File.separatorChar + "test" + File.separatorChar + "java");
             List<String> data = Collections.singletonList(getClass().getName());
-            ClassLoaderCompiler compiler = new ClassLoaderCompiler(new ClassLoader(getClass().getClassLoader()) { }, base, data); //the CL will be closed if it is not wrapped
+            ClassLoaderCompiler compiler = new ClassLoaderCompiler(new ClassLoader(getClass().getClassLoader()) {
+            }, base, data); //the CL will be closed if it is not wrapped
             compiler.compile();
         } catch (Throwable e) {
             e.printStackTrace();

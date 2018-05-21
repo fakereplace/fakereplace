@@ -262,7 +262,12 @@ public class ClassLoaderCompiler {
 
                         if (res != null) {
                             if (res.getProtocol().equals("file")) {
-                                Path dirPath = Paths.get(res.getFile());
+                                Path dirPath = null;
+                                try {
+                                    dirPath = Paths.get(res.toURI());
+                                } catch (URISyntaxException e) {
+                                    throw new RuntimeException(e);
+                                }
                                 listDir(packageName, dirPath, recurse, ret);
                             } else if (res.getProtocol().equals("jar")) {
                                 JarURLConnection connection = (JarURLConnection) res.openConnection();
