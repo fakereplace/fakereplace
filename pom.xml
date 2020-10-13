@@ -34,7 +34,7 @@
         <jsf-api.version>1.2_13</jsf-api.version>
         <servlet-api.version>2.4</servlet-api.version>
         <jboss.modules.version>1.5.1.Final</jboss.modules.version>
-        <junit.version>4.12</junit.version>
+        <junit.version>4.13.1</junit.version>
         <jboss-ejb-api_3.2_spec.version>1.0.0.Final</jboss-ejb-api_3.2_spec.version>
         <httpclient.version>4.3.6</httpclient.version>
         <checkstyle.plugin.version>2.15</checkstyle.plugin.version>
