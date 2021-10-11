@@ -30,7 +30,7 @@
         <arquillian.version>1.1.13.Final</arquillian.version>
         <arquillian.weld-se.version>1.0.0.CR9</arquillian.weld-se.version>
         <javassist.version>3.22.0-GA</javassist.version>
-        <wildfly.version>12.0.0.Final</wildfly.version>
+        <wildfly.version>23.0.2.Final</wildfly.version>
         <jsf-api.version>1.2_13</jsf-api.version>
         <servlet-api.version>2.4</servlet-api.version>
         <jboss.modules.version>1.5.1.Final</jboss.modules.version>
