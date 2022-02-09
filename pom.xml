@@ -40,7 +40,7 @@
         <checkstyle.plugin.version>2.15</checkstyle.plugin.version>
         <el-api.version>2.2</el-api.version>
         <slf4j-simple.version>1.5.10</slf4j-simple.version>
-        <hibernate.version>5.0.5.Final</hibernate.version>
+        <hibernate.version>5.4.24.Final</hibernate.version>
         <hibernate-jpa-2.0-api.version>1.0.1.Final</hibernate-jpa-2.0-api.version>
         <derby.version>10.8.2.2</derby.version>
         <resteasy-jaxrs.version>3.0.12.Final</resteasy-jaxrs.version>
